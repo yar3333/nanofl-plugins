@@ -71,6 +71,8 @@ declare module nanofl
 		family : string;
 		fillColor : string;
 		size : number;
+		strokeColor : string;
+		strokeSize : number;
 		style : string;
 		
 		constructor(characters:string, fillColor:string, family:string, style:string, size:number, align:string, strokeSize:number, strokeColor:string);
