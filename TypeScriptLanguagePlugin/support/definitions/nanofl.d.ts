@@ -51,41 +51,29 @@ declare module nanofl
 	
 	export class TextField extends createjs.Container
 	{
-		border(default, set) : boolean;
-		change(default, null) : stdlib.Event<{}>;
-		dashedBorder(default, set) : boolean;
-		editing(default, set) : boolean;
-		height(default, set) : number;
+		border : boolean;
+		height : number;
 		minHeight(default, null) : number;
 		minWidth(default, null) : number;
-		newTextFormat(default, set) : TextRun;
-		resize(default, null) : stdlib.Event<{ width : number, height:number }>;
 		selectable : boolean;
-		selectionEnd(null, set) : number;
-		selectionStart(null, set) : number;
 		text(get, set) : string;
 		textRuns : TextRun[];
-		width(default, set) : number;
-		constructor(width:number=0.0, height:number=0.0, selectable:boolean=false, border:boolean=false, dashedBorder:boolean=false, textRuns?:TextRun[], newTextFormat?:TextRun);
-		dispose() : void;
-		getSelectionFormat() : TextRun;
-		setSelectionFormat(format:TextRun) : void;
+		width : number;
+		
+		constructor();
 		update() : void;
 	}
 	
 	export class TextRun
 	{
 		align : string;
-		backgroundColor : string;
 		characters : string;
 		family : string;
 		fillColor : string;
 		size : number;
 		style : string;
-		constructor(characters:string, fillColor:string, family:string, style:string, size:number, align:string, backgroundColor:string);
+		
+		constructor(characters:string, fillColor:string, family:string, style:string, size:number, align:string, strokeSize:number, strokeColor:string);
 		clone() : TextRun;
-		duplicate(characters?:string) : TextRun;
-		equ(textRun:TextRun) : boolean;
-		static optimize(textRuns:TextRun[]) : TextRun[];
 	}
 }
