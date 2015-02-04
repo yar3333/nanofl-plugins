@@ -76,38 +76,27 @@ class HaxeLanguagePlugin implements ILanguagePlugin
 				var pack = dotPos >= 0 ? linkedClass.substring(0, dotPos) : "";
 				var klass = dotPos >= 0 ? linkedClass.substring(dotPos + 1) : linkedClass;
 				
-				var text = [];
-				text.push("package base" + (pack != "" ? "." + pack : "") + ";");
-				text.push("");
-				text.push("class " + klass + " extends " + item.getDisplayObjectClassName());
-				text.push("{");
-				text.push("\tpublic function new() super(cast nanofl.Player.library.getItem(\"" + item.namePath + "\"));");
-				text.push("}");
-				fileApi.saveContent(dir + "/gen/base/" + linkedClass.split(".").join("/") + ".hx", text.join("\n"));
+				fileApi.saveContent
+				(
+					dir + "/gen/base/" + linkedClass.split(".").join("/") + ".hx",
+					fileApi.getContent(supportDir + "/BaseMovieClip.hx")
+						.split("{pack}").join("base" + (pack != "" ? "." + pack : ""))
+						.split("{klass}").join(klass)
+						.split("{base}").join(item.getDisplayObjectClassName())
+						.split("{namePath}").join(item.namePath)
+				);
 				
 				var classFile = dir + "/src/" + linkedClass.split(".").join("/") + ".hx";
 				if (!fileApi.exists(classFile))
 				{
-					var text = [];
-					
-					if (pack != "")
-					{
-						text.push("package " + pack + ";");
-						text.push("");
-					}
-					
-					text = text.concat
-					([
-						"class " + klass + " extends base." + linkedClass,
-						"{",
-						"\tpublic function new()",
-						"\t{",
-						"\t\tsuper();",
-						"\t}",
-						"}"
-					]);
-					
-					fileApi.saveContent(classFile, text.join("\n"));
+					fileApi.saveContent
+					(
+						classFile,
+						(pack != "" ? "package " + pack + ";\n" : "") +
+						fileApi.getContent(supportDir + "/MovieClip.hx")
+							.split("{klass}").join(klass)
+							.split("{base}").join("base." + linkedClass)
+					);
 				}
 			}
 		}
