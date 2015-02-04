@@ -1,9 +1,7 @@
 package nanofl;
 
-import createjs.AbstractSoundInstance;
-
 extern class SeamlessSoundLoop
 {
-	function new(sound:AbstractSoundInstance) : Void;
+	function new(sound:createjs.AbstractSoundInstance) : Void;
 	function stop() : Void;
 }
