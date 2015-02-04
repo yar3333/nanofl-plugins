@@ -13,7 +13,7 @@ NoneLanguagePlugin.prototype = {
 		var nameExt = parts.pop();
 		var name = nameExt.substring(0,nameExt.lastIndexOf("."));
 		var dir = parts.join("/");
-		models.common.Log.trace("NoneLanguagePlugin.compile filePath = " + filePath + "; supportDir = " + supportDir + "; dir = " + dir + "; name = " + name);
+		console.log("NoneLanguagePlugin.compile filePath = " + filePath + "; supportDir = " + supportDir + "; dir = " + dir + "; name = " + name);
 		var destFile = dir + "/" + name + ".html";
 		if(!fileApi.exists(destFile)) {
 			var template = fileApi.getContent(supportDir + "/project.html");

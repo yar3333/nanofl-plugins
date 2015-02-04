@@ -25,7 +25,7 @@ FlashDevelopIdePlugin.prototype = {
 		default:
 			ext = null;
 		}
-		models.common.Log.trace("FlashDevelopIdePlugin.generateFiles language = " + language + "; dir = " + dir + "; name = " + name + "; ext = " + ext);
+		console.log("FlashDevelopIdePlugin.generateFiles language = " + language + "; dir = " + dir + "; name = " + name + "; ext = " + ext);
 		var destProjectFile = dir + "/" + name + ext;
 		if(!fileApi.exists(destProjectFile)) {
 			var sourceDir = fileApi.getPluginsDirectory() + "/FlashDevelopIdePlugin/" + language;

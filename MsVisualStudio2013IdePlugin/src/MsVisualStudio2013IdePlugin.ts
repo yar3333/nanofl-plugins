@@ -2,7 +2,6 @@
 type FileApi = models.common.FileApi;
 type Library = models.common.Library;
 type IIdePlugin = models.common.plugins.IIdePlugin;
-type Log = models.common.Log;
 
 class MsVisualStudio2013IdePlugin implements IIdePlugin
 {
@@ -16,6 +15,8 @@ class MsVisualStudio2013IdePlugin implements IIdePlugin
 		var dir = pathParts.slice(0, pathParts.length - 1).join("/");
 		var nameExt = pathParts[pathParts.length - 1];
 		var name = nameExt.lastIndexOf(".") > 0 ? nameExt.substring(0, nameExt.lastIndexOf(".")) : nameExt;
+		
+		console.log("MsVisualStudio2013IdePlugin: dir = " + dir + "; name = " + name);
 
 		var guid = this.newGuid();
 

@@ -8,6 +8,7 @@ var MsVisualStudio2013IdePlugin = (function () {
         var dir = pathParts.slice(0, pathParts.length - 1).join("/");
         var nameExt = pathParts[pathParts.length - 1];
         var name = nameExt.lastIndexOf(".") > 0 ? nameExt.substring(0, nameExt.lastIndexOf(".")) : nameExt;
+        console.log("MsVisualStudio2013IdePlugin: dir = " + dir + "; name = " + name);
         var guid = this.newGuid();
         var self = this;
         [".sln", ".csproj"].forEach(function (ext) {

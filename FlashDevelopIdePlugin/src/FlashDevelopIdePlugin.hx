@@ -1,7 +1,6 @@
 import models.common.DocumentProperties;
 import models.common.FileApi;
 import models.common.Library;
-import models.common.Log;
 import models.common.Plugins;
 import models.common.plugins.IIdePlugin;
 
@@ -28,7 +27,7 @@ class FlashDevelopIdePlugin implements IIdePlugin
 			case _: null;
 		};
 		
-		Log.trace("FlashDevelopIdePlugin.generateFiles language = " + language + "; dir = " + dir + "; name = " + name + "; ext = " + ext);
+		trace("FlashDevelopIdePlugin.generateFiles language = " + language + "; dir = " + dir + "; name = " + name + "; ext = " + ext);
 		
 		var destProjectFile = dir + "/" + name + ext;
 		

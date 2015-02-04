@@ -7664,11 +7664,6 @@ declare module models.common
 		static SCENE_NAME_PATH : string;
 	}
 	
-	export class Log
-	{
-		static trace(v:any) : void;
-	}
-	
 	export class Plugins
 	{
 		static filters : Map<string, models.client.plugins.IFilterPlugin>;

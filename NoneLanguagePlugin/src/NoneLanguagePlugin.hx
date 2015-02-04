@@ -1,7 +1,6 @@
 import models.common.DocumentProperties;
 import models.common.FileApi;
 import models.common.Library;
-import models.common.Log;
 import models.common.Plugins;
 import models.common.plugins.ILanguagePlugin;
 
@@ -22,7 +21,7 @@ class NoneLanguagePlugin implements ILanguagePlugin
 		var name = nameExt.substring(0, nameExt.lastIndexOf("."));
 		var dir = parts.join("/");
 		
-		Log.trace("NoneLanguagePlugin.compile filePath = " + filePath + "; supportDir = " + supportDir + "; dir = " + dir + "; name = " + name);
+		trace("NoneLanguagePlugin.compile filePath = " + filePath + "; supportDir = " + supportDir + "; dir = " + dir + "; name = " + name);
 		
 		var destFile = dir + "/" + name + ".html";
 		if (!fileApi.exists(destFile))

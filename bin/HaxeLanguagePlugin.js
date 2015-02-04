@@ -16,7 +16,7 @@ HaxeLanguagePlugin.prototype = {
 		var nameExt = pathParts[pathParts.length - 1];
 		var name;
 		if(nameExt.lastIndexOf(".") > 0) name = nameExt.substring(0,nameExt.lastIndexOf(".")); else name = nameExt;
-		models.common.Log.trace("HaxeLanguagePlugin.generateFiles filePath = " + filePath + "; supportDir = " + this.supportDir + "; dir= " + dir + "; name = " + name);
+		console.log("HaxeLanguagePlugin.generateFiles filePath = " + filePath + "; supportDir = " + this.supportDir + "; dir= " + dir + "; name = " + name);
 		this.generateLibrary(dir,name);
 		this.generateHtml(dir,name,documentProperties);
 		this.generateClasses(dir,name);
