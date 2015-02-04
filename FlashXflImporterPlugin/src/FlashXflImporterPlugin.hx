@@ -26,7 +26,6 @@ class FlashXflImporterPlugin implements IImporterPlugin
 	
 	public function importDocument(fileApi:FileApi, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, callb:Bool->Void)
 	{
-		haxe.Log.trace = function(v, ?_) models.common.Log.trace(v);
 		DocumentImporter.process(IMPORT_MEDIA_SCRIPT_TEMPLATE, fileApi, srcFilePath, destFilePath, documentProperties, library, true, null, callb);
 	}
 }

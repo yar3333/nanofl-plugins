@@ -1,6 +1,7 @@
 import models.common.DocumentProperties;
 import models.common.FileApi;
 import models.common.Library;
+import models.common.Log;
 import models.common.Plugins;
 import models.common.plugins.IIdePlugin;
 
@@ -16,8 +17,6 @@ class FlashDevelopIdePlugin implements IIdePlugin
 	
 	public function generateFiles(language:String, fileApi:FileApi, filePath:String, documentProperties:DocumentProperties, library:Library) : Void
 	{
-		haxe.Log.trace = function(v, ?_) models.common.Log.trace(v);
-		
 		var pathParts = filePath.split("/");
 		var dir = pathParts.slice(0, pathParts.length - 1).join("/");
 		var nameExt = pathParts[pathParts.length - 1];
@@ -29,7 +28,7 @@ class FlashDevelopIdePlugin implements IIdePlugin
 			case _: null;
 		};
 		
-		trace("FlashDevelopIdePlugin.generateFiles language = " + language + "; dir = " + dir + "; name = " + name + "; ext = " + ext);
+		Log.trace("FlashDevelopIdePlugin.generateFiles language = " + language + "; dir = " + dir + "; name = " + name + "; ext = " + ext);
 		
 		var destProjectFile = dir + "/" + name + ext;
 		

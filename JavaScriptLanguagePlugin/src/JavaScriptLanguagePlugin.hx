@@ -1,6 +1,7 @@
 import models.common.DocumentProperties;
 import models.common.FileApi;
 import models.common.Library;
+import models.common.Log;
 import models.common.Plugins;
 import models.common.plugins.ILanguagePlugin;
 
@@ -27,7 +28,7 @@ class JavaScriptLanguagePlugin implements ILanguagePlugin
 		var nameExt = pathParts[pathParts.length - 1];
 		var name = nameExt.lastIndexOf(".") > 0 ? nameExt.substring(0, nameExt.lastIndexOf(".")) : nameExt;
 		
-		models.common.Log.trace("JavaScriptLanguagePlugin.compile filePath = " + filePath + "; supportDir = " + supportDir+"; dir= " + dir + "; name = " + name);
+		Log.trace("JavaScriptLanguagePlugin.compile filePath = " + filePath + "; supportDir = " + supportDir+"; dir= " + dir + "; name = " + name);
 		
 		generateLibrary(dir, name);
 		generateClasses(dir, name);

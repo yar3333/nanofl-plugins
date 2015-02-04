@@ -1,6 +1,7 @@
 import models.common.DocumentProperties;
 import models.common.FileApi;
 import models.common.Library;
+import models.common.Log;
 import models.common.Plugins;
 import models.common.plugins.ILanguagePlugin;
 
@@ -18,8 +19,6 @@ class HaxeLanguagePlugin implements ILanguagePlugin
 	
 	public function generateFiles(fileApi:FileApi, filePath:String, documentProperties:DocumentProperties, library:Library) : Void
 	{
-		haxe.Log.trace = function(v, ?_) models.common.Log.trace(v);
-		
 		this.fileApi = fileApi;
 		this.library = library;
 		this.supportDir = fileApi.getPluginsDirectory() + "/HaxeLanguagePlugin";
@@ -29,7 +28,7 @@ class HaxeLanguagePlugin implements ILanguagePlugin
 		var nameExt = pathParts[pathParts.length - 1];
 		var name = nameExt.lastIndexOf(".") > 0 ? nameExt.substring(0, nameExt.lastIndexOf(".")) : nameExt;
 		
-		trace("HaxeLanguagePlugin.generateFiles filePath = " + filePath + "; supportDir = " + supportDir + "; dir= " + dir + "; name = " + name);
+		Log.trace("HaxeLanguagePlugin.generateFiles filePath = " + filePath + "; supportDir = " + supportDir + "; dir= " + dir + "; name = " + name);
 		
 		generateLibrary(dir, name);
 		generateHtml(dir, name, documentProperties);

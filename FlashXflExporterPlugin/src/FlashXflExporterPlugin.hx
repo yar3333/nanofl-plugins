@@ -1,6 +1,7 @@
 import models.common.DocumentProperties;
 import models.common.FileApi;
 import models.common.Library;
+import models.common.Log;
 import models.common.Plugins;
 import models.common.plugins.IExporterPlugin;
 import models.common.XmlWriter;
@@ -20,11 +21,9 @@ class FlashXflExporterPlugin implements IExporterPlugin
 	
 	public function exportDocument(fileApi:FileApi, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Void
 	{
-		haxe.Log.trace = function(v, ?_) models.common.Log.trace(v);
-		
-		trace("Plugin.exportDocument " + srcFilePath + " => " + destFilePath);
+		Log.trace("Plugin.exportDocument " + srcFilePath + " => " + destFilePath);
 		var scene = library.getSceneItem();
-		trace("scene.layers.length = " + scene.layers.length);
+		Log.trace("scene.layers.length = " + scene.layers.length);
 		
 		var xml = new XmlWriter();
 		xml.begin("root").attr("a", "123");
