@@ -20,11 +20,8 @@
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="definitions\nanofl.d.ts">
-      <Link>definitions\nanofl.d.ts</Link>
-    </TypeScriptCompile>
-    <Content Include="gen\**\*.ts" />
-    <Content Include="src\**\*.ts" />
+    <TypeScriptCompile Include="gen\**\*.ts" />
+    <TypeScriptCompile Include="src\**\*.ts" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Target Name="Build" DependsOnTargets="CompileTypeScript" />

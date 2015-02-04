@@ -65,6 +65,9 @@ class TypeScriptLanguagePlugin implements ICompilerPlugin
 		if (linkedItems.length > 0)
 		{
             this.fileApi.copy(this.supportDir + "/files", dir);
+
+			var baseMovieClipTemplate = this.fileApi.getContent(this.supportDir + "/BaseMovieClip.ts");
+			var movieClipTemplate = this.fileApi.getContent(this.supportDir + "/MovieClip.ts");
 			
             var self = this;
             linkedItems.forEach(function(item)
@@ -75,38 +78,25 @@ class TypeScriptLanguagePlugin implements ICompilerPlugin
 				var pack = dotPos >= 0 ? linkedClass.substring(0, dotPos) : "";
 				var klass = dotPos >= 0 ? linkedClass.substring(dotPos + 1) : linkedClass;
 				
-				var text = [];
-				text.push("package base" + (pack != "" ? "." + pack : "") + ";");
-				text.push("");
-				text.push("class " + klass + " extends " + item.getDisplayObjectClassName());
-				text.push("{");
-				text.push("\tpublic new() super(cast nanofl.Player.library.getItem(\"" + item.namePath + "\"));");
-				text.push("}");
-                self.fileApi.saveContent(dir + "/gen/base/" + linkedClass.replace(".", "/") + ".hx", text.join("\n"));
+				var text = baseMovieClipTemplate
+						.split("{pack}").join("base" + (pack != "" ? "." + pack : ""))
+						.split("{klass}").join(klass)
+						.split("{base}").join(item.getDisplayObjectClassName())
+						.split("{namePath}").join(item.namePath);
+                
+				self.fileApi.saveContent(dir + "/gen/base/" + linkedClass.replace(".", "/") + ".ts", text);
 				
-				var classFile = dir + "/src/" + linkedClass.replace(".", "/") + ".hx";
+				var classFile = dir + "/src/" + linkedClass.replace(".", "/") + ".ts";
                 if (!self.fileApi.exists(classFile))
 				{
-					var text = [];
-					
-					if (pack != "")
-					{
-						text.push("package " + pack + ";");
-						text.push("");
-					}
-					
-					text = text.concat
-					([
-						"class " + klass + " extends base." + linkedClass,
-						"{",
-						"\tpublic new()",
-						"\t{",
-						"\t\tsuper();",
-						"\t}",
-						"}"
-					]);
-					
-                    self.fileApi.saveContent(classFile, text.join("\n"));
+                    var text = "";
+					if (pack != "") text += "module " + pack + "\n{\n";
+					text += movieClipTemplate
+								.split("{klass}").join(klass)
+								.split("{base}").join("base." + linkedClass);
+					if (pack != "") text += "\n}";
+
+					self.fileApi.saveContent(classFile, text);
 				}
 			});
 		}
@@ -114,7 +104,7 @@ class TypeScriptLanguagePlugin implements ICompilerPlugin
 	
 	private generateSoundsClass(dir:string, name:string)
 	{
-		var classFilePath = dir + "/gen/Sounds.hx";
+		var classFilePath = dir + "/gen/Sounds.ts";
 		
         var sounds = this.library.getSounds();
 		if (sounds.length > 0)
@@ -131,7 +121,7 @@ class TypeScriptLanguagePlugin implements ICompilerPlugin
 			{
 				if (sound.linkage != "" && sound.linkage != null)
 				{
-					text.push("\tpublic static function " + sound.linkage + "(options?:SoundOptions) : AbstractSoundInstance return Sound.play(\"" + sound.linkage + "\", options);");
+					text.push("\tpublic static " + sound.linkage + "(options?:SoundOptions) : AbstractSoundInstance { return Sound.play(\"" + sound.linkage + "\", options); }");
 				}
 			});
 			

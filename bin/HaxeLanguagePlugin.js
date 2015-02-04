@@ -46,6 +46,8 @@ HaxeLanguagePlugin.prototype = {
 		});
 		if(linkedItems.length > 0) {
 			this.fileApi.copy(this.supportDir + "/files",dir);
+			var baseMovieClipTemplate = this.fileApi.getContent(this.supportDir + "/BaseMovieClip.hx");
+			var movieClipTemplate = this.fileApi.getContent(this.supportDir + "/MovieClip.hx");
 			var _g = 0;
 			while(_g < linkedItems.length) {
 				var item1 = linkedItems[_g];
@@ -56,9 +58,9 @@ HaxeLanguagePlugin.prototype = {
 				if(dotPos >= 0) pack = linkedClass.substring(0,dotPos); else pack = "";
 				var klass;
 				if(dotPos >= 0) klass = linkedClass.substring(dotPos + 1); else klass = linkedClass;
-				this.fileApi.saveContent(dir + "/gen/base/" + linkedClass.split(".").join("/") + ".hx",this.fileApi.getContent(this.supportDir + "/BaseMovieClip.hx").split("{pack}").join("base" + (pack != ""?"." + pack:"")).split("{klass}").join(klass).split("{base}").join(item1.getDisplayObjectClassName()).split("{namePath}").join(item1.namePath));
+				this.fileApi.saveContent(dir + "/gen/base/" + linkedClass.split(".").join("/") + ".hx",baseMovieClipTemplate.split("{pack}").join("base" + (pack != ""?"." + pack:"")).split("{klass}").join(klass).split("{base}").join(item1.getDisplayObjectClassName()).split("{namePath}").join(item1.namePath));
 				var classFile = dir + "/src/" + linkedClass.split(".").join("/") + ".hx";
-				if(!this.fileApi.exists(classFile)) this.fileApi.saveContent(classFile,(pack != ""?"package " + pack + ";\n":"") + this.fileApi.getContent(this.supportDir + "/MovieClip.hx").split("{klass}").join(klass).split("{base}").join("base." + linkedClass));
+				if(!this.fileApi.exists(classFile)) this.fileApi.saveContent(classFile,(pack != ""?"package " + pack + ";\n\n":"") + movieClipTemplate.split("{klass}").join(klass).split("{base}").join("base." + linkedClass));
 			}
 		}
 	}

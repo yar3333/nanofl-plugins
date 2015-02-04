@@ -68,6 +68,9 @@ class HaxeLanguagePlugin implements ILanguagePlugin
 		{
 			fileApi.copy(supportDir + "/files", dir);
 			
+			var baseMovieClipTemplate = this.fileApi.getContent(this.supportDir + "/BaseMovieClip.hx");
+			var movieClipTemplate = this.fileApi.getContent(this.supportDir + "/MovieClip.hx");
+			
 			for (item in linkedItems)
 			{
 				var linkedClass = capitalizeClassName(item.linkedClass);
@@ -79,7 +82,7 @@ class HaxeLanguagePlugin implements ILanguagePlugin
 				fileApi.saveContent
 				(
 					dir + "/gen/base/" + linkedClass.split(".").join("/") + ".hx",
-					fileApi.getContent(supportDir + "/BaseMovieClip.hx")
+					baseMovieClipTemplate
 						.split("{pack}").join("base" + (pack != "" ? "." + pack : ""))
 						.split("{klass}").join(klass)
 						.split("{base}").join(item.getDisplayObjectClassName())
@@ -92,8 +95,8 @@ class HaxeLanguagePlugin implements ILanguagePlugin
 					fileApi.saveContent
 					(
 						classFile,
-						(pack != "" ? "package " + pack + ";\n" : "") +
-						fileApi.getContent(supportDir + "/MovieClip.hx")
+						(pack != "" ? "package " + pack + ";\n\n" : "") +
+						movieClipTemplate
 							.split("{klass}").join(klass)
 							.split("{base}").join("base." + linkedClass)
 					);

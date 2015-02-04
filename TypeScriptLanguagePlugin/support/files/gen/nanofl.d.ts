@@ -20,7 +20,7 @@ declare module nanofl
 		paused : boolean;
 		loop : boolean;
 		
-		currentFrame(default, null) : number;
+		currentFrame : number;
 		
 		constructor(symbol:any);
 		
@@ -53,10 +53,10 @@ declare module nanofl
 	{
 		border : boolean;
 		height : number;
-		minHeight(default, null) : number;
-		minWidth(default, null) : number;
+		minHeight : number;
+		minWidth : number;
 		selectable : boolean;
-		text(get, set) : string;
+		text : string;
 		textRuns : TextRun[];
 		width : number;
 		
