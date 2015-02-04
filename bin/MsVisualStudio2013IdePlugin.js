@@ -33,4 +33,3 @@ var MsVisualStudio2013IdePlugin = (function () {
     return MsVisualStudio2013IdePlugin;
 })();
 models.common.Plugins.registerIde(new MsVisualStudio2013IdePlugin());
-//# sourceMappingURL=MsVisualStudio2013IdePlugin.js.map

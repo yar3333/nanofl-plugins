@@ -113,4 +113,3 @@ var TypeScriptLanguagePlugin = (function () {
     return TypeScriptLanguagePlugin;
 })();
 models.common.Plugins.registerLanguage(new TypeScriptLanguagePlugin());
-//# sourceMappingURL=TypeScriptLanguagePlugin.js.map

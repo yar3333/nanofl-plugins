@@ -142,5 +142,3 @@ if(Array.prototype.filter == null) Array.prototype.filter = function(f1) {
 };
 JavaScriptLanguagePlugin.main();
 })();
-
-//# sourceMappingURL=..\bin\JavaScriptLanguagePlugin.js.map

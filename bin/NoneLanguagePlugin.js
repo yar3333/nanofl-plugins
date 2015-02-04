@@ -29,5 +29,3 @@ NoneLanguagePlugin.prototype = {
 };
 NoneLanguagePlugin.main();
 })();
-
-//# sourceMappingURL=..\bin\NoneLanguagePlugin.js.map
