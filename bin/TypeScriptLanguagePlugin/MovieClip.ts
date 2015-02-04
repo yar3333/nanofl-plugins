@@ -2,16 +2,16 @@ class {klass} extends {base}
 {
 	//init()
 	//{
-	//	your initialization code
+		// your initialization code
 	//}
 	
-	// onEnterFrame()
+	//onEnterFrame()
 	//{
-	//	your code for tick
+		// your code for tick
 	//}
 	
 	//onMouseDown(e:createjs.MouseEvent)
 	//{
-	//	your code for mouse down
+		// your code for mouse down
 	//}
 }

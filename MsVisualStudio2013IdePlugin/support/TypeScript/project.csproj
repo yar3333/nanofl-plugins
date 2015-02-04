@@ -8,7 +8,7 @@
     <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
     <TypeScriptOutFile>bin\$(MSBuildProjectName).js</TypeScriptOutFile>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <OutputPath>$(TEMP)</OutputPath>
+    <OutputPath>$(TEMP)\{guid}</OutputPath>
 	<IntermediateOutputPath>$(TEMP)</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
