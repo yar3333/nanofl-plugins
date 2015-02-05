@@ -1041,7 +1041,7 @@ flashimport.SymbolLoader.prototype = {
 			this.log("FONT MAP: " + stdlib.Std.string(htmlparser.HtmlParserTools.getAttr(textAttrs,"face")) + " -> " + font.face + " / " + (font.style != ""?font.style:"regular"));
 		}
 		var font1 = this.fontMap.get(face);
-		return new nanofl.TextRun(StringTools.replace(stdlib.Utf8.htmlUnescape(htmlparser.HtmlParserTools.findOne(textRun,">characters").get_innerHTML()),"\r","\n"),htmlparser.HtmlParserTools.getAttr(textAttrs,"fillColor","#000000"),font1.face,font1.style,htmlparser.HtmlParserTools.getAttr(textAttrs,"size",12.0),htmlparser.HtmlParserTools.getAttr(textAttrs,"alignment"),0,null,null);
+		return new nanofl.TextRun(StringTools.replace(stdlib.Utf8.htmlUnescape(htmlparser.HtmlParserTools.findOne(textRun,">characters").innerHTML),"\r","\n"),htmlparser.HtmlParserTools.getAttr(textAttrs,"fillColor","#000000"),font1.face,font1.style,htmlparser.HtmlParserTools.getAttr(textAttrs,"size",12.0),htmlparser.HtmlParserTools.getAttr(textAttrs,"alignment"),0,null,null);
 	}
 	,loadColorEffect: function(color) {
 		if(color == null) return null;

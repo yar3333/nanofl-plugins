@@ -8053,8 +8053,7 @@ declare module htmlparser
 		setAttribute(name:string, value:string) : void;
 		removeAttribute(name:string) : void;
 		hasAttribute(name:string) : boolean;
-		get_innerHTML() : string
-	 	set_innerHTML(v:string) : string;
+		innerHTML : string;
 		find(selector:string) : htmlparser.HtmlNodeElement[];
 		replaceChild(node:htmlparser.HtmlNodeElement, newNode:htmlparser.HtmlNode) : void;
 		replaceChildWithInner(node:htmlparser.HtmlNodeElement, nodeContainer:htmlparser.HtmlNodeElement) : void;

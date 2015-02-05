@@ -15,7 +15,7 @@ extern class HtmlNodeElement extends htmlparser.HtmlNode
 	function setAttribute(name:String, value:String) : Void;
 	function removeAttribute(name:String) : Void;
 	function hasAttribute(name:String) : Bool;
-	var innerHTML(get, set) : String;
+	var innerHTML : String;
 	function find(selector:String) : Array<htmlparser.HtmlNodeElement>;
 	function replaceChild(node:htmlparser.HtmlNodeElement, newNode:htmlparser.HtmlNode) : Void;
 	function replaceChildWithInner(node:htmlparser.HtmlNodeElement, nodeContainer:htmlparser.HtmlNodeElement) : Void;
