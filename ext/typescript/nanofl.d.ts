@@ -7563,8 +7563,7 @@ declare module models.common
 	
 	export interface ISelectable
 	{
-		set_selected(v:boolean) : boolean
-	 	selected : boolean;
+		selected : boolean;
 	}
 	
 	export interface ITimeline
@@ -8466,8 +8465,7 @@ declare module models.common.geom
 		constructor(fill?:models.common.fills.IFill, contours?:models.common.geom.Contour[], selected?:boolean);
 		contours : models.common.geom.Contour[];
 		fill : models.common.fills.IFill;
-		set_selected(v:boolean) : boolean
-	 	selected : boolean;
+		selected : boolean;
 		save(fills:models.common.fills.IFill[], out:models.common.XmlWriter) : void;
 		draw(g:createjs.Graphics, m?:createjs.Matrix2D) : void;
 		translate(dx:number, dy:number) : void;
@@ -8530,8 +8528,7 @@ declare module models.common.geom
 	{
 		constructor(x1:number, y1:number, x2:number, y2:number, x3?:number, y3?:number, stroke?:models.common.strokes.IStroke, selected?:boolean);
 		stroke : models.common.strokes.IStroke;
-		set_selected(v:boolean) : boolean
-	 	selected : boolean;
+		selected : boolean;
 		draw(g:createjs.Graphics, m:createjs.Matrix2D) : void;
 		getNearestPoint(x:number, y:number) : { point : models.common.geom.Point; t : number; };
 		addTo(edges:models.common.geom.StrokeEdge[]) : void;

@@ -5,7 +5,7 @@ extern class Polygon implements models.common.ISelectable
 	function new(?fill:models.common.fills.IFill, ?contours:Array<models.common.geom.Contour>, ?selected:Bool) : Void;
 	var contours(default, null) : Array<models.common.geom.Contour>;
 	var fill : models.common.fills.IFill;
-	var selected(default, set) : Bool;
+	var selected : Bool;
 	function save(fills:Array<models.common.fills.IFill>, out:models.common.XmlWriter) : Void;
 	function draw(g:createjs.Graphics, ?m:createjs.Matrix2D) : Void;
 	function translate(dx:Float, dy:Float) : Void;
