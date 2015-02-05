@@ -8166,26 +8166,19 @@ declare module nanofl
 		constructor(width?:number, height?:number, selectable?:boolean, border?:boolean, dashedBorder?:boolean, textRuns?:nanofl.TextRun[], newTextFormat?:nanofl.TextRun);
 		minWidth : number;
 		minHeight : number;
-		set_width(v:number) : number
-	 	width : number;
-		set_height(v:number) : number
-	 	height : number;
+		width : number;
+		height : number;
 		selectable : boolean;
-		set_border(v:boolean) : boolean
-	 	border : boolean;
-		set_dashedBorder(v:boolean) : boolean
-	 	dashedBorder : boolean;
+		border : boolean;
+		dashedBorder : boolean;
 		textRuns : nanofl.TextRun[];
-		set_editing(v:boolean) : boolean
-	 	editing : boolean;
-		set_selectionStart(v:number) : number;
-		set_selectionEnd(v:number) : number;
-		set_newTextFormat(v:nanofl.TextRun) : nanofl.TextRun
-	 	newTextFormat : nanofl.TextRun;
+		editing : boolean;
+		selectionStart : number;
+		selectionEnd : number;
+		newTextFormat : nanofl.TextRun;
 		resize : stdlib.Event<{ width : number; height : number; }>;
 		change : stdlib.Event<{ }>;
-		get_text() : string
-	 	set_text(v:string) : string;
+		text : string;
 		draw(ctx:CanvasRenderingContext2D, ignoreCache?:boolean) : boolean;
 		getSelectionFormat() : nanofl.TextRun;
 		setSelectionFormat(format:nanofl.TextRun) : void;
