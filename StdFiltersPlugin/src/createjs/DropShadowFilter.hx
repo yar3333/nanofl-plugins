@@ -1,4 +1,4 @@
-package nanofl;
+package createjs;
 
 /**
 * Applies a DropShadowFilter to DisplayObjects of EaselJS. This filter has inherited the Filter class of EaselJS and has used BlurFilter of EaselJS at the blurring process.
@@ -36,12 +36,12 @@ var bounds = _text.getBounds();
 _text.cache(bounds.x, bounds.y, bounds.width, bounds.height);
 _stage.addChild(_text);</code></pre>
 */
-@:native("createjs.DropShadowFilter")
+@:expose
 extern class DropShadowFilter extends createjs.Filter
 {
 	private static function __init__() : Void
 	{
-		haxe.macro.Compiler.includeFile("nanofl/DropShadowFilter.js");
+		haxe.macro.Compiler.includeFile("createjs/DropShadowFilter.js");
 	}
 	
 	/**

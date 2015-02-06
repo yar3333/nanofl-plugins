@@ -1,4 +1,5 @@
-(function () { "use strict";
+(function ($hx_exports) { "use strict";
+$hx_exports.createjs = $hx_exports.createjs || {};
 var AdjustColorFilterPlugin = function() {
 	this.properties = [{ type : "int", name : "brightness", label : "Brightness", defaultValue : 0, minValue : -100, maxValue : 100, units : "%"},{ type : "int", name : "contrast", label : "Contrast", defaultValue : 0, minValue : -100, maxValue : 100, units : "%"},{ type : "int", name : "saturation", label : "Saturation", defaultValue : 0, minValue : -100, maxValue : 100, units : "%"},{ type : "int", name : "hue", label : "Hue", defaultValue : 0, minValue : -180, maxValue : 180, units : "deg"}];
 	this.label = "Adjust Color";
@@ -714,4 +715,4 @@ _stage.addChild(_shape);</code></pre>
 	createjs.GlowFilter = GlowFilter;
 }(window));;
 StdFiltersPlugin.main();
-})();
+})(typeof window != "undefined" ? window : exports);

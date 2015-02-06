@@ -1,5 +1,4 @@
 import createjs.BlurFilter;
-import createjs.Filter;
 import models.client.plugins.FilterProperty;
 import models.client.plugins.IFilterPlugin;
 

@@ -1,4 +1,4 @@
-import nanofl.GlowFilter;
+import createjs.GlowFilter;
 import models.client.plugins.FilterProperty;
 import models.client.plugins.IFilterPlugin;
 

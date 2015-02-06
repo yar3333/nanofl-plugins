@@ -1,4 +1,4 @@
-package nanofl;
+package createjs;
 
 /**
 * Applies a GlowFilter to DisplayObjects of EaselJS. This filter has inherited the Filter class of EaselJS and has used BlurFilter of EaselJS at the blurring process.
@@ -29,12 +29,12 @@ _shape.filters = [_glowFilter];
 _shape.cache(-100, -100, 200, 200);
 _stage.addChild(_shape);</code></pre>
 */
-@:native("createjs.GlowFilter")
+@:expose
 extern class GlowFilter extends createjs.Filter
 {
 	private static function __init__() : Void
 	{
-		haxe.macro.Compiler.includeFile("nanofl/GlowFilter.js");
+		haxe.macro.Compiler.includeFile("createjs/GlowFilter.js");
 	}
 	
 	/**
