@@ -1341,7 +1341,7 @@ js.Boot.__instanceof = function(o,cl) {
 	}
 };
 js.Boot.__cast = function(o,t) {
-	if(js.Boot.__instanceof(o,t)) return o; else throw new Error("Cannot cast " + Std.string(o) + " to " + Std.string(t));
+	if(js.Boot.__instanceof(o,t)) return o; else throw "Cannot cast " + Std.string(o) + " to " + Std.string(t);
 };
 var stdlib = {};
 stdlib.Debug = function() { };
