@@ -6,13 +6,12 @@ class QuatizeColorsFilter extends createjs.Filter
 	/**
 	 * From 2 to 256. Defaults is 16;
 	 */
-	var maxColors : Int;
+	var colors : Int;
 
-	public function new(?maxColors:Int) : Void
+	public function new(?colors:Int) : Void
 	{
 		super();
-		
-		this.maxColors = maxColors != null ? maxColors : 16;
+		this.colors = colors != null ? colors : 16;
 	}
 	
 	override function applyFilter(ctx:js.html.CanvasRenderingContext2D, x:Float, y:Float, width:Float, height:Float, ?targetCtx:js.html.CanvasRenderingContext2D, ?targetX:Float, ?targetY:Float) : Bool
@@ -21,17 +20,17 @@ class QuatizeColorsFilter extends createjs.Filter
 		
 		var q = new RgbQuant
 		({
-			colors: maxColors
+			colors: colors
 		});
 		
-		var r = q.reduceAsTypedArray(imageData);
-		
-		for (i in 0...r.length) imageData.data[i] = r[i];
+		q.sample(imageData);
+		imageData.data.set(q.reduceAsTypedArray(imageData));
+		ctx.putImageData(imageData, x, y);
 		
 		return true;
 	}
 	
-	override function clone() return new QuatizeColorsFilter(maxColors);
+	override function clone() return new QuatizeColorsFilter(colors);
 	
-	override function toString() return "QuatizeColorsFilter(" + maxColors + ")";
+	override function toString() return "QuatizeColorsFilter(" + colors + ")";
 }

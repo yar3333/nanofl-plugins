@@ -42,7 +42,8 @@
   <!-- Executed before build -->
   <preBuildCommand />
   <!-- Executed after build -->
-  <postBuildCommand alwaysRun="False">cmd /C "IF EXIST support IF NOT EXIST ..\bin\$(ProjectName) mkdir  ..\bin\$(ProjectName)"
+  <postBuildCommand alwaysRun="False">haxelib run refactor replaceInFile $(OutputFile) "/var createjs = {};/var createjs = $$hx_exports.createjs;/"
+cmd /C "IF EXIST support IF NOT EXIST ..\bin\$(ProjectName) mkdir  ..\bin\$(ProjectName)"
 cmd /C "IF EXIST support xcopy /E /Q /Y support ..\bin\$(ProjectName) &gt; nul"</postBuildCommand>
   <!-- Other project options -->
   <options>

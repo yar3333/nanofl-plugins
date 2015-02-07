@@ -7,7 +7,7 @@ function $extend(from, fields) {
 	return proto;
 }
 var QuatizeColorsFilterPlugin = function() {
-	this.properties = [{ type : "int", name : "maxColors", label : "Colors", defaultValue : 16, minValue : 2, maxValue : 256}];
+	this.properties = [{ type : "int", name : "colors", label : "Colors", defaultValue : 16, minValue : 2, maxValue : 256}];
 	this.label = "Quatize Colors";
 	this.name = "QuatizeColorsFilter";
 };
@@ -17,33 +17,29 @@ QuatizeColorsFilterPlugin.main = function() {
 };
 QuatizeColorsFilterPlugin.prototype = {
 	getFilter: function(params) {
-		return new createjs.QuatizeColorsFilter(params.maxColors);
+		return new createjs.QuatizeColorsFilter(params.colors);
 	}
 };
-var createjs = {};
-createjs.QuatizeColorsFilter = $hx_exports.createjs.QuatizeColorsFilter = function(maxColors) {
+var createjs = $hx_exports.createjs;
+createjs.QuatizeColorsFilter = $hx_exports.createjs.QuatizeColorsFilter = function(colors) {
 	createjs.Filter.call(this);
-	if(maxColors != null) this.maxColors = maxColors; else this.maxColors = 16;
+	if(colors != null) this.colors = colors; else this.colors = 16;
 };
 createjs.QuatizeColorsFilter.__super__ = createjs.Filter;
 createjs.QuatizeColorsFilter.prototype = $extend(createjs.Filter.prototype,{
 	applyFilter: function(ctx,x,y,width,height,targetCtx,targetX,targetY) {
 		var imageData = ctx.getImageData(x,y,width,height);
-		var q = new RgbQuant({ colors : this.maxColors});
-		var r = q.reduce(imageData,1,null,null);
-		var _g1 = 0;
-		var _g = r.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			imageData.data[i] = r[i];
-		}
+		var q = new RgbQuant({ colors : this.colors});
+		q.sample(imageData);
+		imageData.data.set(q.reduce(imageData,1,null,null));
+		ctx.putImageData(imageData,x,y);
 		return true;
 	}
 	,clone: function() {
-		return new createjs.QuatizeColorsFilter(this.maxColors);
+		return new createjs.QuatizeColorsFilter(this.colors);
 	}
 	,toString: function() {
-		return "QuatizeColorsFilter(" + this.maxColors + ")";
+		return "QuatizeColorsFilter(" + this.colors + ")";
 	}
 });
 /*
@@ -980,6 +976,6 @@ createjs.QuatizeColorsFilter.prototype = $extend(createjs.Filter.prototype,{
 		module.exports = RgbQuant;
 	}
 
-}).call(this);;
+}).call(typeof window != "undefined" ? window : exports);;
 QuatizeColorsFilterPlugin.main();
 })(typeof window != "undefined" ? window : exports);

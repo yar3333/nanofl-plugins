@@ -932,4 +932,4 @@
 		module.exports = RgbQuant;
 	}
 
-}).call(this);
+}).call(typeof window != "undefined" ? window : exports);

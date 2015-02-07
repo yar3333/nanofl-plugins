@@ -15,11 +15,11 @@ class QuatizeColorsFilterPlugin implements IFilterPlugin
 	
 	public var properties : Array<FilterProperty> =
 	[
-		{ type:"int", name:"maxColors", label:"Colors", defaultValue:16, minValue:2, maxValue:256 }
+		{ type:"int", name:"colors", label:"Colors", defaultValue:16, minValue:2, maxValue:256 }
 	];
 	
 	public function getFilter(params:Dynamic)
 	{
-		return new QuatizeColorsFilter(params.maxColors);
+		return new QuatizeColorsFilter(params.colors);
 	}
 }

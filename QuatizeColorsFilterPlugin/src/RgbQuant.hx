@@ -1,5 +1,3 @@
-package createjs;
-
 typedef RgbQuantOptions =
 {
 	/**
@@ -92,7 +90,7 @@ typedef RgbQuantOptions =
 {
 	private static function __init__() : Void
 	{
-		haxe.macro.Compiler.includeFile("createjs/RgbQuant.js");
+		haxe.macro.Compiler.includeFile("RgbQuant.js");
 	}
 
 	function new(opts:RgbQuantOptions) : Void;
