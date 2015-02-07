@@ -1,24 +1,5 @@
 package nanofl;
 
-typedef TextWithParams =
-{
-	var backgroundColor : String;
-	var bounds : createjs.Rectangle;
-	var charIndex : Int;
-	var text : createjs.Text;
-	var textSecond : createjs.Text;
-};
-
-typedef TextLine =
-{
-	var align : String;
-	var maxFontSize : Float;
-	var maxY : Float;
-	var minY : Float;
-	var texts : Array<nanofl.TextField.TextWithParams>;
-	var width : Float;
-};
-
 extern class TextField extends createjs.Container
 {
 	function new(?width:Float, ?height:Float, ?selectable:Bool, ?border:Bool, ?dashedBorder:Bool, ?textRuns:Array<nanofl.TextRun>, ?newTextFormat:nanofl.TextRun) : Void;

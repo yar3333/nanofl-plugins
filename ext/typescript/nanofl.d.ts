@@ -8198,50 +8198,6 @@ declare module stdlib
 	}
 }
 
-declare module htmlparser.HtmlParser
-{
-	type HtmlLexem =
-	{
-		all : string;
-		allPos : number;
-		attrs : string;
-		close : string;
-		comment : string;
-		elem : string;
-		script : string;
-		scriptAttrs : string;
-		scriptText : string;
-		style : string;
-		styleAttrs : string;
-		styleText : string;
-		tagClose : string;
-		tagEnd : string;
-		tagOpen : string;
-	}
-}
-
-declare module nanofl.TextField
-{
-	type TextWithParams =
-	{
-		backgroundColor : string;
-		bounds : createjs.Rectangle;
-		charIndex : number;
-		text : createjs.Text;
-		textSecond : createjs.Text;
-	}
-	
-	type TextLine =
-	{
-		align : string;
-		maxFontSize : number;
-		maxY : number;
-		minY : number;
-		texts : nanofl.TextField.TextWithParams[];
-		width : number;
-	}
-}
-
 declare module createjs.LoadQueue
 {
 	type LoadQueueFileloadEvent =
