@@ -7487,12 +7487,12 @@ declare module models.common
 		name : string;
 		params : any;
 		save(out:models.common.XmlWriter) : void;
+		equ(filter:models.common.FilterDef) : boolean;
 		clone() : models.common.FilterDef;
 		cloneTweened(t:number, finish:models.common.FilterDef) : models.common.FilterDef;
 		getFilter() : createjs.Filter;
 		getLabel() : string;
 		getProperties() : models.client.plugins.FilterProperty[];
-		equ(filter:models.common.FilterDef) : boolean;
 		static load(node:htmlparser.HtmlNodeElement) : models.common.FilterDef;
 	}
 	
