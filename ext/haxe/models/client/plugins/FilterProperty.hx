@@ -33,7 +33,7 @@ typedef FilterProperty =
 	@:optional
 	var neutralValue : Dynamic;
 	/**
-	 * int / float / string / color
+	 * int / float / string / color / bool
 	 */
 	var type : String;
 	/**

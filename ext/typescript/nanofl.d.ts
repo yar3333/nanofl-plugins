@@ -83,7 +83,7 @@ declare module models.client.plugins
 		 */
 		neutralValue : any;
 		/**
-		 * int / float / string / color
+		 * int / float / string / color / bool
 		 */
 		type : string;
 		/**
