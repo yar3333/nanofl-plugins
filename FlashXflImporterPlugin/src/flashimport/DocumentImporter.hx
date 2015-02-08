@@ -6,6 +6,7 @@ import htmlparser.XmlDocument;
 import models.common.DocumentProperties;
 import models.common.FileApi;
 import models.common.Library;
+import models.common.libraryitems.SoundItem;
 using htmlparser.HtmlParserTools;
 using StringTools;
 
@@ -76,6 +77,16 @@ class DocumentImporter
 		destDocProp.height = docPropNode.getAttr("height", 400);
 		destDocProp.backgroundColor = docPropNode.getAttr("backgroundColor", "#ffffff");
 		destDocProp.framerate = docPropNode.getAttr("frameRate", 24);
+		
+		for (node in docPropNode.find(">media>DOMSoundItem"))
+		{
+			var soundItem = SoundItem.load(node.getAttr("name"), destLibrary.libraryDir, fileApi);
+			if (soundItem != null)
+			{
+				if (node.getAttr("linkageExportForAS", false)) soundItem.linkage = node.getAttr("linkageIdentifier");
+				destLibrary.addItem(soundItem);
+			}
+		}
 		
 		symbolLoader.loadFromXml(Library.SCENE_NAME_PATH, srcDoc);
 		

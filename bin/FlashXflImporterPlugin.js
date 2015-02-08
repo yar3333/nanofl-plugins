@@ -781,6 +781,17 @@ flashimport.DocumentImporter.importXmlFiles = function(fileApi,srcFilePath,destD
 	destDocProp.height = htmlparser.HtmlParserTools.getAttr(docPropNode,"height",400);
 	destDocProp.backgroundColor = htmlparser.HtmlParserTools.getAttr(docPropNode,"backgroundColor","#ffffff");
 	destDocProp.framerate = htmlparser.HtmlParserTools.getAttr(docPropNode,"frameRate",24);
+	var _g = 0;
+	var _g1 = docPropNode.find(">media>DOMSoundItem");
+	while(_g < _g1.length) {
+		var node = _g1[_g];
+		++_g;
+		var soundItem = models.common.libraryitems.SoundItem.load(htmlparser.HtmlParserTools.getAttr(node,"name"),destLibrary.libraryDir,fileApi);
+		if(soundItem != null) {
+			if(htmlparser.HtmlParserTools.getAttr(node,"linkageExportForAS",false)) soundItem.linkage = htmlparser.HtmlParserTools.getAttr(node,"linkageIdentifier");
+			destLibrary.addItem(soundItem);
+		}
+	}
 	symbolLoader.loadFromXml(models.common.Library.SCENE_NAME_PATH,srcDoc);
 	fileApi.findFiles(srcLibDir,function(file) {
 		var namePath = haxe.io.Path.withoutExtension(HxOverrides.substr(file,srcLibDir.length + 1,null));
