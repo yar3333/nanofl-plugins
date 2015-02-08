@@ -822,16 +822,28 @@ flashimport.FontConvertor = function() { };
 flashimport.FontConvertor.__name__ = ["flashimport","FontConvertor"];
 flashimport.FontConvertor.convert = function(font) {
 	var n = font.lastIndexOf("-");
-	var face;
-	if(n >= 0) face = HxOverrides.substr(font,0,n); else face = font;
-	if(StringTools.endsWith(face,"PSMT")) face = StringTools.trim(HxOverrides.substr(face,0,face.length - "PSMT".length));
-	if(StringTools.endsWith(face,"PS")) face = StringTools.trim(HxOverrides.substr(face,0,face.length - "PS".length));
+	var face = flashimport.FontConvertor.removeSuffixes(n >= 0?font.substring(0,n):font);
 	var style;
-	if(n >= 0) style = HxOverrides.substr(font,n + 1,null); else style = "";
-	if(StringTools.endsWith(style,"MT")) style = StringTools.trim(HxOverrides.substr(style,0,style.length - "MT".length));
-	style = style.toLowerCase();
+	if(n >= 0) style = flashimport.FontConvertor.removeSuffixes(font.substring(n + 1)).toLowerCase(); else style = "";
 	if(style == "bolditalic") style = "bold italic";
 	return { face : face, style : style};
+};
+flashimport.FontConvertor.removeSuffixes = function(s) {
+	var changed = true;
+	while(changed) {
+		changed = false;
+		var _g = 0;
+		var _g1 = ["MT","PS","MS"];
+		while(_g < _g1.length) {
+			var suffix = _g1[_g];
+			++_g;
+			if(StringTools.endsWith(s,suffix)) {
+				s = s.substring(0,s.length - suffix.length);
+				changed = true;
+			}
+		}
+	}
+	return s;
 };
 flashimport.Macro = function() { };
 flashimport.Macro.__name__ = ["flashimport","Macro"];
@@ -1049,7 +1061,7 @@ flashimport.SymbolLoader.prototype = {
 		if(!this.fontMap.exists(face)) {
 			var font = flashimport.FontConvertor.convert(face);
 			this.fontMap.set(face,font);
-			this.log("FONT MAP: " + stdlib.Std.string(htmlparser.HtmlParserTools.getAttr(textAttrs,"face")) + " -> " + font.face + " / " + (font.style != ""?font.style:"regular"));
+			this.log("FONT MAP: " + face + " -> " + font.face + " / " + (font.style != ""?font.style:"regular"));
 		}
 		var font1 = this.fontMap.get(face);
 		return new nanofl.TextRun(StringTools.replace(stdlib.Utf8.htmlUnescape(htmlparser.HtmlParserTools.findOne(textRun,">characters").innerHTML),"\r","\n"),htmlparser.HtmlParserTools.getAttr(textAttrs,"fillColor","#000000"),font1.face,font1.style,htmlparser.HtmlParserTools.getAttr(textAttrs,"size",12.0),htmlparser.HtmlParserTools.getAttr(textAttrs,"alignment"),0,null,null);

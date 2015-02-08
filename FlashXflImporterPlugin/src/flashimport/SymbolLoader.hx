@@ -340,7 +340,7 @@ class SymbolLoader
 		{
 			var font = FontConvertor.convert(face);
 			fontMap.set(face, font);
-			log("FONT MAP: " + textAttrs.getAttr("face") +" -> " + font.face + " / " + (font.style != "" ? font.style : "regular"));
+			log("FONT MAP: " + face +" -> " + font.face + " / " + (font.style != "" ? font.style : "regular"));
 		}
 		
 		var font = fontMap.get(face);
