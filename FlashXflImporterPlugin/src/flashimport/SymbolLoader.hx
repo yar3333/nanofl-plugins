@@ -48,14 +48,17 @@ class SymbolLoader
 	
 	var fontMap = new Map<String, { face:String, style:String }>();
 	var morphingNotSupported = new Array<String>();
+	var fontConvertor : FontConvertor;
 	
-	public function new(fileApi:FileApi, doc:XmlDocument, srcLibDir:String, library:Library, ?log:Dynamic->Void)
+	public function new(fileApi:FileApi, doc:XmlDocument, srcLibDir:String, library:Library, fonts:Array<String>, ?log:Dynamic->Void)
 	{
 		this.fileApi = fileApi;
 		this.doc = doc;
 		this.srcLibDir = srcLibDir;
 		this.library = library;
 		this.log = log != null ? log : function(v) {};
+		
+		this.fontConvertor = new FontConvertor(fonts);
 	}
 	
 	public function loadFromLibrary(namePath:String) : LibraryItem
@@ -338,7 +341,7 @@ class SymbolLoader
 		var face = textAttrs.getAttr("face");
 		if (!fontMap.exists(face))
 		{
-			var font = FontConvertor.convert(face);
+			var font = fontConvertor.convert(face);
 			fontMap.set(face, font);
 			log("FONT MAP: " + face +" -> " + font.face + " / " + (font.style != "" ? font.style : "regular"));
 		}

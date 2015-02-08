@@ -24,8 +24,8 @@ class FlashXflImporterPlugin implements IImporterPlugin
 	public var fileFilterDescription = "Adobe Flash Uncompressed Document (*.xfl)";
 	public var fileFilterPattern = "*.xfl";
 	
-	public function importDocument(fileApi:FileApi, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, callb:Bool->Void)
+	public function importDocument(fileApi:FileApi, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, fonts:Array<String>, callb:Bool->Void)
 	{
-		DocumentImporter.process(IMPORT_MEDIA_SCRIPT_TEMPLATE, fileApi, srcFilePath, destFilePath, documentProperties, library, true, null, callb);
+		DocumentImporter.process(IMPORT_MEDIA_SCRIPT_TEMPLATE, fileApi, srcFilePath, destFilePath, documentProperties, library, fonts, true, null, callb);
 	}
 }

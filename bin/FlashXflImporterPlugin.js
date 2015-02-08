@@ -82,8 +82,8 @@ FlashXflImporterPlugin.main = function() {
 	models.common.Plugins.registerImporter(new FlashXflImporterPlugin());
 };
 FlashXflImporterPlugin.prototype = {
-	importDocument: function(fileApi,srcFilePath,destFilePath,documentProperties,library,callb) {
-		flashimport.DocumentImporter.process(FlashXflImporterPlugin.IMPORT_MEDIA_SCRIPT_TEMPLATE,fileApi,srcFilePath,destFilePath,documentProperties,library,true,null,callb);
+	importDocument: function(fileApi,srcFilePath,destFilePath,documentProperties,library,fonts,callb) {
+		flashimport.DocumentImporter.process(FlashXflImporterPlugin.IMPORT_MEDIA_SCRIPT_TEMPLATE,fileApi,srcFilePath,destFilePath,documentProperties,library,fonts,true,null,callb);
 	}
 	,__class__: FlashXflImporterPlugin
 };
@@ -744,12 +744,12 @@ flashimport.CurvedEdge.prototype = $extend(flashimport.StraightEdge.prototype,{
 });
 flashimport.DocumentImporter = function() { };
 flashimport.DocumentImporter.__name__ = ["flashimport","DocumentImporter"];
-flashimport.DocumentImporter.process = function(importMediaScriptTemplate,fileApi,srcFilePath,destFilePath,destDocProp,destLibrary,runFlashToImportMedia,log,callb) {
+flashimport.DocumentImporter.process = function(importMediaScriptTemplate,fileApi,srcFilePath,destFilePath,destDocProp,destLibrary,fonts,runFlashToImportMedia,log,callb) {
 	if(runFlashToImportMedia) flashimport.DocumentImporter.importMedia(importMediaScriptTemplate,fileApi,srcFilePath,destFilePath,destLibrary,function(success) {
-		if(success) flashimport.DocumentImporter.importXmlFiles(fileApi,srcFilePath,destDocProp,destLibrary,log);
+		if(success) flashimport.DocumentImporter.importXmlFiles(fileApi,srcFilePath,destDocProp,destLibrary,fonts,log);
 		callb(success);
 	}); else {
-		flashimport.DocumentImporter.importXmlFiles(fileApi,srcFilePath,destDocProp,destLibrary,log);
+		flashimport.DocumentImporter.importXmlFiles(fileApi,srcFilePath,destDocProp,destLibrary,fonts,log);
 		callb(true);
 	}
 };
@@ -771,11 +771,11 @@ flashimport.DocumentImporter.importMedia = function(importMediaScriptTemplate,fi
 		} else callb(false);
 	});
 };
-flashimport.DocumentImporter.importXmlFiles = function(fileApi,srcFilePath,destDocProp,destLibrary,log) {
+flashimport.DocumentImporter.importXmlFiles = function(fileApi,srcFilePath,destDocProp,destLibrary,fonts,log) {
 	var srcDir = haxe.io.Path.directory(srcFilePath);
 	var srcDoc = new htmlparser.XmlDocument(fileApi.getContent(srcDir + "/DOMDocument.xml"));
 	var srcLibDir = srcDir + "/LIBRARY";
-	var symbolLoader = new flashimport.SymbolLoader(fileApi,srcDoc,srcLibDir,destLibrary,log);
+	var symbolLoader = new flashimport.SymbolLoader(fileApi,srcDoc,srcLibDir,destLibrary,fonts,log);
 	var docPropNode = htmlparser.HtmlParserTools.findOne(srcDoc,">DOMDocument");
 	destDocProp.width = htmlparser.HtmlParserTools.getAttr(docPropNode,"width",550);
 	destDocProp.height = htmlparser.HtmlParserTools.getAttr(docPropNode,"height",400);
@@ -818,32 +818,57 @@ flashimport.DrawOp = { __ename__ : ["flashimport","DrawOp"], __constructs__ : ["
 flashimport.DrawOp.move = function(x,y) { var $x = ["move",0,x,y]; $x.__enum__ = flashimport.DrawOp; return $x; };
 flashimport.DrawOp.line = function(x,y) { var $x = ["line",1,x,y]; $x.__enum__ = flashimport.DrawOp; return $x; };
 flashimport.DrawOp.curve = function(x1,y1,x2,y2) { var $x = ["curve",2,x1,y1,x2,y2]; $x.__enum__ = flashimport.DrawOp; return $x; };
-flashimport.FontConvertor = function() { };
-flashimport.FontConvertor.__name__ = ["flashimport","FontConvertor"];
-flashimport.FontConvertor.convert = function(font) {
-	var n = font.lastIndexOf("-");
-	var face = flashimport.FontConvertor.removeSuffixes(n >= 0?font.substring(0,n):font);
-	var style;
-	if(n >= 0) style = flashimport.FontConvertor.removeSuffixes(font.substring(n + 1)).toLowerCase(); else style = "";
-	if(style == "bolditalic") style = "bold italic";
-	return { face : face, style : style};
+flashimport.FontConvertor = function(fonts) {
+	this.fonts = fonts;
 };
-flashimport.FontConvertor.removeSuffixes = function(s) {
-	var changed = true;
-	while(changed) {
-		changed = false;
+flashimport.FontConvertor.__name__ = ["flashimport","FontConvertor"];
+flashimport.FontConvertor.prototype = {
+	convert: function(font) {
+		var n = font.lastIndexOf("-");
+		var face;
+		if(n >= 0) face = font.substring(0,n); else face = font;
+		face = this.convertFontFamily(face);
+		var style;
+		if(n >= 0) style = this.removeSuffixes(font.substring(n + 1)).toLowerCase(); else style = "";
+		if(style == "bolditalic") style = "bold italic";
+		return { face : face, style : style};
+	}
+	,convertFontFamily: function(s) {
 		var _g = 0;
-		var _g1 = ["MT","PS","MS"];
+		var _g1 = this.fonts;
 		while(_g < _g1.length) {
-			var suffix = _g1[_g];
+			var font = _g1[_g];
 			++_g;
-			if(StringTools.endsWith(s,suffix)) {
-				s = s.substring(0,s.length - suffix.length);
-				changed = true;
+			if(StringTools.replace(font," ","") == s) return font;
+		}
+		s = this.removeSuffixes(s);
+		var _g2 = 0;
+		var _g11 = this.fonts;
+		while(_g2 < _g11.length) {
+			var font1 = _g11[_g2];
+			++_g2;
+			if(StringTools.replace(font1," ","") == s) return font1;
+		}
+		return s;
+	}
+	,removeSuffixes: function(s) {
+		var changed = true;
+		while(changed) {
+			changed = false;
+			var _g = 0;
+			var _g1 = ["MT","PS"];
+			while(_g < _g1.length) {
+				var suffix = _g1[_g];
+				++_g;
+				if(StringTools.endsWith(s,suffix)) {
+					s = s.substring(0,s.length - suffix.length);
+					changed = true;
+				}
 			}
 		}
+		return s;
 	}
-	return s;
+	,__class__: flashimport.FontConvertor
 };
 flashimport.Macro = function() { };
 flashimport.Macro.__name__ = ["flashimport","Macro"];
@@ -856,7 +881,7 @@ flashimport.MatrixParser.load = function(node,divider,dx,dy) {
 	if(node != null) return new models.common.geom.Matrix(htmlparser.HtmlParserTools.getAttr(node,"a",1.0) / divider,htmlparser.HtmlParserTools.getAttr(node,"b",0.0) / divider,htmlparser.HtmlParserTools.getAttr(node,"c",0.0) / divider,htmlparser.HtmlParserTools.getAttr(node,"d",1.0) / divider,htmlparser.HtmlParserTools.getAttr(node,"tx",0.0) + dx,htmlparser.HtmlParserTools.getAttr(node,"ty",0.0) + dy);
 	return new models.common.geom.Matrix();
 };
-flashimport.SymbolLoader = function(fileApi,doc,srcLibDir,library,log) {
+flashimport.SymbolLoader = function(fileApi,doc,srcLibDir,library,fonts,log) {
 	this.morphingNotSupported = new Array();
 	this.fontMap = new haxe.ds.StringMap();
 	this.fileApi = fileApi;
@@ -865,6 +890,7 @@ flashimport.SymbolLoader = function(fileApi,doc,srcLibDir,library,log) {
 	this.library = library;
 	if(log != null) this.log = log; else this.log = function(v) {
 	};
+	this.fontConvertor = new flashimport.FontConvertor(fonts);
 };
 flashimport.SymbolLoader.__name__ = ["flashimport","SymbolLoader"];
 flashimport.SymbolLoader.prototype = {
@@ -1059,7 +1085,7 @@ flashimport.SymbolLoader.prototype = {
 		var textAttrs = htmlparser.HtmlParserTools.findOne(textRun,">textAttrs>DOMTextAttrs");
 		var face = htmlparser.HtmlParserTools.getAttr(textAttrs,"face");
 		if(!this.fontMap.exists(face)) {
-			var font = flashimport.FontConvertor.convert(face);
+			var font = this.fontConvertor.convert(face);
 			this.fontMap.set(face,font);
 			this.log("FONT MAP: " + face + " -> " + font.face + " / " + (font.style != ""?font.style:"regular"));
 		}

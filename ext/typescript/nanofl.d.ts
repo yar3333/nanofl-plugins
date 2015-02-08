@@ -7751,7 +7751,7 @@ declare module models.common.plugins
 		menuItemName : string;
 		fileFilterDescription : string;
 		fileFilterPattern : string;
-		importDocument(fileApi:models.common.FileApi, srcFilePath:string, destFilePath:string, documentProperties:models.common.DocumentProperties, library:models.common.Library, callb:(arg:boolean) => void) : void;
+		importDocument(fileApi:models.common.FileApi, srcFilePath:string, destFilePath:string, documentProperties:models.common.DocumentProperties, library:models.common.Library, fonts:string[], callb:(arg:boolean) => void) : void;
 	}
 	
 	export interface ILanguagePlugin
