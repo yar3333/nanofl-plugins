@@ -5119,6 +5119,7 @@ declare module createjs
 		 * NOTE to create an audio sprite that has not already been registered, both startTime and duration need to be set.
 		 * This is only when creating a new audio sprite, not when playing using the id of an already registered audio sprite.
 		 */
+		static play(src:string, options:SoundOptions) : AbstractSoundInstance;
 		static play(src:string, interrupt?:string, delay?:number, offset?:number, loop?:number, volume?:number, pan?:number, startTime?:number, duration?:number) : createjs.AbstractSoundInstance;
 		/**
 		 * Creates a {{#crossLink "AbstractSoundInstance"}}{{/crossLink}} using the passed in src. If the src does not have a
