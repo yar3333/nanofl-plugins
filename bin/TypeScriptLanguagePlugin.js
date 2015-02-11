@@ -73,15 +73,14 @@ var TypeScriptLanguagePlugin = (function () {
         var sounds = this.library.getSounds();
         if (sounds.length > 0) {
             var text = [];
-            text.push("typedef AbstractSoundInstance = createjs.AbstractSoundInstance;");
-            text.push("typedef Sound = createjs.Sound;");
-            text.push("typedef SoundOptions = createjs.SoundOptions;");
+            text.push("type AbstractSoundInstance = createjs.AbstractSoundInstance;");
+            text.push("type SoundOptions = createjs.SoundOptions;");
             text.push("");
             text.push("class Sounds");
             text.push("{");
             sounds.forEach(function (sound) {
                 if (sound.linkage != "" && sound.linkage != null) {
-                    text.push("\tpublic static " + sound.linkage + "(options?:SoundOptions) : AbstractSoundInstance { return Sound.play(\"" + sound.linkage + "\", options); }");
+                    text.push("\tpublic static " + sound.linkage + "(options?:SoundOptions) : AbstractSoundInstance { return createjs.Sound.play(\"" + sound.linkage + "\", options); }");
                 }
             });
             text.push("}");
