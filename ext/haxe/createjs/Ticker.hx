@@ -238,17 +238,4 @@ extern class Ticker
 	 * event flow for a listener, not just this object.
 	 */
 	static function willTrigger(type:String) : Bool;
-	/**
-	 * Dispatched each tick. The event will be dispatched to each listener even when the Ticker has been paused using
-	 * {{#crossLink "Ticker/setPaused"}}{{/crossLink}}.
-	 *
-	 * <h4>Example</h4>
-	 *
-	 *      createjs.Ticker.addEventListener("tick", handleTick);
-	 *      function handleTick(event) {
-	 *          console.log("Paused:", event.paused, event.delta);
-	 *      }
-	 */
-	static function addTickEventListener(handler:createjs.Ticker.TickerTickEvent -> Void, ?useCapture:Bool) : Dynamic;
-	static function removeTickEventListener(handler:createjs.Ticker.TickerTickEvent -> Void, ?useCapture:Bool) : Void;
 }

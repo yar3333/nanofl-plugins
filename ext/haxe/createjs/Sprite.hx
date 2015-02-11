@@ -142,15 +142,4 @@ extern class Sprite extends createjs.DisplayObject
 	 * Returns a string representation of this object.
 	 */
 	override function toString() : String;
-	/**
-	 * Dispatched when an animation reaches its ends.
-	 */
-	function addAnimationendEventListener(handler:createjs.Sprite.SpriteAnimationendEvent -> Void, ?useCapture:Bool) : Dynamic;
-	function removeAnimationendEventListener(handler:createjs.Sprite.SpriteAnimationendEvent -> Void, ?useCapture:Bool) : Void;
-	/**
-	 * Dispatched any time the current frame changes. For example, this could be due to automatic advancement on a tick,
-	 * or calling gotoAndPlay() or gotoAndStop().
-	 */
-	function addChangeEventListener(handler:createjs.Sprite.SpriteChangeEvent -> Void, ?useCapture:Bool) : Dynamic;
-	function removeChangeEventListener(handler:createjs.Sprite.SpriteChangeEvent -> Void, ?useCapture:Bool) : Void;
 }

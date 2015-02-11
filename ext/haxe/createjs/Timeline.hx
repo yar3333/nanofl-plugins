@@ -91,9 +91,4 @@ extern class Timeline extends createjs.EventDispatcher
 	 * Returns a string representation of this object.
 	 */
 	override function toString() : String;
-	/**
-	 * Called whenever the timeline's position changes.
-	 */
-	function addChangeEventListener(handler:Dynamic -> Void, ?useCapture:Bool) : Dynamic;
-	function removeChangeEventListener(handler:Dynamic -> Void, ?useCapture:Bool) : Void;
 }

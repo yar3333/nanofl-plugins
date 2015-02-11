@@ -130,49 +130,6 @@ extern class AbstractLoader extends createjs.EventDispatcher
 	function getLoadedItems() : Array<Dynamic>;
 	override function toString() : String;
 	/**
-	 * The {{#crossLink "ProgressEvent"}}{{/crossLink}} that is fired when the overall progress changes. Prior to
-	 * version 0.6.0, this was just a regular {{#crossLink "Event"}}{{/crossLink}}.
-	 */
-	function addProgressEventListener(handler:Dynamic -> Void, ?useCapture:Bool) : Dynamic;
-	function removeProgressEventListener(handler:Dynamic -> Void, ?useCapture:Bool) : Void;
-	/**
-	 * The {{#crossLink "Event"}}{{/crossLink}} that is fired when a load starts.
-	 */
-	function addLoadstartEventListener(handler:createjs.AbstractLoader.AbstractLoaderLoadstartEvent -> Void, ?useCapture:Bool) : Dynamic;
-	function removeLoadstartEventListener(handler:createjs.AbstractLoader.AbstractLoaderLoadstartEvent -> Void, ?useCapture:Bool) : Void;
-	/**
-	 * The {{#crossLink "Event"}}{{/crossLink}} that is fired when the entire queue has been loaded.
-	 */
-	function addCompleteEventListener(handler:createjs.AbstractLoader.AbstractLoaderCompleteEvent -> Void, ?useCapture:Bool) : Dynamic;
-	function removeCompleteEventListener(handler:createjs.AbstractLoader.AbstractLoaderCompleteEvent -> Void, ?useCapture:Bool) : Void;
-	/**
-	 * The {{#crossLink "ErrorEvent"}}{{/crossLink}} that is fired when the loader encounters an error. If the error was
-	 * encountered by a file, the event will contain the item that caused the error. Prior to version 0.6.0, this was
-	 * just a regular {{#crossLink "Event"}}{{/crossLink}}.
-	 */
-	function addErrorEventListener(handler:Dynamic -> Void, ?useCapture:Bool) : Dynamic;
-	function removeErrorEventListener(handler:Dynamic -> Void, ?useCapture:Bool) : Void;
-	/**
-	 * The {{#crossLink "Event"}}{{/crossLink}} that is fired when the loader encounters an internal file load error.
-	 * This enables loaders to maintain internal queues, and surface file load errors.
-	 */
-	function addFileerrorEventListener(handler:createjs.AbstractLoader.AbstractLoaderFileerrorEvent -> Void, ?useCapture:Bool) : Dynamic;
-	function removeFileerrorEventListener(handler:createjs.AbstractLoader.AbstractLoaderFileerrorEvent -> Void, ?useCapture:Bool) : Void;
-	/**
-	 * The {{#crossLink "Event"}}{{/crossLink}} that is fired when a loader internally loads a file. This enables
-	 * loaders such as {{#crossLink "ManifestLoader"}}{{/crossLink}} to maintain internal {{#crossLink "LoadQueue"}}{{/crossLink}}s
-	 * and notify when they have loaded a file. The {{#crossLink "LoadQueue"}}{{/crossLink}} class dispatches a
-	 * slightly different {{#crossLink "LoadQueue/fileload:event"}}{{/crossLink}} event.
-	 */
-	function addFileloadEventListener(handler:createjs.AbstractLoader.AbstractLoaderFileloadEvent -> Void, ?useCapture:Bool) : Dynamic;
-	function removeFileloadEventListener(handler:createjs.AbstractLoader.AbstractLoaderFileloadEvent -> Void, ?useCapture:Bool) : Void;
-	/**
-	 * The {{#crossLink "Event"}}{{/crossLink}} that is fired after the internal request is created, but before a load.
-	 * This allows updates to the loader for specific loading needs, such as binary or XHR image loading.
-	 */
-	function addInitializeEventListener(handler:createjs.AbstractLoader.AbstractLoaderInitializeEvent -> Void, ?useCapture:Bool) : Dynamic;
-	function removeInitializeEventListener(handler:createjs.AbstractLoader.AbstractLoaderInitializeEvent -> Void, ?useCapture:Bool) : Void;
-	/**
 	 * The preload type for generic binary types. Note that images are loaded as binary files when using XHR.
 	 */
 	static var BINARY : String;

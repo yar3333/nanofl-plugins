@@ -186,23 +186,4 @@ extern class SpriteSheet extends createjs.EventDispatcher
 	 * SpriteSheet cannot be cloned. A SpriteSheet can be shared by multiple Sprite instances without cloning it.
 	 */
 	function clone() : Void;
-	/**
-	 * Dispatched when all images are loaded.  Note that this only fires if the images
-	 * were not fully loaded when the sprite sheet was initialized. You should check the complete property
-	 * to prior to adding a listener. Ex.
-	 *
-	 * 	var sheet = new SpriteSheet(data);
-	 * 	if (!sheet.complete) {
-	 * 		// not preloaded, listen for the complete event:
-	 * 		sheet.addEventListener("complete", handler);
-	 * 	}
-	 */
-	function addCompleteEventListener(handler:createjs.SpriteSheet.SpriteSheetCompleteEvent -> Void, ?useCapture:Bool) : Dynamic;
-	function removeCompleteEventListener(handler:createjs.SpriteSheet.SpriteSheetCompleteEvent -> Void, ?useCapture:Bool) : Void;
-	/**
-	 * Dispatched when getFrame is called with a valid frame index. This is primarily intended for use by {{#crossLink "SpriteSheetBuilder"}}{{/crossLink}}
-	 * when doing on-demand rendering.
-	 */
-	function addGetframeEventListener(handler:createjs.SpriteSheet.SpriteSheetGetframeEvent -> Void, ?useCapture:Bool) : Dynamic;
-	function removeGetframeEventListener(handler:createjs.SpriteSheet.SpriteSheetGetframeEvent -> Void, ?useCapture:Bool) : Void;
 }

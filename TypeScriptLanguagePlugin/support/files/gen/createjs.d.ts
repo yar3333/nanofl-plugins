@@ -295,49 +295,6 @@ declare module createjs
 		getLoadedItems() : any[];
 		toString() : string;
 		/**
-		 * The {{#crossLink "ProgressEvent"}}{{/crossLink}} that is fired when the overall progress changes. Prior to
-		 * version 0.6.0, this was just a regular {{#crossLink "Event"}}{{/crossLink}}.
-		 */
-		addProgressEventListener(handler:(arg:any) => void, useCapture?:boolean) : any;
-		removeProgressEventListener(handler:(arg:any) => void, useCapture?:boolean) : void;
-		/**
-		 * The {{#crossLink "Event"}}{{/crossLink}} that is fired when a load starts.
-		 */
-		addLoadstartEventListener(handler:(arg:createjs.AbstractLoader.AbstractLoaderLoadstartEvent) => void, useCapture?:boolean) : any;
-		removeLoadstartEventListener(handler:(arg:createjs.AbstractLoader.AbstractLoaderLoadstartEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * The {{#crossLink "Event"}}{{/crossLink}} that is fired when the entire queue has been loaded.
-		 */
-		addCompleteEventListener(handler:(arg:createjs.AbstractLoader.AbstractLoaderCompleteEvent) => void, useCapture?:boolean) : any;
-		removeCompleteEventListener(handler:(arg:createjs.AbstractLoader.AbstractLoaderCompleteEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * The {{#crossLink "ErrorEvent"}}{{/crossLink}} that is fired when the loader encounters an error. If the error was
-		 * encountered by a file, the event will contain the item that caused the error. Prior to version 0.6.0, this was
-		 * just a regular {{#crossLink "Event"}}{{/crossLink}}.
-		 */
-		addErrorEventListener(handler:(arg:any) => void, useCapture?:boolean) : any;
-		removeErrorEventListener(handler:(arg:any) => void, useCapture?:boolean) : void;
-		/**
-		 * The {{#crossLink "Event"}}{{/crossLink}} that is fired when the loader encounters an internal file load error.
-		 * This enables loaders to maintain internal queues, and surface file load errors.
-		 */
-		addFileerrorEventListener(handler:(arg:createjs.AbstractLoader.AbstractLoaderFileerrorEvent) => void, useCapture?:boolean) : any;
-		removeFileerrorEventListener(handler:(arg:createjs.AbstractLoader.AbstractLoaderFileerrorEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * The {{#crossLink "Event"}}{{/crossLink}} that is fired when a loader internally loads a file. This enables
-		 * loaders such as {{#crossLink "ManifestLoader"}}{{/crossLink}} to maintain internal {{#crossLink "LoadQueue"}}{{/crossLink}}s
-		 * and notify when they have loaded a file. The {{#crossLink "LoadQueue"}}{{/crossLink}} class dispatches a
-		 * slightly different {{#crossLink "LoadQueue/fileload:event"}}{{/crossLink}} event.
-		 */
-		addFileloadEventListener(handler:(arg:createjs.AbstractLoader.AbstractLoaderFileloadEvent) => void, useCapture?:boolean) : any;
-		removeFileloadEventListener(handler:(arg:createjs.AbstractLoader.AbstractLoaderFileloadEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * The {{#crossLink "Event"}}{{/crossLink}} that is fired after the internal request is created, but before a load.
-		 * This allows updates to the loader for specific loading needs, such as binary or XHR image loading.
-		 */
-		addInitializeEventListener(handler:(arg:createjs.AbstractLoader.AbstractLoaderInitializeEvent) => void, useCapture?:boolean) : any;
-		removeInitializeEventListener(handler:(arg:createjs.AbstractLoader.AbstractLoaderInitializeEvent) => void, useCapture?:boolean) : void;
-		/**
 		 * The preload type for generic binary types. Note that images are loaded as binary files when using XHR.
 		 */
 		static BINARY : string;
@@ -782,35 +739,6 @@ declare module createjs
 		 * Set the number of play loops remaining.
 		 */
 		setLoop(value:number) : void;
-		/**
-		 * The event that is fired when playback has started successfully.
-		 */
-		addSucceededEventListener(handler:(arg:createjs.AbstractSoundInstance.AbstractSoundInstanceSucceededEvent) => void, useCapture?:boolean) : any;
-		removeSucceededEventListener(handler:(arg:createjs.AbstractSoundInstance.AbstractSoundInstanceSucceededEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * The event that is fired when playback is interrupted. This happens when another sound with the same
-		 * src property is played using an interrupt value that causes this instance to stop playing.
-		 */
-		addInterruptedEventListener(handler:(arg:createjs.AbstractSoundInstance.AbstractSoundInstanceInterruptedEvent) => void, useCapture?:boolean) : any;
-		removeInterruptedEventListener(handler:(arg:createjs.AbstractSoundInstance.AbstractSoundInstanceInterruptedEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * The event that is fired when playback has failed. This happens when there are too many channels with the same
-		 * src property already playing (and the interrupt value doesn't cause an interrupt of another instance), or
-		 * the sound could not be played, perhaps due to a 404 error.
-		 */
-		addFailedEventListener(handler:(arg:createjs.AbstractSoundInstance.AbstractSoundInstanceFailedEvent) => void, useCapture?:boolean) : any;
-		removeFailedEventListener(handler:(arg:createjs.AbstractSoundInstance.AbstractSoundInstanceFailedEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * The event that is fired when a sound has completed playing but has loops remaining.
-		 */
-		addLoopEventListener(handler:(arg:createjs.AbstractSoundInstance.AbstractSoundInstanceLoopEvent) => void, useCapture?:boolean) : any;
-		removeLoopEventListener(handler:(arg:createjs.AbstractSoundInstance.AbstractSoundInstanceLoopEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * The event that is fired when playback completes. This means that the sound has finished playing in its
-		 * entirety, including its loop iterations.
-		 */
-		addCompleteEventListener(handler:(arg:createjs.AbstractSoundInstance.AbstractSoundInstanceCompleteEvent) => void, useCapture?:boolean) : any;
-		removeCompleteEventListener(handler:(arg:createjs.AbstractSoundInstance.AbstractSoundInstanceCompleteEvent) => void, useCapture?:boolean) : void;
 	}
 	
 	/**
@@ -1343,109 +1271,6 @@ declare module createjs
 		 * Returns a string representation of this object.
 		 */
 		toString() : string;
-		/**
-		 * Dispatched when the user presses their left mouse button over the display object. See the
-		 * {{#crossLink "MouseEvent"}}{{/crossLink}} class for a listing of event properties.
-		 */
-		addMousedownEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : any;
-		removeMousedownEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * Dispatched when the user presses their left mouse button and then releases it while over the display object.
-		 * See the {{#crossLink "MouseEvent"}}{{/crossLink}} class for a listing of event properties.
-		 */
-		addClickEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : any;
-		removeClickEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * Dispatched when the user double clicks their left mouse button over this display object.
-		 * See the {{#crossLink "MouseEvent"}}{{/crossLink}} class for a listing of event properties.
-		 */
-		addDblclickEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : any;
-		removeDblclickEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * Dispatched when the user's mouse enters this display object. This event must be enabled using
-		 * {{#crossLink "Stage/enableMouseOver"}}{{/crossLink}}. See also {{#crossLink "DisplayObject/rollover:event"}}{{/crossLink}}.
-		 * See the {{#crossLink "MouseEvent"}}{{/crossLink}} class for a listing of event properties.
-		 */
-		addMouseoverEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : any;
-		removeMouseoverEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * Dispatched when the user's mouse leaves this display object. This event must be enabled using
-		 * {{#crossLink "Stage/enableMouseOver"}}{{/crossLink}}. See also {{#crossLink "DisplayObject/rollout:event"}}{{/crossLink}}.
-		 * See the {{#crossLink "MouseEvent"}}{{/crossLink}} class for a listing of event properties.
-		 */
-		addMouseoutEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : any;
-		removeMouseoutEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * This event is similar to {{#crossLink "DisplayObject/mouseover:event"}}{{/crossLink}}, with the following
-		 * differences: it does not bubble, and it considers {{#crossLink "Container"}}{{/crossLink}} instances as an
-		 * aggregate of their content.
-		 *
-		 * For example, myContainer contains two overlapping children: shapeA and shapeB. The user moves their mouse over
-		 * shapeA and then directly on to shapeB. With a listener for {{#crossLink "mouseover:event"}}{{/crossLink}} on
-		 * myContainer, two events would be received, each targeting a child element:<OL>
-		 * <LI>when the mouse enters shapeA (target=shapeA)</LI>
-		 * <LI>when the mouse enters shapeB (target=shapeB)</LI>
-		 * </OL>
-		 * However, with a listener for "rollover" instead, only a single event is received when the mouse first enters
-		 * the aggregate myContainer content (target=myContainer).
-		 *
-		 * This event must be enabled using {{#crossLink "Stage/enableMouseOver"}}{{/crossLink}}.
-		 * See the {{#crossLink "MouseEvent"}}{{/crossLink}} class for a listing of event properties.
-		 */
-		addRolloverEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : any;
-		removeRolloverEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * This event is similar to {{#crossLink "DisplayObject/mouseout:event"}}{{/crossLink}}, with the following
-		 * differences: it does not bubble, and it considers {{#crossLink "Container"}}{{/crossLink}} instances as an
-		 * aggregate of their content.
-		 *
-		 * For example, myContainer contains two overlapping children: shapeA and shapeB. The user moves their mouse over
-		 * shapeA, then directly on to shapeB, then off both. With a listener for {{#crossLink "mouseout:event"}}{{/crossLink}}
-		 * on myContainer, two events would be received, each targeting a child element:<OL>
-		 * <LI>when the mouse leaves shapeA (target=shapeA)</LI>
-		 * <LI>when the mouse leaves shapeB (target=shapeB)</LI>
-		 * </OL>
-		 * However, with a listener for "rollout" instead, only a single event is received when the mouse leaves
-		 * the aggregate myContainer content (target=myContainer).
-		 *
-		 * This event must be enabled using {{#crossLink "Stage/enableMouseOver"}}{{/crossLink}}.
-		 * See the {{#crossLink "MouseEvent"}}{{/crossLink}} class for a listing of event properties.
-		 */
-		addRolloutEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : any;
-		removeRolloutEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * After a {{#crossLink "DisplayObject/mousedown:event"}}{{/crossLink}} occurs on a display object, a pressmove
-		 * event will be generated on that object whenever the mouse moves until the mouse press is released. This can be
-		 * useful for dragging and similar operations.
-		 */
-		addPressmoveEventListener(handler:(arg:any) => void, useCapture?:boolean) : any;
-		removePressmoveEventListener(handler:(arg:any) => void, useCapture?:boolean) : void;
-		/**
-		 * After a {{#crossLink "DisplayObject/mousedown:event"}}{{/crossLink}} occurs on a display object, a pressup event
-		 * will be generated on that object when that mouse press is released. This can be useful for dragging and similar
-		 * operations.
-		 */
-		addPressupEventListener(handler:(arg:any) => void, useCapture?:boolean) : any;
-		removePressupEventListener(handler:(arg:any) => void, useCapture?:boolean) : void;
-		/**
-		 * Dispatched when the display object is added to a parent container.
-		 */
-		addAddedEventListener(handler:(arg:any) => void, useCapture?:boolean) : any;
-		removeAddedEventListener(handler:(arg:any) => void, useCapture?:boolean) : void;
-		/**
-		 * Dispatched when the display object is removed from its parent container.
-		 */
-		addRemovedEventListener(handler:(arg:any) => void, useCapture?:boolean) : any;
-		removeRemovedEventListener(handler:(arg:any) => void, useCapture?:boolean) : void;
-		/**
-		 * Dispatched on each display object on a stage whenever the stage updates. This occurs immediately before the
-		 * rendering (draw) pass. When {{#crossLink "Stage/update"}}{{/crossLink}} is called, first all display objects on
-		 * the stage dispatch the tick event, then all of the display objects are drawn to stage. Children will have their
-		 * {{#crossLink "tick:event"}}{{/crossLink}} event dispatched in order of their depth prior to the event being
-		 * dispatched on their parent.
-		 */
-		addTickEventListener(handler:(arg:createjs.DisplayObject.DisplayObjectTickEvent) => void, useCapture?:boolean) : any;
-		removeTickEventListener(handler:(arg:createjs.DisplayObject.DisplayObjectTickEvent) => void, useCapture?:boolean) : void;
 		/**
 		 * Suppresses errors generated when using features like hitTest, mouse events, and {{#crossLink "getObjectsUnderPoint"}}{{/crossLink}}
 		 * with cross domain content.
@@ -2206,12 +2031,6 @@ declare module createjs
 		 * Returns a string representation of this object.
 		 */
 		toString() : string;
-		/**
-		 * Interaction events should be added to `htmlElement`, and not the DOMElement instance, since DOMElement instances
-		 * are not full EaselJS display objects and do not participate in EaselJS mouse events.
-		 */
-		addDblClickEventListener(handler:(arg:any) => void, useCapture?:boolean) : any;
-		removeDblClickEventListener(handler:(arg:any) => void, useCapture?:boolean) : void;
 	}
 	
 	/**
@@ -3589,16 +3408,6 @@ declare module createjs
 		 * To stop and restart a queue, use the {{#crossLink "LoadQueue/setPaused"}}{{/crossLink}} method instead.
 		 */
 		close() : void;
-		/**
-		 * This {{#crossLink "ProgressEvent"}}{{/crossLink}} that is fired when an an individual file's progress changes.
-		 */
-		addFileprogressEventListener(handler:(arg:any) => void, useCapture?:boolean) : any;
-		removeFileprogressEventListener(handler:(arg:any) => void, useCapture?:boolean) : void;
-		/**
-		 * This event is fired when an individual file starts to load.
-		 */
-		addFilestartEventListener(handler:(arg:createjs.LoadQueue.LoadQueueFilestartEvent) => void, useCapture?:boolean) : any;
-		removeFilestartEventListener(handler:(arg:createjs.LoadQueue.LoadQueueFilestartEvent) => void, useCapture?:boolean) : void;
 	}
 	
 	/**
@@ -3729,10 +3538,6 @@ declare module createjs
 		 * Translates the matrix on the x and y axes.
 		 */
 		translate(x:number, y:number) : createjs.Matrix2D;
-		/**
-		 * Sets the properties of the matrix to those of an identity matrix (one that applies a null transformation).
-		 */
-		identity_() : createjs.Matrix2D;
 		/**
 		 * Inverts the matrix, causing it to perform the opposite transformation.
 		 */
@@ -5075,18 +4880,6 @@ declare module createjs
 		 * event flow for a listener, not just this object.
 		 */
 		static willTrigger(type:string) : boolean;
-		/**
-		 * This event is fired when a file finishes loading internally. This event is fired for each loaded sound,
-		 * so any handler methods should look up the <code>event.src</code> to handle a particular sound.
-		 */
-		static addFileloadEventListener(handler:(arg:createjs.Sound.SoundFileloadEvent) => void, useCapture?:boolean) : any;
-		static removeFileloadEventListener(handler:(arg:createjs.Sound.SoundFileloadEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * This event is fired when a file fails loading internally. This event is fired for each loaded sound,
-		 * so any handler methods should look up the <code>event.src</code> to handle a particular sound.
-		 */
-		static addFileerrorEventListener(handler:(arg:createjs.Sound.SoundFileerrorEvent) => void, useCapture?:boolean) : any;
-		static removeFileerrorEventListener(handler:(arg:createjs.Sound.SoundFileerrorEvent) => void, useCapture?:boolean) : void;
 	}
 	
 	/**
@@ -5266,17 +5059,6 @@ declare module createjs
 		 * Returns a string representation of this object.
 		 */
 		toString() : string;
-		/**
-		 * Dispatched when an animation reaches its ends.
-		 */
-		addAnimationendEventListener(handler:(arg:createjs.Sprite.SpriteAnimationendEvent) => void, useCapture?:boolean) : any;
-		removeAnimationendEventListener(handler:(arg:createjs.Sprite.SpriteAnimationendEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * Dispatched any time the current frame changes. For example, this could be due to automatic advancement on a tick,
-		 * or calling gotoAndPlay() or gotoAndStop().
-		 */
-		addChangeEventListener(handler:(arg:createjs.Sprite.SpriteChangeEvent) => void, useCapture?:boolean) : any;
-		removeChangeEventListener(handler:(arg:createjs.Sprite.SpriteChangeEvent) => void, useCapture?:boolean) : void;
 	}
 	
 	/**
@@ -5525,25 +5307,6 @@ declare module createjs
 		 * SpriteSheet cannot be cloned. A SpriteSheet can be shared by multiple Sprite instances without cloning it.
 		 */
 		clone() : void;
-		/**
-		 * Dispatched when all images are loaded.  Note that this only fires if the images
-		 * were not fully loaded when the sprite sheet was initialized. You should check the complete property
-		 * to prior to adding a listener. Ex.
-		 *
-		 * 	var sheet = new SpriteSheet(data);
-		 * 	if (!sheet.complete) {
-		 * 		// not preloaded, listen for the complete event:
-		 * 		sheet.addEventListener("complete", handler);
-		 * 	}
-		 */
-		addCompleteEventListener(handler:(arg:createjs.SpriteSheet.SpriteSheetCompleteEvent) => void, useCapture?:boolean) : any;
-		removeCompleteEventListener(handler:(arg:createjs.SpriteSheet.SpriteSheetCompleteEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * Dispatched when getFrame is called with a valid frame index. This is primarily intended for use by {{#crossLink "SpriteSheetBuilder"}}{{/crossLink}}
-		 * when doing on-demand rendering.
-		 */
-		addGetframeEventListener(handler:(arg:createjs.SpriteSheet.SpriteSheetGetframeEvent) => void, useCapture?:boolean) : any;
-		removeGetframeEventListener(handler:(arg:createjs.SpriteSheet.SpriteSheetGetframeEvent) => void, useCapture?:boolean) : void;
 	}
 	
 	/**
@@ -5644,16 +5407,6 @@ declare module createjs
 		 * Returns a string representation of this object.
 		 */
 		toString() : string;
-		/**
-		 * Dispatched when a build completes.
-		 */
-		addCompleteEventListener(handler:(arg:createjs.SpriteSheetBuilder.SpriteSheetBuilderCompleteEvent) => void, useCapture?:boolean) : any;
-		removeCompleteEventListener(handler:(arg:createjs.SpriteSheetBuilder.SpriteSheetBuilderCompleteEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * Dispatched when an asynchronous build has progress.
-		 */
-		addProgressEventListener(handler:(arg:createjs.SpriteSheetBuilder.SpriteSheetBuilderProgressEvent) => void, useCapture?:boolean) : any;
-		removeProgressEventListener(handler:(arg:createjs.SpriteSheetBuilder.SpriteSheetBuilderProgressEvent) => void, useCapture?:boolean) : void;
 	}
 	
 	/**
@@ -5871,62 +5624,6 @@ declare module createjs
 		 * Returns a string representation of this object.
 		 */
 		toString() : string;
-		/**
-		 * Dispatched when the user moves the mouse over the canvas.
-		 * See the {{#crossLink "MouseEvent"}}{{/crossLink}} class for a listing of event properties.
-		 */
-		addStagemousemoveEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : any;
-		removeStagemousemoveEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * Dispatched when the user presses their left mouse button on the canvas. See the {{#crossLink "MouseEvent"}}{{/crossLink}}
-		 * class for a listing of event properties.
-		 */
-		addStagemousedownEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : any;
-		removeStagemousedownEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * Dispatched when the user the user presses somewhere on the stage, then releases the mouse button anywhere that the page can detect it (this varies slightly between browsers).
-		 * You can use {{#crossLink "Stage/mouseInBounds:property"}}{{/crossLink}} to check whether the mouse is currently within the stage bounds.
-		 * See the {{#crossLink "MouseEvent"}}{{/crossLink}} class for a listing of event properties.
-		 */
-		addStagemouseupEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : any;
-		removeStagemouseupEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * Dispatched when the mouse moves from within the canvas area (mouseInBounds == true) to outside it (mouseInBounds == false).
-		 * This is currently only dispatched for mouse input (not touch). See the {{#crossLink "MouseEvent"}}{{/crossLink}}
-		 * class for a listing of event properties.
-		 */
-		addMouseleaveEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : any;
-		removeMouseleaveEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * Dispatched when the mouse moves into the canvas area (mouseInBounds == false) from outside it (mouseInBounds == true).
-		 * This is currently only dispatched for mouse input (not touch). See the {{#crossLink "MouseEvent"}}{{/crossLink}}
-		 * class for a listing of event properties.
-		 */
-		addMouseenterEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : any;
-		removeMouseenterEventListener(handler:(arg:createjs.MouseEvent) => void, useCapture?:boolean) : void;
-		/**
-		 * Dispatched each update immediately before the tick event is propagated through the display list.
-		 * You can call preventDefault on the event object to cancel propagating the tick event.
-		 */
-		addTickstartEventListener(handler:(arg:any) => void, useCapture?:boolean) : any;
-		removeTickstartEventListener(handler:(arg:any) => void, useCapture?:boolean) : void;
-		/**
-		 * Dispatched each update immediately after the tick event is propagated through the display list. Does not fire if
-		 * tickOnUpdate is false. Precedes the "drawstart" event.
-		 */
-		addTickendEventListener(handler:(arg:any) => void, useCapture?:boolean) : any;
-		removeTickendEventListener(handler:(arg:any) => void, useCapture?:boolean) : void;
-		/**
-		 * Dispatched each update immediately before the canvas is cleared and the display list is drawn to it.
-		 * You can call preventDefault on the event object to cancel the draw.
-		 */
-		addDrawstartEventListener(handler:(arg:any) => void, useCapture?:boolean) : any;
-		removeDrawstartEventListener(handler:(arg:any) => void, useCapture?:boolean) : void;
-		/**
-		 * Dispatched each update immediately after the display list is drawn to the canvas and the canvas context is restored.
-		 */
-		addDrawendEventListener(handler:(arg:any) => void, useCapture?:boolean) : any;
-		removeDrawendEventListener(handler:(arg:any) => void, useCapture?:boolean) : void;
 	}
 	
 	/**
@@ -6418,19 +6115,6 @@ declare module createjs
 		 * event flow for a listener, not just this object.
 		 */
 		static willTrigger(type:string) : boolean;
-		/**
-		 * Dispatched each tick. The event will be dispatched to each listener even when the Ticker has been paused using
-		 * {{#crossLink "Ticker/setPaused"}}{{/crossLink}}.
-		 *
-		 * <h4>Example</h4>
-		 *
-		 *      createjs.Ticker.addEventListener("tick", handleTick);
-		 *      function handleTick(event) {
-		 *          console.log("Paused:", event.paused, event.delta);
-		 *      }
-		 */
-		static addTickEventListener(handler:(arg:createjs.Ticker.TickerTickEvent) => void, useCapture?:boolean) : any;
-		static removeTickEventListener(handler:(arg:createjs.Ticker.TickerTickEvent) => void, useCapture?:boolean) : void;
 	}
 	
 	/**
@@ -6524,11 +6208,6 @@ declare module createjs
 		 * Returns a string representation of this object.
 		 */
 		toString() : string;
-		/**
-		 * Called whenever the timeline's position changes.
-		 */
-		addChangeEventListener(handler:(arg:any) => void, useCapture?:boolean) : any;
-		removeChangeEventListener(handler:(arg:any) => void, useCapture?:boolean) : void;
 	}
 	
 	/**
@@ -6680,11 +6359,6 @@ declare module createjs
 		 * Returns a string representation of this object.
 		 */
 		toString() : string;
-		/**
-		 * Called whenever the tween's position changes.
-		 */
-		addChangeEventListener(handler:(arg:any) => void, useCapture?:boolean) : any;
-		removeChangeEventListener(handler:(arg:any) => void, useCapture?:boolean) : void;
 		/**
 		 * Constant defining the none actionsMode for use with setPosition.
 		 */

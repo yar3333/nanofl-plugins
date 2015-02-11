@@ -327,14 +327,4 @@ extern class LoadQueue extends createjs.AbstractLoader
 	 * To stop and restart a queue, use the {{#crossLink "LoadQueue/setPaused"}}{{/crossLink}} method instead.
 	 */
 	function close() : Void;
-	/**
-	 * This {{#crossLink "ProgressEvent"}}{{/crossLink}} that is fired when an an individual file's progress changes.
-	 */
-	function addFileprogressEventListener(handler:Dynamic -> Void, ?useCapture:Bool) : Dynamic;
-	function removeFileprogressEventListener(handler:Dynamic -> Void, ?useCapture:Bool) : Void;
-	/**
-	 * This event is fired when an individual file starts to load.
-	 */
-	function addFilestartEventListener(handler:createjs.LoadQueue.LoadQueueFilestartEvent -> Void, ?useCapture:Bool) : Dynamic;
-	function removeFilestartEventListener(handler:createjs.LoadQueue.LoadQueueFilestartEvent -> Void, ?useCapture:Bool) : Void;
 }

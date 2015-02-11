@@ -111,10 +111,6 @@ extern class Matrix2D
 	 */
 	function translate(x:Float, y:Float) : createjs.Matrix2D;
 	/**
-	 * Sets the properties of the matrix to those of an identity matrix (one that applies a null transformation).
-	 */
-	function identity_() : createjs.Matrix2D;
-	/**
 	 * Inverts the matrix, causing it to perform the opposite transformation.
 	 */
 	function invert() : createjs.Matrix2D;

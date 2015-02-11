@@ -590,16 +590,4 @@ extern class Sound
 	 * event flow for a listener, not just this object.
 	 */
 	static function willTrigger(type:String) : Bool;
-	/**
-	 * This event is fired when a file finishes loading internally. This event is fired for each loaded sound,
-	 * so any handler methods should look up the <code>event.src</code> to handle a particular sound.
-	 */
-	static function addFileloadEventListener(handler:createjs.Sound.SoundFileloadEvent -> Void, ?useCapture:Bool) : Dynamic;
-	static function removeFileloadEventListener(handler:createjs.Sound.SoundFileloadEvent -> Void, ?useCapture:Bool) : Void;
-	/**
-	 * This event is fired when a file fails loading internally. This event is fired for each loaded sound,
-	 * so any handler methods should look up the <code>event.src</code> to handle a particular sound.
-	 */
-	static function addFileerrorEventListener(handler:createjs.Sound.SoundFileerrorEvent -> Void, ?useCapture:Bool) : Dynamic;
-	static function removeFileerrorEventListener(handler:createjs.Sound.SoundFileerrorEvent -> Void, ?useCapture:Bool) : Void;
 }

@@ -114,11 +114,6 @@ extern class Tween extends createjs.EventDispatcher
 	 */
 	override function toString() : String;
 	/**
-	 * Called whenever the tween's position changes.
-	 */
-	function addChangeEventListener(handler:Dynamic -> Void, ?useCapture:Bool) : Dynamic;
-	function removeChangeEventListener(handler:Dynamic -> Void, ?useCapture:Bool) : Void;
-	/**
 	 * Constant defining the none actionsMode for use with setPosition.
 	 */
 	static var NONE : Float;

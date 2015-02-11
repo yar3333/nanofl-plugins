@@ -10,8 +10,6 @@ extern class PointTools
 	static function getDist(x1:Float, y1:Float, x2:Float, y2:Float) : Float;
 	@:noUsing
 	static function getSqrDist(x1:Float, y1:Float, x2:Float, y2:Float) : Float;
-	static function getDistP(a:models.common.geom.Point, b:models.common.geom.Point) : Float;
-	static function getSqrDistP(a:models.common.geom.Point, b:models.common.geom.Point) : Float;
 	@:noUsing
 	static function rotate(x:Float, y:Float, da:Float) : models.common.geom.Point;
 	static function moveInDirection(start:models.common.geom.Point, endX:Float, endY:Float, len:Float) : models.common.geom.Point;

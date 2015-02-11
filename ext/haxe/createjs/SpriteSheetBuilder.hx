@@ -111,14 +111,4 @@ extern class SpriteSheetBuilder extends createjs.EventDispatcher
 	 * Returns a string representation of this object.
 	 */
 	override function toString() : String;
-	/**
-	 * Dispatched when a build completes.
-	 */
-	function addCompleteEventListener(handler:createjs.SpriteSheetBuilder.SpriteSheetBuilderCompleteEvent -> Void, ?useCapture:Bool) : Dynamic;
-	function removeCompleteEventListener(handler:createjs.SpriteSheetBuilder.SpriteSheetBuilderCompleteEvent -> Void, ?useCapture:Bool) : Void;
-	/**
-	 * Dispatched when an asynchronous build has progress.
-	 */
-	function addProgressEventListener(handler:createjs.SpriteSheetBuilder.SpriteSheetBuilderProgressEvent -> Void, ?useCapture:Bool) : Dynamic;
-	function removeProgressEventListener(handler:createjs.SpriteSheetBuilder.SpriteSheetBuilderProgressEvent -> Void, ?useCapture:Bool) : Void;
 }

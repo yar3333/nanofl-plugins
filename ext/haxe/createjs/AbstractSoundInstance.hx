@@ -316,33 +316,4 @@ extern class AbstractSoundInstance extends createjs.EventDispatcher
 	 * Set the number of play loops remaining.
 	 */
 	function setLoop(value:Float) : Void;
-	/**
-	 * The event that is fired when playback has started successfully.
-	 */
-	function addSucceededEventListener(handler:createjs.AbstractSoundInstance.AbstractSoundInstanceSucceededEvent -> Void, ?useCapture:Bool) : Dynamic;
-	function removeSucceededEventListener(handler:createjs.AbstractSoundInstance.AbstractSoundInstanceSucceededEvent -> Void, ?useCapture:Bool) : Void;
-	/**
-	 * The event that is fired when playback is interrupted. This happens when another sound with the same
-	 * src property is played using an interrupt value that causes this instance to stop playing.
-	 */
-	function addInterruptedEventListener(handler:createjs.AbstractSoundInstance.AbstractSoundInstanceInterruptedEvent -> Void, ?useCapture:Bool) : Dynamic;
-	function removeInterruptedEventListener(handler:createjs.AbstractSoundInstance.AbstractSoundInstanceInterruptedEvent -> Void, ?useCapture:Bool) : Void;
-	/**
-	 * The event that is fired when playback has failed. This happens when there are too many channels with the same
-	 * src property already playing (and the interrupt value doesn't cause an interrupt of another instance), or
-	 * the sound could not be played, perhaps due to a 404 error.
-	 */
-	function addFailedEventListener(handler:createjs.AbstractSoundInstance.AbstractSoundInstanceFailedEvent -> Void, ?useCapture:Bool) : Dynamic;
-	function removeFailedEventListener(handler:createjs.AbstractSoundInstance.AbstractSoundInstanceFailedEvent -> Void, ?useCapture:Bool) : Void;
-	/**
-	 * The event that is fired when a sound has completed playing but has loops remaining.
-	 */
-	function addLoopEventListener(handler:createjs.AbstractSoundInstance.AbstractSoundInstanceLoopEvent -> Void, ?useCapture:Bool) : Dynamic;
-	function removeLoopEventListener(handler:createjs.AbstractSoundInstance.AbstractSoundInstanceLoopEvent -> Void, ?useCapture:Bool) : Void;
-	/**
-	 * The event that is fired when playback completes. This means that the sound has finished playing in its
-	 * entirety, including its loop iterations.
-	 */
-	function addCompleteEventListener(handler:createjs.AbstractSoundInstance.AbstractSoundInstanceCompleteEvent -> Void, ?useCapture:Bool) : Dynamic;
-	function removeCompleteEventListener(handler:createjs.AbstractSoundInstance.AbstractSoundInstanceCompleteEvent -> Void, ?useCapture:Bool) : Void;
 }
