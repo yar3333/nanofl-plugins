@@ -202,6 +202,7 @@ declare module models.common.elements
 		translate(dx:number, dy:number) : void;
 		isEmpty() : boolean;
 		hasSelected() : boolean;
+		isAllSelected() : boolean;
 		hasSelectedEdges() : boolean;
 		hasSelectedPolygons() : boolean;
 		select(obj:{ selected : boolean; }) : void;

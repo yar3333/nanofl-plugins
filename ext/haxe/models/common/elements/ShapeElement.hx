@@ -15,6 +15,7 @@ extern class ShapeElement extends models.common.elements.Element
 	override function translate(dx:Float, dy:Float) : Void;
 	function isEmpty() : Bool;
 	function hasSelected() : Bool;
+	function isAllSelected() : Bool;
 	function hasSelectedEdges() : Bool;
 	function hasSelectedPolygons() : Bool;
 	function select(obj:{ var selected : Bool; }) : Void;
