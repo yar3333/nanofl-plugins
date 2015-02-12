@@ -11,6 +11,7 @@ extern class GroupElement extends models.common.elements.Element implements mode
 	override function save(out:models.common.XmlWriter) : Void;
 	override function clone() : models.common.elements.Element;
 	override function getUsedItems() : Array<models.common.libraryitems.LibraryItem>;
+	override function getUsedFilters() : Array<String>;
 	override function createDisplayObject(frameIndexes:Array<{ var frameIndex : Int; var element : models.common.IPathElement; }>) : createjs.DisplayObject;
 	override function updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:Array<{ var frameIndex : Int; var element : models.common.IPathElement; }>) : createjs.Container;
 	function getMaskFilter(layer:models.common.Layer, frameIndex:Int) : createjs.Container;

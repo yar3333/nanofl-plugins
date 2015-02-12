@@ -25,5 +25,6 @@ extern class KeyFrame
 	function save(out:models.common.XmlWriter) : Void;
 	function getIndex() : Int;
 	function getUsedItems() : Array<models.common.libraryitems.LibraryItem>;
+	function getUsedFilters() : Array<String>;
 	static function parse(node:htmlparser.HtmlNodeElement) : models.common.KeyFrame;
 }

@@ -23,7 +23,7 @@ class TypeScriptLanguagePlugin implements ICompilerPlugin
 		var nameExt = pathParts[pathParts.length - 1];
 		var name = nameExt.lastIndexOf(".") > 0 ? nameExt.substring(0, nameExt.lastIndexOf(".")) : nameExt;
 		
-        console.log("TypeScriptLanguagePlugin filePath = " + filePath + "; supportDir = " + this.supportDir + "; dir= " + dir + "; name = " + name);
+        console.log("TypeScriptLanguagePlugin.generateFiles filePath = " + filePath + "; supportDir = " + this.supportDir + "; dir= " + dir + "; name = " + name);
 		
         this.generateLibrary(dir, name);
         this.generateHtml(dir, name, documentProperties);

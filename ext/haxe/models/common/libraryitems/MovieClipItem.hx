@@ -29,6 +29,7 @@ extern class MovieClipItem extends models.common.libraryitems.InstancableItem im
 	override function updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:Array<{ var frameIndex : Int; var element : models.common.IPathElement; }>) : Void;
 	override function hasInstance(namePath:String) : Bool;
 	override function getUsedItems() : Array<models.common.libraryitems.LibraryItem>;
+	override function getUsedFilters() : Array<String>;
 	override function getDisplayObjectClassName() : String;
 	override function toString() : String;
 	static function load(namePath:String, libraryDir:String, fileApi:models.common.FileApi) : models.common.libraryitems.MovieClipItem;

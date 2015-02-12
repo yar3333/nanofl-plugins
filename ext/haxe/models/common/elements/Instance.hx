@@ -19,6 +19,7 @@ extern class Instance extends models.common.elements.Element implements models.c
 	override function toString() : String;
 	var layers(default, never) : models.common.ArrayRO<models.common.Layer>;
 	override function getUsedItems() : Array<models.common.libraryitems.LibraryItem>;
+	override function getUsedFilters() : Array<String>;
 	override function createDisplayObject(frameIndexes:Array<{ var frameIndex : Int; var element : models.common.IPathElement; }>) : createjs.DisplayObject;
 	override function updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:Array<{ var frameIndex : Int; var element : models.common.IPathElement; }>) : createjs.DisplayObject;
 	function getNavigatorName() : String;

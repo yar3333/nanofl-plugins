@@ -13,18 +13,15 @@ NoneLanguagePlugin.prototype = {
 		var nameExt = parts.pop();
 		var name = nameExt.substring(0,nameExt.lastIndexOf("."));
 		var dir = parts.join("/");
-		console.log("NoneLanguagePlugin.compile filePath = " + filePath + "; supportDir = " + supportDir + "; dir = " + dir + "; name = " + name);
-		var destFile = dir + "/" + name + ".html";
-		if(!fileApi.exists(destFile)) {
-			var template = fileApi.getContent(supportDir + "/project.html");
-			template = template.split("{title}").join(documentProperties.title != ""?documentProperties.title:name);
-			template = template.split("{width}").join(documentProperties.width);
-			template = template.split("{height}").join(documentProperties.height);
-			template = template.split("{backgroundColor}").join(documentProperties.backgroundColor);
-			template = template.split("{framerate}").join(documentProperties.framerate);
-			template = template.split("{library}").join(library.compile("library"));
-			fileApi.saveContent(destFile,template);
-		}
+		console.log("NoneLanguagePlugin.generateFiles filePath = " + filePath + "; supportDir = " + supportDir + "; dir = " + dir + "; name = " + name);
+		var template = fileApi.getContent(supportDir + "/project.html");
+		template = template.split("{title}").join(documentProperties.title != ""?documentProperties.title:name);
+		template = template.split("{width}").join(documentProperties.width);
+		template = template.split("{height}").join(documentProperties.height);
+		template = template.split("{backgroundColor}").join(documentProperties.backgroundColor);
+		template = template.split("{framerate}").join(documentProperties.framerate);
+		template = template.split("{library}").join(library.compile("library"));
+		fileApi.saveContent(dir + "/" + name + ".html",template);
 	}
 };
 NoneLanguagePlugin.main();

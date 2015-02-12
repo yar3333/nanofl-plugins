@@ -129,6 +129,7 @@ declare module models.common.elements
 		getState() : models.client.undo.states.ElementState;
 		setState(state:models.client.undo.states.ElementState) : void;
 		getUsedItems() : models.common.libraryitems.LibraryItem[];
+		getUsedFilters() : string[];
 		toString() : string;
 		static parse(node:htmlparser.HtmlNodeElement) : models.common.elements.Element;
 	}
@@ -150,6 +151,7 @@ declare module models.common.elements
 		save(out:models.common.XmlWriter) : void;
 		clone() : models.common.elements.Element;
 		getUsedItems() : models.common.libraryitems.LibraryItem[];
+		getUsedFilters() : string[];
 		createDisplayObject(frameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : createjs.DisplayObject;
 		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : createjs.Container;
 		getMaskFilter(layer:models.common.Layer, frameIndex:number) : createjs.Container;
@@ -179,6 +181,7 @@ declare module models.common.elements
 		toString() : string;
 		layers : models.common.ArrayRO<models.common.Layer>;
 		getUsedItems() : models.common.libraryitems.LibraryItem[];
+		getUsedFilters() : string[];
 		createDisplayObject(frameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : createjs.DisplayObject;
 		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : createjs.DisplayObject;
 		getNavigatorName() : string;
@@ -6928,6 +6931,7 @@ declare module models.common.libraryitems
 		removeInstance(namePath:string) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		getUsedItems() : models.common.libraryitems.LibraryItem[];
+		getUsedFilters() : string[];
 		duplicate(newNamePath:string) : models.common.libraryitems.LibraryItem;
 		remove() : void;
 		toString() : string;
@@ -7018,6 +7022,7 @@ declare module models.common.libraryitems
 		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : void;
 		hasInstance(namePath:string) : boolean;
 		getUsedItems() : models.common.libraryitems.LibraryItem[];
+		getUsedFilters() : string[];
 		getDisplayObjectClassName() : string;
 		toString() : string;
 		static load(namePath:string, libraryDir:string, fileApi:models.common.FileApi) : models.common.libraryitems.MovieClipItem;
@@ -7275,6 +7280,7 @@ declare module models.common
 		save(out:models.common.XmlWriter) : void;
 		getIndex() : number;
 		getUsedItems() : models.common.libraryitems.LibraryItem[];
+		getUsedFilters() : string[];
 		static parse(node:htmlparser.HtmlNodeElement) : models.common.KeyFrame;
 	}
 	
@@ -7308,6 +7314,7 @@ declare module models.common
 		duplicate(keyFrames:models.common.ArrayRO<models.common.KeyFrame>, parentIndex:number) : models.common.Layer;
 		getIndex() : number;
 		getUsedItems() : models.common.libraryitems.LibraryItem[];
+		getUsedFilters() : string[];
 		static parse(node:htmlparser.HtmlNodeElement) : models.common.Layer;
 	}
 	

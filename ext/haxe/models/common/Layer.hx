@@ -30,5 +30,6 @@ extern class Layer
 	function duplicate(keyFrames:models.common.ArrayRO<models.common.KeyFrame>, parentIndex:Int) : models.common.Layer;
 	function getIndex() : Int;
 	function getUsedItems() : Array<models.common.libraryitems.LibraryItem>;
+	function getUsedFilters() : Array<String>;
 	static function parse(node:htmlparser.HtmlNodeElement) : models.common.Layer;
 }

@@ -27,7 +27,7 @@ class JavaScriptLanguagePlugin implements ILanguagePlugin
 		var nameExt = pathParts[pathParts.length - 1];
 		var name = nameExt.lastIndexOf(".") > 0 ? nameExt.substring(0, nameExt.lastIndexOf(".")) : nameExt;
 		
-		trace("JavaScriptLanguagePlugin.compile filePath = " + filePath + "; supportDir = " + supportDir+"; dir= " + dir + "; name = " + name);
+		trace("JavaScriptLanguagePlugin.generateFiles filePath = " + filePath + "; supportDir = " + supportDir+"; dir= " + dir + "; name = " + name);
 		
 		generateLibrary(dir, name);
 		generateClasses(dir, name);

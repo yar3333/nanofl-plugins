@@ -13,6 +13,7 @@ extern class LibraryItem
 	function removeInstance(namePath:String) : Void;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	function getUsedItems() : Array<models.common.libraryitems.LibraryItem>;
+	function getUsedFilters() : Array<String>;
 	function duplicate(newNamePath:String) : models.common.libraryitems.LibraryItem;
 	function remove() : Void;
 	function toString() : String;

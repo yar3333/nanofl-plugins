@@ -19,6 +19,7 @@ extern class Element
 	function getState() : models.client.undo.states.ElementState;
 	function setState(state:models.client.undo.states.ElementState) : Void;
 	function getUsedItems() : Array<models.common.libraryitems.LibraryItem>;
+	function getUsedFilters() : Array<String>;
 	function toString() : String;
 	static function parse(node:htmlparser.HtmlNodeElement) : models.common.elements.Element;
 }
