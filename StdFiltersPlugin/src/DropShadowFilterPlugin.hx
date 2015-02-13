@@ -32,7 +32,7 @@ class DropShadowFilterPlugin implements IFilterPlugin
 		
 		return new DropShadowFilter
 		(
-			params.distance,
+			params.distance * 2,
 			params.angle,
 			color,
 			(params.alpha / 100) * (params.strength / 100),
