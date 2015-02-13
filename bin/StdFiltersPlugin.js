@@ -32,7 +32,7 @@ DropShadowFilterPlugin.prototype = {
 	getFilter: function(params) {
 		var rgb = models.common.ColorTools.parse(params.color);
 		var color = rgb.r << 16 | rgb.g << 8 | rgb.b;
-		return new createjs.DropShadowFilter(params.distance,params.angle,color,params.alpha / 100 * (params.strength / 100),params.blurX * 2,params.blurY * 2,1,params.quality,params.inner,params.knockout,params.hideObject);
+		return new createjs.DropShadowFilter(params.distance * 2,params.angle,color,params.alpha / 100 * (params.strength / 100),params.blurX * 2,params.blurY * 2,1,params.quality,params.inner,params.knockout,params.hideObject);
 	}
 };
 var GlowFilterPlugin = function() {
@@ -298,27 +298,27 @@ _stage.addChild(_text);</code></pre>
 	* @method getBounds
 	* @return {Rectangle} a rectangle object indicating the margins required to draw the filter or null if the filter does not effect bounds.
 	**/
-	p.getBounds = function() {
-		var bounds = this._blurFilter.getBounds();
+	p.getBounds = function(rect) {
+		rect = this._blurFilter.getBounds(rect);
 		var ox = this._offsetX;
 		var oy = this._offsetY;
 		if (ox !== 0) {
 			if (ox < 0) {
-				bounds.x += ox;
-				bounds.width += -ox;
+				rect.x += ox;
+				rect.width += -ox;
 			} else {
-				bounds.width += ox;
+				rect.width += ox;
 			}
 		}
 		if (oy !== 0) {
 			if (oy < 0) {
-				bounds.y += oy;
-				bounds.height += -oy;
+				rect.y += oy;
+				rect.height += -oy;
 			} else {
-				bounds.height += oy;
+				rect.height += oy;
 			}
 		}
-		return bounds;
+		return rect;
 	};
 
 	/**
@@ -605,11 +605,11 @@ _stage.addChild(_shape);</code></pre>
 	* @method getBounds
 	* @return {Rectangle} a rectangle object indicating the margins required to draw the filter or null if the filter does not effect bounds.
 	**/
-	p.getBounds = function() {
+	p.getBounds = function(rect) {
 		if (this.inner) {
-			return null;
+			return rect;
 		} else {
-			return this._blurFilter.getBounds();
+			return this._blurFilter.getBounds(rect);
 		}
 	};
 
