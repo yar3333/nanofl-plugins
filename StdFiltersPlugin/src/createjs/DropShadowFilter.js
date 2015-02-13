@@ -232,27 +232,27 @@ _stage.addChild(_text);</code></pre>
 	* @method getBounds
 	* @return {Rectangle} a rectangle object indicating the margins required to draw the filter or null if the filter does not effect bounds.
 	**/
-	p.getBounds = function() {
-		var bounds = this._blurFilter.getBounds();
+	p.getBounds = function(rect) {
+		rect = this._blurFilter.getBounds(rect);
 		var ox = this._offsetX;
 		var oy = this._offsetY;
 		if (ox !== 0) {
 			if (ox < 0) {
-				bounds.x += ox;
-				bounds.width += -ox;
+				rect.x += ox;
+				rect.width += -ox;
 			} else {
-				bounds.width += ox;
+				rect.width += ox;
 			}
 		}
 		if (oy !== 0) {
 			if (oy < 0) {
-				bounds.y += oy;
-				bounds.height += -oy;
+				rect.y += oy;
+				rect.height += -oy;
 			} else {
-				bounds.height += oy;
+				rect.height += oy;
 			}
 		}
-		return bounds;
+		return rect;
 	};
 
 	/**

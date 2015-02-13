@@ -170,11 +170,11 @@ _stage.addChild(_shape);</code></pre>
 	* @method getBounds
 	* @return {Rectangle} a rectangle object indicating the margins required to draw the filter or null if the filter does not effect bounds.
 	**/
-	p.getBounds = function() {
+	p.getBounds = function(rect) {
 		if (this.inner) {
-			return null;
+			return rect;
 		} else {
-			return this._blurFilter.getBounds();
+			return this._blurFilter.getBounds(rect);
 		}
 	};
 
