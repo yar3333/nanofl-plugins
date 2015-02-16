@@ -7365,6 +7365,11 @@ declare module models.common
 		original : models.common.elements.Element;
 	}
 	
+	export class VersionInfo
+	{
+		static version : string;
+	}
+	
 	export class XmlWriter
 	{
 		constructor();
