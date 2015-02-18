@@ -7368,6 +7368,8 @@ declare module models.common
 	export class VersionInfo
 	{
 		static version : string;
+		static createjsUrl : string;
+		static playerUrl : string;
 	}
 	
 	export class XmlWriter

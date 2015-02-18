@@ -47,6 +47,8 @@ class TypeScriptLanguagePlugin implements ICompilerPlugin
 				width: documentProperties.width,
 				height: documentProperties.height,
 				backgroundColor: documentProperties.backgroundColor,
+				createjsUrl: models.common.VersionInfo.createjsUrl,
+				playerUrl: models.common.VersionInfo.playerUrl,
 				libraryUrl: "bin/library.js",
 				codeUrl: "bin/" + name + ".js",
 				framerate: documentProperties.framerate

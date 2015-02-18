@@ -3,6 +3,7 @@ import models.common.FileApi;
 import models.common.Library;
 import models.common.Plugins;
 import models.common.plugins.ILanguagePlugin;
+import models.common.VersionInfo;
 
 class JavaScriptLanguagePlugin implements ILanguagePlugin
 {
@@ -50,6 +51,8 @@ class JavaScriptLanguagePlugin implements ILanguagePlugin
 			template = template.split("{width}").join(untyped documentProperties.width);
 			template = template.split("{height}").join(untyped documentProperties.height);
 			template = template.split("{backgroundColor}").join(documentProperties.backgroundColor);
+			template = template.split("{createjsUrl}").join(VersionInfo.createjsUrl);
+			template = template.split("{playerUrl}").join(VersionInfo.playerUrl);
 			template = template.split("{libraryUrl}").join("bin/library.js");
 			template = template.split("{scripts}").join(getFiles(dir + "/gen", ".js").concat(getFiles(dir + "/src", ".js")).map(function(s) return "<script src='" + s.substring(dir.length + 1) + "'></script>").join("\n\t\t"));
 			template = template.split("{framerate}").join(untyped documentProperties.framerate);

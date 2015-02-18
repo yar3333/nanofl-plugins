@@ -19,6 +19,8 @@ NoneLanguagePlugin.prototype = {
 		template = template.split("{width}").join(documentProperties.width);
 		template = template.split("{height}").join(documentProperties.height);
 		template = template.split("{backgroundColor}").join(documentProperties.backgroundColor);
+		template = template.split("{createjsUrl}").join(models.common.VersionInfo.createjsUrl);
+		template = template.split("{playerUrl}").join(models.common.VersionInfo.playerUrl);
 		template = template.split("{framerate}").join(documentProperties.framerate);
 		template = template.split("{library}").join(library.compile("library"));
 		fileApi.saveContent(dir + "/" + name + ".html",template);
