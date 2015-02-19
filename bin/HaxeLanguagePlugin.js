@@ -27,7 +27,12 @@ HaxeLanguagePlugin.prototype = {
 	}
 	,generateHtml: function(dir,name,documentProperties) {
 		var file = dir + "/" + name + ".html";
-		if(!this.fileApi.exists(file)) {
+		var defines = [];
+		if(this.fileApi.exists(file)) {
+			var text = this.fileApi.getContent(file);
+			if(text.indexOf("<!--ALLOW_REGENERATION-->") >= 0) defines.push("ALLOW_REGENERATION");
+		}
+		if(!this.fileApi.exists(file) || HxOverrides.indexOf(defines,"ALLOW_REGENERATION",0) >= 0) {
 			var template = this.fileApi.getContent(this.supportDir + "/project.html");
 			template = template.split("{title}").join(documentProperties.title != ""?documentProperties.title:name);
 			template = template.split("{width}").join(documentProperties.width);
@@ -38,6 +43,9 @@ HaxeLanguagePlugin.prototype = {
 			template = template.split("{libraryUrl}").join("bin/library.js");
 			template = template.split("{codeUrl}").join("bin/" + name + ".js");
 			template = template.split("{framerate}").join(documentProperties.framerate);
+			template = template.split("{defines}").join(defines.map(function(s) {
+				return "<!--" + s + "-->\n";
+			}).join(""));
 			this.fileApi.saveContent(file,template);
 		}
 	}
@@ -94,6 +102,32 @@ HaxeLanguagePlugin.prototype = {
 	,capitalize: function(s) {
 		return s.substring(0,1).toUpperCase() + s.substring(1);
 	}
+};
+var HxOverrides = function() { };
+HxOverrides.indexOf = function(a,obj,i) {
+	var len = a.length;
+	if(i < 0) {
+		i += len;
+		if(i < 0) i = 0;
+	}
+	while(i < len) {
+		if(a[i] === obj) return i;
+		i++;
+	}
+	return -1;
+};
+if(Array.prototype.indexOf) HxOverrides.indexOf = function(a,o,i) {
+	return Array.prototype.indexOf.call(a,o,i);
+};
+if(Array.prototype.map == null) Array.prototype.map = function(f) {
+	var a = [];
+	var _g1 = 0;
+	var _g = this.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		a[i] = f(this[i]);
+	}
+	return a;
 };
 if(Array.prototype.filter == null) Array.prototype.filter = function(f1) {
 	var a1 = [];

@@ -1,4 +1,17 @@
 (function () { "use strict";
+var HxOverrides = function() { };
+HxOverrides.indexOf = function(a,obj,i) {
+	var len = a.length;
+	if(i < 0) {
+		i += len;
+		if(i < 0) i = 0;
+	}
+	while(i < len) {
+		if(a[i] === obj) return i;
+		i++;
+	}
+	return -1;
+};
 var JavaScriptLanguagePlugin = function() {
 	this.name = "JavaScript";
 };
@@ -27,7 +40,12 @@ JavaScriptLanguagePlugin.prototype = {
 	}
 	,generateHtml: function(dir,name,documentProperties) {
 		var file = dir + "/" + name + ".html";
-		if(!this.fileApi.exists(file)) {
+		var defines = [];
+		if(this.fileApi.exists(file)) {
+			var text = this.fileApi.getContent(file);
+			if(text.indexOf("<!--ALLOW_REGENERATION-->") >= 0) defines.push("ALLOW_REGENERATION");
+		} else defines.push("ALLOW_REGENERATION");
+		if(!this.fileApi.exists(file) || HxOverrides.indexOf(defines,"ALLOW_REGENERATION",0) >= 0) {
 			var template = this.fileApi.getContent(this.supportDir + "/project.html");
 			template = template.split("{title}").join(documentProperties.title != ""?documentProperties.title:name);
 			template = template.split("{width}").join(documentProperties.width);
@@ -40,6 +58,9 @@ JavaScriptLanguagePlugin.prototype = {
 				return "<script src='" + s.substring(dir.length + 1) + "'></script>";
 			}).join("\n\t\t"));
 			template = template.split("{framerate}").join(documentProperties.framerate);
+			template = template.split("{defines}").join(defines.map(function(s1) {
+				return "<!--" + s1 + "-->\n";
+			}).join(""));
 			this.fileApi.saveContent(file,template);
 		}
 	}
@@ -120,6 +141,9 @@ JavaScriptLanguagePlugin.prototype = {
 			lines.push(s + " = typeof " + s + " != 'undefined' ? " + s + " : {};");
 		}
 	}
+};
+if(Array.prototype.indexOf) HxOverrides.indexOf = function(a,o,i) {
+	return Array.prototype.indexOf.call(a,o,i);
 };
 if(Array.prototype.map == null) Array.prototype.map = function(f) {
 	var a = [];

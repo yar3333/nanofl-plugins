@@ -20,8 +20,14 @@ var TypeScriptLanguagePlugin = (function () {
         this.fileApi.saveContent(dir + "/bin/library.js", this.library.compile("library"));
     };
     TypeScriptLanguagePlugin.prototype.generateHtml = function (dir, name, documentProperties) {
-        var destFile = dir + "/" + name + ".html";
-        if (!this.fileApi.exists(destFile)) {
+        var file = dir + "/" + name + ".html";
+        var defines = [];
+        if (this.fileApi.exists(file)) {
+            var text = this.fileApi.getContent(file);
+            if (text.indexOf("<!--ALLOW_REGENERATION-->") >= 0)
+                defines.push("ALLOW_REGENERATION");
+        }
+        if (!this.fileApi.exists(file) || defines.indexOf("ALLOW_REGENERATION") >= 0) {
             var template = this.fileApi.getContent(this.supportDir + "/project.html");
             var params = {
                 title: documentProperties.title != "" ? documentProperties.title : name,
@@ -32,12 +38,15 @@ var TypeScriptLanguagePlugin = (function () {
                 playerUrl: models.common.VersionInfo.playerUrl,
                 libraryUrl: "bin/library.js",
                 codeUrl: "bin/" + name + ".js",
-                framerate: documentProperties.framerate
+                framerate: documentProperties.framerate,
+                defines: defines.map(function (s) {
+                    return "<!--" + s + "-->\n";
+                }).join("")
             };
             template = template.replace(/\{([_a-zA-Z0-9]+)\}/g, function (match, group) {
                 return params[group];
             });
-            this.fileApi.saveContent(destFile, template);
+            this.fileApi.saveContent(file, template);
         }
     };
     TypeScriptLanguagePlugin.prototype.generateClasses = function (dir, name) {
