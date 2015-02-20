@@ -7367,7 +7367,9 @@ declare module models.common
 	
 	export class VersionInfo
 	{
-		static version : string;
+		static ideVersion : string;
+		static playerVersion : string;
+		static fileFormatVersion : string;
 		static createjsUrl : string;
 		static playerUrl : string;
 	}
