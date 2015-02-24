@@ -29,5 +29,14 @@ NoneLanguagePlugin.prototype = {
 		}
 	}
 };
+var haxe = {};
+haxe.io = {};
+haxe.io.Bytes = function() { };
+haxe.io.Eof = function() { };
+haxe.io.Eof.prototype = {
+	toString: function() {
+		return "Eof";
+	}
+};
 NoneLanguagePlugin.main();
 })();

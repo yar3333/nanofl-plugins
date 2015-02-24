@@ -7078,6 +7078,7 @@ declare module models.common
 		readDirectory(dir:string) : string[];
 		getContent(filePath:string) : string;
 		saveContent(filePath:string, text:string) : void;
+		saveBinary(filePath:string, data:Array<number>) : void;
 		exists(path:string) : boolean;
 		isDirectory(path:string) : boolean;
 		run(filePath:string, args:string[], blocking:boolean) : void;
@@ -8244,6 +8245,7 @@ declare module models.client
 		exists(path:string) : boolean;
 		getContent(filePath:string) : string;
 		saveContent(filePath:string, text:string) : void;
+		saveBinary(filePath:string, data:Array<number>) : void;
 		isDirectory(path:string) : boolean;
 		run(filePath:string, args:string[], blocking:boolean) : void;
 		copy(srcPath:string, destPath:string) : void;

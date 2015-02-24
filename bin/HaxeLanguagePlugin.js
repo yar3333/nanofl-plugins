@@ -116,6 +116,15 @@ HxOverrides.indexOf = function(a,obj,i) {
 	}
 	return -1;
 };
+var haxe = {};
+haxe.io = {};
+haxe.io.Bytes = function() { };
+haxe.io.Eof = function() { };
+haxe.io.Eof.prototype = {
+	toString: function() {
+		return "Eof";
+	}
+};
 if(Array.prototype.indexOf) HxOverrides.indexOf = function(a,o,i) {
 	return Array.prototype.indexOf.call(a,o,i);
 };

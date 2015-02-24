@@ -8,6 +8,7 @@ extern interface FileApi
 	function readDirectory(dir:String) : Array<String>;
 	function getContent(filePath:String) : String;
 	function saveContent(filePath:String, text:String) : Void;
+	function saveBinary(filePath:String, data:haxe.io.Bytes) : Void;
 	function exists(path:String) : Bool;
 	function isDirectory(path:String) : Bool;
 	function run(filePath:String, args:Array<String>, blocking:Bool) : Void;
