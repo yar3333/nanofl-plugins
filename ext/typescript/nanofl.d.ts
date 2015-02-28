@@ -8069,6 +8069,39 @@ declare module models.common.geom
 		rotate(angle:number) : models.common.geom.Matrix;
 		skew(skewX:number, skewY:number) : models.common.geom.Matrix;
 		scale(kx:number, ky:number) : models.common.geom.Matrix;
+		/**
+		 * Creates the specific style of matrix expected by the
+		 * <code>beginGradientFill()</code> and <code>lineGradientStyle()</code>
+		 * methods of the Graphics class. Width and height are scaled to a
+		 * <code>scaleX</code>/<code>scaleY</code> pair and the
+		 * <code>tx</code>/<code>ty</code> values are offset by half the width and
+		 * height.
+		 *
+		 * <p>For example, consider a gradient with the following
+		 * characteristics:</p>
+		 *
+		 * <ul>
+		 *   <li><code>GradientType.LINEAR</code></li>
+		 *   <li>Two colors, green and blue, with the ratios array set to <code>[0,255]</code></li>
+		 *   <li><code>SpreadMethod.PAD</code></li>
+		 *   <li><code>InterpolationMethod.LINEAR_RGB</code></li>
+		 * </ul>
+		 *
+		 * <p>The following illustrations show gradients in which the matrix was
+		 * defined using the <code>createGradientBox()</code> method with different
+		 * parameter settings:</p>
+		 *
+		 * @param width    The width of the gradient box.
+		 * @param height   The height of the gradient box.
+		 * @param rotation The amount to rotate, in radians.
+		 * @param tx       The distance, in pixels, to translate to the right along
+		 *                 the <i>x</i> axis. This value is offset by half of the
+		 *                 <code>width</code> parameter.
+		 * @param ty       The distance, in pixels, to translate down along the
+		 *                 <i>y</i> axis. This value is offset by half of the
+		 *                 <code>height</code> parameter.
+		 */
+		createGradientBox(width:number, height:number, rotation?:number, tx?:number, ty?:number) : models.common.geom.Matrix;
 		toMatrix2D() : createjs.Matrix2D;
 		toString() : string;
 		static load(node:htmlparser.HtmlNodeElement) : models.common.geom.Matrix;
