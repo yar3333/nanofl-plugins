@@ -1,4 +1,4 @@
-package format.geom;
+package geom;
 
 class Rectangle
 {

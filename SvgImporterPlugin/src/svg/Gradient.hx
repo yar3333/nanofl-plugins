@@ -1,12 +1,12 @@
-package format.svg;
+package svg;
 
 import models.common.geom.Matrix;
-import format.display.GradientType;
-import format.display.SpreadMethod;
-import format.display.InterpolationMethod;
-import format.display.CapsStyle;
-import format.display.JointStyle;
-import format.display.LineScaleMode;
+import display.GradientType;
+import display.SpreadMethod;
+import display.InterpolationMethod;
+import display.CapsStyle;
+import display.JointStyle;
+import display.LineScaleMode;
 
 class Gradient
 {

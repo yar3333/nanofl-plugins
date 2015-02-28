@@ -1,7 +1,7 @@
-package format.svg;
+package svg;
 
 import models.common.geom.Matrix;
-import format.geom.Rectangle;
+import geom.Rectangle;
 
 class RenderContext
 {

@@ -16,7 +16,6 @@
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="..\ext\haxe" />
-    <class path="ext" />
     <class path="src" />
   </classpaths>
   <!-- Build options -->

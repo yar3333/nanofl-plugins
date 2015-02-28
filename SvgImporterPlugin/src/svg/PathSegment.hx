@@ -1,6 +1,6 @@
-package format.svg;
+package svg;
 
-import format.gfx.Gfx;
+import gfx.Gfx;
 
 class PathSegment
 {

@@ -1,14 +1,14 @@
-package format.gfx;
+package gfx;
 
-import format.display.CapsStyle;
-import format.display.GradientType;
-import format.display.InterpolationMethod;
-import format.display.JointStyle;
-import format.display.LineScaleMode;
-import format.display.SpreadMethod;
+import display.CapsStyle;
+import display.GradientType;
+import display.InterpolationMethod;
+import display.JointStyle;
+import display.LineScaleMode;
+import display.SpreadMethod;
 import haxe.crypto.BaseCode;
 import haxe.io.Bytes;
-import stube.utils.ByteArray;
+import utils.ByteArray;
 
 class GfxBytes extends Gfx
 {

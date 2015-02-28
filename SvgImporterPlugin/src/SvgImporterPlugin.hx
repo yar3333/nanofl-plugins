@@ -28,7 +28,7 @@ class SvgImporterPlugin implements IImporterPlugin
 	
 	public function load(xml:Xml, namePath:String) : MovieClipItem
 	{
-		var svg = new format.svg.SVGData(xml, false);
+		var svg = new svg.SVGData(xml, false);
 		
 		var r = new MovieClipItem(namePath);
 		//svg.

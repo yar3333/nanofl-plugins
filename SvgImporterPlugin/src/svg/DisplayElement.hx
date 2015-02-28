@@ -1,4 +1,4 @@
-package format.svg;
+package svg;
 
 enum DisplayElement
 {

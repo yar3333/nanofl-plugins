@@ -1,16 +1,16 @@
-package format.svg;
+package svg;
 
-import format.display.GradientType;
-import format.display.SpreadMethod;
-import format.display.CapsStyle;
-import format.display.JointStyle;
-import format.svg.Grad;
-import format.svg.Group;
-import format.svg.FillType;
-import format.svg.PathParser;
-import format.svg.PathSegment;
-import format.svg.Path;
-import format.svg.Text;
+import display.GradientType;
+import display.SpreadMethod;
+import display.CapsStyle;
+import display.JointStyle;
+import svg.Grad;
+import svg.Group;
+import svg.FillType;
+import svg.PathParser;
+import svg.PathSegment;
+import svg.Path;
+import svg.Text;
 import haxe.ds.StringMap;
 import models.common.geom.Matrix;
 
@@ -32,7 +32,7 @@ class SVGData extends Group
 	public var width (default, null) : Float;
 
 	private var mConvertCubics : Bool;
-	private var mGrads : GradHash;
+	private var mGrads : Map<String, Grad>;
 	private var mPathParser : PathParser;
 	
 	
@@ -45,7 +45,7 @@ class SVGData extends Group
 		if (svg == null || (svg.nodeName != "svg" && svg.nodeName != "svg:svg"))
 			throw "Not an SVG file (" + (svg==null ? "null" : svg.nodeName) + ")";
 		
-		mGrads = new GradHash ();
+		mGrads = new Map<String, Grad>();
 		mPathParser = new PathParser ();
 		mConvertCubics = inConvertCubics;
 		

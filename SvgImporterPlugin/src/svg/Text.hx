@@ -1,4 +1,4 @@
-package format.svg;
+package svg;
 
 import models.common.geom.Matrix;
 

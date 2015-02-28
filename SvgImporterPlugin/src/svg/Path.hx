@@ -1,11 +1,7 @@
-package format.svg;
+package svg;
 
-import format.display.GradientType;
-import format.display.SpreadMethod;
-import format.display.InterpolationMethod;
-import format.display.CapsStyle;
-import format.display.JointStyle;
-import format.display.LineScaleMode;
+import display.CapsStyle;
+import display.JointStyle;
 import models.common.geom.Matrix;
 
 typedef PathSegments = Array<PathSegment>;

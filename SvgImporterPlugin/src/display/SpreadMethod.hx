@@ -1,4 +1,4 @@
-package format.display;
+package display;
 
 enum SpreadMethod
 {

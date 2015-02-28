@@ -1,6 +1,6 @@
-package format.gfx;
+package gfx;
 
-import stube.display.Graphics;
+import display.Graphics;
 
 class GfxGraphics extends Gfx
 {

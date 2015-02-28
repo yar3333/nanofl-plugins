@@ -1,8 +1,8 @@
-package format.gfx;
+package gfx;
 
-import format.display.CapsStyle;
-import format.display.JointStyle;
-import format.display.LineScaleMode;
+import display.CapsStyle;
+import display.JointStyle;
+import display.LineScaleMode;
 
 class LineStyle
 {

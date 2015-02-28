@@ -1,8 +1,8 @@
-package format.gfx;
+package gfx;
 
-import format.display.GradientType;
-import format.display.InterpolationMethod;
-import format.display.SpreadMethod;
+import display.GradientType;
+import display.InterpolationMethod;
+import display.SpreadMethod;
 import models.common.geom.Matrix;
 
 class Gradient

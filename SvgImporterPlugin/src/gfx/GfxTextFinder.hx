@@ -1,6 +1,6 @@
-package format.gfx;
+package gfx;
 
-import format.svg.Text;
+import svg.Text;
 
 class GfxTextFinder extends Gfx
 {

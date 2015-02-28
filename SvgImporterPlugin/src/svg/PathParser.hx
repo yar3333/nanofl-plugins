@@ -3,9 +3,9 @@
 //package xinf.ony;
 //import xinf.ony.PathSegment;
 
-package format.svg;
+package svg;
 
-import format.svg.PathSegment;
+import svg.PathSegment;
 
 class PathParser
 {
