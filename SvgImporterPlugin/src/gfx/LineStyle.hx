@@ -6,14 +6,14 @@ import display.LineScaleMode;
 
 class LineStyle
 {
-	public var thickness:Float;
-	public var color:Int;
-	public var alpha:Float;
-	public var pixelHinting:Bool;
-	public var scaleMode:LineScaleMode;
-	public var capsStyle:CapsStyle;
-	public var jointStyle:JointStyle;
-	public var miterLimit:Float;
+	public var thickness : Float;
+	public var color : Int;
+	public var alpha : Float;
+	public var pixelHinting : Bool;
+	public var scaleMode : LineScaleMode;
+	public var capsStyle : CapsStyle;
+	public var jointStyle : JointStyle;
+	public var miterLimit : Float;
 
 	public function new()
 	{
