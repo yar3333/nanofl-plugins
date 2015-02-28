@@ -1,6 +1,5 @@
 package format.svg;
 
-import stube.geom.Matrix;
 import format.gfx.Gfx;
 
 class PathSegment

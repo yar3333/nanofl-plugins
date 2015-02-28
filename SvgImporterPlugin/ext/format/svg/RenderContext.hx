@@ -1,7 +1,7 @@
 package format.svg;
 
-import stube.geom.Matrix;
-import stube.geom.Rectangle;
+import models.common.geom.Matrix;
+import format.geom.Rectangle;
 
 class RenderContext
 {
@@ -20,7 +20,7 @@ class RenderContext
    {
       if (rect!=null && inX>rect.x)
       {
-         if (inX>rect.right)
+         if (inX>rect.x+rect.width)
             inX += rectW - rect.width;
          else
             inX = rect.x + rectW * (inX-rect.x)/rect.width;
@@ -31,7 +31,7 @@ class RenderContext
    {
       if (rect!=null && inY>rect.y)
       {
-         if (inY>rect.right)
+         if (inY>rect.x+rect.width)
             inY += rectH - rect.height;
          else
             inY = rect.y + rectH * (inY-rect.y)/rect.height;

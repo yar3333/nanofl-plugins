@@ -1,29 +1,29 @@
 package format.gfx;
 
-import stube.display.LineScaleMode;
-import stube.display.CapsStyle;
-import stube.display.JointStyle;
+import format.display.CapsStyle;
+import format.display.JointStyle;
+import format.display.LineScaleMode;
 
 class LineStyle
 {
-   public var thickness:Float;
-   public var color:Int;
-   public var alpha:Float;
-   public var pixelHinting:Bool;
-   public var scaleMode:LineScaleMode;
-   public var capsStyle:CapsStyle;
-   public var jointStyle:JointStyle;
-   public var miterLimit:Float;
+	public var thickness:Float;
+	public var color:Int;
+	public var alpha:Float;
+	public var pixelHinting:Bool;
+	public var scaleMode:LineScaleMode;
+	public var capsStyle:CapsStyle;
+	public var jointStyle:JointStyle;
+	public var miterLimit:Float;
 
-   public function new()
-   {
-      thickness = 1.0;
-      color = 0x000000;
-      alpha = 1.0;
-      pixelHinting = false;
-      scaleMode = LineScaleMode.NORMAL;
-      capsStyle = CapsStyle.ROUND;
-      jointStyle = JointStyle.ROUND;
-      miterLimit = 3.0;
-   }
+	public function new()
+	{
+		thickness = 1.0;
+		color = 0x000000;
+		alpha = 1.0;
+		pixelHinting = false;
+		scaleMode = LineScaleMode.NORMAL;
+		capsStyle = CapsStyle.ROUND;
+		jointStyle = JointStyle.ROUND;
+		miterLimit = 3.0;
+	}
 }

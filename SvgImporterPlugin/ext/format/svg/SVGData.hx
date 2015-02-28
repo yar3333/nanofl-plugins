@@ -1,11 +1,9 @@
 package format.svg;
 
-
-import stube.geom.Matrix;
-import stube.display.GradientType;
-import stube.display.SpreadMethod;
-import stube.display.CapsStyle;
-import stube.display.JointStyle;
+import format.display.GradientType;
+import format.display.SpreadMethod;
+import format.display.CapsStyle;
+import format.display.JointStyle;
 import format.svg.Grad;
 import format.svg.Group;
 import format.svg.FillType;
@@ -13,19 +11,15 @@ import format.svg.PathParser;
 import format.svg.PathSegment;
 import format.svg.Path;
 import format.svg.Text;
-
-#if haxe3
 import haxe.ds.StringMap;
-#else
-typedef StringMap<T> = Hash<T>;
-#end
+import models.common.geom.Matrix;
 
-
-class SVGData extends Group {
+class SVGData extends Group
+{
 	
 	
-	private static var SIN45:Float = 0.70710678118654752440084436210485;
-	private static var TAN22:Float = 0.4142135623730950488016887242097;
+	private static var SIN45 : Float = 0.70710678118654752440084436210485;
+	private static var TAN22 : Float = 0.4142135623730950488016887242097;
 	private static var mStyleSplit = ~/;/g;
 	private static var mStyleValue = ~/\s*(.*)\s*:\s*(.*)\s*/;
 	private static var mTranslateMatch = ~/translate\((.*)[, ](.*)\)/;
@@ -34,15 +28,15 @@ class SVGData extends Group {
 	private static var mURLMatch = ~/url\(#(.*)\)/;
 	private static var defaultFill = FillSolid(0x000000);
 	
-	public var height (default, null):Float;
-	public var width (default, null):Float;
+	public var height (default, null) : Float;
+	public var width (default, null) : Float;
 
-	private var mConvertCubics:Bool;
-	private var mGrads:GradHash;
-	private var mPathParser:PathParser;
+	private var mConvertCubics : Bool;
+	private var mGrads : GradHash;
+	private var mPathParser : PathParser;
 	
 	
-	public function new (inXML:Xml, inConvertCubics:Bool = false) {
+	public function new (inXML:Xml, inConvertCubics=false) {
 		
 		super();
 		
@@ -66,12 +60,11 @@ class SVGData extends Group {
 			height = width;
 
 		loadGroup(this, svg, new Matrix (), null);
-		
 	}
 	
 	
-	private function applyTransform (ioMatrix:Matrix, inTrans:String):Float {
-		
+	private function applyTransform (ioMatrix:Matrix, inTrans:String) : Float
+	{
 		var scale = 1.0;
 		
 		if (mTranslateMatch.match(inTrans))
@@ -79,14 +72,12 @@ class SVGData extends Group {
 			// TODO: Pre-translate
 			
 			ioMatrix.translate (Std.parseFloat (mTranslateMatch.matched (1)), Std.parseFloat (mTranslateMatch.matched (2)));
-			
 		} else if (mScaleMatch.match (inTrans)) {
 			
 			// TODO: Pre-scale
 			var s = Std.parseFloat (mScaleMatch.matched (1));
 			ioMatrix.scale (s, s);
 			scale = s;
-			
 		} else if (mMatrixMatch.match (inTrans)) {
 			
 			var m = new Matrix (
@@ -98,7 +89,7 @@ class SVGData extends Group {
 				Std.parseFloat (mMatrixMatch.matched (6))
 			);
 			
-			m.concat (ioMatrix);
+			m.appendMatrix(ioMatrix);
 			
 			ioMatrix.a = m.a;
 			ioMatrix.b = m.b;
@@ -108,20 +99,17 @@ class SVGData extends Group {
 			ioMatrix.ty = m.ty;
 			
 			scale = Math.sqrt (ioMatrix.a * ioMatrix.a + ioMatrix.c * ioMatrix.c);
-			
-		} else { 
+		} else {
 			
 			trace("Warning, unknown transform:" + inTrans);
-			
 		}
 		
 		return scale;
-		
 	}
 	
 	
-	private function dumpGroup (g:Group, indent:String) {
-		
+	private function dumpGroup (g:Group, indent:String)
+	{
 		trace (indent + "Group:" + g.name);
 		indent += "  ";
 		
@@ -129,35 +117,29 @@ class SVGData extends Group {
 			
 			switch (e) {
 				
-				case DisplayPath (path): trace (indent + "Path" + "  " + path.matrix);
-				case DisplayGroup (group): dumpGroup (group, indent+"   ");
-				case DisplayText (text): trace (indent + "Text " + text.text);
-				
+				case DisplayPath (path) : trace (indent + "Path" + "  " + path.matrix);
+				case DisplayGroup (group) : dumpGroup (group, indent+"   ");
+				case DisplayText (text) : trace (indent + "Text " + text.text);
 			}
-			
 		}
-		
 	}
 	
 	
-	private function getColorStyle (inKey:String, inNode:Xml, inStyles:StringMap <String>, inDefault:Int) {
+	private function getColorStyle(inKey:String, inNode:Xml, inStyles:StringMap<String>, inDefault:Int) {
 		
 		var s = getStyle (inKey, inNode, inStyles, "");
 		
 		if (s == "") {
 			
 			return inDefault;
-			
 		}
 		
 		if (s.charAt (0) == '#') {
 			
 			return Std.parseInt ("0x" + s.substr (1));
-			
 		}
 		
 		return Std.parseInt (s);
-		
 	}
 	
 	
@@ -168,19 +150,16 @@ class SVGData extends Group {
 		if (s == "") {
 			
 			return defaultFill;
-			
 		}
 		
 		if (s.charAt (0) == '#') {
 			
 			return FillSolid (Std.parseInt ("0x" + s.substr (1)));
-			
 		}
 		
 		if (s == "none") {
 			
 			return FillNone;
-			
 		}
 		
 		if (mURLMatch.match (s)) {
@@ -190,27 +169,23 @@ class SVGData extends Group {
 			if (mGrads.exists (url)) {
 				
 				return FillGrad(mGrads.get(url));
-				
 			}
 			
 			throw ("Unknown url:" + url);
-			
 		}
 		
 		throw ("Unknown fill string:" + s);
 		
 		return FillNone;
-		
 	}
 	
 	
-	private function getFloat (inXML:Xml, inName:String, inDef:Float = 0.0):Float {
+	private function getFloat (inXML:Xml, inName:String, inDef=0.0) : Float {
 		
 		if (inXML.exists (inName))
 			return Std.parseFloat (inXML.get (inName));
 		
 		return inDef;
-		
 	}
 	
 	
@@ -221,11 +196,9 @@ class SVGData extends Group {
 		if (s == "") {
 			
 			return inDefault;
-		
 		}
 		
 		return Std.parseFloat (s);
-		
 	}
 	
 
@@ -236,23 +209,19 @@ class SVGData extends Group {
 		if (s == "") {
 			
 			return inDefault;
-			
 		}
 		
 		if (s == "none") {
 			
 			return null;
-			
 		}
 		
 		if (s.charAt (0) == '#') {
 			
 			return Std.parseInt ("0x" + s.substr (1));
-			
 		}
 		
 		return Std.parseInt (s);
-		
 	}
 	
 	
@@ -261,21 +230,18 @@ class SVGData extends Group {
 		if (inNode != null && inNode.exists (inKey)) {
 			
 			return inNode.get (inKey);
-			
 		}
 		
 		if (inStyles != null && inStyles.exists (inKey)) {
 			
 			return inStyles.get (inKey);
-			
 		}
 		
 		return inDefault;
-		
 	}
 	
 	
-	private function getStyles (inNode:Xml, inPrevStyles:StringMap<String>):StringMap <String> {
+	private function getStyles (inNode:Xml, inPrevStyles:StringMap<String>) : StringMap <String> {
 		
 		if (!inNode.exists ("style"))
 			return inPrevStyles;
@@ -287,9 +253,7 @@ class SVGData extends Group {
 			for (s in inPrevStyles.keys ()) {
 				
 				styles.set (s, inPrevStyles.get (s));
-			
 			}
-			
 		}
 
 		var style = inNode.get ("style");
@@ -300,13 +264,10 @@ class SVGData extends Group {
 			if (mStyleValue.match (s)) {
 				
 				styles.set (mStyleValue.matched (1), mStyleValue.matched (2));
-				
 			}
-			
 		}
 		
 		return styles;
-		
 	}
 	
 	
@@ -323,23 +284,17 @@ class SVGData extends Group {
 				if (name.substr (0, 4) == "svg:") {
 					
 					name = name.substr (4);
-					
 				}
 				
 				if (name == "linearGradient") {
 					
 					loadGradient (def, GradientType.LINEAR, pass == 1);
-				
 				} else if (name == "radialGradient") {
 					
 					loadGradient (def, GradientType.RADIAL, pass == 1);
-					
 				}
-				
 			}
-			
 		}
-		
 	}
 	
 	
@@ -366,13 +321,10 @@ class SVGData extends Group {
 				grad.spread = base.spread;
 				grad.interp = base.interp;
 				grad.radius = base.radius;
-				
 			} else {
 				
 				throw ("Unknown xlink : " + xlink);
-				
 			}
-			
 		}
 
 		if (inGrad.exists ("x1")) {
@@ -381,14 +333,12 @@ class SVGData extends Group {
 			grad.y1 = getFloat (inGrad, "y1");
 			grad.x2 = getFloat (inGrad, "x2");
 			grad.y2 = getFloat (inGrad, "y2");
-			
 		} else {
 			
 			grad.x1 = getFloat (inGrad, "cx");
 			grad.y1 = getFloat (inGrad, "cy");
 			grad.x2 = getFloat (inGrad, "fx", grad.x1);
 			grad.y2 = getFloat (inGrad, "fy", grad.y1);
-			
 		}
 
 		grad.radius = getFloat (inGrad, "r");
@@ -396,7 +346,6 @@ class SVGData extends Group {
 		if (inGrad.exists ("gradientTransform")) {
 			
 			applyTransform (grad.gradMatrix, inGrad.get ("gradientTransform"));
-			
 		}
 		
 		// todo - grad.spread = base.spread;
@@ -408,31 +357,26 @@ class SVGData extends Group {
 			grad.colors.push (getColorStyle ("stop-color", stop, styles, 0x000000));
 			grad.alphas.push (getFloatStyle ("stop-opacity", stop, styles, 1.0));
 			grad.ratios.push (Std.int (Std.parseFloat (stop.get ("offset")) * 255.0));
-			
 		}
 		
 		mGrads.set (name, grad);
-		
 	}
 	
 	
-	public function loadGroup (g:Group, inG:Xml, matrix:Matrix, inStyles:StringMap <String>):Group {
+	public function loadGroup (g:Group, inG:Xml, matrix:Matrix, inStyles:StringMap <String>) : Group {
 		
 		if (inG.exists ("transform")) {
 			
 			matrix = matrix.clone ();
 			applyTransform (matrix, inG.get ("transform"));
-			
 		}
 		
 		if (inG.exists ("inkscape:label")) {
 			
 			g.name = inG.get ("inkscape:label");
-			
 		} else if (inG.exists ("id")) {
 			
 			g.name = inG.get ("id");
-			
 		}
 		
 		var styles = getStyles (inG, inStyles);
@@ -444,73 +388,57 @@ class SVGData extends Group {
 			if (name.substr (0, 4) == "svg:") {
 				
 				name = name.substr(4);
-				
 			}
 
 			if (name == "defs") {
 				
 				loadDefs (el);
-				
 			} else if (name == "g") {
 				
 				if (!(el.exists("display") && el.get("display") == "none")) {
 				
 					g.children.push (DisplayGroup (loadGroup (new Group (), el, matrix, styles)));
-					
 				}
-				
 			} else if (name == "path" || name == "line" || name == "polyline") {
 				
 				g.children.push (DisplayPath (loadPath (el, matrix, styles, false, false)));
-				
 			} else if (name == "rect") {
 				
 				g.children.push (DisplayPath (loadPath (el, matrix, styles, true, false)));
-				
 			} else if (name == "polygon") {
 				
 				g.children.push (DisplayPath (loadPath (el, matrix, styles, false, false)));
-				
 			} else if (name == "ellipse") {
 				
 				g.children.push (DisplayPath (loadPath (el, matrix, styles, false, true)));
-				
 			} else if (name == "circle") {
 				
 				g.children.push (DisplayPath (loadPath (el, matrix, styles, false, true, true)));
-				
 			} else if (name == "text") {
 				
 				g.children.push (DisplayText (loadText (el, matrix, styles)));
-				
 			} else if (name == "linearGradient") {
 				
 				loadGradient (el, GradientType.LINEAR, true);
-				
 			} else if (name == "radialGradient") {
 				
 				loadGradient (el, GradientType.RADIAL, true);
-				
 			} else {
 				
 				// throw("Unknown child : " + el.nodeName );
-				
 			}
-			
 		}
 		
 		return g;
-		
 	}
 	
 	
-	public function loadPath (inPath:Xml, matrix:Matrix, inStyles:StringMap<String>, inIsRect:Bool, inIsEllipse:Bool, inIsCircle:Bool=false):Path {
+	public function loadPath (inPath:Xml, matrix:Matrix, inStyles:StringMap<String>, inIsRect:Bool, inIsEllipse:Bool, inIsCircle=false) : Path {
 		
 		if (inPath.exists ("transform")) {
 			
 			matrix = matrix.clone ();
 			applyTransform (matrix, inPath.get ("transform"));
-			
 		}
 		
 		var styles = getStyles (inPath, inStyles);
@@ -541,12 +469,11 @@ class SVGData extends Group {
 			
 			if (rx == 0 || ry == 0) {
 				
-				path.segments.push (new MoveSegment (x , y));
+				path.segments.push (new MoveSegment (x, y));
 				path.segments.push (new DrawSegment (x + w, y));
 				path.segments.push (new DrawSegment (x + w, y + h));
 				path.segments.push (new DrawSegment (x, y + h));
 				path.segments.push (new DrawSegment (x, y));
-				
 			} else {
 				
 				path.segments.push (new MoveSegment (x, y + ry));
@@ -566,14 +493,12 @@ class SVGData extends Group {
 				// bottom-left
 				path.segments.push (new QuadraticSegment (x, y + h, x, y + h - ry));
 				path.segments.push (new DrawSegment (x, y + ry));
-				
 			}
-			
 		} else if (inIsEllipse) {
 			
 			var x = inPath.exists ("cx") ? Std.parseFloat (inPath.get ("cx")) : 0;
 			var y = inPath.exists ("cy") ? Std.parseFloat (inPath.get ("cy")) : 0;
-			var r = inIsCircle && inPath.exists ("r") ? Std.parseFloat (inPath.get ("r")) : 0.0; 
+			var r = inIsCircle && inPath.exists ("r") ? Std.parseFloat (inPath.get ("r")) : 0.0;
 			var w = inIsCircle ? r : inPath.exists ("rx") ? Std.parseFloat (inPath.get ("rx")) : 0.0;
 			var w_ = w * SIN45;
 			var cw_ = w * TAN22;
@@ -590,33 +515,28 @@ class SVGData extends Group {
 			path.segments.push (new QuadraticSegment (x - cw_, y - h, x, y - h));
 			path.segments.push (new QuadraticSegment (x + cw_, y - h, x + w_, y - h_));
 			path.segments.push (new QuadraticSegment (x + w, y - ch_, x + w, y));
-			
 		} else {
 			
-			var d = inPath.exists ("points") ? ("M" + inPath.get ("points") + "z") : 
-					inPath.exists ("x1") ? ("M" + inPath.get ("x1") + "," + inPath.get ("y1") + " " + inPath.get ("x2") + "," + inPath.get ("y2") + "z") : 
+			var d = inPath.exists ("points") ? ("M" + inPath.get ("points") + "z") :
+					inPath.exists ("x1") ? ("M" + inPath.get ("x1") + "," + inPath.get ("y1") + " " + inPath.get ("x2") + "," + inPath.get ("y2") + "z") :
 					inPath.get ("d");
 			
 			for (segment in mPathParser.parse (d, mConvertCubics)) {
 				
 				path.segments.push (segment);
-				
 			}
-			
 		}
 
 		return path;
-		
 	}
 	
 	
-	public function loadText (inText:Xml, matrix:Matrix, inStyles:StringMap <String>):Text {
+	public function loadText (inText:Xml, matrix:Matrix, inStyles:StringMap <String>) : Text {
 		
 		if (inText.exists ("transform")) {
 			
 			matrix = matrix.clone ();
 			applyTransform (matrix, inText.get ("transform"));
-			
 		}
 		
 		var styles = getStyles (inText, inStyles);
@@ -641,14 +561,10 @@ class SVGData extends Group {
 		for (el in inText.elements ()) {
 			
 			string += el.toString();
-			
 		}
 		
 		//trace(string);
 		text.text = string;
 		return text;
-		
 	}
-	
-	
 }
