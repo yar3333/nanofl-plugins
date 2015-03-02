@@ -1,9 +1,9 @@
 package svgimport;
 
-class Group
+class SvgGroup
 {
 	public var name : String;
-	public var children : Array<DisplayElement>;
+	public var children : Array<SvgElement>;
 	
 	public function new()
 	{
@@ -12,7 +12,7 @@ class Group
 	}
 
 	public function hasGroup(inName:String) { return findGroup(inName) != null; }
-	public function findGroup(inName:String) : Group
+	public function findGroup(inName:String) : SvgGroup
 	{
 		for (child in children)
 			switch (child)

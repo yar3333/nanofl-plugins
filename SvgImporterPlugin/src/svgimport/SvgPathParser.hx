@@ -1,12 +1,12 @@
 package svgimport;
 
-import svgimport.PathSegment;
+import svgimport.Segment;
 
-class PathParser
+class SvgPathParser
 {
     var lastMoveX : Float;
     var lastMoveY : Float;
-    var prev : PathSegment;
+    var prev : Segment;
     
     static var sCommandArgs : Array<Int>;
 
@@ -48,12 +48,12 @@ class PathParser
         }
     }
 
-    public function parse(pathToParse:String, inConvertCubics:Bool) : Array<PathSegment>
+    public function parse(pathToParse:String, inConvertCubics:Bool) : Array<Segment>
 	{
         lastMoveX = lastMoveY = 0;
         var pos=0;
         var args = new Array<Float>();
-        var segments = new Array<PathSegment>();
+        var segments = new Array<Segment>();
         var current_command_pos = 0;
         var current_command = -1;
         var current_args = -1;
@@ -151,7 +151,7 @@ class PathParser
                   if (prev == null)
                      throw "Unknown command " + String.fromCharCode(current_command) +
                         " near '" + pathToParse.substr(current_command_pos) + "'";
-                  if (inConvertCubics && prev.getType() == PathSegmentType.CUBIC)
+                  if (inConvertCubics && prev.getType() == SegmentType.CUBIC)
                   {
                      var cubic : CubicSegment = cast prev;
                      var quads = cubic.toQuadratics(px, py);
@@ -218,7 +218,7 @@ class PathParser
     function prevCX() : Float return prev != null ? prev.prevCX() : 0;
     function prevCY() : Float return prev != null ? prev.prevCY() : 0;
     
-    function createCommand(code:Int, a:Array<Float>) : PathSegment
+    function createCommand(code:Int, a:Array<Float>) : Segment
     {
         switch (code)
         {

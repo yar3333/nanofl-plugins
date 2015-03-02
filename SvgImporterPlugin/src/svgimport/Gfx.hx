@@ -18,7 +18,7 @@ class Gfx
 	public function lineTo(x:Float, y:Float) { }
 	public function curveTo(cx:Float, cy:Float, x:Float, y:Float) { }
 
-	public function renderText(text:Text) { }
+	public function renderText(text:SvgText) { }
 
 	public function eof() {}
 }

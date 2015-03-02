@@ -1,6 +1,6 @@
 package svgimport;
 
-class PathSegment
+class Segment
 {
 	public var x : Float;
 	public var y : Float;
@@ -11,7 +11,7 @@ class PathSegment
 		y = inY;
 	}
 	
-	public function getType() : PathSegmentType return null;
+	public function getType() : SegmentType return null;
 
 	public function prevX() return x;
 	public function prevY() return y;
@@ -27,12 +27,12 @@ class PathSegment
 	}
 }
 
-class MoveSegment extends PathSegment
+class MoveSegment extends Segment
 {
-	override public function getType() return PathSegmentType.MOVE;
+	override public function getType() return SegmentType.MOVE;
 }
 
-class DrawSegment extends PathSegment
+class DrawSegment extends Segment
 {
 	override public function toGfx(inGfx:Gfx, ioContext:RenderContext)
 	{
@@ -40,10 +40,10 @@ class DrawSegment extends PathSegment
 		inGfx.lineTo(ioContext.lastX, ioContext.lastY);
 	}
 
-	override public function getType() return PathSegmentType.DRAW;
+	override public function getType() return SegmentType.DRAW;
 }
 
-class QuadraticSegment extends PathSegment
+class QuadraticSegment extends Segment
 {
 	public var cx : Float;
 	public var cy : Float;
@@ -65,10 +65,10 @@ class QuadraticSegment extends PathSegment
 						  ioContext.lastX, ioContext.lastY);
 	}
 
-	override public function getType() return PathSegmentType.CURVE;
+	override public function getType() return SegmentType.CURVE;
 }
 
-class CubicSegment extends PathSegment
+class CubicSegment extends Segment
 {
 	public var cx1 : Float;
 	public var cy1 : Float;
@@ -199,10 +199,10 @@ class CubicSegment extends PathSegment
 		return result;
 	}
 	
-	override public function getType() return PathSegmentType.CUBIC;
+	override public function getType() return SegmentType.CUBIC;
 }
 
-class ArcSegment extends PathSegment
+class ArcSegment extends Segment
 {
 	var x1 : Float;
 	var y1 : Float;
@@ -340,7 +340,7 @@ class ArcSegment extends PathSegment
 		inGfx.lineTo(ioContext.lastX, ioContext.lastY);
 	}
 	
-	override public function getType() return PathSegmentType.ARC;
+	override public function getType() return SegmentType.ARC;
 }
 
 

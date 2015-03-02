@@ -1,6 +1,6 @@
 package svgimport;
 
-class Path
+class SvgPath
 {
 	public var matrix : Matrix;
 	public var name : String;
@@ -14,7 +14,7 @@ class Path
 	public var joint_style : JointStyle;
 	public var miter_limit : Float;
 
-	public var segments : Array<PathSegment>;
+	public var segments : Array<Segment>;
 	
 	public function new() { }
 }

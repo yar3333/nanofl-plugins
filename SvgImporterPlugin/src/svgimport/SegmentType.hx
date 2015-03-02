@@ -1,6 +1,6 @@
 package svgimport;
 
-enum PathSegmentType 
+enum SegmentType 
 {
 	MOVE;
 	DRAW;

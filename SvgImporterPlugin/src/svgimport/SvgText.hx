@@ -2,7 +2,7 @@ package svgimport;
 
 import models.common.geom.Matrix;
 
-class Text
+class SvgText
 {
    public var name : String;
    public var x : Float;
