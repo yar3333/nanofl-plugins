@@ -7,7 +7,7 @@ import models.common.geom.Polygon;
 import models.common.geom.StrokeEdge;
 import models.common.strokes.IStroke;
 
-class ContoursExporter implements IContoursExporter
+class ContoursExporter
 {
 	var isInFill = false;
 	

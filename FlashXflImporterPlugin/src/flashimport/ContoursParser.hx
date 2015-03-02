@@ -62,7 +62,7 @@ class ContoursParser
 		cleanEdgeMap(lineEdgeMap);
 	}
 	
-	public function parse(handler:IContoursExporter)
+	public function parse(handler:ContoursExporter)
 	{
 		handler.beginShape();
 		
@@ -188,7 +188,7 @@ class ContoursParser
 		return null;
 	}
 	
-	function exportFillPath(handler:IContoursExporter)
+	function exportFillPath(handler:ContoursExporter)
 	{
 		var path = createPathFromEdgeMap(fillEdgeMap);
 		var pos = { x:FLOAT_MAX_VALUE, y:FLOAT_MAX_VALUE };
@@ -238,7 +238,7 @@ class ContoursParser
 		}
 	}
 	
-	function exportLinePath(handler:IContoursExporter)
+	function exportLinePath(handler:ContoursExporter)
 	{
 		var path = createPathFromEdgeMap(lineEdgeMap);
 		var pos = { x:FLOAT_MAX_VALUE, y:FLOAT_MAX_VALUE };
