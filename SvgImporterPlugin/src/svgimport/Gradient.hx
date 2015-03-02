@@ -3,9 +3,9 @@ package svgimport;
 class Gradient
 {
 	public var type : GradientType;
-	public var colors : Array<UInt>;
+	public var colors : Array<String>;
 	public var alphas : Array<Float>;
-	public var ratios : Array<Int>;
+	public var ratios : Array<Float>;
 	public var matrix : Matrix;
 	public var spread : SpreadMethod;
 	public var interp : InterpolationMethod;

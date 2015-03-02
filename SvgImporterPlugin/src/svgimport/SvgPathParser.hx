@@ -49,7 +49,9 @@ class SvgPathParser
 
     public function parse(pathToParse:String) : Array<Segment>
 	{
-        lastMoveX = lastMoveY = 0;
+        trace("\t\t\t\tPathParser");
+		
+		lastMoveX = lastMoveY = 0;
         var pos=0;
         var args = new Array<Float>();
         var segments = new Array<Segment>();
@@ -61,11 +63,11 @@ class SvgPathParser
 
         var len = pathToParse.length;
         var finished = false;
-        while(pos<=len)
+        while (pos <= len)
         {
             var code = pos == len ? 32 : pathToParse.charCodeAt(pos);
             var command = (code>0 && code<128) ? sCommandArgs[code] : UNKNOWN;
-
+			
             if (command == UNKNOWN)
                throw("failed parsing path near '"+pathToParse.substr(pos)+"'");
  
@@ -73,71 +75,67 @@ class SvgPathParser
             {
                pos++;
             }
-            else if (command<=FLOAT)
+            else if (command <= FLOAT)
             {
-               var end = pos+1;
-               var e_pos = -1;
-               var seen_dot = command == FLOAT_DOT;
-               if (command == FLOAT_EXP)
-               {
-                  e_pos = 0;
-                  seen_dot = true;
-               }
-               while(end<pathToParse.length)
-               {
-                  var ch = pathToParse.charCodeAt(end);
-                  var code =  ch<0 || ch>127 ? UNKNOWN :sCommandArgs[ch];
-                  if (code>FLOAT)
-                     break;
-                  if (code == FLOAT_DOT && seen_dot)
-                     break;
-                  if (e_pos>=0)
-                  {
-                     if (code == FLOAT_SIGN)
-                     {
-                        if (e_pos != 0)
-                           break;
-                     }
-                     else if (code != FLOAT)
-                        break;
-                     e_pos++;
-                  }
-                  else if (code == FLOAT_EXP)
-                  {
-                     if (e_pos>=0)
-                        break;
-                     e_pos = 0;
-                     seen_dot = true;
-                  }
-                  else if (code == FLOAT_SIGN)
-                    break;
-                  end++;
-               }
-               if (current_command<0)
-               {
-                  //throw "Too many numbers near '" +
-                     //pathToParse.substr(current_command_pos) + "'";
-               }
-               else
-               {
-                  var f = Std.parseFloat(pathToParse.substr(pos, end-pos));
-                  args.push(f);
-               }
-               pos = end;
+				var end = pos + 1;
+				var e_pos = -1;
+				var seen_dot = command == FLOAT_DOT;
+				
+				if (command == FLOAT_EXP)
+				{
+					e_pos = 0;
+					seen_dot = true;
+				}
+				
+				while (end < pathToParse.length)
+				{
+					var ch = pathToParse.charCodeAt(end);
+					var code =  ch<0 || ch>127 ? UNKNOWN : sCommandArgs[ch];
+					if (code > FLOAT) break;
+					if (code == FLOAT_DOT && seen_dot) break;
+					if (e_pos>=0)
+					{
+						if (code == FLOAT_SIGN)
+						{
+							if (e_pos != 0) break;
+						}
+						else if (code != FLOAT) break;
+						e_pos++;
+					}
+					else if (code == FLOAT_EXP)
+					{
+						if (e_pos >= 0) break;
+						e_pos = 0;
+						seen_dot = true;
+					}
+					else if (code == FLOAT_SIGN) break;
+					end++;
+				}
+				if (current_command<0)
+				{
+					//throw "Too many numbers near '" +
+                    //pathToParse.substr(current_command_pos) + "'";
+				}
+				else
+				{
+					var f = Std.parseFloat(pathToParse.substr(pos, end-pos));
+					args.push(f);
+				}
+				pos = end;
             }
             else
             {
-               current_command = code;
-               current_args = command;
-               finished = false;
-               current_command_pos = pos;
-               args = [];
-               pos++;
+				current_command = code;
+				current_args = command;
+				finished = false;
+				current_command_pos = pos;
+				args = [];
+				pos++;
             }
 
             var px : Float = 0.0;
             var py : Float = 0.0;
-            if (current_command>=0)
+            if (current_command >= 0)
             {
 				if (current_args == args.length)
 				{
@@ -151,10 +149,8 @@ class SvgPathParser
 						current_args = -1;
 						current_command = -1;
 					}
-					else if (current_command == MOVE)
-						current_command = LINE;
-					else if (current_command == MOVER)
-						current_command = LINER;
+					else if (current_command == MOVE) current_command = LINE;
+					else if (current_command == MOVER) current_command = LINER;
 					
 					current_command_pos = pos;
 					args = [];
@@ -170,31 +166,31 @@ class SvgPathParser
         return segments;
     }
     
-    function commandArgs(inCode:Int) : Int
+    function commandArgs(code:Int) : Int
     {
-       if (inCode == 10) return SEPARATOR;
+		if (code == 10) return SEPARATOR;
 		
-       var str = String.fromCharCode(inCode).toUpperCase();
-       if (str >= "0" && str <= "9") return FLOAT;
+		var str = String.fromCharCode(code).toUpperCase();
+		if (str >= "0" && str <= "9") return FLOAT;
 		
-       switch (str)
-       {
-           case "Z":					return 0;
-           case "H","V":				return 1;
-           case "M","L","T":			return 2;
-           case "S","Q":				return 4;
-           case "C":					return 6;
-           case "A":					return 7;
-           case "\t","\n"," ","\r",",": return SEPARATOR;
-           case "-":					return FLOAT_SIGN;
-           case "+":					return FLOAT_SIGN;
-           case "E","e": 				return FLOAT_EXP;
-           case ".": 					return FLOAT_DOT;
+		switch (str)
+		{
+			case "Z":						return 0;
+			case "H","V":					return 1;
+			case "M","L","T":				return 2;
+			case "S","Q":					return 4;
+			case "C":						return 6;
+			case "A":						return 7;
+			case "\t","\n"," ","\r",",": 	return SEPARATOR;
+			case "-":						return FLOAT_SIGN;
+			case "+":						return FLOAT_SIGN;
+			case "E","e": 					return FLOAT_EXP;
+			case ".": 						return FLOAT_DOT;
 		}
 		
 		return UNKNOWN;
     }
-
+	
     function prevX() : Float return prev != null ? prev.prevX() : 0;
     function prevY() : Float return prev != null ? prev.prevY() : 0;
     function prevCX() : Float return prev != null ? prev.prevCX() : 0;
@@ -253,11 +249,11 @@ class SvgPathParser
 				return new ArcSegment(rx, ry, a[0], a[1], a[2], a[3] != 0., a[4] != 0., a[5]+rx, a[6]+ry);
 			case CLOSE:
 				return new DrawSegment(lastMoveX, lastMoveY);
-
+				
 			case CLOSER:
 				return new DrawSegment(lastMoveX, lastMoveY);
         }
-
+		
         return null;
     }
 }

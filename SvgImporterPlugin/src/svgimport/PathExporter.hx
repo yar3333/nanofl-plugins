@@ -7,15 +7,12 @@ import models.common.geom.Polygon;
 import models.common.geom.StrokeEdge;
 import models.common.strokes.IStroke;
 
-class ContoursExporter
+class PathExporter
 {
 	var isInFill = false;
 	
-	var strokes = new Array<IStroke>();
-	var fills = new Array<IFill>();
-	
-	public var edges(default, null) = new Array<StrokeEdge>();
-	public var polygons(default, null) = new Array<Polygon>();
+	var edges(default, null) = new Array<StrokeEdge>();
+	var polygons(default, null) = new Array<Polygon>();
 	
 	var stroke : IStroke = null;
 	
@@ -24,15 +21,15 @@ class ContoursExporter
 	
 	public function new() { }
 	
-	public function beginFill(n:Int)
+	public function beginFill(fill:IFill)
 	{
 		isInFill = true;
-		polygons.push(new Polygon(fills[n]));
+		polygons.push(new Polygon(fill));
 	}
 	
 	public function endFill() isInFill = false;
 
-	public function beginStroke(n:Int) stroke = strokes[n];
+	public function beginStroke(stroke:IStroke) this.stroke = stroke;
 	public function endStroke() { }
 	
 	public function moveTo(x:Float, y:Float) : Void

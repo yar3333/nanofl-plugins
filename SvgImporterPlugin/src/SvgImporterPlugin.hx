@@ -10,6 +10,7 @@ import models.common.FileApi;
 import models.common.Library;
 import models.common.Plugins;
 import models.common.plugins.IImporterPlugin;
+import svgimport.PathExporter;
 import svgimport.FillType;
 import svgimport.Segment;
 import svgimport.SegmentType;
@@ -34,13 +35,21 @@ class SvgImporterPlugin implements IImporterPlugin
 	public function importDocument(fileApi:FileApi, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, fonts:Array<String>, callb:Bool->Void)
 	{
 		var xml = Xml.parse(fileApi.getContent(srcFilePath));
-		library.addItem(load(xml, Library.SCENE_NAME_PATH));
+		var scene = load(xml, Library.SCENE_NAME_PATH);
+		
+		var out = new models.common.XmlWriter();
+		scene.saveToXml(out);
+		trace(out.toString());
+		
+		library.addItem(scene);
 		callb(true);
 	}
 	
 	public function load(xml:Xml, namePath:String) : MovieClipItem
 	{
 		var svg = new Svg(xml);
+		
+		trace("svg.children = " + svg.children.length);
 		
 		var r = new MovieClipItem(namePath);
 		
@@ -102,7 +111,7 @@ class SvgImporterPlugin implements IImporterPlugin
 			{
 				case SvgElement.DisplayGroup(group):
 					var r = new GroupElement(loadElements(group));
-					//r.name = group.name;
+					r.name = group.name;
 					return r;
 					
 				case SvgElement.DisplayPath(path):
@@ -116,37 +125,10 @@ class SvgImporterPlugin implements IImporterPlugin
 	
 	function loadShape(path:SvgPath) : ShapeElement
 	{
-		if (path.fill == FillType.FillNone)
-		{
-			var x = 0.0;
-			var y = 0.0;
-			
-			for (segment in path.segments)
-			{
-				/*switch (segment.getType())
-				{
-					case SegmentType.
-				}*/
-			}
-			
-			
-		}
-		else
-		{
-			
-		}
-		
-		for (segment in path.segments)
-		{
-			/*switch (segment.getType())
-			{
-				case svgimport.PathSegmentType.MOVE:
-					var seg : MoveSegment = cast segment;
-					seg.
-			}*/
-		}
-		
-		return new ShapeElement();
+		var exporter = new PathExporter();
+		path.export(exporter);
+		var edgesAndPolygons = exporter.export();
+		return new ShapeElement(edgesAndPolygons.edges, edgesAndPolygons.polygons);
 	}
 	
 	function loadText(text:SvgText) : TextElement

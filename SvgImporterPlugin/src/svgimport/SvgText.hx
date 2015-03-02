@@ -1,23 +1,27 @@
 package svgimport;
 
-import models.common.geom.Matrix;
-
 class SvgText
 {
    public var name : String;
+   
    public var x : Float;
    public var y : Float;
    public var matrix : Matrix;
+   
    public var text : String;
+   
    public var fill : FillType;
-   public var fill_alpha : Float;
-   public var stroke_alpha : Float;
-   public var stroke_colour : Null<Int>;
-   public var stroke_width : Float;
-   public var font_family : String;
-   public var font_size : Float;
+   public var fillAlpha : Float;
+   
+   public var strokeAlpha : Float;
+   public var strokeColor : String;
+   public var strokeWidth : Float;
+   
+   public var fontFamily : String;
+   public var fontSize : Float;
+   
    public var kerning : Float;
-   public var letter_spacing : Float;
+   public var letterSpacing : Float;
    
    public function new() { }
 }

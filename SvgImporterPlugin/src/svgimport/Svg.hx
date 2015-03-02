@@ -12,25 +12,27 @@ class Svg extends SvgGroup
 	private static var mScaleMatch = ~/scale\((.*)\)/;
 	private static var mMatrixMatch = ~/matrix\((.*)[, ](.*)[, ](.*)[, ](.*)[, ](.*)[, ](.*)\)/;
 	private static var mURLMatch = ~/url\(#(.*)\)/;
-	private static var defaultFill = FillType.FillSolid(0x000000);
+	private static var defaultFill = FillType.FillSolid("#000000");
 	
 	public var height(default, null) : Float;
 	public var width(default, null) : Float;
-
-	private var mGrads : Map<String, Grad>;
-	private var mPathParser : SvgPathParser;
 	
-	public function new(inXML:Xml)
+	private var gradients : Map<String, Grad>;
+	private var pathParser : SvgPathParser;
+	
+	public function new(xml:Xml)
 	{
 		super();
 		
-		var svg = inXML.firstElement();
+		var svg = xml.firstElement();
 		
 		if (svg == null || (svg.nodeName != "svg" && svg.nodeName != "svg:svg"))
+		{
 			throw "Not an SVG file (" + (svg == null ? "null" : svg.nodeName) + ")";
+		}
 		
-		mGrads = new Map<String, Grad>();
-		mPathParser = new SvgPathParser();
+		gradients = new Map<String, Grad>();
+		pathParser = new SvgPathParser();
 		
 		width = getFloatStyle("width", svg, null, 0.0);
 		height = getFloatStyle("height", svg, null, 0.0);
@@ -41,28 +43,28 @@ class Svg extends SvgGroup
 			width = height;
 		else if (height == 0)
 			height = width;
-
+		
 		loadGroup(this, svg, new Matrix(), null);
 	}
 	
-	private function applyTransform(ioMatrix:Matrix, inTrans:String) : Float
+	private function applyTransform(matrix:Matrix, trans:String) : Float
 	{
 		var scale = 1.0;
 		
-		if (mTranslateMatch.match(inTrans))
+		if (mTranslateMatch.match(trans))
 		{
 			// TODO: Pre-translate
 			
-			ioMatrix.translate(Std.parseFloat(mTranslateMatch.matched(1)), Std.parseFloat(mTranslateMatch.matched(2)));
+			matrix.translate(Std.parseFloat(mTranslateMatch.matched(1)), Std.parseFloat(mTranslateMatch.matched(2)));
 		}
-		else if (mScaleMatch.match(inTrans))
+		else if (mScaleMatch.match(trans))
 		{
 			// TODO: Pre-scale
 			var s = Std.parseFloat(mScaleMatch.matched (1));
-			ioMatrix.scale (s, s);
+			matrix.scale (s, s);
 			scale = s;
 		}
-		else if (mMatrixMatch.match(inTrans))
+		else if (mMatrixMatch.match(trans))
 		{
 			
 			var m = new Matrix
@@ -75,20 +77,20 @@ class Svg extends SvgGroup
 				Std.parseFloat(mMatrixMatch.matched(6))
 			);
 			
-			m.appendMatrix(ioMatrix);
+			m.appendMatrix(matrix);
 			
-			ioMatrix.a = m.a;
-			ioMatrix.b = m.b;
-			ioMatrix.c = m.c;
-			ioMatrix.d = m.d;
-			ioMatrix.tx = m.tx;
-			ioMatrix.ty = m.ty;
+			matrix.a = m.a;
+			matrix.b = m.b;
+			matrix.c = m.c;
+			matrix.d = m.d;
+			matrix.tx = m.tx;
+			matrix.ty = m.ty;
 			
-			scale = Math.sqrt(ioMatrix.a * ioMatrix.a + ioMatrix.c * ioMatrix.c);
+			scale = Math.sqrt(matrix.a * matrix.a + matrix.c * matrix.c);
 		}
 		else
 		{
-			trace("Warning, unknown transform:" + inTrans);
+			trace("Warning, unknown transform:" + trans);
 		}
 		
 		return scale;
@@ -101,42 +103,39 @@ class Svg extends SvgGroup
 		
 		for (e in g.children) {
 			
-			switch (e) {
-				
-				case DisplayPath(path) : trace (indent + "Path" + "  " + path.matrix);
-				case DisplayGroup(group) : dumpGroup (group, indent+"   ");
-				case DisplayText(text) : trace (indent + "Text " + text.text);
+			switch (e)
+			{
+				case SvgElement.DisplayPath(path) : trace (indent + "Path" + "  " + path.matrix);
+				case SvgElement.DisplayGroup(group) : dumpGroup (group, indent+"   ");
+				case SvgElement.DisplayText(text) : trace (indent + "Text " + text.text);
 			}
 		}
 	}
 	
-	private function getColorStyle(inKey:String, inNode:Xml, inStyles:Map<String, String>, inDefault:Int)
+	private function getColorStyle(key:String, node:Xml, styles:Map<String, String>, defaultValue:String) : String
 	{
-		var s = getStyle(inKey, inNode, inStyles, "");
-		
-		if (s == "") return inDefault;
-		if (s.charAt(0) == '#') return Std.parseInt("0x" + s.substr(1));
-		
-		return Std.parseInt(s);
+		var s = getStyle(key, node, styles, defaultValue);
+		return s;
 	}
 	
-	private function getFillStyle (inKey:String, inNode:Xml, inStyles:Map<String, String>)
+	private function getFillStyle (key:String, node:Xml, styles:Map<String, String>) : FillType
 	{
-		var s = getStyle(inKey, inNode, inStyles, "");
+		var s = getStyle(key, node, styles, "");
 		
 		if (s == "") return defaultFill;
-		if (s.charAt (0) == '#') return FillSolid(Std.parseInt("0x" + s.substr(1)));
-		if (s == "none") return FillNone;
+		if (s.charAt (0) == '#') return FillType.FillSolid(s);
+		if (s == "none") return FillType.FillNone;
 		
 		if (mURLMatch.match(s))
 		{
 			var url = mURLMatch.matched(1);
-			if (mGrads.exists(url)) return FillGrad(mGrads.get(url));
+			if (gradients.exists(url)) return FillType.FillGrad(gradients.get(url));
 			throw "Unknown url:" + url;
 		}
 		
-		throw "Unknown fill string:" + s;
-		return FillNone;
+		//throw "Unknown fill string:" + s;
+		trace("Unknown fill string '" + s + "'.");
+		return FillType.FillNone;
 	}
 	
 	private function getFloat(inXML:Xml, inName:String, inDef=0.0) : Float
@@ -145,50 +144,45 @@ class Svg extends SvgGroup
 	}
 	
 	
-	private function getFloatStyle(inKey:String, inNode:Xml, inStyles:Map<String, String>, inDefault:Float)
+	private function getFloatStyle(key:String, node:Xml, inStyles:Map<String, String>, defaultValue:Float)
 	{
-		var s = getStyle(inKey, inNode, inStyles, "");
-		if (s == "") return inDefault;
+		var s = getStyle(key, node, inStyles, "");
+		if (s == "") return defaultValue;
 		return Std.parseFloat(s);
 	}
 	
 
-	private function getStrokeStyle (inKey:String, inNode:Xml, inStyles:Map<String, String>, inDefault:Null<Int>)
+	private function getStrokeStyle(key:String, node:Xml, styles:Map<String, String>, defaultValue:String) : String
 	{
-		var s = getStyle(inKey, inNode, inStyles, "");
-		
-		if (s == "") return inDefault;
+		var s = getStyle(key, node, styles, defaultValue);
 		if (s == "none") return null;
-		if (s.charAt (0) == '#') return Std.parseInt("0x" + s.substr (1));
-		
-		return Std.parseInt(s);
+		return s;
 	}
 	
 	
-	private function getStyle(inKey:String, inNode:Xml, inStyles:Map<String, String>, inDefault:String)
+	private function getStyle(key:String, node:Xml, styles:Map<String, String>, defaultValue:String) : String
 	{
-		if (inNode != null && inNode.exists(inKey)) return inNode.get(inKey);
-		if (inStyles != null && inStyles.exists(inKey)) return inStyles.get(inKey);
-		
-		return inDefault;
+		if (node != null && node.exists(key)) return node.get(key);
+		if (styles != null && styles.exists(key)) return styles.get(key);
+		return defaultValue;
 	}
 	
 	
-	private function getStyles (inNode:Xml, inPrevStyles:Map<String, String>) : Map<String, String>
+	private function getStyles(node:Xml, prevStyles:Map<String, String>) : Map<String, String>
 	{
-		if (!inNode.exists("style")) return inPrevStyles;
+		if (!node.exists("style")) return prevStyles;
 		
 		var styles = new Map<String, String>();
 		
-		if (inPrevStyles != null)
+		if (prevStyles != null)
 		{
-			for (s in inPrevStyles.keys())
+			for (s in prevStyles.keys())
 			{
-				styles.set(s, inPrevStyles.get(s));
+				styles.set(s, prevStyles.get(s));
 			}
 		}
 		
-		var style = inNode.get("style");
+		var style = node.get("style");
 		var strings = mStyleSplit.split(style);
 		
 		for (s in strings)
@@ -231,18 +225,18 @@ class Svg extends SvgGroup
 	}
 	
 	
-	private function loadGradient(inGrad:Xml, inType:GradientType, inCrossLink:Bool)
+	private function loadGradient(gradientNode:Xml, type:GradientType, crossLink:Bool)
 	{
-		var name = inGrad.get("id");
-		var grad = new Grad(inType);
+		var name = gradientNode.get("id");
+		var grad = new Grad(type);
 		
-		if (inCrossLink && inGrad.exists("xlink:href"))
+		if (crossLink && gradientNode.exists("xlink:href"))
 		{
-			var xlink = inGrad.get("xlink:href");
+			var xlink = gradientNode.get("xlink:href");
 			
 			if (xlink.charAt(0) != "#") throw "xlink - unkown syntax : " + xlink;
 			
-			var base = mGrads.get(xlink.substr(1));
+			var base = gradients.get(xlink.substr(1));
 			
 			if (base != null)
 			{
@@ -260,106 +254,110 @@ class Svg extends SvgGroup
 			}
 		}
 
-		if (inGrad.exists("x1"))
+		if (gradientNode.exists("x1"))
 		{
 		
-			grad.x1 = getFloat(inGrad, "x1");
-			grad.y1 = getFloat(inGrad, "y1");
-			grad.x2 = getFloat(inGrad, "x2");
-			grad.y2 = getFloat(inGrad, "y2");
+			grad.x1 = getFloat(gradientNode, "x1");
+			grad.y1 = getFloat(gradientNode, "y1");
+			grad.x2 = getFloat(gradientNode, "x2");
+			grad.y2 = getFloat(gradientNode, "y2");
 		}
 		else
 		{
-			grad.x1 = getFloat(inGrad, "cx");
-			grad.y1 = getFloat(inGrad, "cy");
-			grad.x2 = getFloat(inGrad, "fx", grad.x1);
-			grad.y2 = getFloat(inGrad, "fy", grad.y1);
+			grad.x1 = getFloat(gradientNode, "cx");
+			grad.y1 = getFloat(gradientNode, "cy");
+			grad.x2 = getFloat(gradientNode, "fx", grad.x1);
+			grad.y2 = getFloat(gradientNode, "fy", grad.y1);
 		}
 
-		grad.radius = getFloat(inGrad, "r");
+		grad.radius = getFloat(gradientNode, "r");
 		
-		if (inGrad.exists("gradientTransform"))
+		if (gradientNode.exists("gradientTransform"))
 		{
-			applyTransform(grad.gradMatrix, inGrad.get("gradientTransform"));
+			applyTransform(grad.gradMatrix, gradientNode.get("gradientTransform"));
 		}
 		
 		// todo - grad.spread = base.spread;
 
-		for (stop in inGrad.elements())
+		for (stop in gradientNode.elements())
 		{
 			var styles = getStyles(stop, null);
 			
-			grad.colors.push(getColorStyle("stop-color", stop, styles, 0x000000));
+			grad.colors.push(getColorStyle("stop-color", stop, styles, "#000000"));
 			grad.alphas.push(getFloatStyle("stop-opacity", stop, styles, 1.0));
 			grad.ratios.push(Std.int(Std.parseFloat(stop.get("offset")) * 255.0));
 		}
 		
-		mGrads.set(name, grad);
+		gradients.set(name, grad);
 	}
 	
 	
-	public function loadGroup(g:SvgGroup, inG:Xml, matrix:Matrix, inStyles:Map<String, String>) : SvgGroup
+	public function loadGroup(g:SvgGroup, groupNode:Xml, matrix:Matrix, prevStyles:Map<String, String>) : SvgGroup
 	{
-		if (inG.exists("transform"))
+		trace("loadGroup");
+		
+		if (groupNode.exists("transform"))
 		{
 			matrix = matrix.clone();
-			applyTransform (matrix, inG.get("transform"));
+			applyTransform(matrix, groupNode.get("transform"));
 		}
 		
-		if (inG.exists("inkscape:label"))
+		if (g.name == null || g.name == "")
 		{
-			g.name = inG.get("inkscape:label");
-		}
-		else if (inG.exists("id"))
-		{
-			g.name = inG.get("id");
+			if (groupNode.exists("inkscape:label"))
+			{
+				g.name = groupNode.get("inkscape:label");
+			}
+			else if (groupNode.exists("id"))
+			{
+				g.name = groupNode.get("id");
+			}
 		}
 		
-		var styles = getStyles (inG, inStyles);
+		var styles = getStyles(groupNode, prevStyles);
 		
-		for (el in inG.elements ())
+		for (el in groupNode.elements())
 		{
 			var name = el.nodeName;
 			
-			if (name.substr (0, 4) == "svg:")
-			{
-				name = name.substr(4);
-			}
-
+			if (name.substr(0, 4) == "svg:") name = name.substr(4);
+			
+			trace("\t" + name);
+			
 			if (name == "defs")
 			{
-				loadDefs (el);
+				loadDefs(el);
 			}
 			else if (name == "g")
 			{
 				if (!(el.exists("display") && el.get("display") == "none"))
 				{
-					g.children.push(DisplayGroup(loadGroup(new SvgGroup(), el, matrix, styles)));
+					g.children.push(SvgElement.DisplayGroup(loadGroup(new SvgGroup(), el, matrix, styles)));
 				}
 			}
 			else if (name == "path" || name == "line" || name == "polyline")
 			{
-				g.children.push(DisplayPath(loadPath(el, matrix, styles, false, false)));
+				g.children.push(SvgElement.DisplayPath(loadPath(el, matrix, styles, false, false)));
 			}
 			else if (name == "rect")
 			{
-				g.children.push(DisplayPath(loadPath(el, matrix, styles, true, false)));
+				g.children.push(SvgElement.DisplayPath(loadPath(el, matrix, styles, true, false)));
 			}
 			else if (name == "polygon")
 			{
-				g.children.push(DisplayPath(loadPath(el, matrix, styles, false, false)));
+				g.children.push(SvgElement.DisplayPath(loadPath(el, matrix, styles, false, false)));
 			}
 			else if (name == "ellipse")
 			{
-				g.children.push(DisplayPath(loadPath(el, matrix, styles, false, true)));
+				g.children.push(SvgElement.DisplayPath(loadPath(el, matrix, styles, false, true)));
 			}
 			else if (name == "circle")
 			{
-				g.children.push(DisplayPath(loadPath(el, matrix, styles, false, true, true)));
+				g.children.push(SvgElement.DisplayPath(loadPath(el, matrix, styles, false, true, true)));
 			}
 			else if (name == "text")
 			{
-				g.children.push(DisplayText(loadText (el, matrix, styles)));
+				g.children.push(SvgElement.DisplayText(loadText(el, matrix, styles)));
 			}
 			else if (name == "linearGradient")
 			{
@@ -369,9 +367,13 @@ class Svg extends SvgGroup
 			{
 				loadGradient(el, GradientType.RADIAL, true);
 			}
+			else if (name == "a")
+			{
+				loadGroup(this, el, matrix, styles);
+			}
 			else
 			{
-				// throw "Unknown child : " + el.nodeName;
+				trace("Unknown tag '" + name+"'.");
 			}
 		}
 		
@@ -379,40 +381,50 @@ class Svg extends SvgGroup
 	}
 	
 	
-	public function loadPath(inPath:Xml, matrix:Matrix, inStyles:Map<String, String>, inIsRect:Bool, inIsEllipse:Bool, inIsCircle=false) : SvgPath
+	public function loadPath(pathNode:Xml, matrix:Matrix, prevStyles:Map<String, String>, isRect:Bool, isEllipse:Bool, isCircle=false) : SvgPath
 	{
-		if (inPath.exists("transform"))
+		trace("\t\tloadPath isRect = " + isRect + "; isEllipse = " + isEllipse+"; isCircle = " + isCircle);
+		
+		if (pathNode.exists("transform"))
 		{
 			matrix = matrix.clone();
-			applyTransform(matrix, inPath.get("transform"));
+			applyTransform(matrix, pathNode.get("transform"));
 		}
 		
-		var styles = getStyles (inPath, inStyles);
-		var name = inPath.exists("id") ? inPath.get("id") : "";
+		trace("\t\t\t(1)");
+		var styles = getStyles(pathNode, prevStyles);
+		var name = pathNode.exists("id") ? pathNode.get("id") : "";
 		
 		var path = new SvgPath();
 		
-		path.fill = getFillStyle ("fill", inPath, styles);
-		path.alpha = getFloatStyle("opacity", inPath, styles, 1.0);
-		path.fill_alpha = getFloatStyle("fill-opacity", inPath, styles, 1.0);
-		path.stroke_alpha = getFloatStyle("stroke-opacity", inPath, styles, 1.0);
-		path.stroke_colour = getStrokeStyle ("stroke", inPath, styles, null);
-		path.stroke_width = getFloatStyle("stroke-width", inPath, styles, 1.0);
-		path.stroke_caps = CapsStyle.ROUND;
-		path.joint_style = JointStyle.ROUND;
-		path.miter_limit = getFloatStyle("stroke-miterlimit", inPath, styles, 3.0);
+		trace("\t\t\t(2)");
+		path.alpha = getFloatStyle("opacity", pathNode, styles, 1.0);
+		trace("\t\t\t(3)");
+		path.fill = getFillStyle("fill", pathNode, styles);
+		trace("\t\t\t(4)");
+		path.fillAlpha = getFloatStyle("fill-opacity", pathNode, styles, 1.0);
+		trace("\t\t\t(5)");
+		path.strokeAlpha = getFloatStyle("stroke-opacity", pathNode, styles, 1.0);
+		trace("\t\t\t(6)");
+		path.strokeColor = getStrokeStyle("stroke", pathNode, styles, null);
+		trace("\t\t\t(7)");
+		path.strokeWidth = getFloatStyle("stroke-width", pathNode, styles, 1.0);
+		trace("\t\t\t(8)");
+		path.strokeCaps = "round";
+		path.strokeJoints = "round";
+		path.strokeMiterLimit = getFloatStyle("stroke-miterlimit", pathNode, styles, 3.0);
 		path.segments = [];
 		path.matrix = matrix;
 		path.name = name;
 
-		if (inIsRect)
+		if (isRect)
 		{
-			var x = inPath.exists("x") ? Std.parseFloat(inPath.get("x")) : 0;
-			var y = inPath.exists("y") ? Std.parseFloat(inPath.get("y")) : 0;
-			var w = Std.parseFloat(inPath.get("width"));
-			var h = Std.parseFloat(inPath.get("height"));
-			var rx = inPath.exists("rx") ? Std.parseFloat(inPath.get("rx")) : 0.0;
-			var ry = inPath.exists("ry") ? Std.parseFloat(inPath.get("ry")) : 0.0;
+			var x = pathNode.exists("x") ? Std.parseFloat(pathNode.get("x")) : 0;
+			var y = pathNode.exists("y") ? Std.parseFloat(pathNode.get("y")) : 0;
+			var w = Std.parseFloat(pathNode.get("width"));
+			var h = Std.parseFloat(pathNode.get("height"));
+			var rx = pathNode.exists("rx") ? Std.parseFloat(pathNode.get("rx")) : 0.0;
+			var ry = pathNode.exists("ry") ? Std.parseFloat(pathNode.get("ry")) : 0.0;
 			
 			if (rx == 0 || ry == 0)
 			{
@@ -443,15 +455,15 @@ class Svg extends SvgGroup
 				path.segments.push(new DrawSegment(x, y + ry));
 			}
 		}
-		else if (inIsEllipse)
+		else if (isEllipse)
 		{
-			var x = inPath.exists("cx") ? Std.parseFloat(inPath.get("cx")) : 0;
-			var y = inPath.exists("cy") ? Std.parseFloat(inPath.get("cy")) : 0;
-			var r = inIsCircle && inPath.exists("r") ? Std.parseFloat(inPath.get("r")) : 0.0;
-			var w = inIsCircle ? r : inPath.exists("rx") ? Std.parseFloat(inPath.get("rx")) : 0.0;
+			var x = pathNode.exists("cx") ? Std.parseFloat(pathNode.get("cx")) : 0;
+			var y = pathNode.exists("cy") ? Std.parseFloat(pathNode.get("cy")) : 0;
+			var r = isCircle && pathNode.exists("r") ? Std.parseFloat(pathNode.get("r")) : 0.0;
+			var w = isCircle ? r : pathNode.exists("rx") ? Std.parseFloat(pathNode.get("rx")) : 0.0;
 			var w_ = w * SIN45;
 			var cw_ = w * TAN22;
-			var h = inIsCircle ? r : inPath.exists("ry") ? Std.parseFloat(inPath.get("ry")) : 0.0;
+			var h = isCircle ? r : pathNode.exists("ry") ? Std.parseFloat(pathNode.get("ry")) : 0.0;
 			var h_ = h * SIN45;
 			var ch_ = h * TAN22;
 			
@@ -467,11 +479,12 @@ class Svg extends SvgGroup
 		}
 		else
 		{
-			var d = inPath.exists("points") ? ("M" + inPath.get("points") + "z") :
-					inPath.exists("x1") ? ("M" + inPath.get("x1") + "," + inPath.get("y1") + " " + inPath.get("x2") + "," + inPath.get("y2") + "z") :
-					inPath.get("d");
+			var d = pathNode.exists("points") ? ("M" + pathNode.get("points") + "z") :
+					pathNode.exists("x1") ? ("M" + pathNode.get("x1") + "," + pathNode.get("y1") + " " + pathNode.get("x2") + "," + pathNode.get("y2") + "z") :
+					pathNode.get("d");
 			
-			for (segment in mPathParser.parse(d))
+			trace("\t\t\tparse...");
+			for (segment in pathParser.parse(d))
 			{
 				path.segments.push(segment);
 			}
@@ -480,33 +493,33 @@ class Svg extends SvgGroup
 		return path;
 	}
 	
-	public function loadText(inText:Xml, matrix:Matrix, inStyles:Map<String, String>) : SvgText
+	public function loadText(textNode:Xml, matrix:Matrix, prevStyles:Map<String, String>) : SvgText
 	{
-		if (inText.exists("transform"))
+		if (textNode.exists("transform"))
 		{
 			matrix = matrix.clone();
-			applyTransform (matrix, inText.get("transform"));
+			applyTransform(matrix, textNode.get("transform"));
 		}
 		
-		var styles = getStyles(inText, inStyles);
+		var styles = getStyles(textNode, prevStyles);
 		var text = new SvgText();
 		
 		text.matrix = matrix;
-		text.name = inText.exists("id") ? inText.get("id") : "";
-		text.x = getFloat(inText, "x", 0.0);
-		text.y = getFloat(inText, "y", 0.0);
-		text.fill = getFillStyle("fill", inText, styles);
-		text.fill_alpha = getFloatStyle("fill-opacity", inText, styles, 1.0);
-		text.stroke_alpha = getFloatStyle("stroke-opacity", inText, styles, 1.0);
-		text.stroke_colour = getStrokeStyle("stroke", inText, styles, null);
-		text.stroke_width = getFloatStyle("stroke-width", inText, styles, 1.0);
-		text.font_family = getStyle("font-family", inText, styles, "");
-		text.font_size = getFloatStyle("font-size", inText, styles, 12);
-		text.letter_spacing = getFloatStyle("letter-spacing", inText, styles, 0);
-		text.kerning = getFloatStyle("kerning", inText, styles, 0);
+		text.name = textNode.exists("id") ? textNode.get("id") : "";
+		text.x = getFloat(textNode, "x", 0.0);
+		text.y = getFloat(textNode, "y", 0.0);
+		text.fill = getFillStyle("fill", textNode, styles);
+		text.fillAlpha = getFloatStyle("fill-opacity", textNode, styles, 1.0);
+		text.strokeAlpha = getFloatStyle("stroke-opacity", textNode, styles, 1.0);
+		text.strokeColor = getStrokeStyle("stroke", textNode, styles, null);
+		text.strokeWidth = getFloatStyle("stroke-width", textNode, styles, 1.0);
+		text.fontFamily = getStyle("font-family", textNode, styles, "");
+		text.fontSize = getFloatStyle("font-size", textNode, styles, 12);
+		text.letterSpacing = getFloatStyle("letter-spacing", textNode, styles, 0);
+		text.kerning = getFloatStyle("kerning", textNode, styles, 0);
 
 		text.text = "";
-		for (el in inText.elements())
+		for (el in textNode.elements())
 		{
 			text.text += el.toString();
 		}
