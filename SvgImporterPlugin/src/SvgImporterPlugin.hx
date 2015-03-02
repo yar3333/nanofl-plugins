@@ -10,7 +10,7 @@ import models.common.FileApi;
 import models.common.Library;
 import models.common.Plugins;
 import models.common.plugins.IImporterPlugin;
-import svgimport.PathExporter;
+import svgimport.SvgPathExporter;
 import svgimport.FillType;
 import svgimport.Segment;
 import svgimport.SegmentType;
@@ -36,11 +36,6 @@ class SvgImporterPlugin implements IImporterPlugin
 	{
 		var xml = Xml.parse(fileApi.getContent(srcFilePath));
 		var scene = load(xml, Library.SCENE_NAME_PATH);
-		
-		var out = new models.common.XmlWriter();
-		scene.saveToXml(out);
-		trace(out.toString());
-		
 		library.addItem(scene);
 		callb(true);
 	}
@@ -51,9 +46,8 @@ class SvgImporterPlugin implements IImporterPlugin
 		
 		trace("svg.children = " + svg.children.length);
 		
-		var r = new MovieClipItem(namePath);
-		
 		var lastLayerIsGlobal = false;
+		var layers = [];
 		
 		for (child in svg.children)
 		{
@@ -63,7 +57,7 @@ class SvgImporterPlugin implements IImporterPlugin
 					if (group.name != null && group.name != "")
 					{
 						lastLayerIsGlobal = false;
-						var frame = createLayerWithFrame(r, group.name);
+						var frame = createLayerWithFrame(layers, group.name);
 						for (elem in loadElements(group)) frame.addElement(elem);
 					}
 					else
@@ -71,10 +65,10 @@ class SvgImporterPlugin implements IImporterPlugin
 						if (!lastLayerIsGlobal)
 						{
 							lastLayerIsGlobal = true;
-							createLayerWithFrame(r, "auto_" + r.layers.length);
+							createLayerWithFrame(layers, "auto_" + layers.length);
 						}
 						
-						var frame = r.layers[r.layers.length - 1].keyFrames[0];
+						var frame = layers[layers.length - 1].keyFrames[0];
 						for (elem in loadElements(group)) frame.addElement(elem);
 					}
 					
@@ -82,24 +76,26 @@ class SvgImporterPlugin implements IImporterPlugin
 					if (!lastLayerIsGlobal)
 					{
 						lastLayerIsGlobal = true;
-						createLayerWithFrame(r, "auto_" + r.layers.length);
+						createLayerWithFrame(layers, "auto_" + layers.length);
 					}
 					
-					var frame = r.layers[r.layers.length - 1].keyFrames[0];
+					var frame = layers[layers.length - 1].keyFrames[0];
 					frame.addElement(new GroupElement([ loadShape(path) ]));
 					
 				case SvgElement.DisplayText(text):
 					if (!lastLayerIsGlobal)
 					{
 						lastLayerIsGlobal = true;
-						createLayerWithFrame(r, "auto_" + r.layers.length);
+						createLayerWithFrame(layers, "auto_" + layers.length);
 					}
 					
-					var frame = r.layers[r.layers.length - 1].keyFrames[0];
+					var frame = layers[layers.length - 1].keyFrames[0];
 					frame.addElement(loadText(text));
 			}
 		}
 		
+		var r = new MovieClipItem(namePath);
+		for (layer in layers) r.addLayer(layer);
 		return r;
 	}
 	
@@ -125,7 +121,7 @@ class SvgImporterPlugin implements IImporterPlugin
 	
 	function loadShape(path:SvgPath) : ShapeElement
 	{
-		var exporter = new PathExporter();
+		var exporter = new SvgPathExporter();
 		path.export(exporter);
 		var edgesAndPolygons = exporter.export();
 		return new ShapeElement(edgesAndPolygons.edges, edgesAndPolygons.polygons);
@@ -136,12 +132,12 @@ class SvgImporterPlugin implements IImporterPlugin
 		return new TextElement("", 10, 10, false, false, [], null);
 	}
 	
-	function createLayerWithFrame(parent:MovieClipItem, name:String) : KeyFrame
+	function createLayerWithFrame(parent:Array<Layer>, name:String) : KeyFrame
 	{
 		var layer = new Layer(name);
 		var keyFrame = new KeyFrame();
 		layer.addKeyFrame(keyFrame);
-		parent.addLayer(layer);
+		parent.unshift(layer);
 		return keyFrame;
 	}
 }

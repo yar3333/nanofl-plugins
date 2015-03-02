@@ -118,12 +118,13 @@ class Svg extends SvgGroup
 		return s;
 	}
 	
-	private function getFillStyle (key:String, node:Xml, styles:Map<String, String>) : FillType
+	private function getFillStyle(key:String, node:Xml, styles:Map<String, String>) : FillType
 	{
 		var s = getStyle(key, node, styles, "");
 		
+		trace("getFillStyle s = " + s);
+		
 		if (s == "") return defaultFill;
-		if (s.charAt (0) == '#') return FillType.FillSolid(s);
 		if (s == "none") return FillType.FillNone;
 		
 		if (mURLMatch.match(s))
@@ -133,9 +134,7 @@ class Svg extends SvgGroup
 			throw "Unknown url:" + url;
 		}
 		
-		//throw "Unknown fill string:" + s;
-		trace("Unknown fill string '" + s + "'.");
-		return FillType.FillNone;
+		return FillType.FillSolid(s);
 	}
 	
 	private function getFloat(inXML:Xml, inName:String, inDef=0.0) : Float
@@ -391,25 +390,17 @@ class Svg extends SvgGroup
 			applyTransform(matrix, pathNode.get("transform"));
 		}
 		
-		trace("\t\t\t(1)");
 		var styles = getStyles(pathNode, prevStyles);
 		var name = pathNode.exists("id") ? pathNode.get("id") : "";
 		
 		var path = new SvgPath();
 		
-		trace("\t\t\t(2)");
 		path.alpha = getFloatStyle("opacity", pathNode, styles, 1.0);
-		trace("\t\t\t(3)");
 		path.fill = getFillStyle("fill", pathNode, styles);
-		trace("\t\t\t(4)");
 		path.fillAlpha = getFloatStyle("fill-opacity", pathNode, styles, 1.0);
-		trace("\t\t\t(5)");
 		path.strokeAlpha = getFloatStyle("stroke-opacity", pathNode, styles, 1.0);
-		trace("\t\t\t(6)");
 		path.strokeColor = getStrokeStyle("stroke", pathNode, styles, null);
-		trace("\t\t\t(7)");
 		path.strokeWidth = getFloatStyle("stroke-width", pathNode, styles, 1.0);
-		trace("\t\t\t(8)");
 		path.strokeCaps = "round";
 		path.strokeJoints = "round";
 		path.strokeMiterLimit = getFloatStyle("stroke-miterlimit", pathNode, styles, 3.0);
@@ -457,15 +448,17 @@ class Svg extends SvgGroup
 		}
 		else if (isEllipse)
 		{
+			trace("isCircle = " + isCircle);
 			var x = pathNode.exists("cx") ? Std.parseFloat(pathNode.get("cx")) : 0;
 			var y = pathNode.exists("cy") ? Std.parseFloat(pathNode.get("cy")) : 0;
-			var r = isCircle && pathNode.exists("r") ? Std.parseFloat(pathNode.get("r")) : 0.0;
-			var w = isCircle ? r : pathNode.exists("rx") ? Std.parseFloat(pathNode.get("rx")) : 0.0;
+			var r = isCircle && pathNode.exists("r") ? Std.parseFloat(pathNode.get("r")) / 2 : 0.0;
+			var w = isCircle ? r : (pathNode.exists("rx") ? Std.parseFloat(pathNode.get("rx")) : 0.0);
 			var w_ = w * SIN45;
 			var cw_ = w * TAN22;
-			var h = isCircle ? r : pathNode.exists("ry") ? Std.parseFloat(pathNode.get("ry")) : 0.0;
+			var h = isCircle ? r : (pathNode.exists("ry") ? Std.parseFloat(pathNode.get("ry")) : 0.0);
 			var h_ = h * SIN45;
 			var ch_ = h * TAN22;
+			trace("w = " + w + "; h = " + h);
 			
 			path.segments.push(new MoveSegment(x + w, y));
 			path.segments.push(new QuadraticSegment(x + w, y + ch_, x + w_, y + h_));
@@ -483,7 +476,6 @@ class Svg extends SvgGroup
 					pathNode.exists("x1") ? ("M" + pathNode.get("x1") + "," + pathNode.get("y1") + " " + pathNode.get("x2") + "," + pathNode.get("y2") + "z") :
 					pathNode.get("d");
 			
-			trace("\t\t\tparse...");
 			for (segment in pathParser.parse(d))
 			{
 				path.segments.push(segment);

@@ -18,7 +18,7 @@ class Segment
 	public function prevCX() return x;
 	public function prevCY() return y;
 
-	public function export(exporter:PathExporter)
+	public function export(exporter:SvgPathExporter)
 	{
 		throw "Segment.export4() must be overriden.";
 	}
@@ -26,7 +26,7 @@ class Segment
 
 class MoveSegment extends Segment
 {
-	override public function export(exporter:PathExporter)
+	override public function export(exporter:SvgPathExporter)
 	{
 		exporter.moveTo(x, y);
 	}
@@ -36,7 +36,7 @@ class MoveSegment extends Segment
 
 class DrawSegment extends Segment
 {
-	override public function export(exporter:PathExporter)
+	override public function export(exporter:SvgPathExporter)
 	{
 		exporter.lineTo(x, y);
 	}
@@ -59,7 +59,7 @@ class QuadraticSegment extends Segment
 	override public function prevCX() return cx;
 	override public function prevCY() return cy;
 
-	override public function export(exporter:PathExporter)
+	override public function export(exporter:SvgPathExporter)
 	{
 		exporter.curveTo(cx, cy, x, y);
 	}
@@ -91,7 +91,7 @@ class CubicSegment extends Segment
 		return a + (b-a)*frac;
 	}
 	
-	override public function export(exporter:PathExporter)
+	override public function export(exporter:SvgPathExporter)
 	{
 		var tx0 = exporter.x;
 		var ty0 = exporter.y;
@@ -167,7 +167,7 @@ class ArcSegment extends Segment
 		fS = inSweep;
 	}
 
-	override public function export(exporter:PathExporter)
+	override public function export(exporter:SvgPathExporter)
 	{
 		if (x1 == x && y1 == y) return;
 		

@@ -1,13 +1,17 @@
 package svgimport;
 
 import models.common.fills.IFill;
+import models.common.fills.LinearFill;
+import models.common.fills.RadialFill;
+import models.common.fills.SolidFill;
 import models.common.geom.Contour;
 import models.common.geom.Edge;
 import models.common.geom.Polygon;
 import models.common.geom.StrokeEdge;
 import models.common.strokes.IStroke;
+import models.common.strokes.SolidStroke;
 
-class PathExporter
+class SvgPathExporter
 {
 	var isInFill = false;
 	
@@ -21,15 +25,63 @@ class PathExporter
 	
 	public function new() { }
 	
-	public function beginFill(fill:IFill)
+	public function beginFill(path:SvgPath)
 	{
-		isInFill = true;
-		polygons.push(new Polygon(fill));
+		var fill : IFill = null;
+		
+		switch (path.fill)
+		{
+			case FillType.FillSolid(color):
+				fill = new SolidFill(color);
+				
+			case FillType.FillGrad(grad):
+				if (grad.type == GradientType.LINEAR)
+				{
+					fill = new LinearFill(grad.colors, grad.ratios, grad.matrix);
+				}
+				else
+				if (grad.type == GradientType.RADIAL)
+				{
+					fill = new RadialFill(grad.colors, grad.ratios, grad.matrix);
+				}
+				else
+				{
+					trace("Unknow grad type: " + grad.type);
+				}
+				
+			case FillType.FillNone:
+				// nothing to do
+		}
+		
+		if (fill != null)
+		{
+			isInFill = true;
+			polygons.push(new Polygon(fill));
+		}
 	}
 	
 	public function endFill() isInFill = false;
 
-	public function beginStroke(stroke:IStroke) this.stroke = stroke;
+	public function beginStroke(path:SvgPath)
+	{
+		if (path.strokeColor != null)
+		{
+			stroke = new SolidStroke
+			(
+				path.strokeColor,
+				path.strokeWidth,
+				path.strokeCaps,
+				path.strokeJoints,
+				path.strokeMiterLimit,
+				false
+			);
+		}
+		else
+		{
+			stroke = null;
+		}
+	}
+	
 	public function endStroke() { }
 	
 	public function moveTo(x:Float, y:Float) : Void
@@ -52,7 +104,7 @@ class PathExporter
 		}
 		else
 		{
-			edges.push(new StrokeEdge(this.x, this.y, x, y, stroke));
+			if (stroke != null) edges.push(new StrokeEdge(this.x, this.y, x, y, stroke));
 		}
 		
 		this.x = x;
@@ -68,7 +120,7 @@ class PathExporter
 		}
 		else
 		{
-			edges.push(new StrokeEdge(this.x, this.y, controlX, controlY, anchorX, anchorY, stroke));
+			if (stroke != null) edges.push(new StrokeEdge(this.x, this.y, controlX, controlY, anchorX, anchorY, stroke));
 		}
 		
 		this.x = anchorX;
