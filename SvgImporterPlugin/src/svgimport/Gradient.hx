@@ -1,9 +1,4 @@
-package gfx;
-
-import display.GradientType;
-import display.InterpolationMethod;
-import display.SpreadMethod;
-import models.common.geom.Matrix;
+package svgimport;
 
 class Gradient
 {

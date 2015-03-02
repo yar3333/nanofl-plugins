@@ -1,11 +1,11 @@
-package gfx;
+package svgimport;
 
 class Gfx
 {
 	public function new() { }
 
 	public function geometryOnly() return false;
-	public function size(inWidth:Float, inHeight:Float) { }
+	public function size(width:Float, height:Float) { }
 	public function beginGradientFill(grad:Gradient) { }
 
 	public function beginFill(color:Int, alpha:Float) { }
@@ -14,11 +14,11 @@ class Gfx
 	public function lineStyle(style:LineStyle) { }
 	public function endLineStyle() { }
 
-	public function moveTo(inX:Float, inY:Float) { }
-	public function lineTo(inX:Float, inY:Float) { }
-	public function curveTo(inCX:Float, inCY:Float, inX:Float, inY:Float) { }
+	public function moveTo(x:Float, y:Float) { }
+	public function lineTo(x:Float, y:Float) { }
+	public function curveTo(cx:Float, cy:Float, x:Float, y:Float) { }
 
-	public function renderText(text:svg.Text) { }
+	public function renderText(text:Text) { }
 
 	public function eof() {}
 }

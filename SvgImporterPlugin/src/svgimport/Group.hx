@@ -1,5 +1,4 @@
-package svg;
-
+package svgimport;
 
 class Group
 {

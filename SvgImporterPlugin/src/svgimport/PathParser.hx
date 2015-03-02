@@ -1,11 +1,6 @@
-// This code borrowed from "Xinf", http://xinf.org
-// Copyright of original author.
-//package xinf.ony;
-//import xinf.ony.PathSegment;
+package svgimport;
 
-package svg;
-
-import svg.PathSegment;
+import svgimport.PathSegment;
 
 class PathParser
 {
@@ -156,7 +151,7 @@ class PathParser
                   if (prev == null)
                      throw "Unknown command " + String.fromCharCode(current_command) +
                         " near '" + pathToParse.substr(current_command_pos) + "'";
-                  if (inConvertCubics && prev.getType() == PathSegment.CUBIC)
+                  if (inConvertCubics && prev.getType() == PathSegmentType.CUBIC)
                   {
                      var cubic : CubicSegment = cast prev;
                      var quads = cubic.toQuadratics(px, py);

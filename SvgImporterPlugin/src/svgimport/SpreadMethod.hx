@@ -1,4 +1,4 @@
-package display;
+package svgimport;
 
 enum SpreadMethod
 {

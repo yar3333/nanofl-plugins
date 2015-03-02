@@ -1,16 +1,9 @@
-package svg;
-
-import display.CapsStyle;
-import display.JointStyle;
-import models.common.geom.Matrix;
-
-typedef PathSegments = Array<PathSegment>;
+package svgimport;
 
 class Path
 {
 	public var matrix : Matrix;
 	public var name : String;
-	public var font_size : Float;
 	public var fill : FillType;
 	public var alpha : Float;
 	public var fill_alpha : Float;
@@ -21,7 +14,7 @@ class Path
 	public var joint_style : JointStyle;
 	public var miter_limit : Float;
 
-	public var segments : PathSegments;
+	public var segments : Array<PathSegment>;
 	
 	public function new() { }
 }

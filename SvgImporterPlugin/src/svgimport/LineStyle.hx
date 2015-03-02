@@ -1,8 +1,4 @@
-package gfx;
-
-import display.CapsStyle;
-import display.JointStyle;
-import display.LineScaleMode;
+package svgimport;
 
 class LineStyle
 {

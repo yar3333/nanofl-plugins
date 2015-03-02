@@ -1,9 +1,6 @@
-package svg;
+package svgimport;
 
-import display.GradientType;
-import models.common.geom.Matrix;
-
-class Grad extends gfx.Gradient
+class Grad extends Gradient
 {
 	public var gradMatrix : Matrix;
 	public var radius : Float;
