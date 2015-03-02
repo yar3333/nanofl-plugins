@@ -17,11 +17,10 @@ class Svg extends SvgGroup
 	public var height(default, null) : Float;
 	public var width(default, null) : Float;
 
-	private var mConvertCubics : Bool;
 	private var mGrads : Map<String, Grad>;
 	private var mPathParser : SvgPathParser;
 	
-	public function new(inXML:Xml, inConvertCubics=false)
+	public function new(inXML:Xml)
 	{
 		super();
 		
@@ -32,7 +31,6 @@ class Svg extends SvgGroup
 		
 		mGrads = new Map<String, Grad>();
 		mPathParser = new SvgPathParser();
-		mConvertCubics = inConvertCubics;
 		
 		width = getFloatStyle("width", svg, null, 0.0);
 		height = getFloatStyle("height", svg, null, 0.0);
@@ -473,7 +471,7 @@ class Svg extends SvgGroup
 					inPath.exists("x1") ? ("M" + inPath.get("x1") + "," + inPath.get("y1") + " " + inPath.get("x2") + "," + inPath.get("y2") + "z") :
 					inPath.get("d");
 			
-			for (segment in mPathParser.parse(d, mConvertCubics))
+			for (segment in mPathParser.parse(d))
 			{
 				path.segments.push(segment);
 			}

@@ -10,7 +10,9 @@ import models.common.FileApi;
 import models.common.Library;
 import models.common.Plugins;
 import models.common.plugins.IImporterPlugin;
+import svgimport.FillType;
 import svgimport.Segment;
+import svgimport.SegmentType;
 import svgimport.Svg;
 import svgimport.SvgElement;
 import svgimport.SvgGroup;
@@ -38,7 +40,7 @@ class SvgImporterPlugin implements IImporterPlugin
 	
 	public function load(xml:Xml, namePath:String) : MovieClipItem
 	{
-		var svg = new Svg(xml, false);
+		var svg = new Svg(xml);
 		
 		var r = new MovieClipItem(namePath);
 		
@@ -114,6 +116,26 @@ class SvgImporterPlugin implements IImporterPlugin
 	
 	function loadShape(path:SvgPath) : ShapeElement
 	{
+		if (path.fill == FillType.FillNone)
+		{
+			var x = 0.0;
+			var y = 0.0;
+			
+			for (segment in path.segments)
+			{
+				/*switch (segment.getType())
+				{
+					case SegmentType.
+				}*/
+			}
+			
+			
+		}
+		else
+		{
+			
+		}
+		
 		for (segment in path.segments)
 		{
 			/*switch (segment.getType())

@@ -43,12 +43,11 @@ class SvgPathParser
         if (sCommandArgs == null)
         {
            sCommandArgs = [];
-           for (i in 0...128)
-              sCommandArgs[i] = commandArgs(i);
+           for (i in 0...128) sCommandArgs[i] = commandArgs(i);
         }
     }
 
-    public function parse(pathToParse:String, inConvertCubics:Bool) : Array<Segment>
+    public function parse(pathToParse:String) : Array<Segment>
 	{
         lastMoveX = lastMoveY = 0;
         var pos=0;
@@ -140,48 +139,32 @@ class SvgPathParser
             var py : Float = 0.0;
             if (current_command>=0)
             {
-               if (current_args == args.length)
-               {
-                  if (inConvertCubics && prev != null)
-                  {
-                     px = prev.prevX();
-                     py = prev.prevY();
-                  }
-                  prev = createCommand(current_command, args);
-                  if (prev == null)
-                     throw "Unknown command " + String.fromCharCode(current_command) +
-                        " near '" + pathToParse.substr(current_command_pos) + "'";
-                  if (inConvertCubics && prev.getType() == SegmentType.CUBIC)
-                  {
-                     var cubic : CubicSegment = cast prev;
-                     var quads = cubic.toQuadratics(px, py);
-                     for (q in quads)
-                        segments.push(q);
-                  }
-                  else
-                     segments.push(prev);
-
-                  finished = true;
-                  if (current_args == 0)
-                  {
-                     current_args = -1;
-                     current_command = -1;
-                  }
-                  else if (current_command == MOVE)
-                     current_command = LINE;
-                  else if (current_command == MOVER)
-                     current_command = LINER;
-
-                  current_command_pos = pos;
-                  args = [];
-               }
+				if (current_args == args.length)
+				{
+					prev = createCommand(current_command, args);
+					if (prev == null) throw "Unknown command " + String.fromCharCode(current_command) + " near '" + pathToParse.substr(current_command_pos) + "'";
+					segments.push(prev);
+					
+					finished = true;
+					if (current_args == 0)
+					{
+						current_args = -1;
+						current_command = -1;
+					}
+					else if (current_command == MOVE)
+						current_command = LINE;
+					else if (current_command == MOVER)
+						current_command = LINER;
+					
+					current_command_pos = pos;
+					args = [];
+				}
             }
         }
 
-        if (current_command>=0 && !finished)
+        if (current_command >= 0 && !finished)
         {
-            throw "Unfinished command (" + args.length + "/" + current_args +
-                ") near '" + pathToParse.substr(current_command_pos) + "'";
+            throw "Unfinished command (" + args.length + "/" + current_args + ") near '" + pathToParse.substr(current_command_pos) + "'";
         }
         
         return segments;
@@ -190,27 +173,26 @@ class SvgPathParser
     function commandArgs(inCode:Int) : Int
     {
        if (inCode == 10) return SEPARATOR;
-
+		
        var str = String.fromCharCode(inCode).toUpperCase();
-       if (str>="0" && str<="9")
-          return FLOAT;
-
+       if (str >= "0" && str <= "9") return FLOAT;
+		
        switch (str)
        {
-           case "Z": return 0;
-           case "H","V": return 1;
-           case "M","L","T": return 2;
-           case "S","Q": return 4;
-           case "C": return 6;
-           case "A": return 7;
-           case "\t","\n"," ","\r","," : return SEPARATOR;
-           case "-" : return FLOAT_SIGN;
-           case "+" : return FLOAT_SIGN;
-           case "E","e" : return FLOAT_EXP;
-           case "." : return FLOAT_DOT;
-       }
-
-       return UNKNOWN;
+           case "Z":					return 0;
+           case "H","V":				return 1;
+           case "M","L","T":			return 2;
+           case "S","Q":				return 4;
+           case "C":					return 6;
+           case "A":					return 7;
+           case "\t","\n"," ","\r",",": return SEPARATOR;
+           case "-":					return FLOAT_SIGN;
+           case "+":					return FLOAT_SIGN;
+           case "E","e": 				return FLOAT_EXP;
+           case ".": 					return FLOAT_DOT;
+		}
+		
+		return UNKNOWN;
     }
 
     function prevX() : Float return prev != null ? prev.prevX() : 0;

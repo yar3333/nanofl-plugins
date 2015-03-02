@@ -1,10 +1,12 @@
 package svgimport;
 
+import svgimport.Segment;
+
 enum SegmentType 
 {
-	MOVE;
-	DRAW;
-	CURVE;
-	CUBIC;
-	ARC;
+	MOVE(seg:MoveSegment);
+	DRAW(seg:DrawSegment);
+	CURVE(seg:QuadraticSegment);
+	CUBIC(seg:CubicSegment);
+	ARC(seg:ArcSegment);
 }
