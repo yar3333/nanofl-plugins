@@ -3,6 +3,7 @@ package models.common.elements;
 extern class GroupElement extends models.common.elements.Element implements models.common.ILayersContainer implements models.common.IPathElement
 {
 	function new(elements:Array<models.common.elements.Element>) : Void;
+	var name : String;
 	var currentFrame : Int;
 	var layers(default, never) : models.common.ArrayRO<models.common.Layer>;
 	function addElement(element:models.common.elements.Element) : Void;

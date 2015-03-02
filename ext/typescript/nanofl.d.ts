@@ -143,6 +143,7 @@ declare module models.common.elements
 	export class GroupElement extends models.common.elements.Element implements models.common.ILayersContainer, models.common.IPathElement
 	{
 		constructor(elements:models.common.elements.Element[]);
+		name : string;
 		currentFrame : number;
 		layers : models.common.ArrayRO<models.common.Layer>;
 		addElement(element:models.common.elements.Element) : void;
