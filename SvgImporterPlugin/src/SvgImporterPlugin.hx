@@ -2,7 +2,6 @@ import models.common.DocumentProperties;
 import models.common.elements.Element;
 import models.common.elements.GroupElement;
 import models.common.elements.ShapeElement;
-import models.common.elements.TextElement;
 import models.common.FileApi;
 import models.common.KeyFrame;
 import models.common.Layer;
@@ -10,15 +9,11 @@ import models.common.Library;
 import models.common.libraryitems.MovieClipItem;
 import models.common.Plugins;
 import models.common.plugins.IImporterPlugin;
-import nanofl.TextRun;
-import stdlib.Debug;
-import svgimport.FillType;
 import svgimport.Svg;
 import svgimport.SvgElement;
 import svgimport.SvgGroup;
 import svgimport.SvgPath;
 import svgimport.SvgPathExporter;
-import svgimport.SvgText;
 using StringTools;
 
 class SvgImporterPlugin implements IImporterPlugin
@@ -114,7 +109,7 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 					}
 					
 					var frame = layers[layers.length - 1].keyFrames[0];
-					frame.addElement(loadText(text));
+					frame.addElement(text.toTextElement());
 			}
 		}
 		
@@ -138,7 +133,7 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 					return loadShape(path);
 					
 				case SvgElement.DisplayText(text):
-					return loadText(text);
+					return text.toTextElement();
 			}
 		});
 	}
@@ -149,39 +144,6 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 		path.export(exporter);
 		var edgesAndPolygons = exporter.export();
 		return new ShapeElement(edgesAndPolygons.edges, edgesAndPolygons.polygons);
-	}
-	
-	function loadText(text:SvgText) : TextElement
-	{
-		var fillColor = switch (text.fill)
-		{
-			case FillType.FillNone: null;
-			case FillType.FillSolid(color): color;
-			case FillType.FillGrad(grad): trace("Text gradients is not supported."); grad.colors[0];
-		};
-		
-		//trace(Debug.getDump(text));
-		
-		var r = new TextElement(text.name, 0, 0, false, false, [ new TextRun(text.text, fillColor, text.fontFamily, "", text.fontSize, "left", text.strokeWidth, text.strokeColor, null) ], null);
-		r.matrix = text.matrix.clone();
-		r.matrix.translate(text.x, text.y);
-		
-		if (text.textAnchor != "" && text.textAnchor != "start")
-		{
-			#if js
-			var t : nanofl.TextField = cast r.createDisplayObject(null);
-			if (text.textAnchor == "middle")
-			{
-				var fontHeight = nanofl.TextField.measureFontHeight(text.fontFamily, text.fontStyle, text.fontSize);
-				var fontBaselineCoef = nanofl.TextField.measureFontBaselineCoef(text.fontFamily, text.fontStyle);
-				r.matrix.translate( -t.minWidth / 2, -fontHeight * fontBaselineCoef - nanofl.TextField.PADDING);
-			}
-			#else
-			trace("Text-anchor in not supported on sys platform.");
-			#end
-		}
-		
-		return r;
 	}
 	
 	function createLayerWithFrame(parent:Array<Layer>, name:String) : KeyFrame

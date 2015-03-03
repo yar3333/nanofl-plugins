@@ -1,5 +1,8 @@
 package svgimport;
 
+import models.common.elements.TextElement;
+import nanofl.TextRun;
+
 class SvgText
 {
 	public var name : String;
@@ -60,5 +63,38 @@ class SvgText
 		textAnchor = textNode.exists("text-anchor") ? textNode.get("text-anchor") : "";
 		
 		text = ""; for (el in textNode) text += el.nodeValue;
+	}
+	
+	public function toTextElement() : TextElement
+	{
+		var fillColor = switch (fill)
+		{
+			case FillType.FillNone: null;
+			case FillType.FillSolid(color): color;
+			case FillType.FillGrad(grad): trace("Text gradients is not supported."); grad.colors[0];
+		};
+		
+		//trace(stdlib.Debug.getDump(this));
+		
+		var r = new TextElement(name, 0, 0, false, false, [ new TextRun(text, fillColor, fontFamily, "", fontSize, "left", strokeWidth, strokeColor, null) ], null);
+		r.matrix = matrix.clone();
+		r.matrix.translate(x, y);
+		
+		if (textAnchor != "" && textAnchor != "start")
+		{
+			#if js
+			var t : nanofl.TextField = cast r.createDisplayObject(null);
+			if (textAnchor == "middle")
+			{
+				var fontHeight = nanofl.TextField.measureFontHeight(fontFamily, fontStyle, fontSize);
+				var fontBaselineCoef = nanofl.TextField.measureFontBaselineCoef(fontFamily, fontStyle);
+				r.matrix.translate( -t.minWidth / 2, -fontHeight * fontBaselineCoef - nanofl.TextField.PADDING);
+			}
+			#else
+			trace("Text-anchor in not supported on sys platform.");
+			#end
+		}
+		
+		return r;
 	}
 }
