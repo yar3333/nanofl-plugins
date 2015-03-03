@@ -22,12 +22,18 @@ class SvgPath
 	
 	public function export(exporter:SvgPathExporter) : Void
 	{
-		exporter.beginFill(this);
-		for (segment in segments) segment.export(exporter);
-		exporter.endFill();
+		if (fill != null && fill != FillType.FillNone)
+		{
+			exporter.beginFill(this);
+			for (segment in segments) segment.export(exporter);
+			exporter.endFill();
+		}
 		
-		exporter.beginStroke(this);
-		for (segment in segments) segment.export(exporter);
-		exporter.endStroke();
+		if (strokeColor != null && strokeColor != "")
+		{
+			exporter.beginStroke(this);
+			for (segment in segments) segment.export(exporter);
+			exporter.endStroke();
+		}
 	}
 }
