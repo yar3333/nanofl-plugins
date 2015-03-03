@@ -1,24 +1,22 @@
+import models.common.DocumentProperties;
 import models.common.elements.Element;
 import models.common.elements.GroupElement;
 import models.common.elements.ShapeElement;
 import models.common.elements.TextElement;
+import models.common.FileApi;
 import models.common.KeyFrame;
 import models.common.Layer;
-import models.common.libraryitems.MovieClipItem;
-import models.common.DocumentProperties;
-import models.common.FileApi;
 import models.common.Library;
+import models.common.libraryitems.MovieClipItem;
 import models.common.Plugins;
 import models.common.plugins.IImporterPlugin;
-import svgimport.SvgPathExporter;
-import svgimport.FillType;
-import svgimport.Segment;
-import svgimport.SegmentType;
 import svgimport.Svg;
 import svgimport.SvgElement;
 import svgimport.SvgGroup;
 import svgimport.SvgPath;
+import svgimport.SvgPathExporter;
 import svgimport.SvgText;
+using StringTools;
 
 class SvgImporterPlugin implements IImporterPlugin
 {
