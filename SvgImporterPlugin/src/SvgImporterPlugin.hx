@@ -160,7 +160,7 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 			case FillType.FillGrad(grad): trace("Text gradients is not supported."); grad.colors[0];
 		};
 		
-		trace(Debug.getDump(text));
+		//trace(Debug.getDump(text));
 		
 		var r = new TextElement(text.name, 0, 0, false, false, [ new TextRun(text.text, fillColor, text.fontFamily, "", text.fontSize, "left", text.strokeWidth, text.strokeColor, null) ], null);
 		r.matrix = text.matrix.clone();
@@ -172,10 +172,12 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 			var t : nanofl.TextField = cast r.createDisplayObject(null);
 			if (text.textAnchor == "middle")
 			{
-				r.matrix.translate(t.width / 2, t.height / 2);
+				var fontHeight = nanofl.TextField.measureFontHeight(text.fontFamily, text.fontStyle, text.fontSize);
+				var fontBaselineCoef = nanofl.TextField.measureFontBaselineCoef(text.fontFamily, text.fontStyle);
+				r.matrix.translate( -t.minWidth / 2, -fontHeight * fontBaselineCoef - nanofl.TextField.PADDING);
 			}
 			#else
-			trace("Text-anchor in not supported in sys platform.");
+			trace("Text-anchor in not supported on sys platform.");
 			#end
 		}
 		
