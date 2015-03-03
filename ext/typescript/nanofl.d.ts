@@ -7412,6 +7412,7 @@ declare module models.common.plugins
 		 */
 		name : string;
 		menuItemName : string;
+		menuItemIcon : string;
 		fileFilterDescription : string;
 		fileFilterPattern : string;
 		fileDefaultExtension : string;
@@ -7442,6 +7443,7 @@ declare module models.common.plugins
 		 */
 		name : string;
 		menuItemName : string;
+		menuItemIcon : string;
 		fileFilterDescription : string;
 		fileFilterPattern : string;
 		importDocument(fileApi:models.common.FileApi, srcFilePath:string, destFilePath:string, documentProperties:models.common.DocumentProperties, library:models.common.Library, fonts:string[], callb:(arg:boolean) => void) : void;

@@ -49,7 +49,7 @@ cmd /C "IF EXIST support xcopy /E /Q /Y support ..\bin\$(ProjectName) &gt; nul"<
   <options>
     <option showHiddenPaths="False" />
     <option testMovie="Custom" />
-    <option testMovieCommand="..\..\standalone\run.cmd" />
+    <option testMovieCommand="..\..\ide\standalone.cmd" />
   </options>
   <!-- Plugin storage -->
   <storage />

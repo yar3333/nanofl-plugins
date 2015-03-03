@@ -14,6 +14,7 @@ class FlashXflExporterPlugin implements IExporterPlugin
 	public var name = "FlashXfl";
 	
 	public var menuItemName = "Adobe Flash Uncompressed Document (*.xfl)";
+	public var menuItemIcon = "";
 	public var fileFilterDescription = "Adobe Flash Document (*.xfl)";
 	public var fileFilterPattern = "*.xfl";
 	public var fileDefaultExtension = "xfl";

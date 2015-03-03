@@ -7,6 +7,7 @@ extern interface IExporterPlugin
 	 */
 	var name : String;
 	var menuItemName : String;
+	var menuItemIcon : String;
 	var fileFilterDescription : String;
 	var fileFilterPattern : String;
 	var fileDefaultExtension : String;
