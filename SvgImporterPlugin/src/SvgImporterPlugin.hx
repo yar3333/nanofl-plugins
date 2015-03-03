@@ -67,9 +67,6 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 	
 	public function loadFromSvg(svg:Svg, namePath:String) : MovieClipItem
 	{
-		
-		trace("svg.children = " + svg.children.length);
-		
 		var lastLayerIsGlobal = false;
 		var layers = [];
 		

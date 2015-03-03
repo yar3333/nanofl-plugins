@@ -122,8 +122,6 @@ class Svg extends SvgGroup
 	{
 		var s = getStyle(key, node, styles, "");
 		
-		trace("getFillStyle s = " + s);
-		
 		if (s == "") return defaultFill;
 		if (s == "none") return FillType.FillNone;
 		
@@ -300,8 +298,6 @@ class Svg extends SvgGroup
 	
 	public function loadGroup(g:SvgGroup, groupNode:Xml, matrix:Matrix, prevStyles:Map<String, String>) : SvgGroup
 	{
-		trace("loadGroup");
-		
 		if (groupNode.exists("transform"))
 		{
 			matrix = matrix.clone();
@@ -327,8 +323,6 @@ class Svg extends SvgGroup
 			var name = el.nodeName;
 			
 			if (name.substr(0, 4) == "svg:") name = name.substr(4);
-			
-			trace("\t" + name);
 			
 			if (name == "defs")
 			{
@@ -389,7 +383,7 @@ class Svg extends SvgGroup
 	
 	public function loadPath(pathNode:Xml, matrix:Matrix, prevStyles:Map<String, String>, isRect:Bool, isEllipse:Bool, isCircle=false) : SvgPath
 	{
-		trace("\t\tloadPath isRect = " + isRect + "; isEllipse = " + isEllipse+"; isCircle = " + isCircle);
+		//trace("\t\tloadPath isRect = " + isRect + "; isEllipse = " + isEllipse+"; isCircle = " + isCircle);
 		
 		if (pathNode.exists("transform"))
 		{
@@ -455,7 +449,6 @@ class Svg extends SvgGroup
 		}
 		else if (isEllipse)
 		{
-			trace("isCircle = " + isCircle);
 			var x = pathNode.exists("cx") ? Std.parseFloat(pathNode.get("cx")) : 0;
 			var y = pathNode.exists("cy") ? Std.parseFloat(pathNode.get("cy")) : 0;
 			var r = isCircle && pathNode.exists("r") ? Std.parseFloat(pathNode.get("r")) : 0.0;
@@ -465,7 +458,6 @@ class Svg extends SvgGroup
 			var h = isCircle ? r : (pathNode.exists("ry") ? Std.parseFloat(pathNode.get("ry")) : 0.0);
 			var h_ = h * SIN45;
 			var ch_ = h * TAN22;
-			trace("w = " + w + "; h = " + h);
 			
 			path.segments.push(new MoveSegment(x + w, y));
 			path.segments.push(new QuadraticSegment(x + w, y + ch_, x + w_, y + h_));

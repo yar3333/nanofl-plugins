@@ -46,7 +46,7 @@ class SvgPathExporter
 				}
 				else
 				{
-					trace("Unknow grad type: " + grad.type);
+					trace("Unknow gradient type: " + grad.type);
 				}
 				
 			case FillType.FillNone:
