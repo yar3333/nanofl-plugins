@@ -10,6 +10,9 @@ import models.common.Library;
 import models.common.libraryitems.MovieClipItem;
 import models.common.Plugins;
 import models.common.plugins.IImporterPlugin;
+import nanofl.TextRun;
+import stdlib.Debug;
+import svgimport.FillType;
 import svgimport.Svg;
 import svgimport.SvgElement;
 import svgimport.SvgGroup;
@@ -150,7 +153,33 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 	
 	function loadText(text:SvgText) : TextElement
 	{
-		return new TextElement("", 10, 10, false, false, [], null);
+		var fillColor = switch (text.fill)
+		{
+			case FillType.FillNone: null;
+			case FillType.FillSolid(color): color;
+			case FillType.FillGrad(grad): trace("Text gradients is not supported."); grad.colors[0];
+		};
+		
+		trace(Debug.getDump(text));
+		
+		var r = new TextElement(text.name, 0, 0, false, false, [ new TextRun(text.text, fillColor, text.fontFamily, "", text.fontSize, "left", text.strokeWidth, text.strokeColor, null) ], null);
+		r.matrix = text.matrix.clone();
+		r.matrix.translate(text.x, text.y);
+		
+		if (text.textAnchor != "" && text.textAnchor != "start")
+		{
+			#if js
+			var t : nanofl.TextField = cast r.createDisplayObject(null);
+			if (text.textAnchor == "middle")
+			{
+				r.matrix.translate(t.width / 2, t.height / 2);
+			}
+			#else
+			trace("Text-anchor in not supported in sys platform.");
+			#end
+		}
+		
+		return r;
 	}
 	
 	function createLayerWithFrame(parent:Array<Layer>, name:String) : KeyFrame
