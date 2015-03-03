@@ -7878,6 +7878,9 @@ declare module nanofl
 		setSelectionFormat(format:nanofl.TextRun) : void;
 		dispose() : void;
 		clone(recursive?:boolean) : createjs.DisplayObject;
+		static PADDING : number;
+		static measureFontHeight(family:string, style:string, size:number) : number;
+		static measureFontBaselineCoef(family:string, style:string) : number;
 	}
 }
 

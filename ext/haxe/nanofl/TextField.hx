@@ -3,8 +3,8 @@ package nanofl;
 extern class TextField extends createjs.Container
 {
 	function new(?width:Float, ?height:Float, ?selectable:Bool, ?border:Bool, ?dashedBorder:Bool, ?textRuns:Array<nanofl.TextRun>, ?newTextFormat:nanofl.TextRun) : Void;
-	var minWidth(default, null) : Float;
-	var minHeight(default, null) : Float;
+	var minWidth(default, never) : Float;
+	var minHeight(default, never) : Float;
 	var width : Float;
 	var height : Float;
 	var selectable : Bool;
@@ -23,4 +23,7 @@ extern class TextField extends createjs.Container
 	function setSelectionFormat(format:nanofl.TextRun) : Void;
 	function dispose() : Void;
 	override function clone(?recursive:Bool) : createjs.DisplayObject;
+	static var PADDING : Float;
+	static function measureFontHeight(family:String, style:String, size:Float) : Float;
+	static function measureFontBaselineCoef(family:String, style:String) : Float;
 }
