@@ -169,10 +169,7 @@ class Svg extends SvgGroup
 	
 	private function getStyles(node:Xml, prevStyles:Map<String, String>) : Map<String, String>
 	{
-		if (!node.exists("style")) return prevStyles;
-		
 		var styles = new Map<String, String>();
-		
 		if (prevStyles != null)
 		{
 			for (s in prevStyles.keys())
@@ -181,14 +178,24 @@ class Svg extends SvgGroup
 			}
 		}
 		
-		var style = node.get("style");
-		var strings = mStyleSplit.split(style);
-		
-		for (s in strings)
+		if (node.exists("style")) 
 		{
-			if (mStyleValue.match (s))
+			var style = node.get("style");
+			var strings = mStyleSplit.split(style);
+			
+			for (s in strings)
 			{
-				styles.set(mStyleValue.matched(1), mStyleValue.matched(2));
+				if (mStyleValue.match(s))
+				{
+					styles.set(mStyleValue.matched(1), mStyleValue.matched(2));
+				}
+			}
+		}
+		else
+		{
+			for (key in SvgAttributes.presentation)
+			{
+				if (node.exists(key)) styles.set(key, node.get(key));
 			}
 		}
 		
@@ -451,7 +458,7 @@ class Svg extends SvgGroup
 			trace("isCircle = " + isCircle);
 			var x = pathNode.exists("cx") ? Std.parseFloat(pathNode.get("cx")) : 0;
 			var y = pathNode.exists("cy") ? Std.parseFloat(pathNode.get("cy")) : 0;
-			var r = isCircle && pathNode.exists("r") ? Std.parseFloat(pathNode.get("r")) / 2 : 0.0;
+			var r = isCircle && pathNode.exists("r") ? Std.parseFloat(pathNode.get("r")) : 0.0;
 			var w = isCircle ? r : (pathNode.exists("rx") ? Std.parseFloat(pathNode.get("rx")) : 0.0);
 			var w_ = w * SIN45;
 			var cw_ = w * TAN22;

@@ -52,14 +52,21 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 	public function importDocument(fileApi:FileApi, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, fonts:Array<String>, callb:Bool->Void)
 	{
 		var xml = Xml.parse(fileApi.getContent(srcFilePath));
-		var scene = load(xml, Library.SCENE_NAME_PATH);
+		var svg = new Svg(xml);
+		var scene = loadFromSvg(svg, Library.SCENE_NAME_PATH);
 		library.addItem(scene);
+		documentProperties.width = Math.round(svg.width);
+		documentProperties.height = Math.round(svg.height);
 		callb(true);
 	}
 	
-	public function load(xml:Xml, namePath:String) : MovieClipItem
+	public function loadFromXml(xml:Xml, namePath:String) : MovieClipItem
 	{
-		var svg = new Svg(xml);
+		return loadFromSvg(new Svg(xml), namePath);
+	}
+	
+	public function loadFromSvg(svg:Svg, namePath:String) : MovieClipItem
+	{
 		
 		trace("svg.children = " + svg.children.length);
 		
