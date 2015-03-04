@@ -7,6 +7,7 @@ extern class BitmapFill extends models.common.fills.MatrixFill implements models
 	var repeat : String;
 	function save(out:models.common.XmlWriter) : Void;
 	function clone() : models.common.fills.IFill;
+	function applyAlpha(alpha:Float) : Void;
 	function begin(g:createjs.Graphics) : Void;
 	function getBitmapWidth() : Float;
 	function equ(e:models.common.fills.IFill) : Bool;

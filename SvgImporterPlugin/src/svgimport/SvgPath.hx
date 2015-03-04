@@ -141,6 +141,19 @@ class SvgPath
 		
 		var shape = new ShapeElement(edgesAndPolygons.edges, edgesAndPolygons.polygons);
 		if (!matrix.isIdentity()) shape.transform(matrix);
+		
+		var effectiveStrokeAlpha = alpha * strokeAlpha;
+		if (effectiveStrokeAlpha != 1.0)
+		{
+			for (edge in shape.edges) edge.stroke.applyAlpha(effectiveStrokeAlpha);
+		}
+		
+		var effectiveFillAlpha = alpha * fillAlpha;		
+		if (effectiveFillAlpha != 1.0)
+		{
+			for (polygon in shape.polygons) polygon.fill.applyAlpha(effectiveFillAlpha);
+		}
+		
 		return shape;
 	}
 }

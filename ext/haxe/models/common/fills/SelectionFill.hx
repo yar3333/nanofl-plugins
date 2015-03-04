@@ -5,6 +5,7 @@ extern class SelectionFill extends models.common.fills.BaseFill implements model
 	function new(m:createjs.Matrix2D) : Void;
 	function save(out:models.common.XmlWriter) : Void;
 	function clone() : models.common.fills.IFill;
+	function applyAlpha(alpha:Float) : Void;
 	function begin(g:createjs.Graphics) : Void;
 	function transform(m:models.common.geom.Matrix) : Void;
 	function equ(e:models.common.fills.IFill) : Bool;

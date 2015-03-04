@@ -7,6 +7,7 @@ extern class RadialFill extends models.common.fills.MatrixFill implements models
 	var ratios : Array<Float>;
 	function save(out:models.common.XmlWriter) : Void;
 	function clone() : models.common.fills.IFill;
+	function applyAlpha(alpha:Float) : Void;
 	function begin(g:createjs.Graphics) : Void;
 	function equ(e:models.common.fills.IFill) : Bool;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;

@@ -6,5 +6,6 @@ extern class SelectionStroke extends models.common.strokes.BaseStroke implements
 	function save(out:models.common.XmlWriter) : Void;
 	function begin(g:createjs.Graphics) : Void;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
+	function applyAlpha(alpha:Float) : Void;
 	function toString() : String;
 }

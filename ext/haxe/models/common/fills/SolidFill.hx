@@ -6,6 +6,7 @@ extern class SolidFill extends models.common.fills.BaseFill implements models.co
 	var color : String;
 	function save(out:models.common.XmlWriter) : Void;
 	function clone() : models.common.fills.IFill;
+	function applyAlpha(alpha:Float) : Void;
 	function begin(g:createjs.Graphics) : Void;
 	function equ(e:models.common.fills.IFill) : Bool;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;

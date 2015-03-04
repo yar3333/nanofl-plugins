@@ -7498,6 +7498,7 @@ declare module models.common.strokes
 		equ(e:models.common.strokes.IStroke) : boolean;
 		save(out:models.common.XmlWriter) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		applyAlpha(alpha:number) : void;
 		setLibrary(library:models.common.Library) : void;
 		toString() : string;
 	}
@@ -7512,6 +7513,7 @@ declare module models.common.strokes
 		clone() : models.common.strokes.IStroke;
 		equ(e:models.common.strokes.IStroke) : boolean;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		applyAlpha(alpha:number) : void;
 		toString() : string;
 	}
 	
@@ -7521,6 +7523,7 @@ declare module models.common.strokes
 		save(out:models.common.XmlWriter) : void;
 		begin(g:createjs.Graphics) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		applyAlpha(alpha:number) : void;
 		toString() : string;
 	}
 	
@@ -7533,6 +7536,7 @@ declare module models.common.strokes
 		clone() : models.common.strokes.IStroke;
 		equ(e:models.common.strokes.IStroke) : boolean;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		applyAlpha(alpha:number) : void;
 		toString() : string;
 	}
 }
@@ -7603,6 +7607,7 @@ declare module models.common.fills
 		begin(g:createjs.Graphics) : void;
 		clone() : models.common.fills.IFill;
 		equ(e:models.common.fills.IFill) : boolean;
+		applyAlpha(alpha:number) : void;
 		save(out:models.common.XmlWriter) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		setLibrary(library:models.common.Library) : void;
@@ -7616,6 +7621,7 @@ declare module models.common.fills
 		repeat : string;
 		save(out:models.common.XmlWriter) : void;
 		clone() : models.common.fills.IFill;
+		applyAlpha(alpha:number) : void;
 		begin(g:createjs.Graphics) : void;
 		getBitmapWidth() : number;
 		equ(e:models.common.fills.IFill) : boolean;
@@ -7632,6 +7638,7 @@ declare module models.common.fills
 		ratios : number[];
 		save(out:models.common.XmlWriter) : void;
 		clone() : models.common.fills.IFill;
+		applyAlpha(alpha:number) : void;
 		begin(g:createjs.Graphics) : void;
 		equ(e:models.common.fills.IFill) : boolean;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
@@ -7646,6 +7653,7 @@ declare module models.common.fills
 		ratios : number[];
 		save(out:models.common.XmlWriter) : void;
 		clone() : models.common.fills.IFill;
+		applyAlpha(alpha:number) : void;
 		begin(g:createjs.Graphics) : void;
 		equ(e:models.common.fills.IFill) : boolean;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
@@ -7658,6 +7666,7 @@ declare module models.common.fills
 		constructor(m:createjs.Matrix2D);
 		save(out:models.common.XmlWriter) : void;
 		clone() : models.common.fills.IFill;
+		applyAlpha(alpha:number) : void;
 		begin(g:createjs.Graphics) : void;
 		transform(m:models.common.geom.Matrix) : void;
 		equ(e:models.common.fills.IFill) : boolean;
@@ -7672,6 +7681,7 @@ declare module models.common.fills
 		color : string;
 		save(out:models.common.XmlWriter) : void;
 		clone() : models.common.fills.IFill;
+		applyAlpha(alpha:number) : void;
 		begin(g:createjs.Graphics) : void;
 		equ(e:models.common.fills.IFill) : boolean;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;

@@ -10,5 +10,6 @@ extern class BitmapStroke extends models.common.strokes.BaseStroke implements mo
 	override function clone() : models.common.strokes.IStroke;
 	override function equ(e:models.common.strokes.IStroke) : Bool;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
+	function applyAlpha(alpha:Float) : Void;
 	function toString() : String;
 }
