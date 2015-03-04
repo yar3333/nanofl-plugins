@@ -60,7 +60,14 @@ class SvgPathExporter
 		}
 	}
 	
-	public function endFill() isInFill = false;
+	public function endFill()
+	{
+		if (isInFill)
+		{
+			closeContour();
+			isInFill = false;
+		}
+	}
 
 	public function beginStroke(path:SvgPath)
 	{
@@ -88,6 +95,7 @@ class SvgPathExporter
 	{
 		if (isInFill)
 		{
+			closeContour();
 			polygons[polygons.length - 1].contours.push(new Contour([]));
 		}
 		
@@ -131,5 +139,26 @@ class SvgPathExporter
 	{
 		var polygons = []; for (p in this.polygons) polygons = polygons.concat(p.split());
 		return { edges:edges, polygons:polygons };
+	}
+	
+	function closeContour()
+	{
+		if (polygons.length > 0)
+		{
+			var contours = polygons[polygons.length - 1].contours;
+			if (contours.length > 0)
+			{
+				var edges = contours[contours.length - 1].edges;
+				if (edges.length > 0)
+				{
+					var edge1 = edges[0];
+					var edge2 = edges[edges.length - 1];
+					if (edge1.x1 != edge2.x3 || edge1.y1 != edge2.y3)
+					{
+						edges.push(new Edge(edge2.x3, edge2.y3, edge1.x1, edge1.y1));
+					}
+				}
+			}
+		}
 	}
 }
