@@ -8,6 +8,8 @@ class Transform
 
 	public static function apply(matrix:Matrix, trans:String) : Matrix
 	{
+		if (trans == null || trans == "") return matrix;
+		
 		var scale = 1.0;
 		
 		if (mTranslateMatch.match(trans))

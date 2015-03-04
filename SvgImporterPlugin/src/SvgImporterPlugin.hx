@@ -99,7 +99,7 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 					}
 					
 					var frame = layers[layers.length - 1].keyFrames[0];
-					frame.addElement(new GroupElement([ loadShape(path) ]));
+					frame.addElement(new GroupElement([ path.toElement() ]));
 					
 				case SvgElement.DisplayText(text):
 					if (!lastLayerIsGlobal)
@@ -109,7 +109,7 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 					}
 					
 					var frame = layers[layers.length - 1].keyFrames[0];
-					frame.addElement(text.toTextElement());
+					frame.addElement(text.toElement());
 			}
 		}
 		
@@ -130,20 +130,12 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 					return r;
 					
 				case SvgElement.DisplayPath(path):
-					return loadShape(path);
+					return path.toElement();
 					
 				case SvgElement.DisplayText(text):
-					return text.toTextElement();
+					return text.toElement();
 			}
 		});
-	}
-	
-	function loadShape(path:SvgPath) : ShapeElement
-	{
-		var exporter = new SvgPathExporter();
-		path.export(exporter);
-		var edgesAndPolygons = exporter.export();
-		return new ShapeElement(edgesAndPolygons.edges, edgesAndPolygons.polygons);
 	}
 	
 	function createLayerWithFrame(parent:Array<Layer>, name:String) : KeyFrame

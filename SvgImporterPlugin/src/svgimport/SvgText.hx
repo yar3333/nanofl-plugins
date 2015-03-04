@@ -65,7 +65,7 @@ class SvgText
 		text = ""; for (el in textNode) text += el.nodeValue;
 	}
 	
-	public function toTextElement() : TextElement
+	public function toElement() : TextElement
 	{
 		var fillColor = switch (fill)
 		{

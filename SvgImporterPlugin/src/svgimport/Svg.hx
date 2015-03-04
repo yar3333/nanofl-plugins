@@ -1,12 +1,7 @@
 package svgimport;
 
-import svgimport.Segment;
-
 class Svg extends SvgGroup
 {
-	private static var SIN45 : Float = 0.70710678118654752440084436210485;
-	private static var TAN22 : Float = 0.4142135623730950488016887242097;
-	
 	public var height(default, null) : Float;
 	public var width(default, null) : Float;
 	
@@ -201,23 +196,23 @@ class Svg extends SvgGroup
 			}
 			else if (name == "path" || name == "line" || name == "polyline")
 			{
-				g.children.push(SvgElement.DisplayPath(loadPath(el, matrix, styles, false, false)));
+				g.children.push(SvgElement.DisplayPath(new SvgPath(el, matrix, styles, gradients, pathParser, false, false)));
 			}
 			else if (name == "rect")
 			{
-				g.children.push(SvgElement.DisplayPath(loadPath(el, matrix, styles, true, false)));
+				g.children.push(SvgElement.DisplayPath(new SvgPath(el, matrix, styles, gradients, pathParser, true, false)));
 			}
 			else if (name == "polygon")
 			{
-				g.children.push(SvgElement.DisplayPath(loadPath(el, matrix, styles, false, false)));
+				g.children.push(SvgElement.DisplayPath(new SvgPath(el, matrix, styles, gradients, pathParser, false, false)));
 			}
 			else if (name == "ellipse")
 			{
-				g.children.push(SvgElement.DisplayPath(loadPath(el, matrix, styles, false, true)));
+				g.children.push(SvgElement.DisplayPath(new SvgPath(el, matrix, styles, gradients, pathParser, false, true)));
 			}
 			else if (name == "circle")
 			{
-				g.children.push(SvgElement.DisplayPath(loadPath(el, matrix, styles, false, true, true)));
+				g.children.push(SvgElement.DisplayPath(new SvgPath(el, matrix, styles, gradients, pathParser, false, true, true)));
 			}
 			else if (name == "text")
 			{
@@ -245,106 +240,4 @@ class Svg extends SvgGroup
 	}
 	
 	
-	public function loadPath(pathNode:Xml, matrix:Matrix, prevStyles:Map<String, String>, isRect:Bool, isEllipse:Bool, isCircle=false) : SvgPath
-	{
-		//trace("\t\tloadPath isRect = " + isRect + "; isEllipse = " + isEllipse+"; isCircle = " + isCircle);
-		
-		if (pathNode.exists("transform"))
-		{
-			matrix = matrix.clone();
-			Transform.apply(matrix, pathNode.get("transform"));
-		}
-		
-		var styles = XmlTools.getStyles(pathNode, prevStyles, gradients);
-		var name = pathNode.exists("id") ? pathNode.get("id") : "";
-		
-		var path = new SvgPath();
-		
-		path.alpha = XmlTools.getFloatStyle(pathNode, "opacity", styles, 1.0);
-		path.fill = XmlTools.getFillStyle(pathNode, "fill", styles,gradients);
-		path.fillAlpha = XmlTools.getFloatStyle(pathNode, "fill-opacity", styles, 1.0);
-		path.strokeAlpha = XmlTools.getFloatStyle(pathNode, "stroke-opacity", styles, 1.0);
-		path.strokeColor = XmlTools.getStrokeStyle(pathNode, "stroke", styles, null);
-		path.strokeWidth = XmlTools.getFloatStyle(pathNode, "stroke-width", styles, 1.0);
-		path.strokeCaps = "round";
-		path.strokeJoints = "round";
-		path.strokeMiterLimit = XmlTools.getFloatStyle(pathNode, "stroke-miterlimit", styles, 3.0);
-		path.segments = [];
-		path.matrix = matrix;
-		path.name = name;
-
-		if (isRect)
-		{
-			var x = pathNode.exists("x") ? Std.parseFloat(pathNode.get("x")) : 0;
-			var y = pathNode.exists("y") ? Std.parseFloat(pathNode.get("y")) : 0;
-			var w = Std.parseFloat(pathNode.get("width"));
-			var h = Std.parseFloat(pathNode.get("height"));
-			var rx = pathNode.exists("rx") ? Std.parseFloat(pathNode.get("rx")) : 0.0;
-			var ry = pathNode.exists("ry") ? Std.parseFloat(pathNode.get("ry")) : 0.0;
-			
-			if (rx == 0 || ry == 0)
-			{
-				path.segments.push(new MoveSegment(x, y));
-				path.segments.push(new DrawSegment(x + w, y));
-				path.segments.push(new DrawSegment(x + w, y + h));
-				path.segments.push(new DrawSegment(x, y + h));
-				path.segments.push(new DrawSegment(x, y));
-			}
-			else
-			{
-				path.segments.push(new MoveSegment(x, y + ry));
-				
-				// top-left
-				path.segments.push(new QuadraticSegment(x, y, x + rx, y));
-				path.segments.push(new DrawSegment(x + w - rx, y));
-				
-				// top-right
-				path.segments.push(new QuadraticSegment(x + w, y, x + w, y + rx));
-				path.segments.push(new DrawSegment(x + w, y + h - ry));
-				
-				// bottom-right
-				path.segments.push(new QuadraticSegment(x + w, y + h, x + w - rx, y + h));
-				path.segments.push(new DrawSegment(x + rx, y + h));
-				
-				// bottom-left
-				path.segments.push(new QuadraticSegment(x, y + h, x, y + h - ry));
-				path.segments.push(new DrawSegment(x, y + ry));
-			}
-		}
-		else if (isEllipse)
-		{
-			var x = pathNode.exists("cx") ? Std.parseFloat(pathNode.get("cx")) : 0;
-			var y = pathNode.exists("cy") ? Std.parseFloat(pathNode.get("cy")) : 0;
-			var r = isCircle && pathNode.exists("r") ? Std.parseFloat(pathNode.get("r")) : 0.0;
-			var w = isCircle ? r : (pathNode.exists("rx") ? Std.parseFloat(pathNode.get("rx")) : 0.0);
-			var w_ = w * SIN45;
-			var cw_ = w * TAN22;
-			var h = isCircle ? r : (pathNode.exists("ry") ? Std.parseFloat(pathNode.get("ry")) : 0.0);
-			var h_ = h * SIN45;
-			var ch_ = h * TAN22;
-			
-			path.segments.push(new MoveSegment(x + w, y));
-			path.segments.push(new QuadraticSegment(x + w, y + ch_, x + w_, y + h_));
-			path.segments.push(new QuadraticSegment(x + cw_, y + h, x, y + h));
-			path.segments.push(new QuadraticSegment(x - cw_, y + h, x - w_, y + h_));
-			path.segments.push(new QuadraticSegment(x - w, y + ch_, x - w, y));
-			path.segments.push(new QuadraticSegment(x - w, y - ch_, x - w_, y - h_));
-			path.segments.push(new QuadraticSegment(x - cw_, y - h, x, y - h));
-			path.segments.push(new QuadraticSegment(x + cw_, y - h, x + w_, y - h_));
-			path.segments.push(new QuadraticSegment(x + w, y - ch_, x + w, y));
-		}
-		else
-		{
-			var d = pathNode.exists("points") ? ("M" + pathNode.get("points") + "z") :
-					pathNode.exists("x1") ? ("M" + pathNode.get("x1") + "," + pathNode.get("y1") + " " + pathNode.get("x2") + "," + pathNode.get("y2") + "z") :
-					pathNode.get("d");
-			
-			for (segment in pathParser.parse(d))
-			{
-				path.segments.push(segment);
-			}
-		}
-		
-		return path;
-	}
 }
