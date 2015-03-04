@@ -34,10 +34,7 @@ class SvgText
 	{
 		matrix = mat.clone();
 		
-		if (textNode.exists("transform"))
-		{
-			Transform.apply(matrix, textNode.get("transform"));
-		}
+		matrix.appendMatrix(Transform.load(textNode.get("transform")));
 		
 		var styles = XmlTools.getStyles(textNode, prevStyles, gradients);
 		

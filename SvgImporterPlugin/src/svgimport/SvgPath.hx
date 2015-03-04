@@ -30,7 +30,7 @@ class SvgPath
 		
 		matrix = mat.clone();
 		
-		Transform.apply(matrix, pathNode.get("transform"));
+		matrix.appendMatrix(Transform.load(pathNode.get("transform")));
 		
 		var styles = XmlTools.getStyles(pathNode, prevStyles, gradients);
 		name = pathNode.exists("id") ? pathNode.get("id") : "";
