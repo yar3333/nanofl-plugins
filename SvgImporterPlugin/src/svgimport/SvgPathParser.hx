@@ -49,6 +49,8 @@ class SvgPathParser
 
     public function parse(pathToParse:String) : Array<Segment>
 	{
+		if (pathToParse == null) return [];
+		
 		lastMoveX = lastMoveY = 0;
         var pos=0;
         var args = new Array<Float>();

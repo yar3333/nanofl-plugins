@@ -121,6 +121,8 @@ class SvgPath
 	
 	public function toElement() : ShapeElement
 	{
+		if (segments.length == 0) return null;
+		
 		var exporter = new SvgPathExporter();
 		
 		if (fill != null && fill != FillType.FillNone)

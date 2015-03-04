@@ -99,7 +99,8 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 					}
 					
 					var frame = layers[layers.length - 1].keyFrames[0];
-					frame.addElement(new GroupElement([ path.toElement() ]));
+					var shape = path.toElement();
+					if (shape != null) frame.addElement(new GroupElement([ shape ]));
 					
 				case SvgElement.DisplayText(text):
 					if (!lastLayerIsGlobal)
@@ -120,22 +121,27 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 	
 	function loadElements(g:SvgGroup) : Array<Element>
 	{
-		return g.children.map(function(child) : Element
+		var r = new Array<Element>();
+		
+		for (child in g.children)
 		{
 			switch (child)
 			{
 				case SvgElement.DisplayGroup(group):
-					var r = new GroupElement(loadElements(group));
-					r.name = group.name;
-					return r;
+					var group = new GroupElement(loadElements(group));
+					group.name = group.name;
+					r.push(group);
 					
 				case SvgElement.DisplayPath(path):
-					return path.toElement();
+					var shape = path.toElement();
+					if (shape != null) r.push(shape);
 					
 				case SvgElement.DisplayText(text):
-					return text.toElement();
+					r.push(text.toElement());
 			}
-		});
+		}
+		
+		return r;
 	}
 	
 	function createLayerWithFrame(parent:Array<Layer>, name:String) : KeyFrame
