@@ -5,7 +5,7 @@ class SvgGroup
 	public var name = "";
 	public var children = new Array<SvgElement>();
 	
-	public function new(groupNode:Xml, matrix:Matrix, prevStyles:Map<String, String>, gradients:Map<String, Grad>, pathParser:SvgPathParser) : Void
+	public function new(groupNode:Xml, matrix:Matrix, prevStyles:Map<String, String>, gradients:Map<String, Grad>) : Void
 	{
 		matrix = matrix.clone();
 		
@@ -20,7 +20,7 @@ class SvgGroup
 			name = groupNode.get("id");
 		}
 		
-		loadChildren(groupNode, matrix, XmlTools.getStyles(groupNode, prevStyles, gradients), gradients, pathParser);
+		loadChildren(groupNode, matrix, XmlTools.getStyles(groupNode, prevStyles, gradients), gradients);
 	}
 
 	public function hasGroup(inName:String) { return findGroup(inName) != null; }
@@ -38,7 +38,7 @@ class SvgGroup
 		return null;
 	}
 	
-	function loadChildren(xml:Xml, matrix:Matrix, styles:Map<String, String>, gradients:Map<String, Grad>, pathParser:SvgPathParser)
+	function loadChildren(xml:Xml, matrix:Matrix, styles:Map<String, String>, gradients:Map<String, Grad>)
 	{
 		for (el in xml.elements())
 		{
@@ -54,28 +54,28 @@ class SvgGroup
 			{
 				if (!(el.exists("display") && el.get("display") == "none"))
 				{
-					children.push(SvgElement.DisplayGroup(new SvgGroup(el, matrix, styles, gradients, pathParser)));
+					children.push(SvgElement.DisplayGroup(new SvgGroup(el, matrix, styles, gradients)));
 				}
 			}
 			else if (name == "path" || name == "line" || name == "polyline")
 			{
-				children.push(SvgElement.DisplayPath(new SvgPath(el, matrix, styles, gradients, pathParser, false, false)));
+				children.push(SvgElement.DisplayPath(new SvgPath(el, matrix, styles, gradients, false, false)));
 			}
 			else if (name == "rect")
 			{
-				children.push(SvgElement.DisplayPath(new SvgPath(el, matrix, styles, gradients, pathParser, true, false)));
+				children.push(SvgElement.DisplayPath(new SvgPath(el, matrix, styles, gradients, true, false)));
 			}
 			else if (name == "polygon")
 			{
-				children.push(SvgElement.DisplayPath(new SvgPath(el, matrix, styles, gradients, pathParser, false, false)));
+				children.push(SvgElement.DisplayPath(new SvgPath(el, matrix, styles, gradients, false, false)));
 			}
 			else if (name == "ellipse")
 			{
-				children.push(SvgElement.DisplayPath(new SvgPath(el, matrix, styles, gradients, pathParser, false, true)));
+				children.push(SvgElement.DisplayPath(new SvgPath(el, matrix, styles, gradients, false, true)));
 			}
 			else if (name == "circle")
 			{
-				children.push(SvgElement.DisplayPath(new SvgPath(el, matrix, styles, gradients, pathParser, false, true, true)));
+				children.push(SvgElement.DisplayPath(new SvgPath(el, matrix, styles, gradients, false, true, true)));
 			}
 			else if (name == "text")
 			{
@@ -91,7 +91,7 @@ class SvgGroup
 			}
 			else if (name == "a")
 			{
-				loadChildren(el, matrix, styles, gradients, pathParser);
+				loadChildren(el, matrix, styles, gradients);
 			}
 			else
 			{

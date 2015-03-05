@@ -6,7 +6,6 @@ class Svg extends SvgGroup
 	public var width(default, null) : Float;
 	
 	private var gradients : Map<String, Grad>;
-	private var pathParser : SvgPathParser;
 	
 	public function new(xml:Xml)
 	{
@@ -18,7 +17,6 @@ class Svg extends SvgGroup
 		}
 		
 		gradients = new Map<String, Grad>();
-		pathParser = new SvgPathParser();
 		
 		width = XmlTools.getFloatStyle(svg, "width", null, 0.0);
 		height = XmlTools.getFloatStyle(svg, "height", null, 0.0);
@@ -40,7 +38,7 @@ class Svg extends SvgGroup
 		else if (width  == 0) width = height;
 		else if (height == 0) height = width;
 		
-		super(svg, new Matrix(), null, gradients, pathParser);
+		super(svg, new Matrix(), null, gradients);
 	}
 	
 	private function dumpGroup(g:SvgGroup, indent:String)

@@ -2,12 +2,8 @@ package svgimport;
 
 import svgimport.Segment;
 
-class SvgPathParser
+class SegmentsParser
 {
-    var lastMoveX : Float;
-    var lastMoveY : Float;
-    var prev : Segment;
-    
     static var sCommandArgs : Array<Int>;
 
     static inline var MOVE  = 77;//"M".charCodeAt(0);
@@ -38,7 +34,16 @@ class SvgPathParser
     static var FLOAT_DOT = -5;
     static var FLOAT_EXP = -6;
 
-    public function new()
+    var lastMoveX : Float;
+    var lastMoveY : Float;
+    var prev : Segment;
+    
+	public static function run(pathToParse:String) : Array<Segment>
+	{
+		return new SegmentsParser().parse(pathToParse);
+	}
+	
+	function new()
 	{
         if (sCommandArgs == null)
         {
@@ -47,7 +52,7 @@ class SvgPathParser
         }
     }
 
-    public function parse(pathToParse:String) : Array<Segment>
+    function parse(pathToParse:String) : Array<Segment>
 	{
 		if (pathToParse == null) return [];
 		

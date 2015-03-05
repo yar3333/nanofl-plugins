@@ -24,7 +24,7 @@ class SvgPath
 
 	public var segments : Array<Segment>;
 	
-	public function new(pathNode:Xml, mat:Matrix, prevStyles:Map<String, String>, gradients:Map<String, Grad>, pathParser:SvgPathParser, isRect:Bool, isEllipse:Bool, isCircle=false) : Void
+	public function new(pathNode:Xml, mat:Matrix, prevStyles:Map<String, String>, gradients:Map<String, Grad>, isRect:Bool, isEllipse:Bool, isCircle=false) : Void
 	{
 		//trace("\t\tloadPath isRect = " + isRect + "; isEllipse = " + isEllipse+"; isCircle = " + isCircle);
 		
@@ -112,7 +112,7 @@ class SvgPath
 					pathNode.exists("x1") ? ("M" + pathNode.get("x1") + "," + pathNode.get("y1") + " " + pathNode.get("x2") + "," + pathNode.get("y2") + "z") :
 					pathNode.get("d");
 			
-			for (segment in pathParser.parse(d))
+			for (segment in SegmentsParser.run(d))
 			{
 				segments.push(segment);
 			}
