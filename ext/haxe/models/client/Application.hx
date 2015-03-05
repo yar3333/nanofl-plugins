@@ -8,7 +8,7 @@ typedef Application =
 	var document : models.client.Document;
 	var fileApi : models.client.XpcomFileApi;
 	function generateTempDocumentFilePath() : String;
-	function loadDocument(path:String, callb:models.client.Document -> Void) : Void;
+	function loadDocument(path:String, ?activateAfterLoad:Bool, ?callb:models.client.Document -> Void) : Void;
 	var newObjectParams : models.client.NewObjectParams;
 	var plugins : models.client.IPlugins;
 	function quit() : Void;

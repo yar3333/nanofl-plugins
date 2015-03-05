@@ -8474,7 +8474,7 @@ declare module models.client
 		document : models.client.Document;
 		fileApi : models.client.XpcomFileApi;
 		generateTempDocumentFilePath() : string;
-		loadDocument(path:string, callb:(arg:models.client.Document) => void) : void;
+		loadDocument(path:string, activateAfterLoad?:boolean, callb?:(arg:models.client.Document) => void) : void;
 		newObjectParams : models.client.NewObjectParams;
 		plugins : models.client.IPlugins;
 		quit() : void;
