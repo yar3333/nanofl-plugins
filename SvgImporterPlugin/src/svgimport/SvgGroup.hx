@@ -5,7 +5,7 @@ class SvgGroup
 	public var name = "";
 	public var children = new Array<SvgElement>();
 	
-	public function new(groupNode:Xml, matrix:Matrix, prevStyles:Map<String, String>, gradients:Map<String, Grad>) : Void
+	public function new(groupNode:Xml, matrix:Matrix, baseStyles:Map<String, String>, gradients:Map<String, Grad>) : Void
 	{
 		matrix = matrix.clone();
 		
@@ -20,7 +20,7 @@ class SvgGroup
 			name = groupNode.get("id");
 		}
 		
-		loadChildren(groupNode, matrix, XmlTools.getStyles(groupNode, prevStyles, gradients), gradients);
+		loadChildren(groupNode, matrix, XmlTools.getStyles(groupNode, baseStyles, gradients), gradients);
 	}
 
 	public function hasGroup(inName:String) { return findGroup(inName) != null; }

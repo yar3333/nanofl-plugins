@@ -6,15 +6,15 @@ class XmlTools
 	private static var mStyleValue = ~/\s*(.*)\s*:\s*(.*)\s*/;
 	private static var mURLMatch = ~/url\(#(.*)\)/;
 	
-	public static function getStyles(node:Xml, prevStyles:Map<String, String>, gradients:Map<String, Grad>) : Map<String, String>
+	public static function getStyles(node:Xml, baseStyles:Map<String, String>, gradients:Map<String, Grad>) : Map<String, String>
 	{
 		var styles = new Map<String, String>();
 		
-		if (prevStyles != null)
+		if (baseStyles != null)
 		{
-			for (s in prevStyles.keys())
+			for (s in baseStyles.keys())
 			{
-				styles.set(s, prevStyles.get(s));
+				styles.set(s, baseStyles.get(s));
 			}
 		}
 		

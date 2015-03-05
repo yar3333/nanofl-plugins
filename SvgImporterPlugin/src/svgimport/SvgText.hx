@@ -30,13 +30,13 @@ class SvgText
    
 	public var textAnchor : String;
    
-	public function new(textNode:Xml, mat:Matrix, prevStyles:Map<String, String>, gradients:Map<String, Grad>)
+	public function new(textNode:Xml, mat:Matrix, baseStyles:Map<String, String>, gradients:Map<String, Grad>)
 	{
 		matrix = mat.clone();
 		
 		matrix.appendMatrix(Transform.load(textNode.get("transform")));
 		
-		var styles = XmlTools.getStyles(textNode, prevStyles, gradients);
+		var styles = XmlTools.getStyles(textNode, baseStyles, gradients);
 		
 		name = textNode.exists("id") ? textNode.get("id") : "";
 		

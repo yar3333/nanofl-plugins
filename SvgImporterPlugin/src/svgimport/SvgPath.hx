@@ -24,15 +24,13 @@ class SvgPath
 
 	public var segments : Array<Segment>;
 	
-	public function new(pathNode:Xml, mat:Matrix, prevStyles:Map<String, String>, gradients:Map<String, Grad>, isRect:Bool, isEllipse:Bool, isCircle=false) : Void
+	public function new(pathNode:Xml, mat:Matrix, baseStyles:Map<String, String>, gradients:Map<String, Grad>, isRect:Bool, isEllipse:Bool, isCircle=false) : Void
 	{
-		//trace("\t\tloadPath isRect = " + isRect + "; isEllipse = " + isEllipse+"; isCircle = " + isCircle);
-		
 		matrix = mat.clone();
 		
 		matrix.appendMatrix(Transform.load(pathNode.get("transform")));
 		
-		var styles = XmlTools.getStyles(pathNode, prevStyles, gradients);
+		var styles = XmlTools.getStyles(pathNode, baseStyles, gradients);
 		name = pathNode.exists("id") ? pathNode.get("id") : "";
 		
 		alpha = XmlTools.getFloatStyle(pathNode, "opacity", styles, 1.0);
