@@ -39,9 +39,10 @@ class SvgPath
 		strokeAlpha = XmlTools.getFloatStyle(pathNode, "stroke-opacity", styles, 1.0);
 		strokeColor = XmlTools.getStrokeStyle(pathNode, "stroke", styles, null);
 		strokeWidth = XmlTools.getFloatStyle(pathNode, "stroke-width", styles, 1.0);
-		strokeCaps = "round";
-		strokeJoints = "round";
-		strokeMiterLimit = XmlTools.getFloatStyle(pathNode, "stroke-miterlimit", styles, 3.0);
+		strokeCaps = XmlTools.getStyle(pathNode, "stroke-linecap", styles, "butt");
+		strokeJoints = XmlTools.getStyle(pathNode, "stroke-linejoin", styles, "miter");
+		strokeMiterLimit = XmlTools.getFloatStyle(pathNode, "stroke-miterlimit", styles, 4.0);
+		
 		segments = [];
 
 		if (isRect)
