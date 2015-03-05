@@ -10,7 +10,7 @@ extern class XpcomFileApi implements models.common.FileApi
 	function exists(path:String) : Bool;
 	function getContent(filePath:String) : String;
 	function saveContent(filePath:String, text:String) : Void;
-	function saveBinary(filePath:String, data:haxe.io.Bytes) : Void;
+	function saveBinary(filePath:String, data:Array<Int>) : Void;
 	function isDirectory(path:String) : Bool;
 	function run(filePath:String, args:Array<String>, blocking:Bool) : Void;
 	function copy(srcPath:String, destPath:String) : Void;

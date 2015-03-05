@@ -55,15 +55,6 @@ StdFiltersPlugin.main = function() {
 	models.common.Plugins.registerFilter(new GlowFilterPlugin());
 	models.common.Plugins.registerFilter(new AdjustColorFilterPlugin());
 };
-var haxe = {};
-haxe.io = {};
-haxe.io.Bytes = function() { };
-haxe.io.Eof = function() { };
-haxe.io.Eof.prototype = {
-	toString: function() {
-		return "Eof";
-	}
-};
 Math.NaN = Number.NaN;
 Math.NEGATIVE_INFINITY = Number.NEGATIVE_INFINITY;
 Math.POSITIVE_INFINITY = Number.POSITIVE_INFINITY;

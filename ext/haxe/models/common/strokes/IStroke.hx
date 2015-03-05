@@ -9,6 +9,7 @@ extern interface IStroke
 	function save(out:models.common.XmlWriter) : Void;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	function applyAlpha(alpha:Float) : Void;
+	function getTransformed(m:models.common.geom.Matrix) : models.common.strokes.IStroke;
 	function setLibrary(library:models.common.Library) : Void;
 	function toString() : String;
 }

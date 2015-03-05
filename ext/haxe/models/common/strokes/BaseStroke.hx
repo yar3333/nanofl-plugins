@@ -20,5 +20,6 @@ extern class BaseStroke
 	function clone() : models.common.strokes.IStroke;
 	function equ(e:models.common.strokes.IStroke) : Bool;
 	function setLibrary(library:models.common.Library) : Void;
+	function getTransformed(m:models.common.geom.Matrix) : models.common.strokes.IStroke;
 	static function load(node:htmlparser.HtmlNodeElement) : models.common.strokes.IStroke;
 }

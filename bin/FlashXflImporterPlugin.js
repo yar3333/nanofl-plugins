@@ -1232,16 +1232,6 @@ haxe.ds.StringMap.prototype = {
 	,__class__: haxe.ds.StringMap
 };
 haxe.io = {};
-haxe.io.Bytes = function() { };
-haxe.io.Bytes.__name__ = ["haxe","io","Bytes"];
-haxe.io.Eof = function() { };
-haxe.io.Eof.__name__ = ["haxe","io","Eof"];
-haxe.io.Eof.prototype = {
-	toString: function() {
-		return "Eof";
-	}
-	,__class__: haxe.io.Eof
-};
 haxe.io.Path = function(path) {
 	var c1 = path.lastIndexOf("/");
 	var c2 = path.lastIndexOf("\\");

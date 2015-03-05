@@ -6994,6 +6994,12 @@ declare module models.common.libraryitems
 		static parse(namePath:string, fontNode:htmlparser.HtmlNodeElement) : models.common.libraryitems.FontItem;
 	}
 	
+	export class LibraryItems
+	{
+		static saveToXml(items:models.common.libraryitems.LibraryItem[], out:models.common.XmlWriter) : void;
+		static loadFromXml(xml:htmlparser.HtmlNodeElement) : models.common.libraryitems.LibraryItem[];
+	}
+	
 	export class MovieClipItem extends models.common.libraryitems.InstancableItem implements models.common.ITimeline, models.common.ILayersContainer
 	{
 		constructor(namePath:string);
@@ -7079,7 +7085,7 @@ declare module models.common
 		readDirectory(dir:string) : string[];
 		getContent(filePath:string) : string;
 		saveContent(filePath:string, text:string) : void;
-		saveBinary(filePath:string, data:Array<number>) : void;
+		saveBinary(filePath:string, data:number[]) : void;
 		exists(path:string) : boolean;
 		isDirectory(path:string) : boolean;
 		run(filePath:string, args:string[], blocking:boolean) : void;
@@ -7088,6 +7094,11 @@ declare module models.common
 		remove(path:string) : void;
 		findFiles(dirPath:string, onFile?:(arg:string) => void, onDir?:(arg:string) => boolean) : void;
 		getPluginPaths() : string[];
+	}
+	
+	export interface ISelectable
+	{
+		selected : boolean;
 	}
 	
 	interface ArrayRO<T> extends Array<T> { }
@@ -7241,11 +7252,6 @@ declare module models.common
 		getChildren() : models.common.elements.Element[];
 		createDisplayObject(frameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : createjs.DisplayObject;
 		getTimeline() : models.common.ITimeline;
-	}
-	
-	export interface ISelectable
-	{
-		selected : boolean;
 	}
 	
 	export interface ITimeline
@@ -7487,6 +7493,7 @@ declare module models.common.strokes
 		clone() : models.common.strokes.IStroke;
 		equ(e:models.common.strokes.IStroke) : boolean;
 		setLibrary(library:models.common.Library) : void;
+		getTransformed(m:models.common.geom.Matrix) : models.common.strokes.IStroke;
 		static load(node:htmlparser.HtmlNodeElement) : models.common.strokes.IStroke;
 	}
 	
@@ -7499,6 +7506,7 @@ declare module models.common.strokes
 		save(out:models.common.XmlWriter) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		applyAlpha(alpha:number) : void;
+		getTransformed(m:models.common.geom.Matrix) : models.common.strokes.IStroke;
 		setLibrary(library:models.common.Library) : void;
 		toString() : string;
 	}
@@ -7543,10 +7551,25 @@ declare module models.common.strokes
 
 declare module models.client.undo.states
 {
+	type DocumentState = models.common.DocumentProperties;
+	
 	export class ElementState
 	{
 		equ(state:models.client.undo.states.ElementState) : boolean;
 		toString() : string;
+	}
+	
+	export class ElementsState
+	{
+		constructor(layerElements:{ elements : models.common.elements.Element[]; }[]);
+		layerElements : { elements : models.common.elements.Element[]; }[];
+	}
+	
+	export class FigureState
+	{
+		constructor(shapeStates:models.client.undo.states.ShapeState[]);
+		shapeStates : models.client.undo.states.ShapeState[];
+		equ(state:models.client.undo.states.FigureState) : boolean;
 	}
 	
 	export class InstanceState extends models.client.undo.states.ElementState
@@ -7561,6 +7584,13 @@ declare module models.client.undo.states
 	type LibraryItemState = models.common.libraryitems.LibraryItem;
 	
 	type LibraryState = models.common.libraryitems.LibraryItem[];
+	
+	export class NavigatorState
+	{
+		constructor(first:{ frameIndex : number; layerIndex : number; namePath : string; }, nexts:{ layerIndex : number; frameIndex : number; elementIndex : number; }[]);
+		first : { frameIndex : number; layerIndex : number; namePath : string; };
+		nexts : { layerIndex : number; frameIndex : number; elementIndex : number; }[];
+	}
 	
 	export class ShapeState extends models.client.undo.states.ElementState
 	{
@@ -7587,6 +7617,13 @@ declare module models.client.undo.states
 		constructor(layerStates:models.common.Layer[]);
 		layerStates : models.common.Layer[];
 	}
+	
+	export class TransformationsState
+	{
+		constructor(elementStates:models.common.geom.Matrix[]);
+		elementStates : models.common.geom.Matrix[];
+		equ(state:models.client.undo.states.TransformationsState) : boolean;
+	}
 }
 
 declare module models.common.fills
@@ -7600,6 +7637,8 @@ declare module models.common.fills
 	{
 		constructor(matrix:models.common.geom.Matrix);
 		matrix : models.common.geom.Matrix;
+		clone() : models.common.fills.IFill;
+		getTransformed(m:models.common.geom.Matrix) : models.common.fills.IFill;
 	}
 	
 	export interface IFill
@@ -7608,6 +7647,7 @@ declare module models.common.fills
 		clone() : models.common.fills.IFill;
 		equ(e:models.common.fills.IFill) : boolean;
 		applyAlpha(alpha:number) : void;
+		getTransformed(m:models.common.geom.Matrix) : models.common.fills.IFill;
 		save(out:models.common.XmlWriter) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		setLibrary(library:models.common.Library) : void;
@@ -7667,10 +7707,9 @@ declare module models.common.fills
 		save(out:models.common.XmlWriter) : void;
 		clone() : models.common.fills.IFill;
 		applyAlpha(alpha:number) : void;
+		getTransformed(m:models.common.geom.Matrix) : models.common.fills.IFill;
 		begin(g:createjs.Graphics) : void;
-		transform(m:models.common.geom.Matrix) : void;
 		equ(e:models.common.fills.IFill) : boolean;
-		translate(dx:number, dy:number) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		toString() : string;
 	}
@@ -7682,6 +7721,7 @@ declare module models.common.fills
 		save(out:models.common.XmlWriter) : void;
 		clone() : models.common.fills.IFill;
 		applyAlpha(alpha:number) : void;
+		getTransformed(m:models.common.geom.Matrix) : models.common.fills.IFill;
 		begin(g:createjs.Graphics) : void;
 		equ(e:models.common.fills.IFill) : boolean;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
@@ -7768,6 +7808,11 @@ declare module htmlparser
 		setInnerText(text:string) : void;
 	}
 	
+	export class HtmlDocument extends htmlparser.HtmlNodeElement
+	{
+		constructor(str?:string);
+	}
+	
 	export class HtmlNodeText extends htmlparser.HtmlNode
 	{
 		constructor(text:string);
@@ -7810,6 +7855,61 @@ declare module htmlparser
 	}
 }
 
+declare module models.client.editorelements
+{
+	export class EditorElement implements models.common.ISelectable
+	{
+		frame : models.common.Frame;
+		originalElement : models.common.elements.Element;
+		currentElement : models.common.elements.Element;
+		metaDispObj : createjs.Container;
+		selected : boolean;
+		get_width() : number
+	 	set_width(v:number) : number;
+		get_height() : number
+	 	set_height(v:number) : number;
+		updateTransformations() : void;
+		update() : void;
+		rebind() : void;
+		getBounds() : createjs.Rectangle;
+		getTransformedBounds() : createjs.Rectangle;
+		hitTest(x:number, y:number) : boolean;
+	}
+	
+	export class EditorElementSelectBox extends models.client.editorelements.EditorElement
+	{
+		updateTransformations() : void;
+	}
+	
+	export class EditorElementGroup extends models.client.editorelements.EditorElementSelectBox
+	{
+		get_element() : models.common.elements.GroupElement;
+	}
+	
+	export class EditorElementInstance extends models.client.editorelements.EditorElementSelectBox
+	{
+		get_element() : models.common.elements.Instance;
+	}
+	
+	export class EditorElementShape extends models.client.editorelements.EditorElement
+	{
+		get_element() : models.common.elements.ShapeElement;
+	}
+	
+	export class EditorElementText extends models.client.editorelements.EditorElementSelectBox
+	{
+		get_element() : models.common.elements.TextElement;
+		update() : void;
+		hitTest(x:number, y:number) : boolean;
+		beginEditing() : void;
+		endEditing() : void;
+		setSelectionFormat(format:nanofl.TextRun) : void;
+		getSelectionFormat() : nanofl.TextRun;
+		setPosAndSize(obj:{ height : number; width : number; x : number; y : number; }) : void;
+		getMinSize() : { height : number; width : number; };
+	}
+}
+
 declare module nanofl
 {
 	export class Bitmap extends createjs.Bitmap
@@ -7844,6 +7944,12 @@ declare module nanofl
 		uncacheChild(child:createjs.DisplayObject) : void;
 		toString() : string;
 		static applyMask(mask:createjs.DisplayObject, obj:createjs.DisplayObject) : boolean;
+	}
+	
+	export class Stage extends createjs.Stage
+	{
+		constructor(canvas:any);
+		update(params?:any) : void;
 	}
 	
 	export class TextRun
@@ -7892,6 +7998,30 @@ declare module nanofl
 		static measureFontHeight(family:string, style:string, size:number) : number;
 		static measureFontBaselineCoef(family:string, style:string) : number;
 	}
+	
+	export class TransformationBox extends createjs.Container
+	{
+		constructor();
+		minWidth : number;
+		minHeight : number;
+		width : number;
+		height : number;
+		get_regPointX() : number
+	 	set_regPointX(v:number) : number;
+		get_regPointY() : number
+	 	set_regPointY(v:number) : number;
+		rotateCursorUrl : string;
+		resize : stdlib.Event<nanofl.TransformationBox.ResizeEventArgs>;
+		rotate : stdlib.Event<nanofl.TransformationBox.RotateEventArgs>;
+		moveRegPoint : stdlib.Event<{ }>;
+		defaultRegPointX : number;
+		defaultRegPointY : number;
+		autoRegPoint : boolean;
+		disableRotation : boolean;
+		magnetOnRotate : boolean;
+		proportionalResize : boolean;
+		draw(ctx:CanvasRenderingContext2D, ignoreCache?:boolean) : boolean;
+	}
 }
 
 declare module stdlib
@@ -7903,6 +8033,24 @@ declare module stdlib
 		unbind(handler:(arg0:any, arg1:EventArgsType) => void) : void;
 		unbindAll() : void;
 		call(args:EventArgsType) : void;
+	}
+}
+
+declare module nanofl.TransformationBox
+{
+	type ResizeEventArgs =
+	{
+		kx : number;
+		ky : number;
+		regX : number;
+		regY : number;
+	}
+	
+	type RotateEventArgs =
+	{
+		angle : number;
+		regX : number;
+		regY : number;
 	}
 }
 
@@ -7965,6 +8113,11 @@ declare module models.common.geom
 		maxY : number;
 		minX : number;
 		minY : number;
+	}
+	
+	export class BoundsTools
+	{
+		static updateByRect(bounds:models.common.geom.Bounds, rect:createjs.Rectangle) : models.common.geom.Bounds;
 	}
 	
 	export class Contour
@@ -8265,6 +8418,28 @@ declare module createjs.AbstractSoundInstance
 	}
 }
 
+declare module models.client.undo
+{
+	export class UndoQueue
+	{
+		/**
+		 * This method may be called several times with different operations.
+		 */
+		beginTransaction(operations:{ document : boolean; element : models.common.elements.Element; elements : boolean; figure : boolean; libraryAddItem : string; libraryItem : string; libraryRemoveItems : string[]; libraryRenameItem : { newNamePath : string; oldNamePath : string; }; timeline : boolean; transformations : boolean; }) : void;
+		cancelTransaction() : void;
+		revertTransaction() : void;
+		forgetTransaction() : void;
+		commitTransaction() : void;
+		undo() : void;
+		redo() : void;
+		canUndo() : boolean;
+		canRedo() : boolean;
+		documentSaved() : void;
+		isDocumentModified() : boolean;
+		toString() : string;
+	}
+}
+
 declare module createjs.Sprite
 {
 	type SpriteAnimationendEvent =
@@ -8284,6 +8459,302 @@ declare module createjs.Sprite
 
 declare module models.client
 {
+	enum ActiveView
+	{
+		LIBRARY,
+		TIMELINE,
+		EDITOR
+	}
+	
+	type Application =
+	{
+		addRecent(path:string) : void;
+		clipboard : models.client.Clipboard;
+		createNewEmptyDocument(addEmptySceneToLibrary:boolean, docProp?:models.common.DocumentProperties) : models.client.Document;
+		document : models.client.Document;
+		fileApi : models.client.XpcomFileApi;
+		generateTempDocumentFilePath() : string;
+		loadDocument(path:string, callb:(arg:models.client.Document) => void) : void;
+		newObjectParams : models.client.NewObjectParams;
+		plugins : models.client.IPlugins;
+		quit() : void;
+		saveDocumentIfNeed(callb:() => void) : void;
+		serverApi : models.client.ServerApi;
+	}
+	
+	export class Clipboard
+	{
+		constructor(app:models.client.Application);
+		copy(isCut?:boolean) : boolean;
+		canCut() : boolean;
+		canCopy() : boolean;
+		canPaste() : boolean;
+		cut() : boolean;
+		paste() : boolean;
+		restoreFocus() : void;
+	}
+	
+	export class Document
+	{
+		path : string;
+		properties : models.common.DocumentProperties;
+		library : models.client.EditorLibrary;
+		neverSaved : boolean;
+		navigator : models.client.Navigator;
+		editor : models.client.Editor;
+		undoQueue : models.client.undo.UndoQueue;
+		activate(isCenterView:boolean) : void;
+		setProperties(properties:models.common.DocumentProperties) : void;
+		updateTitle() : void;
+		save(callb?:() => void) : void;
+		saveAs(newPath?:string, callb?:() => void) : void;
+		test() : void;
+	}
+	
+	export class Editor
+	{
+		container : createjs.Container;
+		get_activeLayer() : models.client.EditorLayer;
+		figure : models.client.Figure;
+		get_magnet() : boolean
+	 	set_magnet(v:boolean) : boolean;
+		get_shift() : boolean
+	 	set_shift(v:boolean) : boolean;
+		get_zoomLevel() : number
+	 	set_zoomLevel(v:number) : number;
+		beginEditing(pathItem:models.client.PathItem, isCenterView?:boolean) : void;
+		updateShapes() : void;
+		updateElement(element:models.common.elements.Element) : void;
+		hasSelected() : boolean;
+		toggleSelection() : boolean;
+		select(obj:models.common.ISelectable, deselectOthers?:boolean) : void;
+		selectWoUpdate(obj:models.common.ISelectable, deselectOthers?:boolean) : void;
+		deselect(obj:models.common.ISelectable) : void;
+		deselectWoUpdate(obj:models.common.ISelectable) : void;
+		selectAll() : void;
+		deselectAll() : void;
+		deselectAllWoUpdate() : void;
+		selectLayers(layerIndexes:number[]) : void;
+		isSelectedAtPos(pos:models.common.geom.Point) : boolean;
+		getItemAtPos(pos:models.common.geom.Point) : models.client.editorelements.EditorElement;
+		getObjectAtPos(pos:models.common.geom.Point) : { layerIndex : number; obj : models.common.ISelectable; };
+		breakApartSelected() : void;
+		removeSelected() : void;
+		translateSelected(dx:number, dy:number, lowLevel?:boolean) : void;
+		updateTransformations() : void;
+		getItems(includeShape?:boolean) : models.client.editorelements.EditorElement[];
+		getSelectedItems() : models.client.editorelements.EditorElement[];
+		getObjectLayerIndex(obj:models.common.ISelectable) : number;
+		extractSelected() : models.common.elements.Element[];
+		isItemCanBeAdded(item:models.common.libraryitems.LibraryItem) : boolean;
+		addElement(element:models.common.elements.Element) : models.client.editorelements.EditorElement;
+		convertToSymbol() : void;
+		groupSelected() : void;
+		translateVertex(point:models.common.geom.Point, dx:number, dy:number, addUndoTransaction?:boolean) : void;
+		rebind(isCenterView?:boolean) : void;
+		update() : void;
+		showAllLayers() : void;
+		hideAllLayers() : void;
+		lockAllLayers() : void;
+		unlockAllLayers() : void;
+		getSelectedLayerIndexes() : number[];
+		removeTransformFromSelected() : void;
+		moveSelectedFront() : void;
+		moveSelectedForwards() : void;
+		moveSelectedBackwards() : void;
+		moveSelectedBack() : void;
+		swapInstance(instance:models.common.elements.Instance, newNamePath:string) : void;
+		getForClipboard() : string;
+		pasteFromXml(data:string) : boolean;
+		duplicateSelected() : void;
+		getObjectsInRectangle(x:number, y:number, width:number, height:number) : models.common.ISelectable[];
+		cutToClipboard() : void;
+		copyToClipboard() : void;
+		pasteFromClipboard() : void;
+	}
+	
+	export class EditorLayer
+	{
+		container : createjs.Container;
+		shape : models.client.editorelements.EditorElementShape;
+		get_editable() : boolean;
+		get_parentIndex() : number;
+		get_type() : string;
+		addElement(element:models.common.elements.Element, index?:number) : models.client.editorelements.EditorElement;
+		removeSelected() : void;
+		getItems(r?:models.client.editorelements.EditorElement[], includeShape?:boolean) : models.client.editorelements.EditorElement[];
+		getSelectedItems(r?:models.client.editorelements.EditorElement[]) : models.client.editorelements.EditorElement[];
+		hasSelected() : boolean;
+		isAllSelected() : boolean;
+		hasItem(item:models.client.editorelements.EditorElement) : boolean;
+		selectAll() : void;
+		deselectAll() : void;
+		breakApartSelectedItems() : void;
+		show() : void;
+		hide() : void;
+		lock() : void;
+		unlock() : void;
+		getItemAtPos(pos:models.common.geom.Point) : models.client.editorelements.EditorElement;
+		getEditablessReason() : string;
+		moveSelectedFront() : void;
+		moveSelectedForwards() : void;
+		moveSelectedBackwards() : void;
+		moveSelectedBack() : void;
+		magnetSelectedToGuide() : void;
+		getIndex() : number;
+		getTweenedElements(frameIndex:number) : models.common.TweenedElement[];
+		update() : void;
+		getChildLayers() : models.client.EditorLayer[];
+		getElementIndex(element:models.common.elements.Element) : number;
+		getElementByIndex(elementIndex:number) : models.common.elements.Element;
+		getElementsState() : { elements : models.common.elements.Element[]; };
+		duplicateSelected() : void;
+		isShowSelection() : boolean;
+	}
+	
+	export class EditorLibrary
+	{
+		constructor(app:models.client.Application, library:models.common.Library);
+		get_activeItem() : models.common.libraryitems.LibraryItem;
+		renameItem(namePath:string, newNamePath:string) : boolean;
+		removeItems(namePaths:string[]) : void;
+		copyAndChangeDir(libraryDir:string, callb?:() => void) : void;
+		getNextItemName() : string;
+		hasItem(namePath:string) : boolean;
+		addItem(item:models.common.libraryitems.LibraryItem) : void;
+		addFont(family:string, variants:models.common.FontVariant[]) : void;
+		preload(ready:() => void) : void;
+		getItem(namePath:string) : models.common.libraryitems.LibraryItem;
+		getSceneInstance() : models.common.elements.Instance;
+		getSceneItem() : models.common.libraryitems.MovieClipItem;
+		getItems() : models.common.libraryitems.LibraryItem[];
+		getRawLibrary() : models.common.Library;
+		getForClipboard() : string;
+		pasteFromXml(data:string) : boolean;
+		hasSelected() : boolean;
+		removeSelected() : void;
+		renameByUser(namePath:string) : boolean;
+		deselectAll() : void;
+		update() : void;
+		getSelectedItems() : models.common.libraryitems.LibraryItem[];
+		gotoPrevItem(overwriteSelection:boolean) : void;
+		gotoNextItem(overwriteSelection:boolean) : void;
+		showPropertiesPopup() : void;
+		createEmptySymbol() : void;
+		createFolder() : void;
+		importImagesFromPaths(paths:string[], folderPath:string, ready?:() => void) : void;
+		importLibraryItemsFromFiles(files:File[], folderPath:string, callb?:(arg:models.common.libraryitems.LibraryItem[]) => void) : void;
+	}
+	
+	export class Figure
+	{
+		constructor(layers:models.client.EditorLayer[]);
+		getVertexAtPos(pt:models.common.geom.Point) : models.common.geom.Point;
+		getSameEdgeWithLayers(edge:models.common.geom.Edge) : { layerIndex : number; edge : models.common.geom.Edge; }[];
+		getEdgeAtPos(pt:models.common.geom.Point) : { dist : number; edge : models.common.geom.Edge; layerIndex : number; t : number; };
+		getStrokeEdgeAtPos(pt:models.common.geom.Point) : { dist : number; edge : models.common.geom.StrokeEdge; layerIndex : number; t : number; };
+		getPolygonEdgeAtPos(pt:models.common.geom.Point) : { dist : number; edge : models.common.geom.Edge; layerIndex : number; t : number; };
+		getPolygonAtPos(pt:models.common.geom.Point) : { layerIndex : number; polygon : models.common.geom.Polygon; };
+		translateVertex(point:models.common.geom.Point, dx:number, dy:number) : void;
+		hasSelected() : boolean;
+		hasSelectedEdges() : boolean;
+		hasSelectedPolygons() : boolean;
+		updateShapes() : void;
+		getSelectedEdgesStrokeParams() : { color : string; thickness : number; type : string; };
+		getSelectedPolygonsFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : models.common.geom.Matrix; ratios : number[]; type : string; };
+		selectAll() : void;
+		deselectAll() : void;
+		getBounds(bounds?:models.common.geom.Bounds) : models.common.geom.Bounds;
+		getSelectedBounds(bounds?:models.common.geom.Bounds) : models.common.geom.Bounds;
+		removeSelected() : void;
+		translateSelected(dx:number, dy:number) : void;
+		transformSelected(m:models.common.geom.Matrix) : void;
+		setSelectedPolygonsFillParams(params:{ bitmapPath : string; color : string; colors : string[]; matrix : models.common.geom.Matrix; ratios : number[]; }) : void;
+		setSelectedEdgesStrokeParams(params:{ color : string; thickness : number; }) : void;
+		setSelectedPolygonsFill(fill:models.common.fills.IFill, x1?:number, y1?:number, x2?:number, y2?:number) : void;
+		setSelectedEdgesStroke(stroke:models.common.strokes.IStroke) : void;
+		combine_vertex(x:number, y:number) : void;
+		combine_selected() : void;
+		extractSelected() : models.common.elements.ShapeElement;
+		combineLayerWithEdge(layerIndex:number, edge:models.common.geom.Edge) : void;
+		getMagnetPointEx(x:number, y:number, excludeSelf?:boolean) : { found : boolean; point : models.common.geom.Point; };
+		splitEdge(edge:models.common.geom.Edge, t:number) : models.common.geom.Point;
+		getSelectedStrokeEdges() : models.common.geom.StrokeEdge[];
+	}
+	
+	type IPlugins =
+	{
+		exportDocument(pluginName:string) : void;
+		importDocument(pluginName:string) : void;
+		reload(alertOnSuccess?:boolean) : boolean;
+	}
+	
+	export class Navigator
+	{
+		editPath : models.client.PathItem[];
+		get_pathItem() : models.client.PathItem;
+		navigateUp() : void;
+		navigateDown(container:models.common.IPathElement) : void;
+		navigateTo(editPath:models.client.PathItem[], isCenterView?:boolean) : void;
+		update(isCenterView:boolean) : void;
+		setLayerIndex(index:number) : void;
+		setFrameIndex(index:number) : void;
+		getInstanceNamePaths() : string[];
+	}
+	
+	export class NewObjectParams
+	{
+		constructor(app:models.client.Application);
+		strokeType : string;
+		fillType : string;
+		get_stroke() : models.common.strokes.IStroke;
+		get_fill() : models.common.fills.IFill;
+		roundRadius : number;
+		textFormat : nanofl.TextRun;
+		setStroke(stroke:models.common.strokes.IStroke) : void;
+		setFill(fill:models.common.fills.IFill) : void;
+		setStrokeParams(p:{ color : string; thickness : number; }) : void;
+		getStrokeParams() : { color : string; thickness : number; type : string; };
+		setFillParams(p:{ bitmapPath : string; color : string; colors : string[]; matrix : models.common.geom.Matrix; ratios : number[]; }) : void;
+		getFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : models.common.geom.Matrix; ratios : number[]; type : string; };
+		getStrokeByType(type:string) : models.common.strokes.IStroke;
+		getFillByType(type:string) : models.common.fills.IFill;
+	}
+	
+	export class PathItem
+	{
+		constructor(element:models.common.IPathElement, layerIndex?:number, frameIndex?:number);
+		element : models.common.IPathElement;
+		layerIndex : number;
+		frameIndex : number;
+		setLayerIndex(n:number) : void;
+		setFrameIndex(n:number) : void;
+		get_layer() : models.common.Layer;
+		get_frame() : models.common.Frame;
+		equ(p:models.client.PathItem) : boolean;
+		clone() : models.client.PathItem;
+	}
+	
+	export interface ServerApi
+	{
+		getTempDirectory() : string;
+		copyDir(fromPath:string, toPath:string, callb?:() => void) : void;
+		requestUrl(url:string, callb:(arg:string) => void) : void;
+		openInBrowser(url:string) : void;
+		uploadFileAsLibraryItem(library:models.common.Library, folderPath:string, file:File, callb:(arg:models.common.libraryitems.LibraryItem) => void) : void;
+		getFonts() : string[];
+	}
+	
+	export class ShapePropertiesOptions
+	{
+		strokePane : boolean;
+		fillPane : boolean;
+		roundRadiusPane : boolean;
+		showStrokePane() : models.client.ShapePropertiesOptions;
+		showFillPane() : models.client.ShapePropertiesOptions;
+		showRoundRadiusPane() : models.client.ShapePropertiesOptions;
+	}
+	
 	export class XpcomFileApi implements models.common.FileApi
 	{
 		constructor();
@@ -8294,7 +8765,7 @@ declare module models.client
 		exists(path:string) : boolean;
 		getContent(filePath:string) : string;
 		saveContent(filePath:string, text:string) : void;
-		saveBinary(filePath:string, data:Array<number>) : void;
+		saveBinary(filePath:string, data:number[]) : void;
 		isDirectory(path:string) : boolean;
 		run(filePath:string, args:string[], blocking:boolean) : void;
 		copy(srcPath:string, destPath:string) : void;

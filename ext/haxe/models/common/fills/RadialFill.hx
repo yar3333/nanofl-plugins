@@ -6,7 +6,7 @@ extern class RadialFill extends models.common.fills.MatrixFill implements models
 	var colors : Array<String>;
 	var ratios : Array<Float>;
 	function save(out:models.common.XmlWriter) : Void;
-	function clone() : models.common.fills.IFill;
+	override function clone() : models.common.fills.IFill;
 	function applyAlpha(alpha:Float) : Void;
 	function begin(g:createjs.Graphics) : Void;
 	function equ(e:models.common.fills.IFill) : Bool;
