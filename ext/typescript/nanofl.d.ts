@@ -7420,9 +7420,9 @@ declare module models.common.plugins
 		menuItemName : string;
 		menuItemIcon : string;
 		fileFilterDescription : string;
-		fileFilterPattern : string;
+		fileFilterExtensions : string[];
 		fileDefaultExtension : string;
-		exportDocument(fileApi:models.common.FileApi, srcFilePath:string, destFilePath:string, documentProperties:models.common.DocumentProperties, library:models.common.Library) : void;
+		exportDocument(fileApi:models.common.FileApi, srcFilePath:string, destFilePath:string, documentProperties:models.common.DocumentProperties, library:models.common.Library) : boolean;
 	}
 	
 	export interface IIdePlugin
@@ -7451,7 +7451,7 @@ declare module models.common.plugins
 		menuItemName : string;
 		menuItemIcon : string;
 		fileFilterDescription : string;
-		fileFilterPattern : string;
+		fileFilterExtensions : string[];
 		importDocument(fileApi:models.common.FileApi, srcFilePath:string, destFilePath:string, documentProperties:models.common.DocumentProperties, library:models.common.Library, fonts:string[], callb:(arg:boolean) => void) : void;
 	}
 	
@@ -8684,8 +8684,8 @@ declare module models.client
 	
 	type IPlugins =
 	{
-		exportDocument(pluginName:string) : void;
-		importDocument(pluginName:string) : void;
+		exportDocument(pluginName:string, destFilePath?:string, callb?:(arg:boolean) => void) : void;
+		importDocument(pluginName:string, srcFilePath?:string, callb?:(arg:models.client.Document) => void) : void;
 		reload(alertOnSuccess?:boolean) : boolean;
 	}
 	

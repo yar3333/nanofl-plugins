@@ -45,7 +45,7 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 	public var menuItemName = "Scalable Vector Graphics (*.svg)";
 	public var menuItemIcon = "url(data:image/png;base64," + embeddedIcon.replace("\r", "").replace("\n", "") + ")";
 	public var fileFilterDescription = "Scalable Vector Graphics (*.svg)";
-	public var fileFilterPattern = "*.svg";
+	public var fileFilterExtensions = [ "svg" ];
 	
 	public function importDocument(fileApi:FileApi, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, fonts:Array<String>, callb:Bool->Void)
 	{

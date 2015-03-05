@@ -71,7 +71,7 @@ EReg.prototype = {
 	,__class__: EReg
 };
 var FlashXflImporterPlugin = function() {
-	this.fileFilterPattern = "*.xfl";
+	this.fileFilterExtensions = ["xfl"];
 	this.fileFilterDescription = "Adobe Flash Uncompressed Document (*.xfl)";
 	this.menuItemIcon = "url(data:image/png;base64," + StringTools.replace(StringTools.replace(FlashXflImporterPlugin.embeddedIcon,"\r",""),"\n","") + ")";
 	this.menuItemName = "Adobe Flash Uncompressed Document (*.xfl)";

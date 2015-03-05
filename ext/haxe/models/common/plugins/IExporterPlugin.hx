@@ -9,7 +9,7 @@ extern interface IExporterPlugin
 	var menuItemName : String;
 	var menuItemIcon : String;
 	var fileFilterDescription : String;
-	var fileFilterPattern : String;
+	var fileFilterExtensions : Array<String>;
 	var fileDefaultExtension : String;
-	function exportDocument(fileApi:models.common.FileApi, srcFilePath:String, destFilePath:String, documentProperties:models.common.DocumentProperties, library:models.common.Library) : Void;
+	function exportDocument(fileApi:models.common.FileApi, srcFilePath:String, destFilePath:String, documentProperties:models.common.DocumentProperties, library:models.common.Library) : Bool;
 }

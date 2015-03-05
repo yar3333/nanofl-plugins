@@ -16,10 +16,10 @@ class FlashXflExporterPlugin implements IExporterPlugin
 	public var menuItemName = "Adobe Flash Uncompressed Document (*.xfl)";
 	public var menuItemIcon = "";
 	public var fileFilterDescription = "Adobe Flash Document (*.xfl)";
-	public var fileFilterPattern = "*.xfl";
+	public var fileFilterExtensions = [ "xfl" ];
 	public var fileDefaultExtension = "xfl";
 	
-	public function exportDocument(fileApi:FileApi, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Void
+	public function exportDocument(fileApi:FileApi, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
 	{
 		trace("Plugin.exportDocument " + srcFilePath + " => " + destFilePath);
 		var scene = library.getSceneItem();
@@ -33,5 +33,7 @@ class FlashXflExporterPlugin implements IExporterPlugin
 		xml.end();
 		
 		fileApi.saveContent(destFilePath, xml.toString());
+		
+		return true;
 	}
 }

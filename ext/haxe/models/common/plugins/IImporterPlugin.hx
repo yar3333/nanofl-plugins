@@ -9,6 +9,6 @@ extern interface IImporterPlugin
 	var menuItemName : String;
 	var menuItemIcon : String;
 	var fileFilterDescription : String;
-	var fileFilterPattern : String;
+	var fileFilterExtensions : Array<String>;
 	function importDocument(fileApi:models.common.FileApi, srcFilePath:String, destFilePath:String, documentProperties:models.common.DocumentProperties, library:models.common.Library, fonts:Array<String>, callb:Bool -> Void) : Void;
 }

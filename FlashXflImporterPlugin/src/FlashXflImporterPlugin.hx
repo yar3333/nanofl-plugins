@@ -38,7 +38,7 @@ YII=
 	public var menuItemName = "Adobe Flash Uncompressed Document (*.xfl)";
 	public var menuItemIcon = "url(data:image/png;base64," + embeddedIcon.replace("\r", "").replace("\n", "") + ")";
 	public var fileFilterDescription = "Adobe Flash Uncompressed Document (*.xfl)";
-	public var fileFilterPattern = "*.xfl";
+	public var fileFilterExtensions = [ "xfl" ];
 	
 	public function importDocument(fileApi:FileApi, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, fonts:Array<String>, callb:Bool->Void)
 	{
