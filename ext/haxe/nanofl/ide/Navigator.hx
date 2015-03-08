@@ -3,7 +3,7 @@ package nanofl.ide;
 extern class Navigator
 {
 	var editPath(default, null) : Array<nanofl.ide.PathItem>;
-	var pathItem(get, null) : nanofl.ide.PathItem;
+	var pathItem(default, never) : nanofl.ide.PathItem;
 	@:profile
 	function navigateUp() : Void;
 	@:profile

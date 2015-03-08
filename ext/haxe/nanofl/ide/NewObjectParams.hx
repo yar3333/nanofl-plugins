@@ -5,8 +5,8 @@ extern class NewObjectParams
 	function new(app:nanofl.ide.Application) : Void;
 	var strokeType : String;
 	var fillType : String;
-	var stroke(get, never) : nanofl.engine.strokes.IStroke;
-	var fill(get, never) : nanofl.engine.fills.IFill;
+	var stroke(default, never) : nanofl.engine.strokes.IStroke;
+	var fill(default, never) : nanofl.engine.fills.IFill;
 	var roundRadius : Float;
 	var textFormat(default, null) : nanofl.TextRun;
 	function setStroke(stroke:nanofl.engine.strokes.IStroke) : Void;

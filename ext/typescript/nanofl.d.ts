@@ -7302,7 +7302,7 @@ declare module nanofl.ide
 	export class EditorLibrary
 	{
 		constructor(app:nanofl.ide.Application, library:nanofl.engine.Library);
-		get_activeItem() : nanofl.engine.libraryitems.LibraryItem;
+		activeItem : nanofl.engine.libraryitems.LibraryItem;
 		renameItem(namePath:string, newNamePath:string) : boolean;
 		removeItems(namePaths:string[]) : void;
 		copyAndChangeDir(libraryDir:string, callb?:() => void) : void;
@@ -7379,7 +7379,7 @@ declare module nanofl.ide
 	export class Navigator
 	{
 		editPath : nanofl.ide.PathItem[];
-		get_pathItem() : nanofl.ide.PathItem;
+		pathItem : nanofl.ide.PathItem;
 		navigateUp() : void;
 		navigateDown(container:nanofl.engine.IPathElement) : void;
 		navigateTo(editPath:nanofl.ide.PathItem[], isCenterView?:boolean) : void;
@@ -7394,8 +7394,8 @@ declare module nanofl.ide
 		constructor(app:nanofl.ide.Application);
 		strokeType : string;
 		fillType : string;
-		get_stroke() : nanofl.engine.strokes.IStroke;
-		get_fill() : nanofl.engine.fills.IFill;
+		stroke : nanofl.engine.strokes.IStroke;
+		fill : nanofl.engine.fills.IFill;
 		roundRadius : number;
 		textFormat : nanofl.TextRun;
 		setStroke(stroke:nanofl.engine.strokes.IStroke) : void;
@@ -7416,8 +7416,8 @@ declare module nanofl.ide
 		frameIndex : number;
 		setLayerIndex(n:number) : void;
 		setFrameIndex(n:number) : void;
-		get_layer() : nanofl.engine.Layer;
-		get_frame() : nanofl.engine.Frame;
+		layer : nanofl.engine.Layer;
+		frame : nanofl.engine.Frame;
 		equ(p:nanofl.ide.PathItem) : boolean;
 		clone() : nanofl.ide.PathItem;
 	}
@@ -8685,10 +8685,8 @@ declare module nanofl.ide.editorelements
 		currentElement : nanofl.engine.elements.Element;
 		metaDispObj : createjs.Container;
 		selected : boolean;
-		get_width() : number
-	 	set_width(v:number) : number;
-		get_height() : number
-	 	set_height(v:number) : number;
+		width : number;
+		height : number;
 		updateTransformations() : void;
 		update() : void;
 		rebind() : void;

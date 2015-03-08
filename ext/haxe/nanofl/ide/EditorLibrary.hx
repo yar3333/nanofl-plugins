@@ -3,7 +3,7 @@ package nanofl.ide;
 extern class EditorLibrary
 {
 	function new(app:nanofl.ide.Application, library:nanofl.engine.Library) : Void;
-	var activeItem(get, never) : nanofl.engine.libraryitems.LibraryItem;
+	var activeItem(default, never) : nanofl.engine.libraryitems.LibraryItem;
 	function renameItem(namePath:String, newNamePath:String) : Bool;
 	function removeItems(namePaths:Array<String>) : Void;
 	function copyAndChangeDir(libraryDir:String, ?callb:Void -> Void) : Void;

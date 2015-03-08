@@ -7,8 +7,8 @@ extern class EditorElement implements nanofl.engine.ISelectable
 	var currentElement(default, null) : nanofl.engine.elements.Element;
 	var metaDispObj(default, null) : createjs.Container;
 	var selected : Bool;
-	var width(get, set) : Float;
-	var height(get, set) : Float;
+	var width : Float;
+	var height : Float;
 	function updateTransformations() : Void;
 	function update() : Void;
 	function rebind() : Void;

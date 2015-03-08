@@ -3,11 +3,9 @@ package nanofl.ide;
 extern class Editor
 {
 	var container(default, null) : createjs.Container;
-	var activeLayer(get, null) : nanofl.ide.EditorLayer;
+	var activeLayer(get, never) : nanofl.ide.EditorLayer;
 	var figure(default, null) : nanofl.ide.Figure;
-	@:isVar
 	var magnet(get, set) : Bool;
-	@:isVar
 	var shift(get, set) : Bool;
 	var zoomLevel(get, set) : Float;
 	@:profile
