@@ -78,9 +78,9 @@ var FlashXflImporterPlugin = function() {
 	this.name = "FlashXflImporter";
 };
 FlashXflImporterPlugin.__name__ = ["FlashXflImporterPlugin"];
-FlashXflImporterPlugin.__interfaces__ = [models.common.plugins.IImporterPlugin];
+FlashXflImporterPlugin.__interfaces__ = [nanofl.ide.plugins.IImporterPlugin];
 FlashXflImporterPlugin.main = function() {
-	models.common.Plugins.registerImporter(new FlashXflImporterPlugin());
+	nanofl.engine.Plugins.registerImporter(new FlashXflImporterPlugin());
 };
 FlashXflImporterPlugin.prototype = {
 	importDocument: function(fileApi,srcFilePath,destFilePath,documentProperties,library,fonts,callb) {
@@ -395,9 +395,9 @@ flashimport.ContourParser.prototype = {
 			var low = StringTools.rpad(HxOverrides.substr(s,n + 1,null),"0",2);
 			var r = Std.parseInt("0x" + high + low);
 			if(r >= -2147483648) r = -(~r + 1);
-			return models.common.geom.PointTools.round100(r / 5120);
+			return nanofl.engine.geom.PointTools.round100(r / 5120);
 		}
-		return models.common.geom.PointTools.round100(0.05 * Std.parseFloat(s));
+		return nanofl.engine.geom.PointTools.round100(0.05 * Std.parseFloat(s));
 	}
 	,__class__: flashimport.ContourParser
 };
@@ -415,7 +415,7 @@ flashimport.ContoursExporter.__name__ = ["flashimport","ContoursExporter"];
 flashimport.ContoursExporter.prototype = {
 	beginFill: function(n) {
 		this.isInFill = true;
-		this.polygons.push(new models.common.geom.Polygon(this.fills[n]));
+		this.polygons.push(new nanofl.engine.geom.Polygon(this.fills[n]));
 	}
 	,endFill: function() {
 		this.isInFill = false;
@@ -426,23 +426,23 @@ flashimport.ContoursExporter.prototype = {
 	,endStroke: function() {
 	}
 	,moveTo: function(x,y) {
-		if(this.isInFill) this.polygons[this.polygons.length - 1].contours.push(new models.common.geom.Contour([]));
+		if(this.isInFill) this.polygons[this.polygons.length - 1].contours.push(new nanofl.engine.geom.Contour([]));
 		this.x = x;
 		this.y = y;
 	}
 	,lineTo: function(x,y) {
 		if(this.isInFill) {
 			var contours = this.polygons[this.polygons.length - 1].contours;
-			contours[contours.length - 1].edges.push(new models.common.geom.Edge(this.x,this.y,x,y));
-		} else this.edges.push(new models.common.geom.StrokeEdge(this.x,this.y,x,y,null,null,this.stroke));
+			contours[contours.length - 1].edges.push(new nanofl.engine.geom.Edge(this.x,this.y,x,y));
+		} else this.edges.push(new nanofl.engine.geom.StrokeEdge(this.x,this.y,x,y,null,null,this.stroke));
 		this.x = x;
 		this.y = y;
 	}
 	,curveTo: function(controlX,controlY,anchorX,anchorY) {
 		if(this.isInFill) {
 			var contours = this.polygons[this.polygons.length - 1].contours;
-			contours[contours.length - 1].edges.push(new models.common.geom.Edge(this.x,this.y,controlX,controlY,anchorX,anchorY));
-		} else this.edges.push(new models.common.geom.StrokeEdge(this.x,this.y,controlX,controlY,anchorX,anchorY,this.stroke));
+			contours[contours.length - 1].edges.push(new nanofl.engine.geom.Edge(this.x,this.y,controlX,controlY,anchorX,anchorY));
+		} else this.edges.push(new nanofl.engine.geom.StrokeEdge(this.x,this.y,controlX,controlY,anchorX,anchorY,this.stroke));
 		this.x = anchorX;
 		this.y = anchorY;
 	}
@@ -563,7 +563,7 @@ flashimport.ContoursParser.prototype = {
 				var coordMap = this.createCoordMap(subPath);
 				while(subPath.length > 0) {
 					var idx = 0;
-					while(idx < subPath.length) if(prevEdge == null || models.common.geom.PointTools.equ(prevEdge.get_to(),subPath[idx].get_from())) {
+					while(idx < subPath.length) if(prevEdge == null || nanofl.engine.geom.PointTools.equ(prevEdge.get_to(),subPath[idx].get_from())) {
 						var edge = subPath.splice(idx,1)[0];
 						tmpPath.push(edge);
 						this.removeEdgeFromCoordMap(coordMap,edge);
@@ -625,7 +625,7 @@ flashimport.ContoursParser.prototype = {
 					pos = { x : 1e10, y : 1e10};
 					handler.beginFill(fillStyleIdx - 1);
 				}
-				if(!models.common.geom.PointTools.equ(pos,e.get_from())) handler.moveTo(e.get_from().x,e.get_from().y);
+				if(!nanofl.engine.geom.PointTools.equ(pos,e.get_from())) handler.moveTo(e.get_from().x,e.get_from().y);
 				if(js.Boot.__instanceof(e,flashimport.CurvedEdge)) {
 					var c;
 					c = js.Boot.__cast(e , flashimport.CurvedEdge);
@@ -653,7 +653,7 @@ flashimport.ContoursParser.prototype = {
 					pos = { x : 1e10, y : 1e10};
 					handler.beginStroke(lineStyleIdx - 1);
 				}
-				if(!models.common.geom.PointTools.equ(e.get_from(),pos)) handler.moveTo(e.get_from().x,e.get_from().y);
+				if(!nanofl.engine.geom.PointTools.equ(e.get_from(),pos)) handler.moveTo(e.get_from().x,e.get_from().y);
 				if(js.Boot.__instanceof(e,flashimport.CurvedEdge)) {
 					var c;
 					c = js.Boot.__cast(e , flashimport.CurvedEdge);
@@ -781,13 +781,13 @@ flashimport.DocumentImporter.importXmlFiles = function(fileApi,srcFilePath,destD
 	while(_g < _g1.length) {
 		var node = _g1[_g];
 		++_g;
-		var soundItem = models.common.libraryitems.SoundItem.load(htmlparser.HtmlParserTools.getAttr(node,"name"),destLibrary.libraryDir,fileApi);
+		var soundItem = nanofl.engine.libraryitems.SoundItem.load(htmlparser.HtmlParserTools.getAttr(node,"name"),destLibrary.libraryDir,fileApi);
 		if(soundItem != null) {
 			if(htmlparser.HtmlParserTools.getAttr(node,"linkageExportForAS",false)) soundItem.linkage = htmlparser.HtmlParserTools.getAttr(node,"linkageIdentifier");
 			destLibrary.addItem(soundItem);
 		}
 	}
-	symbolLoader.loadFromXml(models.common.Library.SCENE_NAME_PATH,srcDoc);
+	symbolLoader.loadFromXml(nanofl.engine.Library.SCENE_NAME_PATH,srcDoc);
 	fileApi.findFiles(srcLibDir,function(file) {
 		var namePath = haxe.io.Path.withoutExtension(HxOverrides.substr(file,srcLibDir.length + 1,null));
 		symbolLoader.loadFromLibrary(namePath);
@@ -873,8 +873,8 @@ flashimport.MatrixParser.load = function(node,divider,dx,dy) {
 	if(dy == null) dy = 0.0;
 	if(dx == null) dx = 0.0;
 	if(divider == null) divider = 1.0;
-	if(node != null) return new models.common.geom.Matrix(htmlparser.HtmlParserTools.getAttr(node,"a",1.0) / divider,htmlparser.HtmlParserTools.getAttr(node,"b",0.0) / divider,htmlparser.HtmlParserTools.getAttr(node,"c",0.0) / divider,htmlparser.HtmlParserTools.getAttr(node,"d",1.0) / divider,htmlparser.HtmlParserTools.getAttr(node,"tx",0.0) + dx,htmlparser.HtmlParserTools.getAttr(node,"ty",0.0) + dy);
-	return new models.common.geom.Matrix();
+	if(node != null) return new nanofl.engine.geom.Matrix(htmlparser.HtmlParserTools.getAttr(node,"a",1.0) / divider,htmlparser.HtmlParserTools.getAttr(node,"b",0.0) / divider,htmlparser.HtmlParserTools.getAttr(node,"c",0.0) / divider,htmlparser.HtmlParserTools.getAttr(node,"d",1.0) / divider,htmlparser.HtmlParserTools.getAttr(node,"tx",0.0) + dx,htmlparser.HtmlParserTools.getAttr(node,"ty",0.0) + dy);
+	return new nanofl.engine.geom.Matrix();
 };
 flashimport.SymbolLoader = function(fileApi,doc,srcLibDir,library,fonts,log) {
 	this.morphingNotSupported = new Array();
@@ -897,10 +897,10 @@ flashimport.SymbolLoader.prototype = {
 		return this.library.getItem(namePath);
 	}
 	,loadFromXml: function(namePath,src) {
-		if(this.library.hasItem(namePath)) return js.Boot.__cast(this.library.getItem(namePath) , models.common.libraryitems.MovieClipItem);
+		if(this.library.hasItem(namePath)) return js.Boot.__cast(this.library.getItem(namePath) , nanofl.engine.libraryitems.MovieClipItem);
 		var symbolItemXml = htmlparser.HtmlParserTools.findOne(src,">DOMSymbolItem");
 		if(symbolItemXml == null) symbolItemXml = htmlparser.HtmlParserTools.findOne(src,">DOMDocument");
-		var r = new models.common.libraryitems.MovieClipItem(namePath);
+		var r = new nanofl.engine.libraryitems.MovieClipItem(namePath);
 		r.likeButton = htmlparser.HtmlParserTools.getAttr(symbolItemXml,"symbolType") == "button";
 		this.loadLinkage(r,symbolItemXml);
 		var _g = 0;
@@ -914,7 +914,7 @@ flashimport.SymbolLoader.prototype = {
 		return r;
 	}
 	,loadBitmap: function(namePath) {
-		var r = new models.common.libraryitems.BitmapItem(namePath,"png");
+		var r = new nanofl.engine.libraryitems.BitmapItem(namePath,"png");
 		var _g = 0;
 		var _g1 = this.doc.find(">DOMDocument>media>DOMBitmapItem");
 		while(_g < _g1.length) {
@@ -928,7 +928,7 @@ flashimport.SymbolLoader.prototype = {
 		return r;
 	}
 	,loadLayer: function(layer,namePathForLog) {
-		var r = new models.common.Layer(htmlparser.HtmlParserTools.getAttr(layer,"name"),htmlparser.HtmlParserTools.getAttr(layer,"layerType","normal"),htmlparser.HtmlParserTools.getAttr(layer,"visible",true),htmlparser.HtmlParserTools.getAttr(layer,"locked",false),htmlparser.HtmlParserTools.getAttrInt(layer,"parentLayerIndex"));
+		var r = new nanofl.engine.Layer(htmlparser.HtmlParserTools.getAttr(layer,"name"),htmlparser.HtmlParserTools.getAttr(layer,"layerType","normal"),htmlparser.HtmlParserTools.getAttr(layer,"visible",true),htmlparser.HtmlParserTools.getAttr(layer,"locked",false),htmlparser.HtmlParserTools.getAttrInt(layer,"parentLayerIndex"));
 		var _g = 0;
 		var _g1 = layer.find(">frames>DOMFrame");
 		while(_g < _g1.length) {
@@ -939,7 +939,7 @@ flashimport.SymbolLoader.prototype = {
 		return r;
 	}
 	,loadFrame: function(frame,namePathForLog) {
-		return new models.common.KeyFrame(htmlparser.HtmlParserTools.getAttr(frame,"name",""),stdlib.Std["int"](htmlparser.HtmlParserTools.getAttr(frame,"duration",1)),this.loadMotionTween(frame,namePathForLog),this.loadElements(frame.find(">elements>*"),new models.common.geom.Matrix()));
+		return new nanofl.engine.KeyFrame(htmlparser.HtmlParserTools.getAttr(frame,"name",""),stdlib.Std["int"](htmlparser.HtmlParserTools.getAttr(frame,"duration",1)),this.loadMotionTween(frame,namePathForLog),this.loadElements(frame.find(">elements>*"),new nanofl.engine.geom.Matrix()));
 	}
 	,loadMotionTween: function(frame,namePathForLog) {
 		var type = htmlparser.HtmlParserTools.getAttr(frame,"tweenType","none");
@@ -947,7 +947,7 @@ flashimport.SymbolLoader.prototype = {
 		case "none":
 			return null;
 		case "motion":
-			return new models.common.tweens.MotionTween(htmlparser.HtmlParserTools.getAttr(frame,"acceleration",0),this.parseMotionTweenRotate(htmlparser.HtmlParserTools.getAttr(frame,"motionTweenRotate"),htmlparser.HtmlParserTools.getAttr(frame,"motionTweenRotateTimes",1)),htmlparser.HtmlParserTools.getAttr(frame,"motionTweenOrientToPath",false));
+			return new nanofl.engine.tweens.MotionTween(htmlparser.HtmlParserTools.getAttr(frame,"acceleration",0),this.parseMotionTweenRotate(htmlparser.HtmlParserTools.getAttr(frame,"motionTweenRotate"),htmlparser.HtmlParserTools.getAttr(frame,"motionTweenRotateTimes",1)),htmlparser.HtmlParserTools.getAttr(frame,"motionTweenOrientToPath",false));
 		case "shape":
 			if(!Lambda.has(this.morphingNotSupported,namePathForLog)) {
 				this.morphingNotSupported.push(namePathForLog);
@@ -969,7 +969,7 @@ flashimport.SymbolLoader.prototype = {
 			var _g1 = element.name;
 			switch(_g1) {
 			case "DOMSymbolInstance":case "DOMBitmapInstance":
-				var instance = new models.common.elements.Instance(htmlparser.HtmlParserTools.getAttr(element,"libraryItemName"),htmlparser.HtmlParserTools.getAttr(element,"name",""),this.loadColorEffect(htmlparser.HtmlParserTools.findOne(element,">color>Color")),element.find(">filters>*").map(function(f) {
+				var instance = new nanofl.engine.elements.Instance(htmlparser.HtmlParserTools.getAttr(element,"libraryItemName"),htmlparser.HtmlParserTools.getAttr(element,"name",""),this.loadColorEffect(htmlparser.HtmlParserTools.findOne(element,">color>Color")),element.find(">filters>*").map(function(f) {
 					return _g2.loadFilter(f);
 				}));
 				instance.matrix = flashimport.MatrixParser.load(htmlparser.HtmlParserTools.findOne(element,">matrix>Matrix")).prependMatrix(parentMatrix);
@@ -977,7 +977,7 @@ flashimport.SymbolLoader.prototype = {
 				r.push(instance);
 				break;
 			case "DOMShape":
-				if(!htmlparser.HtmlParserTools.getAttr(element,"isDrawingObject",false)) r.push(this.loadShape(element,parentMatrix)); else r.push(new models.common.elements.GroupElement([this.loadShape(element,parentMatrix)]));
+				if(!htmlparser.HtmlParserTools.getAttr(element,"isDrawingObject",false)) r.push(this.loadShape(element,parentMatrix)); else r.push(new nanofl.engine.elements.GroupElement([this.loadShape(element,parentMatrix)]));
 				break;
 			case "DOMStaticText":case "DOMDynamicText":case "DOMInputText":
 				r.push(this.loadText(element,parentMatrix));
@@ -986,7 +986,7 @@ flashimport.SymbolLoader.prototype = {
 				var elements1 = element.find(">members>*");
 				if(elements1.length > 0) {
 					var m = flashimport.MatrixParser.load(htmlparser.HtmlParserTools.findOne(element,">matrix>Matrix"));
-					var group = new models.common.elements.GroupElement(this.loadElements(elements1,m.clone().invert().prependMatrix(parentMatrix)));
+					var group = new nanofl.engine.elements.GroupElement(this.loadElements(elements1,m.clone().invert().prependMatrix(parentMatrix)));
 					group.matrix = m;
 					r.push(group);
 				}
@@ -1017,7 +1017,7 @@ flashimport.SymbolLoader.prototype = {
 		var contoursExporter = new flashimport.ContoursExporter(strokes,fills);
 		new flashimport.ContoursParser(contours).parse(contoursExporter);
 		var p = contoursExporter["export"]();
-		var shape = new models.common.elements.ShapeElement(p.edges,p.polygons);
+		var shape = new nanofl.engine.elements.ShapeElement(p.edges,p.polygons);
 		shape.matrix = flashimport.MatrixParser.load(htmlparser.HtmlParserTools.findOne(element,">matrix>Matrix")).prependMatrix(parentMatrix);
 		this.loadRegPoint(shape,htmlparser.HtmlParserTools.findOne(element,">transformationPoint>Point"));
 		shape.ensureNoTransform();
@@ -1027,26 +1027,26 @@ flashimport.SymbolLoader.prototype = {
 		var _g = fill.name;
 		switch(_g) {
 		case "SolidColor":
-			return new models.common.fills.SolidFill(models.common.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(fill,"color","#000000"),htmlparser.HtmlParserTools.getAttr(fill,"alpha",1.0)));
+			return new nanofl.engine.fills.SolidFill(nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(fill,"color","#000000"),htmlparser.HtmlParserTools.getAttr(fill,"alpha",1.0)));
 		case "LinearGradient":
 			var gradients = fill.find(">GradientEntry");
-			return new models.common.fills.LinearFill(gradients.map(function(g) {
-				return models.common.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(g,"color"),htmlparser.HtmlParserTools.getAttr(g,"alpha",1.0));
+			return new nanofl.engine.fills.LinearFill(gradients.map(function(g) {
+				return nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(g,"color"),htmlparser.HtmlParserTools.getAttr(g,"alpha",1.0));
 			}),gradients.map(function(g1) {
 				return htmlparser.HtmlParserTools.getAttr(g1,"ratio");
 			}),flashimport.MatrixParser.load(htmlparser.HtmlParserTools.findOne(fill,">matrix>Matrix"),0.001220703125));
 		case "RadialGradient":
 			var gradients1 = fill.find(">GradientEntry");
-			return new models.common.fills.RadialFill(gradients1.map(function(g2) {
-				return models.common.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(g2,"color"),htmlparser.HtmlParserTools.getAttr(g2,"alpha",1.0));
+			return new nanofl.engine.fills.RadialFill(gradients1.map(function(g2) {
+				return nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(g2,"color"),htmlparser.HtmlParserTools.getAttr(g2,"alpha",1.0));
 			}),gradients1.map(function(g3) {
 				return htmlparser.HtmlParserTools.getAttr(g3,"ratio");
 			}),flashimport.MatrixParser.load(htmlparser.HtmlParserTools.findOne(fill,">matrix>Matrix"),0.001220703125));
 		case "BitmapFill":
-			return new models.common.fills.BitmapFill(htmlparser.HtmlParserTools.getAttr(fill,"bitmapPath"),flashimport.MatrixParser.load(htmlparser.HtmlParserTools.findOne(fill,">matrix>Matrix"),20),htmlparser.HtmlParserTools.getAttr(fill,"bitmapIsClipped",true)?"no-repeat":"repeat");
+			return new nanofl.engine.fills.BitmapFill(htmlparser.HtmlParserTools.getAttr(fill,"bitmapPath"),flashimport.MatrixParser.load(htmlparser.HtmlParserTools.findOne(fill,">matrix>Matrix"),20),htmlparser.HtmlParserTools.getAttr(fill,"bitmapIsClipped",true)?"no-repeat":"repeat");
 		default:
 			this.log("WARNING: unknow fill type '" + fill.name + "'.");
-			return new models.common.fills.SolidFill("#FFFFFF");
+			return new nanofl.engine.fills.SolidFill("#FFFFFF");
 		}
 	}
 	,loadShapeStroke: function(stroke) {
@@ -1055,10 +1055,10 @@ flashimport.SymbolLoader.prototype = {
 		var _g = stroke.name;
 		switch(_g) {
 		case "SolidStroke":
-			return new models.common.strokes.SolidStroke(models.common.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(colorElem,"color","#000000"),htmlparser.HtmlParserTools.getAttr(colorElem,"alpha",1.0)),!isHairline?htmlparser.HtmlParserTools.getAttr(stroke,"weight",1.0):1.0,htmlparser.HtmlParserTools.getAttr(stroke,"caps","round"),htmlparser.HtmlParserTools.getAttr(stroke,"joins","round"),htmlparser.HtmlParserTools.getAttr(stroke,"miterLimit",3.0),isHairline);
+			return new nanofl.engine.strokes.SolidStroke(nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(colorElem,"color","#000000"),htmlparser.HtmlParserTools.getAttr(colorElem,"alpha",1.0)),!isHairline?htmlparser.HtmlParserTools.getAttr(stroke,"weight",1.0):1.0,htmlparser.HtmlParserTools.getAttr(stroke,"caps","round"),htmlparser.HtmlParserTools.getAttr(stroke,"joins","round"),htmlparser.HtmlParserTools.getAttr(stroke,"miterLimit",3.0),isHairline);
 		default:
 			this.log("WARNING: unknow stroke type '" + stroke.name + "'.");
-			return new models.common.strokes.SolidStroke("#000000");
+			return new nanofl.engine.strokes.SolidStroke("#000000");
 		}
 	}
 	,loadRegPoint: function(dest,point) {
@@ -1069,7 +1069,7 @@ flashimport.SymbolLoader.prototype = {
 	}
 	,loadText: function(text,parentMatrix) {
 		var _g = this;
-		var r = new models.common.elements.TextElement(htmlparser.HtmlParserTools.getAttr(text,"name",""),htmlparser.HtmlParserTools.getAttr(text,"width",0.0) + 4.0,htmlparser.HtmlParserTools.getAttr(text,"height",0.0) + 4.0,htmlparser.HtmlParserTools.getAttr(text,"isSelectable",true),false,nanofl.TextRun.optimize(text.find(">textRuns>DOMTextRun").map(function(run) {
+		var r = new nanofl.engine.elements.TextElement(htmlparser.HtmlParserTools.getAttr(text,"name",""),htmlparser.HtmlParserTools.getAttr(text,"width",0.0) + 4.0,htmlparser.HtmlParserTools.getAttr(text,"height",0.0) + 4.0,htmlparser.HtmlParserTools.getAttr(text,"isSelectable",true),false,nanofl.TextRun.optimize(text.find(">textRuns>DOMTextRun").map(function(run) {
 			return _g.loadTextRun(run);
 		})),new nanofl.TextRun(null,"#000000","Times","",12,"left",0,null,null));
 		r.matrix = flashimport.MatrixParser.load(htmlparser.HtmlParserTools.findOne(text,">matrix>Matrix"),1.0,-2 + htmlparser.HtmlParserTools.getAttr(text,"left",0.0),-2).prependMatrix(parentMatrix);
@@ -1089,8 +1089,8 @@ flashimport.SymbolLoader.prototype = {
 	}
 	,loadColorEffect: function(color) {
 		if(color == null) return null;
-		if(color.hasAttribute("brightness")) return new models.common.coloreffects.ColorEffectBrightness(htmlparser.HtmlParserTools.getAttr(color,"brightness",1.0));
-		if(color.hasAttribute("tintMultiplier")) return new models.common.coloreffects.ColorEffectTint(htmlparser.HtmlParserTools.getAttr(color,"tintColor"),htmlparser.HtmlParserTools.getAttr(color,"tintMultiplier",1.0));
+		if(color.hasAttribute("brightness")) return new nanofl.engine.coloreffects.ColorEffectBrightness(htmlparser.HtmlParserTools.getAttr(color,"brightness",1.0));
+		if(color.hasAttribute("tintMultiplier")) return new nanofl.engine.coloreffects.ColorEffectTint(htmlparser.HtmlParserTools.getAttr(color,"tintColor"),htmlparser.HtmlParserTools.getAttr(color,"tintMultiplier",1.0));
 		var props = ["alphaMultiplier","redMultiplier","greenMultiplier","blueMultiplier","alphaOffset","redOffset","greenOffset","blueOffset"];
 		var attrs = stdlib.Std.array((function($this) {
 			var $r;
@@ -1101,14 +1101,14 @@ flashimport.SymbolLoader.prototype = {
 		var propCount = Lambda.count(attrs,function(s) {
 			return Lambda.has(props,s);
 		});
-		if(color.hasAttribute("alphaMultiplier") && propCount == 1) return new models.common.coloreffects.ColorEffectAlpha(htmlparser.HtmlParserTools.getAttr(color,"alphaMultiplier",1.0)); else if(propCount > 0) return new models.common.coloreffects.ColorEffectAdvanced(htmlparser.HtmlParserTools.getAttr(color,"alphaMultiplier",1.0),htmlparser.HtmlParserTools.getAttr(color,"redMultiplier",1.0),htmlparser.HtmlParserTools.getAttr(color,"greenMultiplier",1.0),htmlparser.HtmlParserTools.getAttr(color,"blueMultiplier",1.0),htmlparser.HtmlParserTools.getAttr(color,"alphaOffset",0.0),htmlparser.HtmlParserTools.getAttr(color,"redOffset",0.0),htmlparser.HtmlParserTools.getAttr(color,"greenOffset",0.0),htmlparser.HtmlParserTools.getAttr(color,"blueOffset",0.0));
+		if(color.hasAttribute("alphaMultiplier") && propCount == 1) return new nanofl.engine.coloreffects.ColorEffectAlpha(htmlparser.HtmlParserTools.getAttr(color,"alphaMultiplier",1.0)); else if(propCount > 0) return new nanofl.engine.coloreffects.ColorEffectAdvanced(htmlparser.HtmlParserTools.getAttr(color,"alphaMultiplier",1.0),htmlparser.HtmlParserTools.getAttr(color,"redMultiplier",1.0),htmlparser.HtmlParserTools.getAttr(color,"greenMultiplier",1.0),htmlparser.HtmlParserTools.getAttr(color,"blueMultiplier",1.0),htmlparser.HtmlParserTools.getAttr(color,"alphaOffset",0.0),htmlparser.HtmlParserTools.getAttr(color,"redOffset",0.0),htmlparser.HtmlParserTools.getAttr(color,"greenOffset",0.0),htmlparser.HtmlParserTools.getAttr(color,"blueOffset",0.0));
 		return null;
 	}
 	,loadFilter: function(filter) {
 		if(filter == null) return null;
 		var params = filter.getAttributesObject();
 		if(Object.prototype.hasOwnProperty.call(params,"strength")) Reflect.setField(params,"strength",Math.round(stdlib.Std.parseFloat(Reflect.field(params,"strength")) * 100));
-		return new models.common.FilterDef(filter.name,params);
+		return new nanofl.engine.FilterDef(filter.name,params);
 	}
 	,parseMotionTweenRotate: function(motionTweenRotate,motionTweenRotateTimes) {
 		switch(motionTweenRotate) {

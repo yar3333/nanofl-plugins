@@ -1,7 +1,7 @@
-﻿type DocumentProperties = models.common.DocumentProperties;
-type FileApi = models.common.FileApi;
-type Library = models.common.Library;
-type IIdePlugin = models.common.plugins.IIdePlugin;
+﻿type DocumentProperties = nanofl.engine.DocumentProperties;
+type FileApi = nanofl.engine.FileApi;
+type Library = nanofl.engine.Library;
+type IIdePlugin = nanofl.ide.plugins.IIdePlugin;
 
 class MsVisualStudio2013IdePlugin implements IIdePlugin
 {
@@ -48,4 +48,4 @@ class MsVisualStudio2013IdePlugin implements IIdePlugin
 	}
 }
 
-models.common.Plugins.registerIde(new MsVisualStudio2013IdePlugin());
+nanofl.engine.Plugins.registerIde(new MsVisualStudio2013IdePlugin());

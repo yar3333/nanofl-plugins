@@ -1,7 +1,7 @@
 package flashimport;
 
 import htmlparser.HtmlNodeElement;
-import models.common.DocumentProperties;
+import nanofl.engine.DocumentProperties;
 using htmlparser.HtmlParserTools;
 
 class DocumentPropertiesParser

@@ -1,11 +1,11 @@
 package flashimport;
 
-import models.common.fills.IFill;
-import models.common.geom.Contour;
-import models.common.geom.Edge;
-import models.common.geom.Polygon;
-import models.common.geom.StrokeEdge;
-import models.common.strokes.IStroke;
+import nanofl.engine.fills.IFill;
+import nanofl.engine.geom.Contour;
+import nanofl.engine.geom.Edge;
+import nanofl.engine.geom.Polygon;
+import nanofl.engine.geom.StrokeEdge;
+import nanofl.engine.strokes.IStroke;
 
 class ContoursExporter
 {

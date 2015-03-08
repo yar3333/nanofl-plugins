@@ -1,4 +1,4 @@
-import models.common.Plugins;
+import nanofl.engine.Plugins;
 
 class StdFiltersPlugin
 {

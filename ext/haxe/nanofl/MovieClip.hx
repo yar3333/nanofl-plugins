@@ -2,8 +2,8 @@ package nanofl;
 
 extern class MovieClip extends createjs.Container
 {
-	function new(symbol:models.common.libraryitems.MovieClipItem, initFrameIndex:Int, childFrameIndexes:Array<{ var frameIndex : Int; var element : models.common.IPathElement; }>) : Void;
-	var symbol(default, null) : models.common.libraryitems.MovieClipItem;
+	function new(symbol:nanofl.engine.libraryitems.MovieClipItem, initFrameIndex:Int, childFrameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : Void;
+	var symbol(default, null) : nanofl.engine.libraryitems.MovieClipItem;
 	var currentFrame(default, null) : Int;
 	function addChildToLayer(child:createjs.DisplayObject, layerIndex:Int) : createjs.DisplayObject;
 	override function removeAllChildren() : Void;

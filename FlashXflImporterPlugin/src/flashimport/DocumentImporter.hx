@@ -3,10 +3,10 @@ package flashimport;
 import haxe.io.Path;
 import haxe.Timer;
 import htmlparser.XmlDocument;
-import models.common.DocumentProperties;
-import models.common.FileApi;
-import models.common.Library;
-import models.common.libraryitems.SoundItem;
+import nanofl.engine.DocumentProperties;
+import nanofl.engine.FileApi;
+import nanofl.engine.Library;
+import nanofl.engine.libraryitems.SoundItem;
 using htmlparser.HtmlParserTools;
 using StringTools;
 

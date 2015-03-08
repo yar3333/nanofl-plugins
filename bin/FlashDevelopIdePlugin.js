@@ -3,9 +3,9 @@ var FlashDevelopIdePlugin = function() {
 	this.languages = ["JavaScript","Haxe"];
 	this.name = "FlashDevelop";
 };
-FlashDevelopIdePlugin.__interfaces__ = [models.common.plugins.IIdePlugin];
+FlashDevelopIdePlugin.__interfaces__ = [nanofl.ide.plugins.IIdePlugin];
 FlashDevelopIdePlugin.main = function() {
-	models.common.Plugins.registerIde(new FlashDevelopIdePlugin());
+	nanofl.engine.Plugins.registerIde(new FlashDevelopIdePlugin());
 };
 FlashDevelopIdePlugin.prototype = {
 	generateFiles: function(language,fileApi,filePath,documentProperties,library) {

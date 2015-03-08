@@ -1,6 +1,6 @@
 package svgimport;
 
-import models.common.elements.ShapeElement;
+import nanofl.engine.elements.ShapeElement;
 import svgimport.Segment;
 
 class SvgPath

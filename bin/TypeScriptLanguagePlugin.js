@@ -34,8 +34,8 @@ var TypeScriptLanguagePlugin = (function () {
                 width: documentProperties.width,
                 height: documentProperties.height,
                 backgroundColor: documentProperties.backgroundColor,
-                createjsUrl: models.common.VersionInfo.createjsUrl,
-                playerUrl: models.common.VersionInfo.playerUrl,
+                createjsUrl: nanofl.engine.VersionInfo.createjsUrl,
+                playerUrl: nanofl.engine.VersionInfo.playerUrl,
                 libraryUrl: "bin/library.js",
                 codeUrl: "bin/" + name + ".js",
                 framerate: documentProperties.framerate,
@@ -110,4 +110,4 @@ var TypeScriptLanguagePlugin = (function () {
     };
     return TypeScriptLanguagePlugin;
 })();
-models.common.Plugins.registerLanguage(new TypeScriptLanguagePlugin());
+nanofl.engine.Plugins.registerLanguage(new TypeScriptLanguagePlugin());

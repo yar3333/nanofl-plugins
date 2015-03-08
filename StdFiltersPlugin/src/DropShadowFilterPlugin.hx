@@ -1,7 +1,7 @@
 import createjs.DropShadowFilter;
-import models.client.plugins.FilterProperty;
-import models.client.plugins.IFilterPlugin;
-import models.common.ColorTools;
+import nanofl.engine.plugins.FilterProperty;
+import nanofl.engine.plugins.IFilterPlugin;
+import nanofl.engine.ColorTools;
 
 class DropShadowFilterPlugin implements IFilterPlugin
 {

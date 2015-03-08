@@ -5,7 +5,7 @@ var AdjustColorFilterPlugin = function() {
 	this.label = "Adjust Color";
 	this.name = "AdjustColorFilter";
 };
-AdjustColorFilterPlugin.__interfaces__ = [models.client.plugins.IFilterPlugin];
+AdjustColorFilterPlugin.__interfaces__ = [nanofl.engine.plugins.IFilterPlugin];
 AdjustColorFilterPlugin.prototype = {
 	getFilter: function(params) {
 		return new createjs.ColorMatrixFilter(new createjs.ColorMatrix(Math.round(params.brightness / 100 * 255 * 0.4),params.contrast,params.saturation,params.hue).toArray());
@@ -16,7 +16,7 @@ var BlurFilterPlugin = function() {
 	this.label = "Blur";
 	this.name = "BlurFilter";
 };
-BlurFilterPlugin.__interfaces__ = [models.client.plugins.IFilterPlugin];
+BlurFilterPlugin.__interfaces__ = [nanofl.engine.plugins.IFilterPlugin];
 BlurFilterPlugin.prototype = {
 	getFilter: function(params) {
 		return new createjs.BlurFilter(params.blurX * 2,params.blurY * 2,params.quality);
@@ -27,10 +27,10 @@ var DropShadowFilterPlugin = function() {
 	this.label = "Drop Shadow";
 	this.name = "DropShadowFilter";
 };
-DropShadowFilterPlugin.__interfaces__ = [models.client.plugins.IFilterPlugin];
+DropShadowFilterPlugin.__interfaces__ = [nanofl.engine.plugins.IFilterPlugin];
 DropShadowFilterPlugin.prototype = {
 	getFilter: function(params) {
-		var rgb = models.common.ColorTools.parse(params.color);
+		var rgb = nanofl.engine.ColorTools.parse(params.color);
 		var color = rgb.r << 16 | rgb.g << 8 | rgb.b;
 		return new createjs.DropShadowFilter(params.distance * 2,params.angle,color,params.alpha / 100 * (params.strength / 100),params.blurX * 2,params.blurY * 2,1,params.quality,params.inner,params.knockout,params.hideObject);
 	}
@@ -40,20 +40,20 @@ var GlowFilterPlugin = function() {
 	this.label = "Glow";
 	this.name = "GlowFilter";
 };
-GlowFilterPlugin.__interfaces__ = [models.client.plugins.IFilterPlugin];
+GlowFilterPlugin.__interfaces__ = [nanofl.engine.plugins.IFilterPlugin];
 GlowFilterPlugin.prototype = {
 	getFilter: function(params) {
-		var rgb = models.common.ColorTools.parse(params.color);
+		var rgb = nanofl.engine.ColorTools.parse(params.color);
 		var color = rgb.r << 16 | rgb.g << 8 | rgb.b;
 		return new createjs.GlowFilter(color,params.alpha / 100 * (params.strength / 100),params.blurX * 2,params.blurY * 2,1,params.quality,params.inner,params.knockout);
 	}
 };
 var StdFiltersPlugin = function() { };
 StdFiltersPlugin.main = function() {
-	models.common.Plugins.registerFilter(new DropShadowFilterPlugin());
-	models.common.Plugins.registerFilter(new BlurFilterPlugin());
-	models.common.Plugins.registerFilter(new GlowFilterPlugin());
-	models.common.Plugins.registerFilter(new AdjustColorFilterPlugin());
+	nanofl.engine.Plugins.registerFilter(new DropShadowFilterPlugin());
+	nanofl.engine.Plugins.registerFilter(new BlurFilterPlugin());
+	nanofl.engine.Plugins.registerFilter(new GlowFilterPlugin());
+	nanofl.engine.Plugins.registerFilter(new AdjustColorFilterPlugin());
 };
 Math.NaN = Number.NaN;
 Math.NEGATIVE_INFINITY = Number.NEGATIVE_INFINITY;

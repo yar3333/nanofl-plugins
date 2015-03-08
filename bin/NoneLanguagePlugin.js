@@ -2,9 +2,9 @@
 var NoneLanguagePlugin = function() {
 	this.name = "";
 };
-NoneLanguagePlugin.__interfaces__ = [models.common.plugins.ILanguagePlugin];
+NoneLanguagePlugin.__interfaces__ = [nanofl.ide.plugins.ILanguagePlugin];
 NoneLanguagePlugin.main = function() {
-	models.common.Plugins.registerLanguage(new NoneLanguagePlugin());
+	nanofl.engine.Plugins.registerLanguage(new NoneLanguagePlugin());
 };
 NoneLanguagePlugin.prototype = {
 	generateFiles: function(fileApi,filePath,documentProperties,library) {
@@ -21,8 +21,8 @@ NoneLanguagePlugin.prototype = {
 			template = template.split("{width}").join(documentProperties.width);
 			template = template.split("{height}").join(documentProperties.height);
 			template = template.split("{backgroundColor}").join(documentProperties.backgroundColor);
-			template = template.split("{createjsUrl}").join(models.common.VersionInfo.createjsUrl);
-			template = template.split("{playerUrl}").join(models.common.VersionInfo.playerUrl);
+			template = template.split("{createjsUrl}").join(nanofl.engine.VersionInfo.createjsUrl);
+			template = template.split("{playerUrl}").join(nanofl.engine.VersionInfo.playerUrl);
 			template = template.split("{framerate}").join(documentProperties.framerate);
 			template = template.split("{library}").join(library.compile("library"));
 			fileApi.saveContent(destHtmlFile,template);

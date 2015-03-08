@@ -1,8 +1,8 @@
-﻿type DocumentProperties = models.common.DocumentProperties;
-type FileApi = models.common.FileApi;
-type Library = models.common.Library;
-type InstancableItem = models.common.libraryitems.InstancableItem;
-type ICompilerPlugin = models.common.plugins.ILanguagePlugin;
+﻿type DocumentProperties = nanofl.engine.DocumentProperties;
+type FileApi = nanofl.engine.FileApi;
+type Library = nanofl.engine.Library;
+type InstancableItem = nanofl.engine.libraryitems.InstancableItem;
+type ICompilerPlugin = nanofl.ide.plugins.ILanguagePlugin;
 
 class TypeScriptLanguagePlugin implements ICompilerPlugin
 {
@@ -55,8 +55,8 @@ class TypeScriptLanguagePlugin implements ICompilerPlugin
 				width: documentProperties.width,
 				height: documentProperties.height,
 				backgroundColor: documentProperties.backgroundColor,
-				createjsUrl: models.common.VersionInfo.createjsUrl,
-				playerUrl: models.common.VersionInfo.playerUrl,
+				createjsUrl: nanofl.engine.VersionInfo.createjsUrl,
+				playerUrl: nanofl.engine.VersionInfo.playerUrl,
 				libraryUrl: "bin/library.js",
 				codeUrl: "bin/" + name + ".js",
 				framerate: documentProperties.framerate,
@@ -158,4 +158,4 @@ class TypeScriptLanguagePlugin implements ICompilerPlugin
 	}
 }
 
-models.common.Plugins.registerLanguage(new TypeScriptLanguagePlugin());
+nanofl.engine.Plugins.registerLanguage(new TypeScriptLanguagePlugin());

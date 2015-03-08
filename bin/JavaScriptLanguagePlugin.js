@@ -15,9 +15,9 @@ HxOverrides.indexOf = function(a,obj,i) {
 var JavaScriptLanguagePlugin = function() {
 	this.name = "JavaScript";
 };
-JavaScriptLanguagePlugin.__interfaces__ = [models.common.plugins.ILanguagePlugin];
+JavaScriptLanguagePlugin.__interfaces__ = [nanofl.ide.plugins.ILanguagePlugin];
 JavaScriptLanguagePlugin.main = function() {
-	models.common.Plugins.registerLanguage(new JavaScriptLanguagePlugin());
+	nanofl.engine.Plugins.registerLanguage(new JavaScriptLanguagePlugin());
 };
 JavaScriptLanguagePlugin.prototype = {
 	generateFiles: function(fileApi,filePath,documentProperties,library) {
@@ -51,8 +51,8 @@ JavaScriptLanguagePlugin.prototype = {
 			template = template.split("{width}").join(documentProperties.width);
 			template = template.split("{height}").join(documentProperties.height);
 			template = template.split("{backgroundColor}").join(documentProperties.backgroundColor);
-			template = template.split("{createjsUrl}").join(models.common.VersionInfo.createjsUrl);
-			template = template.split("{playerUrl}").join(models.common.VersionInfo.playerUrl);
+			template = template.split("{createjsUrl}").join(nanofl.engine.VersionInfo.createjsUrl);
+			template = template.split("{playerUrl}").join(nanofl.engine.VersionInfo.playerUrl);
 			template = template.split("{libraryUrl}").join("bin/library.js");
 			template = template.split("{scripts}").join(this.getFiles(dir + "/gen",".js").concat(this.getFiles(dir + "/src",".js")).map(function(s) {
 				return "<script src='" + s.substring(dir.length + 1) + "'></script>";

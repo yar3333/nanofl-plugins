@@ -1,15 +1,15 @@
 package svgimport;
 
-import models.common.fills.IFill;
-import models.common.fills.LinearFill;
-import models.common.fills.RadialFill;
-import models.common.fills.SolidFill;
-import models.common.geom.Contour;
-import models.common.geom.Edge;
-import models.common.geom.Polygon;
-import models.common.geom.StrokeEdge;
-import models.common.strokes.IStroke;
-import models.common.strokes.SolidStroke;
+import nanofl.engine.fills.IFill;
+import nanofl.engine.fills.LinearFill;
+import nanofl.engine.fills.RadialFill;
+import nanofl.engine.fills.SolidFill;
+import nanofl.engine.geom.Contour;
+import nanofl.engine.geom.Edge;
+import nanofl.engine.geom.Polygon;
+import nanofl.engine.geom.StrokeEdge;
+import nanofl.engine.strokes.IStroke;
+import nanofl.engine.strokes.SolidStroke;
 
 class SvgPathExporter
 {

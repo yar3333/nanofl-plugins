@@ -1,6 +1,6 @@
 import createjs.GlowFilter;
-import models.client.plugins.FilterProperty;
-import models.client.plugins.IFilterPlugin;
+import nanofl.engine.plugins.FilterProperty;
+import nanofl.engine.plugins.IFilterPlugin;
 
 class GlowFilterPlugin implements IFilterPlugin
 {
@@ -23,7 +23,7 @@ class GlowFilterPlugin implements IFilterPlugin
 	
 	public function getFilter(params:Dynamic)
 	{
-		var rgb = models.common.ColorTools.parse(params.color);
+		var rgb = nanofl.engine.ColorTools.parse(params.color);
 		var color = (rgb.r << 16) | (rgb.g << 8) | rgb.b;
 		
 		return new GlowFilter

@@ -33,4 +33,4 @@ var MsVisualStudio2013IdePlugin = (function () {
     };
     return MsVisualStudio2013IdePlugin;
 })();
-models.common.Plugins.registerIde(new MsVisualStudio2013IdePlugin());
+nanofl.engine.Plugins.registerIde(new MsVisualStudio2013IdePlugin());

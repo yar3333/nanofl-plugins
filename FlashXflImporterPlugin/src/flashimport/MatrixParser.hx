@@ -1,7 +1,7 @@
 package flashimport;
 
 import htmlparser.HtmlNodeElement;
-import models.common.geom.Matrix;
+import nanofl.engine.geom.Matrix;
 using htmlparser.HtmlParserTools;
 
 class MatrixParser

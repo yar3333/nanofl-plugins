@@ -1,7 +1,7 @@
 package flashimport;
 
 import htmlparser.HtmlNodeElement;
-import models.common.geom.PointTools;
+import nanofl.engine.geom.PointTools;
 import stdlib.Debug;
 using htmlparser.HtmlParserTools;
 using StringTools;

@@ -1,7 +1,7 @@
 import createjs.ColorMatrixFilter;
 import createjs.ColorMatrix;
-import models.client.plugins.FilterProperty;
-import models.client.plugins.IFilterPlugin;
+import nanofl.engine.plugins.FilterProperty;
+import nanofl.engine.plugins.IFilterPlugin;
 
 class AdjustColorFilterPlugin implements IFilterPlugin
 {

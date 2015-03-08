@@ -1,8 +1,8 @@
 package flashimport;
 
 import haxe.ds.StringMap;
-import models.common.geom.Point;
-using models.common.geom.PointTools;
+import nanofl.engine.geom.Point;
+using nanofl.engine.geom.PointTools;
 using Lambda;
 
 typedef EdgeMap = haxe.ds.IntMap<Array<IEdge>>;

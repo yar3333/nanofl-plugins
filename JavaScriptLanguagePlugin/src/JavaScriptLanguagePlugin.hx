@@ -1,9 +1,9 @@
-import models.common.DocumentProperties;
-import models.common.FileApi;
-import models.common.Library;
-import models.common.Plugins;
-import models.common.plugins.ILanguagePlugin;
-import models.common.VersionInfo;
+import nanofl.engine.DocumentProperties;
+import nanofl.engine.FileApi;
+import nanofl.engine.Library;
+import nanofl.engine.Plugins;
+import nanofl.ide.plugins.ILanguagePlugin;
+import nanofl.engine.VersionInfo;
 
 class JavaScriptLanguagePlugin implements ILanguagePlugin
 {

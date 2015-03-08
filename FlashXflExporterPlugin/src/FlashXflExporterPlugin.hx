@@ -1,9 +1,9 @@
-import models.common.DocumentProperties;
-import models.common.FileApi;
-import models.common.Library;
-import models.common.Plugins;
-import models.common.plugins.IExporterPlugin;
-import models.common.XmlWriter;
+import nanofl.engine.DocumentProperties;
+import nanofl.engine.FileApi;
+import nanofl.engine.Library;
+import nanofl.engine.Plugins;
+import nanofl.ide.plugins.IExporterPlugin;
+import nanofl.engine.XmlWriter;
 
 class FlashXflExporterPlugin implements IExporterPlugin
 {

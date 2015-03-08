@@ -1,6 +1,6 @@
 package svgimport;
 
-import models.common.elements.TextElement;
+import nanofl.engine.elements.TextElement;
 import nanofl.TextRun;
 
 class SvgText

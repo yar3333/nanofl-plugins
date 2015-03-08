@@ -1,10 +1,10 @@
 import flashimport.DocumentImporter;
 import flashimport.Macro;
-import models.common.DocumentProperties;
-import models.common.FileApi;
-import models.common.Library;
-import models.common.Plugins;
-import models.common.plugins.IImporterPlugin;
+import nanofl.engine.DocumentProperties;
+import nanofl.engine.FileApi;
+import nanofl.engine.Library;
+import nanofl.engine.Plugins;
+import nanofl.ide.plugins.IImporterPlugin;
 using StringTools;
 
 class FlashXflImporterPlugin implements IImporterPlugin

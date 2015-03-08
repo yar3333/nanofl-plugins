@@ -1,6 +1,6 @@
 ﻿package flashimport;
 
-import models.common.geom.Point;
+import nanofl.engine.geom.Point;
 
 class StraightEdge implements IEdge
 {

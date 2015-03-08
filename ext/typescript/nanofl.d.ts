@@ -52,219 +52,6 @@ declare module createjs.SpriteSheetBuilder
 	}
 }
 
-declare module models.client.plugins
-{
-	type FilterProperty =
-	{
-		/**
-		 * Like 123, 10.3, "#00aaff", "rgb(1,2,3)" or "rgba(12,32,255,128)".
-		 */
-		defaultValue : any;
-		/**
-		 * Used to display in form. If not specified then name will be used.
-		 */
-		label : string;
-		/**
-		 * Maximum value to validate on input. Used for int/float only.
-		 */
-		maxValue : any;
-		/**
-		 * Minimum value to validate on input. Used for int/float only.
-		 */
-		minValue : any;
-		/**
-		 * Used as field name in params.
-		 */
-		name : string;
-		/**
-		 * Value for neutral case.
-		 * Used to detect finish value in tween when finish filter is absent.
-		 * Don't specify or set to null if not need.
-		 */
-		neutralValue : any;
-		/**
-		 * int / float / string / color / bool
-		 */
-		type : string;
-		/**
-		 * Units to display ("px", "%").
-		 */
-		units : string;
-	}
-	
-	export interface IFilterPlugin
-	{
-		/**
-		 * Internal filter name (for example: "DropShadowFilter").
-		 * Used as xml tag on saving.
-		 */
-		name : string;
-		/**
-		 * Filter name for screen forms (for example: "Drop Shadow").
-		 */
-		label : string;
-		properties : models.client.plugins.FilterProperty[];
-		getFilter(params:any) : createjs.Filter;
-	}
-}
-
-declare module models.common.elements
-{
-	export class Element
-	{
-		matrix : models.common.geom.Matrix;
-		regX : number;
-		regY : number;
-		visible : boolean;
-		keyFrame : models.common.KeyFrame;
-		getType() : string;
-		removeInstance(namePath:string) : void;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		hasInstance(namePath:string) : boolean;
-		save(out:models.common.XmlWriter) : void;
-		clone() : models.common.elements.Element;
-		translate(dx:number, dy:number) : void;
-		createDisplayObject(frameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : createjs.DisplayObject;
-		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : createjs.DisplayObject;
-		getState() : models.client.undo.states.ElementState;
-		setState(state:models.client.undo.states.ElementState) : void;
-		getUsedItems() : models.common.libraryitems.LibraryItem[];
-		getUsedFilters() : string[];
-		toString() : string;
-		static parse(node:htmlparser.HtmlNodeElement) : models.common.elements.Element;
-	}
-	
-	export class Elements
-	{
-		static parse(base:htmlparser.HtmlNodeElement) : models.common.elements.Element[];
-		static save(elements:models.common.elements.Element[], out:models.common.XmlWriter) : void;
-	}
-	
-	export class GroupElement extends models.common.elements.Element implements models.common.ILayersContainer, models.common.IPathElement
-	{
-		constructor(elements:models.common.elements.Element[]);
-		name : string;
-		currentFrame : number;
-		layers : models.common.ArrayRO<models.common.Layer>;
-		addElement(element:models.common.elements.Element) : void;
-		removeInstance(namePath:string) : void;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		save(out:models.common.XmlWriter) : void;
-		clone() : models.common.elements.Element;
-		getUsedItems() : models.common.libraryitems.LibraryItem[];
-		getUsedFilters() : string[];
-		createDisplayObject(frameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : createjs.DisplayObject;
-		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : createjs.Container;
-		getMaskFilter(layer:models.common.Layer, frameIndex:number) : createjs.Container;
-		isScene() : boolean;
-		getNavigatorName() : string;
-		getNavigatorIcon() : string;
-		getChildren() : models.common.elements.Element[];
-		getTimeline() : models.common.ITimeline;
-	}
-	
-	export class Instance extends models.common.elements.Element implements models.common.IPathElement
-	{
-		constructor(namePath:string, name?:string, colorEffect?:models.common.coloreffects.ColorEffect, filters?:models.common.FilterDef[]);
-		namePath : string;
-		name : string;
-		colorEffect : models.common.coloreffects.ColorEffect;
-		filters : models.common.FilterDef[];
-		symbol : models.common.libraryitems.InstancableItem;
-		getType() : string;
-		save(out:models.common.XmlWriter) : void;
-		clone() : models.common.elements.Element;
-		hasInstance(namePath:string) : boolean;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		isScene() : boolean;
-		getState() : models.client.undo.states.ElementState;
-		setState(state:models.client.undo.states.ElementState) : void;
-		toString() : string;
-		layers : models.common.ArrayRO<models.common.Layer>;
-		getUsedItems() : models.common.libraryitems.LibraryItem[];
-		getUsedFilters() : string[];
-		createDisplayObject(frameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : createjs.DisplayObject;
-		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : createjs.DisplayObject;
-		getNavigatorName() : string;
-		getNavigatorIcon() : string;
-		getChildren() : models.common.elements.Element[];
-		getTimeline() : models.common.ITimeline;
-	}
-	
-	export class ShapeElement extends models.common.elements.Element
-	{
-		constructor(edges?:models.common.geom.StrokeEdge[], polygons?:models.common.geom.Polygon[]);
-		edges : models.common.geom.StrokeEdge[];
-		polygons : models.common.geom.Polygon[];
-		getType() : string;
-		save(out:models.common.XmlWriter) : void;
-		ensureNoTransform() : void;
-		drawOnGraphics(g:createjs.Graphics, m:createjs.Matrix2D) : void;
-		createDisplayObject(frameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : createjs.DisplayObject;
-		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : createjs.DisplayObject;
-		clone() : models.common.elements.Element;
-		translate(dx:number, dy:number) : void;
-		isEmpty() : boolean;
-		hasSelected() : boolean;
-		isAllSelected() : boolean;
-		hasSelectedEdges() : boolean;
-		hasSelectedPolygons() : boolean;
-		select(obj:{ selected : boolean; }) : void;
-		selectAll() : void;
-		deselectAll() : void;
-		translateSelected(dx:number, dy:number) : void;
-		translateVertex(point:models.common.geom.Point, dx:number, dy:number) : void;
-		removeSelected() : void;
-		getPolygonAtPos(pt:models.common.geom.Point) : models.common.geom.Polygon;
-		getSameEdges(edge:models.common.geom.Edge) : models.common.geom.Edge[];
-		getNearestStrokeEdge(pt:models.common.geom.Point) : { dist : number; edge : models.common.geom.StrokeEdge; point : models.common.geom.Point; t : number; };
-		getNearestPolygonEdge(pt:models.common.geom.Point) : { dist : number; edge : models.common.geom.Edge; point : models.common.geom.Point; t : number; };
-		getNearestVertex(pt:models.common.geom.Point, excludeSelf?:boolean) : { dist : number; distMinusEdgeThickness : number; point : models.common.geom.Point; };
-		setSelectedEdgesStroke(stroke:models.common.strokes.IStroke) : void;
-		setSelectedEdgesStrokeParams(params:{ color : string; thickness : number; }) : void;
-		getSelectedEdgesStrokeParams() : { color : string; thickness : number; type : string; };
-		setSelectedPolygonsFill(fill:models.common.fills.IFill, x1?:number, y1?:number, x2?:number, y2?:number) : void;
-		setSelectedPolygonsFillParams(params:{ bitmapPath : string; color : string; colors : string[]; matrix : models.common.geom.Matrix; ratios : number[]; }) : void;
-		getSelectedPolygonsFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : models.common.geom.Matrix; ratios : number[]; type : string; };
-		floodFill(fill:models.common.fills.IFill, x1:number, y1:number, x2:number, y2:number) : void;
-		getBounds(bounds?:models.common.geom.Bounds) : models.common.geom.Bounds;
-		getSelectedBounds(bounds?:models.common.geom.Bounds) : models.common.geom.Bounds;
-		transform(m:models.common.geom.Matrix) : void;
-		transformSelected(m:models.common.geom.Matrix) : void;
-		combine_strokeEdge(edge:models.common.geom.StrokeEdge) : void;
-		combine_edge(edge:models.common.geom.Edge) : void;
-		combine_vertex(x:number, y:number) : void;
-		combine_selected() : void;
-		extractSelected() : models.common.elements.ShapeElement;
-		getState() : models.client.undo.states.ElementState;
-		setState(_state:models.client.undo.states.ElementState) : void;
-		replaceEdge(search:models.common.geom.Edge, replacement:models.common.geom.Edge[]) : void;
-		combine(shape:models.common.elements.ShapeElement) : void;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		toString() : string;
-	}
-	
-	export class TextElement extends models.common.elements.Element
-	{
-		constructor(name:string, width:number, height:number, selectable:boolean, border:boolean, textRuns:nanofl.TextRun[], newTextFormat:nanofl.TextRun);
-		name : string;
-		width : number;
-		height : number;
-		selectable : boolean;
-		border : boolean;
-		textRuns : nanofl.TextRun[];
-		newTextFormat : nanofl.TextRun;
-		save(out:models.common.XmlWriter) : void;
-		getText() : string;
-		createDisplayObject(frameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : createjs.DisplayObject;
-		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : createjs.DisplayObject;
-		getMinSize(dispObj:createjs.DisplayObject) : { height : number; width : number; };
-		clone() : models.common.elements.Element;
-		getState() : models.client.undo.states.ElementState;
-		setState(_state:models.client.undo.states.ElementState) : void;
-	}
-}
-
 declare module createjs
 {
 	/**
@@ -6796,12 +6583,520 @@ declare module createjs
 	}
 }
 
-declare module models.common.geom.Edge
+declare module nanofl.engine.geom.BezierCurve
 {
-	type EdgesItersection =
+	type BezierCurvesIntersection =
 	{
-		a : models.common.geom.Edge[];
-		b : models.common.geom.Edge[];
+		a : nanofl.engine.geom.BezierCurve[];
+		b : nanofl.engine.geom.BezierCurve[];
+	}
+}
+
+declare module nanofl.engine.geom
+{
+	export class BezierCurve
+	{
+		constructor(x1:number, y1:number, x2:number, y2:number, x3:number, y3:number);
+		p1 : nanofl.engine.geom.Point;
+		p2 : nanofl.engine.geom.Point;
+		p3 : nanofl.engine.geom.Point;
+		update(x1?:number, y1?:number, x2?:number, y2?:number, x3?:number, y3?:number) : void;
+		getNearestPoint(x:number, y:number) : { dist : number; nor : nanofl.engine.geom.Point; onCurve : boolean; orientedDist : number; point : nanofl.engine.geom.Point; t : number; };
+		getNearestPointP(pt:nanofl.engine.geom.Point) : { dist : number; nor : nanofl.engine.geom.Point; onCurve : boolean; orientedDist : number; point : nanofl.engine.geom.Point; t : number; };
+		getPoint(t:number) : nanofl.engine.geom.Point;
+		getNor(t:number) : nanofl.engine.geom.Point;
+		getBounds() : nanofl.engine.geom.Bounds;
+		getIntersectionPointsX_rightRay(mx:number, my:number) : number[];
+		getIntersectionCount_rightRay(mx:number, my:number) : number;
+		getIntersection_straightSection(line:nanofl.engine.geom.StraightLine) : { curves : nanofl.engine.geom.BezierCurve[]; lines : nanofl.engine.geom.StraightLine[]; };
+		getIntersection_bezierCurve(curve:nanofl.engine.geom.BezierCurve) : nanofl.engine.geom.BezierCurve.BezierCurvesIntersection;
+		isDegeneratedToPoint() : boolean;
+		getFirstPart(t:number) : nanofl.engine.geom.BezierCurve;
+		getSecondPart(t:number) : nanofl.engine.geom.BezierCurve;
+		getPart(t1:number, t2:number) : nanofl.engine.geom.BezierCurve;
+		split(tt:number[]) : nanofl.engine.geom.BezierCurve[];
+		translate(dx:number, dy:number) : nanofl.engine.geom.BezierCurve;
+		rotate(da:number) : nanofl.engine.geom.BezierCurve;
+		clone() : nanofl.engine.geom.BezierCurve;
+		equ(curve:nanofl.engine.geom.BezierCurve) : boolean;
+		getReversed() : nanofl.engine.geom.BezierCurve;
+		reverse() : void;
+		getLength() : number;
+		getTangent(t:number) : number;
+		toString() : string;
+	}
+	
+	type Bounds =
+	{
+		maxX : number;
+		maxY : number;
+		minX : number;
+		minY : number;
+	}
+	
+	export class BoundsTools
+	{
+		static updateByRect(bounds:nanofl.engine.geom.Bounds, rect:createjs.Rectangle) : nanofl.engine.geom.Bounds;
+	}
+	
+	export class Contour
+	{
+		constructor(edges:nanofl.engine.geom.Edge[]);
+		edges : nanofl.engine.geom.Edge[];
+		save(out:nanofl.engine.XmlWriter) : void;
+		draw(g:createjs.Graphics) : void;
+		translate(dx:number, dy:number) : void;
+		isPointInside(px:number, py:number) : boolean;
+		isPointInsideP(p:nanofl.engine.geom.Point) : boolean;
+		hasPoint(px:number, py:number) : boolean;
+		hasEdge(edge:nanofl.engine.geom.Edge) : boolean;
+		isEdgeInside(edge:nanofl.engine.geom.Edge) : boolean;
+		isNestedTo(outer:nanofl.engine.geom.Contour, canEqu:boolean) : boolean;
+		clone() : nanofl.engine.geom.Contour;
+		isClockwise() : boolean;
+		reverse() : void;
+		getCommonEdges(contour:nanofl.engine.geom.Contour) : nanofl.engine.geom.Edge[];
+		indexIn(contours:nanofl.engine.geom.Contour[]) : number;
+		equ(c:nanofl.engine.geom.Contour) : boolean;
+		toString() : string;
+	}
+	
+	export class Contours
+	{
+		static find<T>(edges:T[]) : nanofl.engine.geom.Contour[];
+	}
+	
+	export class Edge
+	{
+		constructor(x1:number, y1:number, x2:number, y2:number, x3?:number, y3?:number);
+		x1 : number;
+		y1 : number;
+		x2 : number;
+		y2 : number;
+		x3 : number;
+		y3 : number;
+		isStraight() : boolean;
+		getIntersectionCount_rightRay(mx:number, my:number) : number;
+		getIntersectionPointsX_rightRay(mx:number, my:number) : number[];
+		draw(g:createjs.Graphics, m:createjs.Matrix2D) : void;
+		equ(e:nanofl.engine.geom.Edge) : boolean;
+		getNearestPoint(x:number, y:number) : { point : nanofl.engine.geom.Point; t : number; };
+		translate(dx:number, dy:number) : void;
+		translateVertex(point:nanofl.engine.geom.Point, dx:number, dy:number) : void;
+		translateStart(dx:number, dy:number) : void;
+		translateEnd(dx:number, dy:number) : void;
+		reverse() : nanofl.engine.geom.Edge;
+		getBounds(bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
+		toString() : string;
+		getMiddlePoint() : nanofl.engine.geom.Point;
+		hasCommonVertices(edge:nanofl.engine.geom.Edge) : boolean;
+		transform(m:nanofl.engine.geom.Matrix) : void;
+		asStraightLine() : nanofl.engine.geom.StraightLine;
+		asBezierCurve() : nanofl.engine.geom.BezierCurve;
+		clone() : nanofl.engine.geom.Edge;
+		indexIn<T>(edges:T[]) : number;
+		isDegeneratedToPoint() : boolean;
+		roundCoords() : void;
+		getLength() : number;
+		getPart(t:number) : nanofl.engine.geom.Edge;
+		getPoint(t:number) : nanofl.engine.geom.Point;
+		getTangent(t:number) : number;
+		split(t:number) : nanofl.engine.geom.Edge[];
+		isInRectangle(x:number, y:number, width:number, height:number) : boolean;
+		static fromStraightLine(line:nanofl.engine.geom.StraightLine) : nanofl.engine.geom.Edge;
+		static fromBezierCurve(curve:nanofl.engine.geom.BezierCurve) : nanofl.engine.geom.Edge;
+		static getIntersection(edgeA:nanofl.engine.geom.Edge, edgeB:nanofl.engine.geom.Edge) : nanofl.engine.geom.Edge.EdgesItersection;
+	}
+	
+	export class Edges
+	{
+		static ensureUnique<T>(edges:T[]) : boolean;
+		static concatUnique<T>(edgesA:nanofl.engine.geom.Edge[], edgesB:T[]) : nanofl.engine.geom.Edge[];
+		static appendUnique<T>(edgesA:T[], edgesB:T[]) : T[];
+		static drawStroked(edges:nanofl.engine.geom.StrokeEdge[], g:createjs.Graphics, m:createjs.Matrix2D) : void;
+		static draw<T>(edges:T[], g:createjs.Graphics) : void;
+		static getBounds(edges:nanofl.engine.geom.Edge[], bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
+		static getStrokedBounds(edges:nanofl.engine.geom.StrokeEdge[], bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
+		static export<T>(edges:T[], out:nanofl.engine.XmlWriter) : void;
+		static exportStroked(edges:nanofl.engine.geom.StrokeEdge[], out:nanofl.engine.XmlWriter) : void;
+		static load(s:string) : nanofl.engine.geom.Edge[];
+		static save(edges:nanofl.engine.geom.Edge[]) : string;
+		/**
+		 * The pos is a random index in edges array. Method return a new pos after replace (pos may be increazed if inserts before pos).
+		 */
+		static replace(edges:nanofl.engine.geom.Edge[], search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[], pos?:number) : number;
+		static intersect(edgesA:nanofl.engine.geom.Edge[], edgesB:nanofl.engine.geom.Edge[], onReplace?:(arg0:nanofl.engine.geom.Edge, arg1:nanofl.engine.geom.Edge[]) => void) : void;
+		static roundAndRemoveDegenerated<T>(edges:T[]) : void;
+	}
+	
+	export class Matrix
+	{
+		constructor(a?:number, b?:number, c?:number, d?:number, tx?:number, ty?:number);
+		a : number;
+		b : number;
+		c : number;
+		d : number;
+		tx : number;
+		ty : number;
+		save(out:nanofl.engine.XmlWriter) : void;
+		decompose() : { rotation : number; scaleX : number; scaleY : number; skewX : number; skewY : number; x : number; y : number; };
+		setMatrix(m:{ a : number; b : number; c : number; d : number; tx : number; ty : number; }) : nanofl.engine.geom.Matrix;
+		isIdentity() : boolean;
+		invert() : nanofl.engine.geom.Matrix;
+		transformPoint(x:number, y:number) : nanofl.engine.geom.Point;
+		clone() : nanofl.engine.geom.Matrix;
+		translate(tx:number, ty:number) : nanofl.engine.geom.Matrix;
+		equ(m:nanofl.engine.geom.Matrix) : boolean;
+		setTransform(x:number, y:number, scaleX:number, scaleY:number, rotation:number, skewX:number, skewY:number, regX?:number, regY?:number) : nanofl.engine.geom.Matrix;
+		appendMatrix(m:nanofl.engine.geom.Matrix) : nanofl.engine.geom.Matrix;
+		prependMatrix(m:nanofl.engine.geom.Matrix) : nanofl.engine.geom.Matrix;
+		append(a:number, b:number, c:number, d:number, tx:number, ty:number) : nanofl.engine.geom.Matrix;
+		prepend(a:number, b:number, c:number, d:number, tx:number, ty:number) : nanofl.engine.geom.Matrix;
+		appendTransform(x:number, y:number, scaleX?:number, scaleY?:number, rotation?:number, skewX?:number, skewY?:number, regX?:number, regY?:number) : nanofl.engine.geom.Matrix;
+		prependTransform(x:number, y:number, scaleX?:number, scaleY?:number, rotation?:number, skewX?:number, skewY?:number, regX?:number, regY?:number) : nanofl.engine.geom.Matrix;
+		rotate(angle:number) : nanofl.engine.geom.Matrix;
+		skew(skewX:number, skewY:number) : nanofl.engine.geom.Matrix;
+		scale(kx:number, ky:number) : nanofl.engine.geom.Matrix;
+		/**
+		 * Creates the specific style of matrix expected by the
+		 * <code>beginGradientFill()</code> and <code>lineGradientStyle()</code>
+		 * methods of the Graphics class. Width and height are scaled to a
+		 * <code>scaleX</code>/<code>scaleY</code> pair and the
+		 * <code>tx</code>/<code>ty</code> values are offset by half the width and
+		 * height.
+		 *
+		 * <p>For example, consider a gradient with the following
+		 * characteristics:</p>
+		 *
+		 * <ul>
+		 *   <li><code>GradientType.LINEAR</code></li>
+		 *   <li>Two colors, green and blue, with the ratios array set to <code>[0,255]</code></li>
+		 *   <li><code>SpreadMethod.PAD</code></li>
+		 *   <li><code>InterpolationMethod.LINEAR_RGB</code></li>
+		 * </ul>
+		 *
+		 * <p>The following illustrations show gradients in which the matrix was
+		 * defined using the <code>createGradientBox()</code> method with different
+		 * parameter settings:</p>
+		 *
+		 * @param width    The width of the gradient box.
+		 * @param height   The height of the gradient box.
+		 * @param rotation The amount to rotate, in radians.
+		 * @param tx       The distance, in pixels, to translate to the right along
+		 *                 the <i>x</i> axis. This value is offset by half of the
+		 *                 <code>width</code> parameter.
+		 * @param ty       The distance, in pixels, to translate down along the
+		 *                 <i>y</i> axis. This value is offset by half of the
+		 *                 <code>height</code> parameter.
+		 */
+		createGradientBox(width:number, height:number, rotation?:number, tx?:number, ty?:number) : nanofl.engine.geom.Matrix;
+		toMatrix2D() : createjs.Matrix2D;
+		toString() : string;
+		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.geom.Matrix;
+		static fromMatrix2D(m:createjs.Matrix2D) : nanofl.engine.geom.Matrix;
+	}
+	
+	type Point =
+	{
+		x : number;
+		y : number;
+	}
+	
+	export class PointTools
+	{
+		static half(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
+		static round(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
+		static normalize(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
+		static getLength(pt:nanofl.engine.geom.Point) : number;
+		static getDist(x1:number, y1:number, x2:number, y2:number) : number;
+		static getSqrDist(x1:number, y1:number, x2:number, y2:number) : number;
+		static rotate(x:number, y:number, da:number) : nanofl.engine.geom.Point;
+		static moveInDirection(start:nanofl.engine.geom.Point, endX:number, endY:number, len:number) : nanofl.engine.geom.Point;
+		static equ(pt1:nanofl.engine.geom.Point, pt2:nanofl.engine.geom.Point) : boolean;
+		static clone(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
+		static round100(n:number) : number;
+		static toString(pt:nanofl.engine.geom.Point) : string;
+		static getNearest(pt:nanofl.engine.geom.Point, points:nanofl.engine.geom.Point[]) : nanofl.engine.geom.Point;
+	}
+	
+	export class Polygon implements nanofl.engine.ISelectable
+	{
+		constructor(fill?:nanofl.engine.fills.IFill, contours?:nanofl.engine.geom.Contour[], selected?:boolean);
+		contours : nanofl.engine.geom.Contour[];
+		fill : nanofl.engine.fills.IFill;
+		selected : boolean;
+		save(fills:nanofl.engine.fills.IFill[], out:nanofl.engine.XmlWriter) : void;
+		draw(g:createjs.Graphics, m?:createjs.Matrix2D) : void;
+		translate(dx:number, dy:number) : void;
+		isPointInside(px:number, py:number) : boolean;
+		isEdgeInside(edge:nanofl.engine.geom.Edge) : boolean;
+		isPolygonInside(p:nanofl.engine.geom.Polygon) : boolean;
+		translateVertex(point:nanofl.engine.geom.Point, dx:number, dy:number) : void;
+		getBounds(bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
+		applyFill(fill:nanofl.engine.fills.IFill, x1?:number, y1?:number, x2?:number, y2?:number) : void;
+		transform(m:nanofl.engine.geom.Matrix) : void;
+		getEdgesByPoint(x:number, y:number, edges?:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Edge[];
+		getEdges(edges?:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Edge[];
+		getPointInside() : nanofl.engine.geom.Point;
+		clone() : nanofl.engine.geom.Polygon;
+		replaceEdge(search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[]) : void;
+		getReconstructed(additionalEdges:nanofl.engine.geom.Edge[], force?:boolean) : nanofl.engine.geom.Polygon[];
+		export(out:nanofl.engine.XmlWriter, fills:nanofl.engine.fills.IFill[]) : void;
+		split() : nanofl.engine.geom.Polygon[];
+		equ(p:nanofl.engine.geom.Polygon) : boolean;
+		roundPoints() : void;
+		isInRectangle(x:number, y:number, width:number, height:number) : boolean;
+		toString() : string;
+		static load(node:htmlparser.HtmlNodeElement, fills:nanofl.engine.fills.IFill[]) : nanofl.engine.geom.Polygon;
+	}
+	
+	export class Polygons
+	{
+		static findByPoint(polygons:nanofl.engine.geom.Polygon[], x:number, y:number) : nanofl.engine.geom.Polygon;
+		static isEdgeInside(polygons:nanofl.engine.geom.Polygon[], edge:nanofl.engine.geom.Edge) : boolean;
+		static reconstruct(edges:nanofl.engine.geom.Edge[], polygonsToDetectFill:nanofl.engine.geom.Polygon[]) : nanofl.engine.geom.Polygon[];
+		static mergeByCommonEdges(polygons:nanofl.engine.geom.Polygon[], edges:nanofl.engine.geom.StrokeEdge[]) : void;
+		static removeDublicates(polygons:nanofl.engine.geom.Polygon[]) : void;
+		static hasDublicates(polygons:nanofl.engine.geom.Polygon[]) : boolean;
+		static roundAndRemoveDegenerated(polygons:nanofl.engine.geom.Polygon[]) : void;
+	}
+	
+	export class StraightLine
+	{
+		constructor(x1:number, y1:number, x2:number, y2:number);
+		x1 : number;
+		y1 : number;
+		x2 : number;
+		y2 : number;
+		getBounds() : nanofl.engine.geom.Bounds;
+		getNearestPoint(x:number, y:number) : { point : nanofl.engine.geom.Point; t : number; };
+		getLength() : number;
+		getIntersectionPointX_rightRay(mx:number, my:number) : number;
+		isIntersect_rightRay(mx:number, my:number) : boolean;
+		getIntersection_straightSection(line:nanofl.engine.geom.StraightLine) : nanofl.engine.geom.Point;
+		toString() : string;
+		isDegeneratedToPoint() : boolean;
+		getFirstPart(t:number) : nanofl.engine.geom.StraightLine;
+		getSecondPart(t:number) : nanofl.engine.geom.StraightLine;
+		split(t:number) : nanofl.engine.geom.StraightLine[];
+		getPoint(t:number) : nanofl.engine.geom.Point;
+		getTangent(t:number) : number;
+	}
+	
+	export class StrokeEdge extends nanofl.engine.geom.Edge implements nanofl.engine.ISelectable
+	{
+		constructor(x1:number, y1:number, x2:number, y2:number, x3?:number, y3?:number, stroke?:nanofl.engine.strokes.IStroke, selected?:boolean);
+		stroke : nanofl.engine.strokes.IStroke;
+		selected : boolean;
+		draw(g:createjs.Graphics, m:createjs.Matrix2D) : void;
+		getNearestPoint(x:number, y:number) : { point : nanofl.engine.geom.Point; t : number; };
+		addTo(edges:nanofl.engine.geom.StrokeEdge[]) : void;
+		clone() : nanofl.engine.geom.Edge;
+		toString() : string;
+		static fromEdge(edge:nanofl.engine.geom.Edge, stroke?:nanofl.engine.strokes.IStroke, selected?:boolean) : nanofl.engine.geom.StrokeEdge;
+	}
+	
+	export class StrokeEdges
+	{
+		static load(node:htmlparser.HtmlNodeElement, strokes:nanofl.engine.strokes.IStroke[]) : nanofl.engine.geom.StrokeEdge[];
+		static save(edges:nanofl.engine.geom.StrokeEdge[], strokes:nanofl.engine.strokes.IStroke[], out:nanofl.engine.XmlWriter) : void;
+		static replace(edges:nanofl.engine.geom.StrokeEdge[], search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[]) : boolean;
+	}
+}
+
+declare module nanofl.engine.plugins
+{
+	type FilterProperty =
+	{
+		/**
+		 * Like 123, 10.3, "#00aaff", "rgb(1,2,3)" or "rgba(12,32,255,128)".
+		 */
+		defaultValue : any;
+		/**
+		 * Used to display in form. If not specified then name will be used.
+		 */
+		label : string;
+		/**
+		 * Maximum value to validate on input. Used for int/float only.
+		 */
+		maxValue : any;
+		/**
+		 * Minimum value to validate on input. Used for int/float only.
+		 */
+		minValue : any;
+		/**
+		 * Used as field name in params.
+		 */
+		name : string;
+		/**
+		 * Value for neutral case.
+		 * Used to detect finish value in tween when finish filter is absent.
+		 * Don't specify or set to null if not need.
+		 */
+		neutralValue : any;
+		/**
+		 * int / float / string / color / bool
+		 */
+		type : string;
+		/**
+		 * Units to display ("px", "%").
+		 */
+		units : string;
+	}
+	
+	export interface IFilterPlugin
+	{
+		/**
+		 * Internal filter name (for example: "DropShadowFilter").
+		 * Used as xml tag on saving.
+		 */
+		name : string;
+		/**
+		 * Filter name for screen forms (for example: "Drop Shadow").
+		 */
+		label : string;
+		properties : nanofl.engine.plugins.FilterProperty[];
+		getFilter(params:any) : createjs.Filter;
+	}
+}
+
+declare module nanofl.engine.strokes
+{
+	export class BaseStroke
+	{
+		thickness : number;
+		/**
+		 *  butt, round, or square. Easeljs's default is butt.
+		 */
+		caps : string;
+		/**
+		 * bevel, round, or miter. Easeljs's default is miter.
+		 */
+		joints : string;
+		/**
+		 * Miter limit ratio which controls at what point a mitered joint will be clipped. Easeljs's default is 10.
+		 */
+		miterLimit : number;
+		ignoreScale : boolean;
+		getSize() : number;
+		clone() : nanofl.engine.strokes.IStroke;
+		equ(e:nanofl.engine.strokes.IStroke) : boolean;
+		setLibrary(library:nanofl.engine.Library) : void;
+		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.strokes.IStroke;
+		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.strokes.IStroke;
+	}
+	
+	export interface IStroke
+	{
+		begin(g:createjs.Graphics) : void;
+		clone() : nanofl.engine.strokes.IStroke;
+		getSize() : number;
+		equ(e:nanofl.engine.strokes.IStroke) : boolean;
+		save(out:nanofl.engine.XmlWriter) : void;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		applyAlpha(alpha:number) : void;
+		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.strokes.IStroke;
+		setLibrary(library:nanofl.engine.Library) : void;
+		toString() : string;
+	}
+	
+	export class BitmapStroke extends nanofl.engine.strokes.BaseStroke implements nanofl.engine.strokes.IStroke
+	{
+		constructor(bitmapPath?:string, repeat?:string, thickness?:number, caps?:string, joints?:string, miterLimit?:number, ignoreScale?:boolean);
+		bitmapPath : string;
+		repeat : string;
+		save(out:nanofl.engine.XmlWriter) : void;
+		begin(g:createjs.Graphics) : void;
+		clone() : nanofl.engine.strokes.IStroke;
+		equ(e:nanofl.engine.strokes.IStroke) : boolean;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		applyAlpha(alpha:number) : void;
+		toString() : string;
+	}
+	
+	export class SelectionStroke extends nanofl.engine.strokes.BaseStroke implements nanofl.engine.strokes.IStroke
+	{
+		constructor(base:nanofl.engine.strokes.BaseStroke, m:createjs.Matrix2D);
+		save(out:nanofl.engine.XmlWriter) : void;
+		begin(g:createjs.Graphics) : void;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		applyAlpha(alpha:number) : void;
+		toString() : string;
+	}
+	
+	export class SolidStroke extends nanofl.engine.strokes.BaseStroke implements nanofl.engine.strokes.IStroke
+	{
+		constructor(color?:string, thickness?:number, caps?:string, joints?:string, miterLimit?:number, ignoreScale?:boolean);
+		color : string;
+		save(out:nanofl.engine.XmlWriter) : void;
+		begin(g:createjs.Graphics) : void;
+		clone() : nanofl.engine.strokes.IStroke;
+		equ(e:nanofl.engine.strokes.IStroke) : boolean;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		applyAlpha(alpha:number) : void;
+		toString() : string;
+	}
+}
+
+declare module nanofl.ide.plugins
+{
+	export interface IExporterPlugin
+	{
+		/**
+		 * Compiler name (for example: "JavaScript", "TypeScript", "Haxe").
+		 */
+		name : string;
+		menuItemName : string;
+		menuItemIcon : string;
+		fileFilterDescription : string;
+		fileFilterExtensions : string[];
+		fileDefaultExtension : string;
+		exportDocument(fileApi:nanofl.engine.FileApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library) : boolean;
+	}
+	
+	export interface IIdePlugin
+	{
+		/**
+		 * IDE name (for example: "FlashDevelop", "MS Visual Studio 2013").
+		 */
+		name : string;
+		/**
+		 * Supported languages (for example: [ "JavaScript", "TypeScript", "Haxe" ]).
+		 */
+		languages : string[];
+		/**
+		 * Called to generate IDE-related files (solution/project).
+		 * "fileApi" argument is a path to *.nfl file.
+		 */
+		generateFiles(language:string, fileApi:nanofl.engine.FileApi, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library) : void;
+	}
+	
+	export interface IImporterPlugin
+	{
+		/**
+		 * Compiler name (for example: "JavaScript", "TypeScript", "Haxe").
+		 */
+		name : string;
+		menuItemName : string;
+		menuItemIcon : string;
+		fileFilterDescription : string;
+		fileFilterExtensions : string[];
+		importDocument(fileApi:nanofl.engine.FileApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, fonts:string[], callb:(arg:boolean) => void) : void;
+	}
+	
+	export interface ILanguagePlugin
+	{
+		/**
+		 * Code language name (for example: "JavaScript", "TypeScript", "Haxe").
+		 * This value displayed to users & used as internal language ID.
+		 */
+		name : string;
+		/**
+		 * Called to generate source code files (usually, base classes for symbols used in code)
+		 * and sealized library to load in application.
+		 * "filePath" argument is a path to *.nfl file.
+		 */
+		generateFiles(fileApi:nanofl.engine.FileApi, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library) : void;
 	}
 }
 
@@ -6823,232 +7118,6 @@ declare module createjs.Sound
 		src : string;
 		target : any;
 		type : string;
-	}
-}
-
-declare module models.common.geom.BezierCurve
-{
-	type BezierCurvesIntersection =
-	{
-		a : models.common.geom.BezierCurve[];
-		b : models.common.geom.BezierCurve[];
-	}
-}
-
-declare module models.common.coloreffects
-{
-	export class ColorEffect
-	{
-		apply(obj:createjs.DisplayObject) : void;
-		clone() : models.common.coloreffects.ColorEffect;
-		getNeutralClone() : models.common.coloreffects.ColorEffect;
-		getTweened(k:number, finish:models.common.coloreffects.ColorEffect) : models.common.coloreffects.ColorEffect;
-		save(out:models.common.XmlWriter) : void;
-		equ(c:models.common.coloreffects.ColorEffect) : boolean;
-		static load(node:htmlparser.HtmlNodeElement) : models.common.coloreffects.ColorEffect;
-		static equS(a:models.common.coloreffects.ColorEffect, b:models.common.coloreffects.ColorEffect) : boolean;
-	}
-	
-	export class ColorEffectAdvanced extends models.common.coloreffects.ColorEffect
-	{
-		constructor(alphaMultiplier:number, redMultiplier:number, greenMultiplier:number, blueMultiplier:number, alphaOffset:number, redOffset:number, greenOffset:number, blueOffset:number);
-		redMultiplier : number;
-		greenMultiplier : number;
-		blueMultiplier : number;
-		alphaMultiplier : number;
-		redOffset : number;
-		greenOffset : number;
-		blueOffset : number;
-		alphaOffset : number;
-		save(out:models.common.XmlWriter) : void;
-		apply(obj:createjs.DisplayObject) : void;
-		clone() : models.common.coloreffects.ColorEffectAdvanced;
-		getNeutralClone() : models.common.coloreffects.ColorEffect;
-		getTweened(k:number, finish:models.common.coloreffects.ColorEffect) : models.common.coloreffects.ColorEffect;
-		equ(c:models.common.coloreffects.ColorEffect) : boolean;
-		static load(node:htmlparser.HtmlNodeElement) : models.common.coloreffects.ColorEffectAdvanced;
-	}
-	
-	export class ColorEffectAlpha extends models.common.coloreffects.ColorEffect
-	{
-		constructor(value:number);
-		value : number;
-		save(out:models.common.XmlWriter) : void;
-		apply(obj:createjs.DisplayObject) : void;
-		clone() : models.common.coloreffects.ColorEffectAlpha;
-		getNeutralClone() : models.common.coloreffects.ColorEffect;
-		getTweened(k:number, finish:models.common.coloreffects.ColorEffect) : models.common.coloreffects.ColorEffect;
-		equ(c:models.common.coloreffects.ColorEffect) : boolean;
-		static load(node:htmlparser.HtmlNodeElement) : models.common.coloreffects.ColorEffectAlpha;
-	}
-	
-	export class ColorEffectBrightness extends models.common.coloreffects.ColorEffect
-	{
-		constructor(value:number);
-		value : number;
-		save(out:models.common.XmlWriter) : void;
-		apply(obj:createjs.DisplayObject) : void;
-		clone() : models.common.coloreffects.ColorEffectBrightness;
-		getNeutralClone() : models.common.coloreffects.ColorEffect;
-		getTweened(k:number, finish:models.common.coloreffects.ColorEffect) : models.common.coloreffects.ColorEffect;
-		equ(c:models.common.coloreffects.ColorEffect) : boolean;
-		static load(node:htmlparser.HtmlNodeElement) : models.common.coloreffects.ColorEffectBrightness;
-	}
-	
-	export class ColorEffectDouble extends models.common.coloreffects.ColorEffect
-	{
-		constructor(effect0:models.common.coloreffects.ColorEffect, effect1:models.common.coloreffects.ColorEffect);
-		apply(obj:createjs.DisplayObject) : void;
-		equ(c:models.common.coloreffects.ColorEffect) : boolean;
-	}
-	
-	export class ColorEffectTint extends models.common.coloreffects.ColorEffect
-	{
-		constructor(color:string, multiplier:number);
-		color : string;
-		multiplier : number;
-		save(out:models.common.XmlWriter) : void;
-		apply(obj:createjs.DisplayObject) : void;
-		clone() : models.common.coloreffects.ColorEffectTint;
-		getNeutralClone() : models.common.coloreffects.ColorEffect;
-		getTweened(k:number, finish:models.common.coloreffects.ColorEffect) : models.common.coloreffects.ColorEffect;
-		equ(c:models.common.coloreffects.ColorEffect) : boolean;
-		static load(node:htmlparser.HtmlNodeElement) : models.common.coloreffects.ColorEffectTint;
-	}
-}
-
-declare module models.common.libraryitems
-{
-	export class LibraryItem
-	{
-		namePath : string;
-		getType() : string;
-		getIcon() : string;
-		clone() : models.common.libraryitems.LibraryItem;
-		save(fileApi:models.common.FileApi) : void;
-		saveToXml(out:models.common.XmlWriter) : void;
-		getFilePathTemplate() : string;
-		preload(ready:() => void) : void;
-		removeInstance(namePath:string) : void;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		getUsedItems() : models.common.libraryitems.LibraryItem[];
-		getUsedFilters() : string[];
-		duplicate(newNamePath:string) : models.common.libraryitems.LibraryItem;
-		remove() : void;
-		toString() : string;
-		static load(namePath:string, libraryDir:string, fileApi:models.common.FileApi) : models.common.libraryitems.LibraryItem;
-		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : models.common.libraryitems.LibraryItem;
-	}
-	
-	export class InstancableItem extends models.common.libraryitems.LibraryItem
-	{
-		linkedClass : string;
-		newInstance() : models.common.elements.Instance;
-		hasInstance(namePath:string) : boolean;
-		getDisplayObjectClassName() : string;
-		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : createjs.DisplayObject;
-		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : void;
-	}
-	
-	export class BitmapItem extends models.common.libraryitems.InstancableItem
-	{
-		constructor(namePath:string, ext:string);
-		image : HTMLImageElement;
-		getType() : string;
-		clone() : models.common.libraryitems.LibraryItem;
-		getIcon() : string;
-		save(fileApi:models.common.FileApi) : void;
-		saveToXml(out:models.common.XmlWriter) : void;
-		getUrl() : string;
-		preload(ready:() => void) : void;
-		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : createjs.DisplayObject;
-		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : void;
-		getDisplayObjectClassName() : string;
-		toString() : string;
-		static load(namePath:string, libraryDir:string, fileApi:models.common.FileApi) : models.common.libraryitems.BitmapItem;
-		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : models.common.libraryitems.BitmapItem;
-	}
-	
-	export class FolderItem extends models.common.libraryitems.LibraryItem
-	{
-		constructor(namePath:string);
-		opened : boolean;
-		clone() : models.common.libraryitems.LibraryItem;
-		getIcon() : string;
-		toString() : string;
-	}
-	
-	export class FontItem extends models.common.libraryitems.LibraryItem
-	{
-		constructor(namePath:string, variants:models.common.FontVariant[]);
-		variants : models.common.FontVariant[];
-		getType() : string;
-		clone() : models.common.libraryitems.LibraryItem;
-		getIcon() : string;
-		save(fileApi:models.common.FileApi) : void;
-		saveToXml(out:models.common.XmlWriter) : void;
-		toFont() : models.common.Font;
-		preload(ready:() => void) : void;
-		toString() : string;
-		static load(namePath:string, libraryDir:string, fileApi:models.common.FileApi) : models.common.libraryitems.FontItem;
-		static parse(namePath:string, fontNode:htmlparser.HtmlNodeElement) : models.common.libraryitems.FontItem;
-	}
-	
-	export class LibraryItems
-	{
-		static saveToXml(items:models.common.libraryitems.LibraryItem[], out:models.common.XmlWriter) : void;
-		static loadFromXml(xml:htmlparser.HtmlNodeElement) : models.common.libraryitems.LibraryItem[];
-	}
-	
-	export class MovieClipItem extends models.common.libraryitems.InstancableItem implements models.common.ITimeline, models.common.ILayersContainer
-	{
-		constructor(namePath:string);
-		layers : models.common.ArrayRO<models.common.Layer>;
-		likeButton : boolean;
-		autoPlay : boolean;
-		loop : boolean;
-		getType() : string;
-		clone() : models.common.libraryitems.LibraryItem;
-		addLayer(layer:models.common.Layer) : void;
-		/**
-		 * Add block of layers into timeline.
-		 * Assume that layers' parentIndex referenced inside block.
-		 */
-		addLayersBlock(layersToAdd:models.common.Layer[], index?:number) : void;
-		removeLayers(index:number) : models.common.Layer[];
-		getFramesAt(frameIndex:number) : models.common.Frame[];
-		removeInstance(namePath:string) : void;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		getIcon() : string;
-		save(fileApi:models.common.FileApi) : void;
-		saveToXml(out:models.common.XmlWriter) : void;
-		getTotalFrames() : number;
-		getTimelineState() : models.client.undo.states.TimelineState;
-		setTimelineState(state:models.client.undo.states.TimelineState) : void;
-		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : nanofl.MovieClip;
-		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : void;
-		hasInstance(namePath:string) : boolean;
-		getUsedItems() : models.common.libraryitems.LibraryItem[];
-		getUsedFilters() : string[];
-		getDisplayObjectClassName() : string;
-		toString() : string;
-		static load(namePath:string, libraryDir:string, fileApi:models.common.FileApi) : models.common.libraryitems.MovieClipItem;
-		static parse(namePath:string, movieClipNode:htmlparser.HtmlNodeElement) : models.common.libraryitems.MovieClipItem;
-	}
-	
-	export class SoundItem extends models.common.libraryitems.LibraryItem
-	{
-		constructor(namePath:string, ext:string);
-		linkage : string;
-		getType() : string;
-		clone() : models.common.libraryitems.LibraryItem;
-		getIcon() : string;
-		save(fileApi:models.common.FileApi) : void;
-		saveToXml(out:models.common.XmlWriter) : void;
-		getUrl() : string;
-		toString() : string;
-		static load(namePath:string, libraryDir:string, fileApi:models.common.FileApi) : models.common.libraryitems.SoundItem;
-		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : models.common.libraryitems.SoundItem;
 	}
 }
 
@@ -7075,658 +7144,494 @@ declare module createjs.Ticker
 	}
 }
 
-declare module models.common
+declare module nanofl.ide
 {
-	export interface FileApi
+	enum ActiveView
 	{
+		LIBRARY,
+		TIMELINE,
+		EDITOR
+	}
+	
+	type Application =
+	{
+		addRecent(path:string) : void;
+		clipboard : nanofl.ide.Clipboard;
+		createNewEmptyDocument(addEmptySceneToLibrary:boolean, docProp?:nanofl.engine.DocumentProperties) : nanofl.ide.Document;
+		document : nanofl.ide.Document;
+		fileApi : nanofl.ide.XpcomFileApi;
+		generateTempDocumentFilePath() : string;
+		loadDocument(path:string, activateAfterLoad?:boolean, callb?:(arg:nanofl.ide.Document) => void) : void;
+		newObjectParams : nanofl.ide.NewObjectParams;
+		plugins : nanofl.ide.IPlugins;
+		quit() : void;
+		saveDocumentIfNeed(callb:() => void) : void;
+		serverApi : nanofl.engine.ServerApi;
+	}
+	
+	export class Clipboard
+	{
+		constructor(app:nanofl.ide.Application);
+		copy(isCut?:boolean) : boolean;
+		canCut() : boolean;
+		canCopy() : boolean;
+		canPaste() : boolean;
+		cut() : boolean;
+		paste() : boolean;
+		restoreFocus() : void;
+	}
+	
+	export class Document
+	{
+		path : string;
+		properties : nanofl.engine.DocumentProperties;
+		library : nanofl.ide.EditorLibrary;
+		neverSaved : boolean;
+		navigator : nanofl.ide.Navigator;
+		editor : nanofl.ide.Editor;
+		undoQueue : nanofl.ide.undo.UndoQueue;
+		activate(isCenterView:boolean) : void;
+		setProperties(properties:nanofl.engine.DocumentProperties) : void;
+		updateTitle() : void;
+		save(callb?:() => void) : void;
+		saveAs(newPath?:string, callb?:() => void) : void;
+		test() : void;
+	}
+	
+	export class Editor
+	{
+		container : createjs.Container;
+		get_activeLayer() : nanofl.ide.EditorLayer;
+		figure : nanofl.ide.Figure;
+		get_magnet() : boolean
+	 	set_magnet(v:boolean) : boolean;
+		get_shift() : boolean
+	 	set_shift(v:boolean) : boolean;
+		get_zoomLevel() : number
+	 	set_zoomLevel(v:number) : number;
+		beginEditing(pathItem:nanofl.ide.PathItem, isCenterView?:boolean) : void;
+		updateShapes() : void;
+		updateElement(element:nanofl.engine.elements.Element) : void;
+		hasSelected() : boolean;
+		toggleSelection() : boolean;
+		select(obj:nanofl.engine.ISelectable, deselectOthers?:boolean) : void;
+		selectWoUpdate(obj:nanofl.engine.ISelectable, deselectOthers?:boolean) : void;
+		deselect(obj:nanofl.engine.ISelectable) : void;
+		deselectWoUpdate(obj:nanofl.engine.ISelectable) : void;
+		selectAll() : void;
+		deselectAll() : void;
+		deselectAllWoUpdate() : void;
+		selectLayers(layerIndexes:number[]) : void;
+		isSelectedAtPos(pos:nanofl.engine.geom.Point) : boolean;
+		getItemAtPos(pos:nanofl.engine.geom.Point) : nanofl.ide.editorelements.EditorElement;
+		getObjectAtPos(pos:nanofl.engine.geom.Point) : { layerIndex : number; obj : nanofl.engine.ISelectable; };
+		breakApartSelected() : void;
+		removeSelected() : void;
+		translateSelected(dx:number, dy:number, lowLevel?:boolean) : void;
+		updateTransformations() : void;
+		getItems(includeShape?:boolean) : nanofl.ide.editorelements.EditorElement[];
+		getSelectedItems() : nanofl.ide.editorelements.EditorElement[];
+		getObjectLayerIndex(obj:nanofl.engine.ISelectable) : number;
+		extractSelected() : nanofl.engine.elements.Element[];
+		isItemCanBeAdded(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
+		addElement(element:nanofl.engine.elements.Element) : nanofl.ide.editorelements.EditorElement;
+		convertToSymbol() : void;
+		groupSelected() : void;
+		translateVertex(point:nanofl.engine.geom.Point, dx:number, dy:number, addUndoTransaction?:boolean) : void;
+		rebind(isCenterView?:boolean) : void;
+		update() : void;
+		showAllLayers() : void;
+		hideAllLayers() : void;
+		lockAllLayers() : void;
+		unlockAllLayers() : void;
+		getSelectedLayerIndexes() : number[];
+		removeTransformFromSelected() : void;
+		moveSelectedFront() : void;
+		moveSelectedForwards() : void;
+		moveSelectedBackwards() : void;
+		moveSelectedBack() : void;
+		swapInstance(instance:nanofl.engine.elements.Instance, newNamePath:string) : void;
+		getForClipboard() : string;
+		pasteFromXml(data:string) : boolean;
+		duplicateSelected() : void;
+		getObjectsInRectangle(x:number, y:number, width:number, height:number) : nanofl.engine.ISelectable[];
+		cutToClipboard() : void;
+		copyToClipboard() : void;
+		pasteFromClipboard() : void;
+	}
+	
+	export class EditorLayer
+	{
+		container : createjs.Container;
+		shape : nanofl.ide.editorelements.EditorElementShape;
+		get_editable() : boolean;
+		get_parentIndex() : number;
+		get_type() : string;
+		addElement(element:nanofl.engine.elements.Element, index?:number) : nanofl.ide.editorelements.EditorElement;
+		removeSelected() : void;
+		getItems(r?:nanofl.ide.editorelements.EditorElement[], includeShape?:boolean) : nanofl.ide.editorelements.EditorElement[];
+		getSelectedItems(r?:nanofl.ide.editorelements.EditorElement[]) : nanofl.ide.editorelements.EditorElement[];
+		hasSelected() : boolean;
+		isAllSelected() : boolean;
+		hasItem(item:nanofl.ide.editorelements.EditorElement) : boolean;
+		selectAll() : void;
+		deselectAll() : void;
+		breakApartSelectedItems() : void;
+		show() : void;
+		hide() : void;
+		lock() : void;
+		unlock() : void;
+		getItemAtPos(pos:nanofl.engine.geom.Point) : nanofl.ide.editorelements.EditorElement;
+		getEditablessReason() : string;
+		moveSelectedFront() : void;
+		moveSelectedForwards() : void;
+		moveSelectedBackwards() : void;
+		moveSelectedBack() : void;
+		magnetSelectedToGuide() : void;
+		getIndex() : number;
+		getTweenedElements(frameIndex:number) : nanofl.engine.TweenedElement[];
+		update() : void;
+		getChildLayers() : nanofl.ide.EditorLayer[];
+		getElementIndex(element:nanofl.engine.elements.Element) : number;
+		getElementByIndex(elementIndex:number) : nanofl.engine.elements.Element;
+		getElementsState() : { elements : nanofl.engine.elements.Element[]; };
+		duplicateSelected() : void;
+		isShowSelection() : boolean;
+	}
+	
+	export class EditorLibrary
+	{
+		constructor(app:nanofl.ide.Application, library:nanofl.engine.Library);
+		get_activeItem() : nanofl.engine.libraryitems.LibraryItem;
+		renameItem(namePath:string, newNamePath:string) : boolean;
+		removeItems(namePaths:string[]) : void;
+		copyAndChangeDir(libraryDir:string, callb?:() => void) : void;
+		getNextItemName() : string;
+		hasItem(namePath:string) : boolean;
+		addItem(item:nanofl.engine.libraryitems.LibraryItem) : void;
+		addFont(family:string, variants:nanofl.engine.FontVariant[]) : void;
+		preload(ready:() => void) : void;
+		getItem(namePath:string) : nanofl.engine.libraryitems.LibraryItem;
+		getSceneInstance() : nanofl.engine.elements.Instance;
+		getSceneItem() : nanofl.engine.libraryitems.MovieClipItem;
+		getItems() : nanofl.engine.libraryitems.LibraryItem[];
+		getRawLibrary() : nanofl.engine.Library;
+		getForClipboard() : string;
+		pasteFromXml(data:string) : boolean;
+		hasSelected() : boolean;
+		removeSelected() : void;
+		renameByUser(namePath:string) : boolean;
+		deselectAll() : void;
+		update() : void;
+		getSelectedItems() : nanofl.engine.libraryitems.LibraryItem[];
+		gotoPrevItem(overwriteSelection:boolean) : void;
+		gotoNextItem(overwriteSelection:boolean) : void;
+		showPropertiesPopup() : void;
+		createEmptySymbol() : void;
+		createFolder() : void;
+		importImagesFromPaths(paths:string[], folderPath:string, ready?:() => void) : void;
+		importLibraryItemsFromFiles(files:File[], folderPath:string, callb?:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
+	}
+	
+	export class Figure
+	{
+		constructor(layers:nanofl.ide.EditorLayer[]);
+		getVertexAtPos(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
+		getSameEdgeWithLayers(edge:nanofl.engine.geom.Edge) : { layerIndex : number; edge : nanofl.engine.geom.Edge; }[];
+		getEdgeAtPos(pt:nanofl.engine.geom.Point) : { dist : number; edge : nanofl.engine.geom.Edge; layerIndex : number; t : number; };
+		getStrokeEdgeAtPos(pt:nanofl.engine.geom.Point) : { dist : number; edge : nanofl.engine.geom.StrokeEdge; layerIndex : number; t : number; };
+		getPolygonEdgeAtPos(pt:nanofl.engine.geom.Point) : { dist : number; edge : nanofl.engine.geom.Edge; layerIndex : number; t : number; };
+		getPolygonAtPos(pt:nanofl.engine.geom.Point) : { layerIndex : number; polygon : nanofl.engine.geom.Polygon; };
+		translateVertex(point:nanofl.engine.geom.Point, dx:number, dy:number) : void;
+		hasSelected() : boolean;
+		hasSelectedEdges() : boolean;
+		hasSelectedPolygons() : boolean;
+		updateShapes() : void;
+		getSelectedEdgesStrokeParams() : { color : string; thickness : number; type : string; };
+		getSelectedPolygonsFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; ratios : number[]; type : string; };
+		selectAll() : void;
+		deselectAll() : void;
+		getBounds(bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
+		getSelectedBounds(bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
+		removeSelected() : void;
+		translateSelected(dx:number, dy:number) : void;
+		transformSelected(m:nanofl.engine.geom.Matrix) : void;
+		setSelectedPolygonsFillParams(params:{ bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; ratios : number[]; }) : void;
+		setSelectedEdgesStrokeParams(params:{ color : string; thickness : number; }) : void;
+		setSelectedPolygonsFill(fill:nanofl.engine.fills.IFill, x1?:number, y1?:number, x2?:number, y2?:number) : void;
+		setSelectedEdgesStroke(stroke:nanofl.engine.strokes.IStroke) : void;
+		combine_vertex(x:number, y:number) : void;
+		combine_selected() : void;
+		extractSelected() : nanofl.engine.elements.ShapeElement;
+		combineLayerWithEdge(layerIndex:number, edge:nanofl.engine.geom.Edge) : void;
+		getMagnetPointEx(x:number, y:number, excludeSelf?:boolean) : { found : boolean; point : nanofl.engine.geom.Point; };
+		splitEdge(edge:nanofl.engine.geom.Edge, t:number) : nanofl.engine.geom.Point;
+		getSelectedStrokeEdges() : nanofl.engine.geom.StrokeEdge[];
+	}
+	
+	type IPlugins =
+	{
+		exportDocument(pluginName:string, destFilePath?:string, callb?:(arg:boolean) => void) : void;
+		importDocument(pluginName:string, srcFilePath?:string, callb?:(arg:nanofl.ide.Document) => void) : void;
+		reload(alertOnSuccess?:boolean) : boolean;
+	}
+	
+	export class Navigator
+	{
+		editPath : nanofl.ide.PathItem[];
+		get_pathItem() : nanofl.ide.PathItem;
+		navigateUp() : void;
+		navigateDown(container:nanofl.engine.IPathElement) : void;
+		navigateTo(editPath:nanofl.ide.PathItem[], isCenterView?:boolean) : void;
+		update(isCenterView:boolean) : void;
+		setLayerIndex(index:number) : void;
+		setFrameIndex(index:number) : void;
+		getInstanceNamePaths() : string[];
+	}
+	
+	export class NewObjectParams
+	{
+		constructor(app:nanofl.ide.Application);
+		strokeType : string;
+		fillType : string;
+		get_stroke() : nanofl.engine.strokes.IStroke;
+		get_fill() : nanofl.engine.fills.IFill;
+		roundRadius : number;
+		textFormat : nanofl.TextRun;
+		setStroke(stroke:nanofl.engine.strokes.IStroke) : void;
+		setFill(fill:nanofl.engine.fills.IFill) : void;
+		setStrokeParams(p:{ color : string; thickness : number; }) : void;
+		getStrokeParams() : { color : string; thickness : number; type : string; };
+		setFillParams(p:{ bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; ratios : number[]; }) : void;
+		getFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; ratios : number[]; type : string; };
+		getStrokeByType(type:string) : nanofl.engine.strokes.IStroke;
+		getFillByType(type:string) : nanofl.engine.fills.IFill;
+	}
+	
+	export class PathItem
+	{
+		constructor(element:nanofl.engine.IPathElement, layerIndex?:number, frameIndex?:number);
+		element : nanofl.engine.IPathElement;
+		layerIndex : number;
+		frameIndex : number;
+		setLayerIndex(n:number) : void;
+		setFrameIndex(n:number) : void;
+		get_layer() : nanofl.engine.Layer;
+		get_frame() : nanofl.engine.Frame;
+		equ(p:nanofl.ide.PathItem) : boolean;
+		clone() : nanofl.ide.PathItem;
+	}
+	
+	export class ShapePropertiesOptions
+	{
+		strokePane : boolean;
+		fillPane : boolean;
+		roundRadiusPane : boolean;
+		showStrokePane() : nanofl.ide.ShapePropertiesOptions;
+		showFillPane() : nanofl.ide.ShapePropertiesOptions;
+		showRoundRadiusPane() : nanofl.ide.ShapePropertiesOptions;
+	}
+	
+	export class XpcomFileApi implements nanofl.engine.FileApi
+	{
+		constructor();
 		getTempDirectory() : string;
-		getPluginsDirectory() : string;
 		getToolsDirectory() : string;
-		readDirectory(dir:string) : string[];
+		getPluginsDirectory() : string;
+		readDirectory(path:string) : string[];
+		exists(path:string) : boolean;
 		getContent(filePath:string) : string;
 		saveContent(filePath:string, text:string) : void;
 		saveBinary(filePath:string, data:number[]) : void;
-		exists(path:string) : boolean;
 		isDirectory(path:string) : boolean;
 		run(filePath:string, args:string[], blocking:boolean) : void;
 		copy(srcPath:string, destPath:string) : void;
-		rename(oldPath:string, newPath:string) : void;
+		rename(oldName:string, newName:string) : void;
 		remove(path:string) : void;
 		findFiles(dirPath:string, onFile?:(arg:string) => void, onDir?:(arg:string) => boolean) : void;
 		getPluginPaths() : string[];
+		nativePath(path:string) : string;
+		basicRemove(path:string) : void;
+		basicRename(oldPath:string, newPath:string) : void;
 	}
-	
-	export interface ISelectable
+}
+
+declare module nanofl.engine.elements
+{
+	export class Element
 	{
-		selected : boolean;
-	}
-	
-	interface ArrayRO<T> extends Array<T> { }
-	
-	export class ColorTools
-	{
-		static parse(s:string) : { a : number; b : number; g : number; r : number; };
-		static colorToString(color:string, alpha?:number) : string;
-		static rgbaToString(rgba:{ a : number; b : number; g : number; r : number; }) : string;
-		/**
-		 * Converts an RGB color value to HSL. Conversion formula
-		 * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
-		 * Assumes r, g, and b are contained in the set [0, 255] and
-		 * returns h, s, and l in the set [0, 1].
-		 *
-		 * @param Number r The red color value
-		 * @param Number g The green color value
-		 * @param Number b The blue color value
-		 * @return Array The HSL representation
-		 */
-		static rgbToHsl(rgb:{ b : number; g : number; r : number; }) : { h : number; l : number; s : number; };
-		/**
-		 * Converts an HSL color value to RGB. Conversion formula
-		 * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
-		 * Assumes h, s, and l are contained in the set [0, 1] and
-		 * returns r, g, and b in the set [0, 255].
-		 *
-		 * @param Number h The hue
-		 * @param Number s The saturation
-		 * @param Number l The lightness
-		 * @return Array The RGB representation
-		 */
-		static hslToRgb(hsl:{ h : number; l : number; s : number; }) : { b : number; g : number; r : number; };
-		/**
-		 * Converts an RGB color value to HSV. Conversion formula
-		 * adapted from http://en.wikipedia.org/wiki/HSV_color_space.
-		 * Assumes r, g, and b are contained in the set [0, 255] and
-		 * returns h, s, and v in the set [0, 1].
-		 *
-		 * @param Number r The red color value
-		 * @param Number g The green color value
-		 * @param Number b The blue color value
-		 * @return Array The HSV representation
-		 */
-		static rgbToHsv(rgb:{ b : number; g : number; r : number; }) : { h : number; s : number; v : number; };
-		/**
-		 * Converts an HSV color value to RGB. Conversion formula
-		 * adapted from http://en.wikipedia.org/wiki/HSV_color_space.
-		 * Assumes h, s, and v are contained in the set [0, 1] and
-		 * returns r, g, and b in the set [0, 255].
-		 *
-		 * @param Number h The hue
-		 * @param Number s The saturation
-		 * @param Number v The value
-		 * @return Array The RGB representation
-		 */
-		static hsvToRgb(hsv:{ h : number; s : number; v : number; }) : { b : number; g : number; r : number; };
-		static tweenRgba(start:{ a : number; b : number; g : number; r : number; }, finish:{ a : number; b : number; g : number; r : number; }, t:number) : { a : number; b : number; g : number; r : number; };
-		static tweenHsl(start:{ h : number; l : number; s : number; }, finish:{ h : number; l : number; s : number; }, t:number) : { h : number; l : number; s : number; };
-		static normalize(s:string) : string;
-	}
-	
-	export class DocumentProperties
-	{
-		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, language?:string, ide?:string);
-		title : string;
-		width : number;
-		height : number;
-		backgroundColor : string;
-		framerate : number;
-		language : string;
-		ide : string;
-		save(fileApi:models.common.FileApi, filePath:string) : void;
-		static load(filePath:string, fileApi:models.common.FileApi) : models.common.DocumentProperties;
-	}
-	
-	export class FilterDef
-	{
-		constructor(name:string, params:any);
-		name : string;
-		params : any;
-		save(out:models.common.XmlWriter) : void;
-		equ(filter:models.common.FilterDef) : boolean;
-		clone() : models.common.FilterDef;
-		cloneTweened(t:number, finish:models.common.FilterDef) : models.common.FilterDef;
-		getFilter() : createjs.Filter;
-		getLabel() : string;
-		getProperties() : models.client.plugins.FilterProperty[];
-		static load(node:htmlparser.HtmlNodeElement) : models.common.FilterDef;
-	}
-	
-	type Font =
-	{
-		fallbacks : string[];
-		family : string;
-		variants : models.common.FontVariant[];
-	}
-	
-	export class FontVariant
-	{
-		constructor(style?:string, weight?:number, locals?:string[], url?:string, format?:string);
-		/**
-		 * "normal", "italic"
-		 */
-		style : string;
-		/**
-		 * 100=thin, 300=light, 400=normal, 600=semiBold, 700=bold, 800=extraBold
-		 */
-		weight : number;
-		/**
-		 * possible font name in system to prevent loading from web if exists locally ("Open Sans Bold", "OpenSans-Bold")
-		 */
-		locals : string[];
-		/**
-		 * url to font file (can be relative to library directory)
-		 */
-		url : string;
-		/**
-		 * font file format ("woff")
-		 */
-		format : string;
-		equ(e:models.common.FontVariant) : boolean;
-	}
-	
-	export class Frame
-	{
-		constructor(keyFrame:models.common.KeyFrame, subIndex:number);
-		keyFrame : models.common.KeyFrame;
-		subIndex : number;
-	}
-	
-	export class Guide
-	{
-		constructor(shape:models.common.elements.ShapeElement);
-		get(startProps:{ rotation : number; x : number; y : number; }, finishProps:{ rotation : number; x : number; y : number; }, orientToPath:boolean, t:number) : { rotation : number; x : number; y : number; };
-	}
-	
-	export interface ILayersContainer
-	{
-		layers : models.common.ArrayRO<models.common.Layer>;
-		toString() : string;
-	}
-	
-	export interface IPathElement extends models.common.ILayersContainer
-	{
+		matrix : nanofl.engine.geom.Matrix;
+		regX : number;
+		regY : number;
 		visible : boolean;
-		matrix : models.common.geom.Matrix;
-		isScene() : boolean;
-		getNavigatorName() : string;
-		getNavigatorIcon() : string;
-		getChildren() : models.common.elements.Element[];
-		createDisplayObject(frameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]) : createjs.DisplayObject;
-		getTimeline() : models.common.ITimeline;
-	}
-	
-	export interface ITimeline
-	{
-		addLayer(layer:models.common.Layer) : void;
-		addLayersBlock(layersToAdd:models.common.Layer[], index?:number) : void;
-		removeLayers(index:number) : models.common.Layer[];
-		getTimelineState() : models.client.undo.states.TimelineState;
-		setTimelineState(state:models.client.undo.states.TimelineState) : void;
-	}
-	
-	export class KeyFrame
-	{
-		constructor(label?:string, duration?:number, motionTween?:models.common.tweens.MotionTween, elements?:models.common.elements.Element[]);
-		layer : models.common.Layer;
-		label : string;
-		duration : number;
-		motionTween : models.common.tweens.MotionTween;
-		elements : models.common.ArrayRO<models.common.elements.Element>;
-		addElement(element:models.common.elements.Element, index?:number) : void;
-		removeElementAt(n:number) : void;
-		swapElement(i:number, j:number) : void;
-		duplicate(label?:string, duration?:number, elements?:models.common.elements.Element[]) : models.common.KeyFrame;
-		getShape(createIfNotExist:boolean) : models.common.elements.ShapeElement;
-		clone() : models.common.KeyFrame;
-		isEmpty() : boolean;
-		getElementsState() : { elements : models.common.elements.Element[]; };
-		setElementsState(state:{ elements : models.common.elements.Element[]; }) : void;
-		getTweenedElements(frameSubIndex:number) : models.common.TweenedElement[];
-		getNextKeyFrame() : models.common.KeyFrame;
-		getParentLayerFrame(frameSubIndex:number) : models.common.Frame;
-		hasGoodMotionTween() : boolean;
-		getParentGuide(frameSubIndex:number) : models.common.Guide;
-		save(out:models.common.XmlWriter) : void;
-		getIndex() : number;
-		getUsedItems() : models.common.libraryitems.LibraryItem[];
-		getUsedFilters() : string[];
-		static parse(node:htmlparser.HtmlNodeElement) : models.common.KeyFrame;
-	}
-	
-	export class Layer
-	{
-		constructor(name:string, type?:string, visible?:boolean, locked?:boolean, parentIndex?:number);
-		name : string;
-		type : string;
-		visible : boolean;
-		locked : boolean;
-		parentIndex : number;
-		parentLayer : models.common.Layer;
-		keyFrames : models.common.ArrayRO<models.common.KeyFrame>;
-		getTotalFrames() : number;
-		getFrame(frameIndex:number) : models.common.Frame;
-		addKeyFrame(keyFrame:models.common.KeyFrame) : void;
-		insertFrame(frameIndex:number) : void;
-		convertToKeyFrame(frameIndex:number) : boolean;
-		removeFrame(frameIndex:number) : boolean;
+		keyFrame : nanofl.engine.KeyFrame;
+		getType() : string;
 		removeInstance(namePath:string) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		hasInstance(namePath:string) : boolean;
-		getHumanType() : string;
-		getIcon() : string;
-		getNestLevel(layers:models.common.ArrayRO<models.common.Layer>) : number;
-		getParentGuide(frameIndex:number) : models.common.Guide;
-		getChildLayers() : models.common.Layer[];
-		getTweenedElements(frameIndex:number) : models.common.TweenedElement[];
-		save(out:models.common.XmlWriter) : void;
-		clone() : models.common.Layer;
-		duplicate(keyFrames:models.common.ArrayRO<models.common.KeyFrame>, parentIndex:number) : models.common.Layer;
-		getIndex() : number;
-		getUsedItems() : models.common.libraryitems.LibraryItem[];
+		save(out:nanofl.engine.XmlWriter) : void;
+		clone() : nanofl.engine.elements.Element;
+		translate(dx:number, dy:number) : void;
+		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		getState() : nanofl.ide.undo.states.ElementState;
+		setState(state:nanofl.ide.undo.states.ElementState) : void;
+		getUsedItems() : nanofl.engine.libraryitems.LibraryItem[];
 		getUsedFilters() : string[];
-		static parse(node:htmlparser.HtmlNodeElement) : models.common.Layer;
-	}
-	
-	export class Library
-	{
-		constructor(libraryDir:string, addEmptyScene:boolean);
-		libraryDir : string;
-		loadItems(fileApi:models.common.FileApi) : void;
-		parseItems(base:htmlparser.HtmlNodeElement) : void;
-		addFont(family:string, variants:models.common.FontVariant[]) : void;
-		renameItem(oldNamePath:string, newNamePath:string) : void;
-		compile(libraryDir:string) : string;
-		addItem(item:models.common.libraryitems.LibraryItem) : models.common.libraryitems.LibraryItem;
-		removeItem(namePath:string) : void;
-		getSceneItem() : models.common.libraryitems.MovieClipItem;
-		getSceneInstance() : models.common.elements.Instance;
-		getInstancableItems() : models.common.libraryitems.InstancableItem[];
-		getBitmaps() : models.common.libraryitems.BitmapItem[];
-		getSounds() : models.common.libraryitems.SoundItem[];
-		getFonts() : models.common.Font[];
-		getItem(namePath:string) : models.common.libraryitems.LibraryItem;
-		hasItem(namePath:string) : boolean;
-		save(fileApi:models.common.FileApi) : void;
-		realUrl(url:string) : string;
-		getItems(includeScene?:boolean) : models.common.libraryitems.LibraryItem[];
-		preload(ready:() => void) : void;
-		getItemCount() : number;
-		static SCENE_NAME_PATH : string;
-	}
-	
-	export class Plugins
-	{
-		static filters : Map<string, models.client.plugins.IFilterPlugin>;
-		static importers : Map<string, models.common.plugins.IImporterPlugin>;
-		static exporters : Map<string, models.common.plugins.IExporterPlugin>;
-		static languages : Map<string, models.common.plugins.ILanguagePlugin>;
-		static ides : Map<string, models.common.plugins.IIdePlugin>;
-		static registerFilter(plugin:models.client.plugins.IFilterPlugin) : void;
-		static registerImporter(plugin:models.common.plugins.IImporterPlugin) : void;
-		static registerExporter(plugin:models.common.plugins.IExporterPlugin) : void;
-		static registerLanguage(plugin:models.common.plugins.ILanguagePlugin) : void;
-		static registerIde(plugin:models.common.plugins.IIdePlugin) : void;
-	}
-	
-	type TweenedElement =
-	{
-		current : models.common.elements.Element;
-		original : models.common.elements.Element;
-	}
-	
-	export class VersionInfo
-	{
-		static ideVersion : string;
-		static playerVersion : string;
-		static fileFormatVersion : string;
-		static createjsUrl : string;
-		static playerUrl : string;
-	}
-	
-	export class XmlWriter
-	{
-		constructor();
-		begin(tag:string, attrs?:{ value : any; name : string; }[]) : models.common.XmlWriter;
-		end() : models.common.XmlWriter;
-		attr(name:string, value:any, defValue?:any) : models.common.XmlWriter;
-		content(s:string) : models.common.XmlWriter;
 		toString() : string;
-	}
-}
-
-declare module models.common.tweens
-{
-	export class MotionTween
-	{
-		constructor(easing:number, rotateCount:number, orientToPath:boolean);
-		easing : number;
-		rotateCount : number;
-		orientToPath : boolean;
-		save(out:models.common.XmlWriter) : void;
-		apply(frameSubIndex:number) : models.common.TweenedElement[];
-		clone() : models.common.tweens.MotionTween;
-		isGood() : boolean;
-		static load(node:htmlparser.HtmlNodeElement) : models.common.tweens.MotionTween;
-	}
-}
-
-declare module models.common.plugins
-{
-	export interface IExporterPlugin
-	{
-		/**
-		 * Compiler name (for example: "JavaScript", "TypeScript", "Haxe").
-		 */
-		name : string;
-		menuItemName : string;
-		menuItemIcon : string;
-		fileFilterDescription : string;
-		fileFilterExtensions : string[];
-		fileDefaultExtension : string;
-		exportDocument(fileApi:models.common.FileApi, srcFilePath:string, destFilePath:string, documentProperties:models.common.DocumentProperties, library:models.common.Library) : boolean;
+		static parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.elements.Element;
 	}
 	
-	export interface IIdePlugin
+	export class Elements
 	{
-		/**
-		 * IDE name (for example: "FlashDevelop", "MS Visual Studio 2013").
-		 */
-		name : string;
-		/**
-		 * Supported languages (for example: [ "JavaScript", "TypeScript", "Haxe" ]).
-		 */
-		languages : string[];
-		/**
-		 * Called to generate IDE-related files (solution/project).
-		 * "fileApi" argument is a path to *.nfl file.
-		 */
-		generateFiles(language:string, fileApi:models.common.FileApi, filePath:string, documentProperties:models.common.DocumentProperties, library:models.common.Library) : void;
+		static parse(base:htmlparser.HtmlNodeElement) : nanofl.engine.elements.Element[];
+		static save(elements:nanofl.engine.elements.Element[], out:nanofl.engine.XmlWriter) : void;
 	}
 	
-	export interface IImporterPlugin
+	export class GroupElement extends nanofl.engine.elements.Element implements nanofl.engine.ILayersContainer, nanofl.engine.IPathElement
 	{
-		/**
-		 * Compiler name (for example: "JavaScript", "TypeScript", "Haxe").
-		 */
+		constructor(elements:nanofl.engine.elements.Element[]);
 		name : string;
-		menuItemName : string;
-		menuItemIcon : string;
-		fileFilterDescription : string;
-		fileFilterExtensions : string[];
-		importDocument(fileApi:models.common.FileApi, srcFilePath:string, destFilePath:string, documentProperties:models.common.DocumentProperties, library:models.common.Library, fonts:string[], callb:(arg:boolean) => void) : void;
-	}
-	
-	export interface ILanguagePlugin
-	{
-		/**
-		 * Code language name (for example: "JavaScript", "TypeScript", "Haxe").
-		 * This value displayed to users & used as internal language ID.
-		 */
-		name : string;
-		/**
-		 * Called to generate source code files (usually, base classes for symbols used in code)
-		 * and sealized library to load in application.
-		 * "filePath" argument is a path to *.nfl file.
-		 */
-		generateFiles(fileApi:models.common.FileApi, filePath:string, documentProperties:models.common.DocumentProperties, library:models.common.Library) : void;
-	}
-}
-
-declare module models.common.strokes
-{
-	export class BaseStroke
-	{
-		thickness : number;
-		/**
-		 *  butt, round, or square. Easeljs's default is butt.
-		 */
-		caps : string;
-		/**
-		 * bevel, round, or miter. Easeljs's default is miter.
-		 */
-		joints : string;
-		/**
-		 * Miter limit ratio which controls at what point a mitered joint will be clipped. Easeljs's default is 10.
-		 */
-		miterLimit : number;
-		ignoreScale : boolean;
-		getSize() : number;
-		clone() : models.common.strokes.IStroke;
-		equ(e:models.common.strokes.IStroke) : boolean;
-		setLibrary(library:models.common.Library) : void;
-		getTransformed(m:models.common.geom.Matrix) : models.common.strokes.IStroke;
-		static load(node:htmlparser.HtmlNodeElement) : models.common.strokes.IStroke;
-	}
-	
-	export interface IStroke
-	{
-		begin(g:createjs.Graphics) : void;
-		clone() : models.common.strokes.IStroke;
-		getSize() : number;
-		equ(e:models.common.strokes.IStroke) : boolean;
-		save(out:models.common.XmlWriter) : void;
+		currentFrame : number;
+		layers : nanofl.engine.ArrayRO<nanofl.engine.Layer>;
+		addElement(element:nanofl.engine.elements.Element) : void;
+		removeInstance(namePath:string) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		applyAlpha(alpha:number) : void;
-		getTransformed(m:models.common.geom.Matrix) : models.common.strokes.IStroke;
-		setLibrary(library:models.common.Library) : void;
-		toString() : string;
+		save(out:nanofl.engine.XmlWriter) : void;
+		clone() : nanofl.engine.elements.Element;
+		getUsedItems() : nanofl.engine.libraryitems.LibraryItem[];
+		getUsedFilters() : string[];
+		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.Container;
+		getMaskFilter(layer:nanofl.engine.Layer, frameIndex:number) : createjs.Container;
+		isScene() : boolean;
+		getNavigatorName() : string;
+		getNavigatorIcon() : string;
+		getChildren() : nanofl.engine.elements.Element[];
+		getTimeline() : nanofl.engine.ITimeline;
 	}
 	
-	export class BitmapStroke extends models.common.strokes.BaseStroke implements models.common.strokes.IStroke
+	export class Instance extends nanofl.engine.elements.Element implements nanofl.engine.IPathElement
 	{
-		constructor(bitmapPath?:string, repeat?:string, thickness?:number, caps?:string, joints?:string, miterLimit?:number, ignoreScale?:boolean);
-		bitmapPath : string;
-		repeat : string;
-		save(out:models.common.XmlWriter) : void;
-		begin(g:createjs.Graphics) : void;
-		clone() : models.common.strokes.IStroke;
-		equ(e:models.common.strokes.IStroke) : boolean;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		applyAlpha(alpha:number) : void;
-		toString() : string;
-	}
-	
-	export class SelectionStroke extends models.common.strokes.BaseStroke implements models.common.strokes.IStroke
-	{
-		constructor(base:models.common.strokes.BaseStroke, m:createjs.Matrix2D);
-		save(out:models.common.XmlWriter) : void;
-		begin(g:createjs.Graphics) : void;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		applyAlpha(alpha:number) : void;
-		toString() : string;
-	}
-	
-	export class SolidStroke extends models.common.strokes.BaseStroke implements models.common.strokes.IStroke
-	{
-		constructor(color?:string, thickness?:number, caps?:string, joints?:string, miterLimit?:number, ignoreScale?:boolean);
-		color : string;
-		save(out:models.common.XmlWriter) : void;
-		begin(g:createjs.Graphics) : void;
-		clone() : models.common.strokes.IStroke;
-		equ(e:models.common.strokes.IStroke) : boolean;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		applyAlpha(alpha:number) : void;
-		toString() : string;
-	}
-}
-
-declare module models.client.undo.states
-{
-	type DocumentState = models.common.DocumentProperties;
-	
-	export class ElementState
-	{
-		equ(state:models.client.undo.states.ElementState) : boolean;
-		toString() : string;
-	}
-	
-	export class ElementsState
-	{
-		constructor(layerElements:{ elements : models.common.elements.Element[]; }[]);
-		layerElements : { elements : models.common.elements.Element[]; }[];
-	}
-	
-	export class FigureState
-	{
-		constructor(shapeStates:models.client.undo.states.ShapeState[]);
-		shapeStates : models.client.undo.states.ShapeState[];
-		equ(state:models.client.undo.states.FigureState) : boolean;
-	}
-	
-	export class InstanceState extends models.client.undo.states.ElementState
-	{
-		constructor(name:string, colorEffect:models.common.coloreffects.ColorEffect, filters:models.common.FilterDef[]);
+		constructor(namePath:string, name?:string, colorEffect?:nanofl.engine.coloreffects.ColorEffect, filters?:nanofl.engine.FilterDef[]);
+		namePath : string;
 		name : string;
-		colorEffect : models.common.coloreffects.ColorEffect;
-		filters : models.common.FilterDef[];
-		equ(_state:models.client.undo.states.ElementState) : boolean;
+		colorEffect : nanofl.engine.coloreffects.ColorEffect;
+		filters : nanofl.engine.FilterDef[];
+		symbol : nanofl.engine.libraryitems.InstancableItem;
+		getType() : string;
+		save(out:nanofl.engine.XmlWriter) : void;
+		clone() : nanofl.engine.elements.Element;
+		hasInstance(namePath:string) : boolean;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		isScene() : boolean;
+		getState() : nanofl.ide.undo.states.ElementState;
+		setState(state:nanofl.ide.undo.states.ElementState) : void;
+		toString() : string;
+		layers : nanofl.engine.ArrayRO<nanofl.engine.Layer>;
+		getUsedItems() : nanofl.engine.libraryitems.LibraryItem[];
+		getUsedFilters() : string[];
+		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		getNavigatorName() : string;
+		getNavigatorIcon() : string;
+		getChildren() : nanofl.engine.elements.Element[];
+		getTimeline() : nanofl.engine.ITimeline;
 	}
 	
-	type LibraryItemState = models.common.libraryitems.LibraryItem;
-	
-	type LibraryState = models.common.libraryitems.LibraryItem[];
-	
-	export class NavigatorState
+	export class ShapeElement extends nanofl.engine.elements.Element
 	{
-		constructor(first:{ frameIndex : number; layerIndex : number; namePath : string; }, nexts:{ layerIndex : number; frameIndex : number; elementIndex : number; }[]);
-		first : { frameIndex : number; layerIndex : number; namePath : string; };
-		nexts : { layerIndex : number; frameIndex : number; elementIndex : number; }[];
-	}
-	
-	export class ShapeState extends models.client.undo.states.ElementState
-	{
-		constructor(edges:models.common.geom.StrokeEdge[], polygons:models.common.geom.Polygon[]);
-		edges : models.common.geom.StrokeEdge[];
-		polygons : models.common.geom.Polygon[];
-		equ(_state:models.client.undo.states.ElementState) : boolean;
+		constructor(edges?:nanofl.engine.geom.StrokeEdge[], polygons?:nanofl.engine.geom.Polygon[]);
+		edges : nanofl.engine.geom.StrokeEdge[];
+		polygons : nanofl.engine.geom.Polygon[];
+		getType() : string;
+		save(out:nanofl.engine.XmlWriter) : void;
+		ensureNoTransform() : void;
+		drawOnGraphics(g:createjs.Graphics, m:createjs.Matrix2D) : void;
+		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		clone() : nanofl.engine.elements.Element;
+		translate(dx:number, dy:number) : void;
+		isEmpty() : boolean;
+		hasSelected() : boolean;
+		isAllSelected() : boolean;
+		hasSelectedEdges() : boolean;
+		hasSelectedPolygons() : boolean;
+		select(obj:{ selected : boolean; }) : void;
+		selectAll() : void;
+		deselectAll() : void;
+		translateSelected(dx:number, dy:number) : void;
+		translateVertex(point:nanofl.engine.geom.Point, dx:number, dy:number) : void;
+		removeSelected() : void;
+		getPolygonAtPos(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Polygon;
+		getSameEdges(edge:nanofl.engine.geom.Edge) : nanofl.engine.geom.Edge[];
+		getNearestStrokeEdge(pt:nanofl.engine.geom.Point) : { dist : number; edge : nanofl.engine.geom.StrokeEdge; point : nanofl.engine.geom.Point; t : number; };
+		getNearestPolygonEdge(pt:nanofl.engine.geom.Point) : { dist : number; edge : nanofl.engine.geom.Edge; point : nanofl.engine.geom.Point; t : number; };
+		getNearestVertex(pt:nanofl.engine.geom.Point, excludeSelf?:boolean) : { dist : number; distMinusEdgeThickness : number; point : nanofl.engine.geom.Point; };
+		setSelectedEdgesStroke(stroke:nanofl.engine.strokes.IStroke) : void;
+		setSelectedEdgesStrokeParams(params:{ color : string; thickness : number; }) : void;
+		getSelectedEdgesStrokeParams() : { color : string; thickness : number; type : string; };
+		setSelectedPolygonsFill(fill:nanofl.engine.fills.IFill, x1?:number, y1?:number, x2?:number, y2?:number) : void;
+		setSelectedPolygonsFillParams(params:{ bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; ratios : number[]; }) : void;
+		getSelectedPolygonsFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; ratios : number[]; type : string; };
+		floodFill(fill:nanofl.engine.fills.IFill, x1:number, y1:number, x2:number, y2:number) : void;
+		getBounds(bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
+		getSelectedBounds(bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
+		transform(m:nanofl.engine.geom.Matrix) : void;
+		transformSelected(m:nanofl.engine.geom.Matrix) : void;
+		combine_strokeEdge(edge:nanofl.engine.geom.StrokeEdge) : void;
+		combine_edge(edge:nanofl.engine.geom.Edge) : void;
+		combine_vertex(x:number, y:number) : void;
+		combine_selected() : void;
+		extractSelected() : nanofl.engine.elements.ShapeElement;
+		getState() : nanofl.ide.undo.states.ElementState;
+		setState(_state:nanofl.ide.undo.states.ElementState) : void;
+		replaceEdge(search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[]) : void;
+		combine(shape:nanofl.engine.elements.ShapeElement) : void;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		toString() : string;
 	}
 	
-	export class TextState extends models.client.undo.states.ElementState
+	export class TextElement extends nanofl.engine.elements.Element
 	{
-		constructor(width:number, height:number, selectable:boolean, border:boolean, textRuns:nanofl.TextRun[]);
+		constructor(name:string, width:number, height:number, selectable:boolean, border:boolean, textRuns:nanofl.TextRun[], newTextFormat:nanofl.TextRun);
+		name : string;
 		width : number;
 		height : number;
 		selectable : boolean;
 		border : boolean;
 		textRuns : nanofl.TextRun[];
-		equ(_state:models.client.undo.states.ElementState) : boolean;
-	}
-	
-	export class TimelineState
-	{
-		constructor(layerStates:models.common.Layer[]);
-		layerStates : models.common.Layer[];
-	}
-	
-	export class TransformationsState
-	{
-		constructor(elementStates:models.common.geom.Matrix[]);
-		elementStates : models.common.geom.Matrix[];
-		equ(state:models.client.undo.states.TransformationsState) : boolean;
+		newTextFormat : nanofl.TextRun;
+		save(out:nanofl.engine.XmlWriter) : void;
+		getText() : string;
+		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		getMinSize(dispObj:createjs.DisplayObject) : { height : number; width : number; };
+		clone() : nanofl.engine.elements.Element;
+		getState() : nanofl.ide.undo.states.ElementState;
+		setState(_state:nanofl.ide.undo.states.ElementState) : void;
 	}
 }
 
-declare module models.common.fills
+declare module nanofl.ide.undo
 {
-	export class BaseFill
+	export class UndoQueue
 	{
-		setLibrary(library:models.common.Library) : void;
-	}
-	
-	export class MatrixFill extends models.common.fills.BaseFill
-	{
-		constructor(matrix:models.common.geom.Matrix);
-		matrix : models.common.geom.Matrix;
-		clone() : models.common.fills.IFill;
-		getTransformed(m:models.common.geom.Matrix) : models.common.fills.IFill;
-	}
-	
-	export interface IFill
-	{
-		begin(g:createjs.Graphics) : void;
-		clone() : models.common.fills.IFill;
-		equ(e:models.common.fills.IFill) : boolean;
-		applyAlpha(alpha:number) : void;
-		getTransformed(m:models.common.geom.Matrix) : models.common.fills.IFill;
-		save(out:models.common.XmlWriter) : void;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		setLibrary(library:models.common.Library) : void;
+		/**
+		 * This method may be called several times with different operations.
+		 */
+		beginTransaction(operations:{ document : boolean; element : nanofl.engine.elements.Element; elements : boolean; figure : boolean; libraryAddItem : string; libraryItem : string; libraryRemoveItems : string[]; libraryRenameItem : { newNamePath : string; oldNamePath : string; }; timeline : boolean; transformations : boolean; }) : void;
+		cancelTransaction() : void;
+		revertTransaction() : void;
+		forgetTransaction() : void;
+		commitTransaction() : void;
+		undo() : void;
+		redo() : void;
+		canUndo() : boolean;
+		canRedo() : boolean;
+		documentSaved() : void;
+		isDocumentModified() : boolean;
 		toString() : string;
-	}
-	
-	export class BitmapFill extends models.common.fills.MatrixFill implements models.common.fills.IFill
-	{
-		constructor(bitmapPath:string, matrix:models.common.geom.Matrix, repeat?:string);
-		bitmapPath : string;
-		repeat : string;
-		save(out:models.common.XmlWriter) : void;
-		clone() : models.common.fills.IFill;
-		applyAlpha(alpha:number) : void;
-		begin(g:createjs.Graphics) : void;
-		getBitmapWidth() : number;
-		equ(e:models.common.fills.IFill) : boolean;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		setLibrary(library:models.common.Library) : void;
-		toString() : string;
-		static load(node:htmlparser.HtmlNodeElement) : models.common.fills.BitmapFill;
-	}
-	
-	export class LinearFill extends models.common.fills.MatrixFill implements models.common.fills.IFill
-	{
-		constructor(colors:string[], ratios:number[], matrix:models.common.geom.Matrix);
-		colors : string[];
-		ratios : number[];
-		save(out:models.common.XmlWriter) : void;
-		clone() : models.common.fills.IFill;
-		applyAlpha(alpha:number) : void;
-		begin(g:createjs.Graphics) : void;
-		equ(e:models.common.fills.IFill) : boolean;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		toString() : string;
-		static load(node:htmlparser.HtmlNodeElement) : models.common.fills.LinearFill;
-	}
-	
-	export class RadialFill extends models.common.fills.MatrixFill implements models.common.fills.IFill
-	{
-		constructor(colors:string[], ratios:number[], matrix:models.common.geom.Matrix);
-		colors : string[];
-		ratios : number[];
-		save(out:models.common.XmlWriter) : void;
-		clone() : models.common.fills.IFill;
-		applyAlpha(alpha:number) : void;
-		begin(g:createjs.Graphics) : void;
-		equ(e:models.common.fills.IFill) : boolean;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		toString() : string;
-		static load(node:htmlparser.HtmlNodeElement) : models.common.fills.RadialFill;
-	}
-	
-	export class SelectionFill extends models.common.fills.BaseFill implements models.common.fills.IFill
-	{
-		constructor(m:createjs.Matrix2D);
-		save(out:models.common.XmlWriter) : void;
-		clone() : models.common.fills.IFill;
-		applyAlpha(alpha:number) : void;
-		getTransformed(m:models.common.geom.Matrix) : models.common.fills.IFill;
-		begin(g:createjs.Graphics) : void;
-		equ(e:models.common.fills.IFill) : boolean;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		toString() : string;
-	}
-	
-	export class SolidFill extends models.common.fills.BaseFill implements models.common.fills.IFill
-	{
-		constructor(color:string);
-		color : string;
-		save(out:models.common.XmlWriter) : void;
-		clone() : models.common.fills.IFill;
-		applyAlpha(alpha:number) : void;
-		getTransformed(m:models.common.geom.Matrix) : models.common.fills.IFill;
-		begin(g:createjs.Graphics) : void;
-		equ(e:models.common.fills.IFill) : boolean;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		toString() : string;
-		static load(node:htmlparser.HtmlNodeElement) : models.common.fills.SolidFill;
 	}
 }
 
@@ -7752,6 +7657,97 @@ declare module createjs.SpriteSheet
 	{
 		frame : any;
 		index : number;
+	}
+}
+
+declare module nanofl.engine.coloreffects
+{
+	export class ColorEffect
+	{
+		apply(obj:createjs.DisplayObject) : void;
+		clone() : nanofl.engine.coloreffects.ColorEffect;
+		getNeutralClone() : nanofl.engine.coloreffects.ColorEffect;
+		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffect;
+		save(out:nanofl.engine.XmlWriter) : void;
+		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
+		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffect;
+		static equS(a:nanofl.engine.coloreffects.ColorEffect, b:nanofl.engine.coloreffects.ColorEffect) : boolean;
+	}
+	
+	export class ColorEffectAdvanced extends nanofl.engine.coloreffects.ColorEffect
+	{
+		constructor(alphaMultiplier:number, redMultiplier:number, greenMultiplier:number, blueMultiplier:number, alphaOffset:number, redOffset:number, greenOffset:number, blueOffset:number);
+		redMultiplier : number;
+		greenMultiplier : number;
+		blueMultiplier : number;
+		alphaMultiplier : number;
+		redOffset : number;
+		greenOffset : number;
+		blueOffset : number;
+		alphaOffset : number;
+		save(out:nanofl.engine.XmlWriter) : void;
+		apply(obj:createjs.DisplayObject) : void;
+		clone() : nanofl.engine.coloreffects.ColorEffectAdvanced;
+		getNeutralClone() : nanofl.engine.coloreffects.ColorEffect;
+		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffect;
+		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
+		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffectAdvanced;
+	}
+	
+	export class ColorEffectAlpha extends nanofl.engine.coloreffects.ColorEffect
+	{
+		constructor(value:number);
+		value : number;
+		save(out:nanofl.engine.XmlWriter) : void;
+		apply(obj:createjs.DisplayObject) : void;
+		clone() : nanofl.engine.coloreffects.ColorEffectAlpha;
+		getNeutralClone() : nanofl.engine.coloreffects.ColorEffect;
+		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffect;
+		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
+		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffectAlpha;
+	}
+	
+	export class ColorEffectBrightness extends nanofl.engine.coloreffects.ColorEffect
+	{
+		constructor(value:number);
+		value : number;
+		save(out:nanofl.engine.XmlWriter) : void;
+		apply(obj:createjs.DisplayObject) : void;
+		clone() : nanofl.engine.coloreffects.ColorEffectBrightness;
+		getNeutralClone() : nanofl.engine.coloreffects.ColorEffect;
+		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffect;
+		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
+		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffectBrightness;
+	}
+	
+	export class ColorEffectDouble extends nanofl.engine.coloreffects.ColorEffect
+	{
+		constructor(effect0:nanofl.engine.coloreffects.ColorEffect, effect1:nanofl.engine.coloreffects.ColorEffect);
+		apply(obj:createjs.DisplayObject) : void;
+		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
+	}
+	
+	export class ColorEffectTint extends nanofl.engine.coloreffects.ColorEffect
+	{
+		constructor(color:string, multiplier:number);
+		color : string;
+		multiplier : number;
+		save(out:nanofl.engine.XmlWriter) : void;
+		apply(obj:createjs.DisplayObject) : void;
+		clone() : nanofl.engine.coloreffects.ColorEffectTint;
+		getNeutralClone() : nanofl.engine.coloreffects.ColorEffect;
+		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffect;
+		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
+		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffectTint;
+	}
+}
+
+declare module nanofl.engine.geom.Edge
+{
+	type EdgesItersection =
+	{
+		a : nanofl.engine.geom.Edge[];
+		b : nanofl.engine.geom.Edge[];
 	}
 }
 
@@ -7855,66 +7851,11 @@ declare module htmlparser
 	}
 }
 
-declare module models.client.editorelements
-{
-	export class EditorElement implements models.common.ISelectable
-	{
-		frame : models.common.Frame;
-		originalElement : models.common.elements.Element;
-		currentElement : models.common.elements.Element;
-		metaDispObj : createjs.Container;
-		selected : boolean;
-		get_width() : number
-	 	set_width(v:number) : number;
-		get_height() : number
-	 	set_height(v:number) : number;
-		updateTransformations() : void;
-		update() : void;
-		rebind() : void;
-		getBounds() : createjs.Rectangle;
-		getTransformedBounds() : createjs.Rectangle;
-		hitTest(x:number, y:number) : boolean;
-	}
-	
-	export class EditorElementSelectBox extends models.client.editorelements.EditorElement
-	{
-		updateTransformations() : void;
-	}
-	
-	export class EditorElementGroup extends models.client.editorelements.EditorElementSelectBox
-	{
-		get_element() : models.common.elements.GroupElement;
-	}
-	
-	export class EditorElementInstance extends models.client.editorelements.EditorElementSelectBox
-	{
-		get_element() : models.common.elements.Instance;
-	}
-	
-	export class EditorElementShape extends models.client.editorelements.EditorElement
-	{
-		get_element() : models.common.elements.ShapeElement;
-	}
-	
-	export class EditorElementText extends models.client.editorelements.EditorElementSelectBox
-	{
-		get_element() : models.common.elements.TextElement;
-		update() : void;
-		hitTest(x:number, y:number) : boolean;
-		beginEditing() : void;
-		endEditing() : void;
-		setSelectionFormat(format:nanofl.TextRun) : void;
-		getSelectionFormat() : nanofl.TextRun;
-		setPosAndSize(obj:{ height : number; width : number; x : number; y : number; }) : void;
-		getMinSize() : { height : number; width : number; };
-	}
-}
-
 declare module nanofl
 {
 	export class Bitmap extends createjs.Bitmap
 	{
-		constructor(symbol:models.common.libraryitems.InstancableItem);
+		constructor(symbol:nanofl.engine.libraryitems.InstancableItem);
 		toString() : string;
 	}
 	
@@ -7924,16 +7865,10 @@ declare module nanofl
 		static callMethod(parent:createjs.DisplayObject, name:string) : void;
 	}
 	
-	export class GraphicsTools
-	{
-		static drawDashedLine(g:createjs.Graphics, x1:number, y1:number, x2:number, y2:number, color1:string, color2?:string, dashLen?:number) : createjs.Graphics;
-		static drawDashedRect(g:createjs.Graphics, x1:number, y1:number, x2:number, y2:number, color1:string, color2?:string, dashLen?:number) : createjs.Graphics;
-	}
-	
 	export class MovieClip extends createjs.Container
 	{
-		constructor(symbol:models.common.libraryitems.MovieClipItem, initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : models.common.IPathElement; }[]);
-		symbol : models.common.libraryitems.MovieClipItem;
+		constructor(symbol:nanofl.engine.libraryitems.MovieClipItem, initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]);
+		symbol : nanofl.engine.libraryitems.MovieClipItem;
 		currentFrame : number;
 		addChildToLayer(child:createjs.DisplayObject, layerIndex:number) : createjs.DisplayObject;
 		removeAllChildren() : void;
@@ -7998,30 +7933,6 @@ declare module nanofl
 		static measureFontHeight(family:string, style:string, size:number) : number;
 		static measureFontBaselineCoef(family:string, style:string) : number;
 	}
-	
-	export class TransformationBox extends createjs.Container
-	{
-		constructor();
-		minWidth : number;
-		minHeight : number;
-		width : number;
-		height : number;
-		get_regPointX() : number
-	 	set_regPointX(v:number) : number;
-		get_regPointY() : number
-	 	set_regPointY(v:number) : number;
-		rotateCursorUrl : string;
-		resize : stdlib.Event<nanofl.TransformationBox.ResizeEventArgs>;
-		rotate : stdlib.Event<nanofl.TransformationBox.RotateEventArgs>;
-		moveRegPoint : stdlib.Event<{ }>;
-		defaultRegPointX : number;
-		defaultRegPointY : number;
-		autoRegPoint : boolean;
-		disableRotation : boolean;
-		magnetOnRotate : boolean;
-		proportionalResize : boolean;
-		draw(ctx:CanvasRenderingContext2D, ignoreCache?:boolean) : boolean;
-	}
 }
 
 declare module stdlib
@@ -8033,24 +7944,6 @@ declare module stdlib
 		unbind(handler:(arg0:any, arg1:EventArgsType) => void) : void;
 		unbindAll() : void;
 		call(args:EventArgsType) : void;
-	}
-}
-
-declare module nanofl.TransformationBox
-{
-	type ResizeEventArgs =
-	{
-		kx : number;
-		ky : number;
-		regX : number;
-		regY : number;
-	}
-	
-	type RotateEventArgs =
-	{
-		angle : number;
-		regX : number;
-		regY : number;
 	}
 }
 
@@ -8070,318 +7963,6 @@ declare module createjs.LoadQueue
 		The : any;
 		item : any;
 		type : string;
-	}
-}
-
-declare module models.common.geom
-{
-	export class BezierCurve
-	{
-		constructor(x1:number, y1:number, x2:number, y2:number, x3:number, y3:number);
-		p1 : models.common.geom.Point;
-		p2 : models.common.geom.Point;
-		p3 : models.common.geom.Point;
-		update(x1?:number, y1?:number, x2?:number, y2?:number, x3?:number, y3?:number) : void;
-		getNearestPoint(x:number, y:number) : { dist : number; nor : models.common.geom.Point; onCurve : boolean; orientedDist : number; point : models.common.geom.Point; t : number; };
-		getNearestPointP(pt:models.common.geom.Point) : { dist : number; nor : models.common.geom.Point; onCurve : boolean; orientedDist : number; point : models.common.geom.Point; t : number; };
-		getPoint(t:number) : models.common.geom.Point;
-		getNor(t:number) : models.common.geom.Point;
-		getBounds() : models.common.geom.Bounds;
-		getIntersectionPointsX_rightRay(mx:number, my:number) : number[];
-		getIntersectionCount_rightRay(mx:number, my:number) : number;
-		getIntersection_straightSection(line:models.common.geom.StraightLine) : { curves : models.common.geom.BezierCurve[]; lines : models.common.geom.StraightLine[]; };
-		getIntersection_bezierCurve(curve:models.common.geom.BezierCurve) : models.common.geom.BezierCurve.BezierCurvesIntersection;
-		isDegeneratedToPoint() : boolean;
-		getFirstPart(t:number) : models.common.geom.BezierCurve;
-		getSecondPart(t:number) : models.common.geom.BezierCurve;
-		getPart(t1:number, t2:number) : models.common.geom.BezierCurve;
-		split(tt:number[]) : models.common.geom.BezierCurve[];
-		translate(dx:number, dy:number) : models.common.geom.BezierCurve;
-		rotate(da:number) : models.common.geom.BezierCurve;
-		clone() : models.common.geom.BezierCurve;
-		equ(curve:models.common.geom.BezierCurve) : boolean;
-		getReversed() : models.common.geom.BezierCurve;
-		reverse() : void;
-		getLength() : number;
-		getTangent(t:number) : number;
-		toString() : string;
-	}
-	
-	type Bounds =
-	{
-		maxX : number;
-		maxY : number;
-		minX : number;
-		minY : number;
-	}
-	
-	export class BoundsTools
-	{
-		static updateByRect(bounds:models.common.geom.Bounds, rect:createjs.Rectangle) : models.common.geom.Bounds;
-	}
-	
-	export class Contour
-	{
-		constructor(edges:models.common.geom.Edge[]);
-		edges : models.common.geom.Edge[];
-		save(out:models.common.XmlWriter) : void;
-		draw(g:createjs.Graphics) : void;
-		translate(dx:number, dy:number) : void;
-		isPointInside(px:number, py:number) : boolean;
-		isPointInsideP(p:models.common.geom.Point) : boolean;
-		hasPoint(px:number, py:number) : boolean;
-		hasEdge(edge:models.common.geom.Edge) : boolean;
-		isEdgeInside(edge:models.common.geom.Edge) : boolean;
-		isNestedTo(outer:models.common.geom.Contour, canEqu:boolean) : boolean;
-		clone() : models.common.geom.Contour;
-		isClockwise() : boolean;
-		reverse() : void;
-		getCommonEdges(contour:models.common.geom.Contour) : models.common.geom.Edge[];
-		indexIn(contours:models.common.geom.Contour[]) : number;
-		equ(c:models.common.geom.Contour) : boolean;
-		toString() : string;
-	}
-	
-	export class Contours
-	{
-		static find<T>(edges:T[]) : models.common.geom.Contour[];
-	}
-	
-	export class Edge
-	{
-		constructor(x1:number, y1:number, x2:number, y2:number, x3?:number, y3?:number);
-		x1 : number;
-		y1 : number;
-		x2 : number;
-		y2 : number;
-		x3 : number;
-		y3 : number;
-		isStraight() : boolean;
-		getIntersectionCount_rightRay(mx:number, my:number) : number;
-		getIntersectionPointsX_rightRay(mx:number, my:number) : number[];
-		draw(g:createjs.Graphics, m:createjs.Matrix2D) : void;
-		equ(e:models.common.geom.Edge) : boolean;
-		getNearestPoint(x:number, y:number) : { point : models.common.geom.Point; t : number; };
-		translate(dx:number, dy:number) : void;
-		translateVertex(point:models.common.geom.Point, dx:number, dy:number) : void;
-		translateStart(dx:number, dy:number) : void;
-		translateEnd(dx:number, dy:number) : void;
-		reverse() : models.common.geom.Edge;
-		getBounds(bounds?:models.common.geom.Bounds) : models.common.geom.Bounds;
-		toString() : string;
-		getMiddlePoint() : models.common.geom.Point;
-		hasCommonVertices(edge:models.common.geom.Edge) : boolean;
-		transform(m:models.common.geom.Matrix) : void;
-		asStraightLine() : models.common.geom.StraightLine;
-		asBezierCurve() : models.common.geom.BezierCurve;
-		clone() : models.common.geom.Edge;
-		indexIn<T>(edges:T[]) : number;
-		isDegeneratedToPoint() : boolean;
-		roundCoords() : void;
-		getLength() : number;
-		getPart(t:number) : models.common.geom.Edge;
-		getPoint(t:number) : models.common.geom.Point;
-		getTangent(t:number) : number;
-		split(t:number) : models.common.geom.Edge[];
-		isInRectangle(x:number, y:number, width:number, height:number) : boolean;
-		static fromStraightLine(line:models.common.geom.StraightLine) : models.common.geom.Edge;
-		static fromBezierCurve(curve:models.common.geom.BezierCurve) : models.common.geom.Edge;
-		static getIntersection(edgeA:models.common.geom.Edge, edgeB:models.common.geom.Edge) : models.common.geom.Edge.EdgesItersection;
-	}
-	
-	export class Edges
-	{
-		static ensureUnique<T>(edges:T[]) : boolean;
-		static concatUnique<T>(edgesA:models.common.geom.Edge[], edgesB:T[]) : models.common.geom.Edge[];
-		static appendUnique<T>(edgesA:T[], edgesB:T[]) : T[];
-		static drawStroked(edges:models.common.geom.StrokeEdge[], g:createjs.Graphics, m:createjs.Matrix2D) : void;
-		static draw<T>(edges:T[], g:createjs.Graphics) : void;
-		static getBounds(edges:models.common.geom.Edge[], bounds?:models.common.geom.Bounds) : models.common.geom.Bounds;
-		static getStrokedBounds(edges:models.common.geom.StrokeEdge[], bounds?:models.common.geom.Bounds) : models.common.geom.Bounds;
-		static export<T>(edges:T[], out:models.common.XmlWriter) : void;
-		static exportStroked(edges:models.common.geom.StrokeEdge[], out:models.common.XmlWriter) : void;
-		static load(s:string) : models.common.geom.Edge[];
-		static save(edges:models.common.geom.Edge[]) : string;
-		/**
-		 * The pos is a random index in edges array. Method return a new pos after replace (pos may be increazed if inserts before pos).
-		 */
-		static replace(edges:models.common.geom.Edge[], search:models.common.geom.Edge, replacement:models.common.geom.Edge[], pos?:number) : number;
-		static intersect(edgesA:models.common.geom.Edge[], edgesB:models.common.geom.Edge[], onReplace?:(arg0:models.common.geom.Edge, arg1:models.common.geom.Edge[]) => void) : void;
-		static roundAndRemoveDegenerated<T>(edges:T[]) : void;
-	}
-	
-	export class Matrix
-	{
-		constructor(a?:number, b?:number, c?:number, d?:number, tx?:number, ty?:number);
-		a : number;
-		b : number;
-		c : number;
-		d : number;
-		tx : number;
-		ty : number;
-		save(out:models.common.XmlWriter) : void;
-		decompose() : { rotation : number; scaleX : number; scaleY : number; skewX : number; skewY : number; x : number; y : number; };
-		setMatrix(m:{ a : number; b : number; c : number; d : number; tx : number; ty : number; }) : models.common.geom.Matrix;
-		isIdentity() : boolean;
-		invert() : models.common.geom.Matrix;
-		transformPoint(x:number, y:number) : models.common.geom.Point;
-		clone() : models.common.geom.Matrix;
-		translate(tx:number, ty:number) : models.common.geom.Matrix;
-		equ(m:models.common.geom.Matrix) : boolean;
-		setTransform(x:number, y:number, scaleX:number, scaleY:number, rotation:number, skewX:number, skewY:number, regX?:number, regY?:number) : models.common.geom.Matrix;
-		appendMatrix(m:models.common.geom.Matrix) : models.common.geom.Matrix;
-		prependMatrix(m:models.common.geom.Matrix) : models.common.geom.Matrix;
-		append(a:number, b:number, c:number, d:number, tx:number, ty:number) : models.common.geom.Matrix;
-		prepend(a:number, b:number, c:number, d:number, tx:number, ty:number) : models.common.geom.Matrix;
-		appendTransform(x:number, y:number, scaleX?:number, scaleY?:number, rotation?:number, skewX?:number, skewY?:number, regX?:number, regY?:number) : models.common.geom.Matrix;
-		prependTransform(x:number, y:number, scaleX?:number, scaleY?:number, rotation?:number, skewX?:number, skewY?:number, regX?:number, regY?:number) : models.common.geom.Matrix;
-		rotate(angle:number) : models.common.geom.Matrix;
-		skew(skewX:number, skewY:number) : models.common.geom.Matrix;
-		scale(kx:number, ky:number) : models.common.geom.Matrix;
-		/**
-		 * Creates the specific style of matrix expected by the
-		 * <code>beginGradientFill()</code> and <code>lineGradientStyle()</code>
-		 * methods of the Graphics class. Width and height are scaled to a
-		 * <code>scaleX</code>/<code>scaleY</code> pair and the
-		 * <code>tx</code>/<code>ty</code> values are offset by half the width and
-		 * height.
-		 *
-		 * <p>For example, consider a gradient with the following
-		 * characteristics:</p>
-		 *
-		 * <ul>
-		 *   <li><code>GradientType.LINEAR</code></li>
-		 *   <li>Two colors, green and blue, with the ratios array set to <code>[0,255]</code></li>
-		 *   <li><code>SpreadMethod.PAD</code></li>
-		 *   <li><code>InterpolationMethod.LINEAR_RGB</code></li>
-		 * </ul>
-		 *
-		 * <p>The following illustrations show gradients in which the matrix was
-		 * defined using the <code>createGradientBox()</code> method with different
-		 * parameter settings:</p>
-		 *
-		 * @param width    The width of the gradient box.
-		 * @param height   The height of the gradient box.
-		 * @param rotation The amount to rotate, in radians.
-		 * @param tx       The distance, in pixels, to translate to the right along
-		 *                 the <i>x</i> axis. This value is offset by half of the
-		 *                 <code>width</code> parameter.
-		 * @param ty       The distance, in pixels, to translate down along the
-		 *                 <i>y</i> axis. This value is offset by half of the
-		 *                 <code>height</code> parameter.
-		 */
-		createGradientBox(width:number, height:number, rotation?:number, tx?:number, ty?:number) : models.common.geom.Matrix;
-		toMatrix2D() : createjs.Matrix2D;
-		toString() : string;
-		static load(node:htmlparser.HtmlNodeElement) : models.common.geom.Matrix;
-		static fromMatrix2D(m:createjs.Matrix2D) : models.common.geom.Matrix;
-	}
-	
-	type Point =
-	{
-		x : number;
-		y : number;
-	}
-	
-	export class PointTools
-	{
-		static half(pt:models.common.geom.Point) : models.common.geom.Point;
-		static round(pt:models.common.geom.Point) : models.common.geom.Point;
-		static normalize(pt:models.common.geom.Point) : models.common.geom.Point;
-		static getLength(pt:models.common.geom.Point) : number;
-		static getDist(x1:number, y1:number, x2:number, y2:number) : number;
-		static getSqrDist(x1:number, y1:number, x2:number, y2:number) : number;
-		static rotate(x:number, y:number, da:number) : models.common.geom.Point;
-		static moveInDirection(start:models.common.geom.Point, endX:number, endY:number, len:number) : models.common.geom.Point;
-		static equ(pt1:models.common.geom.Point, pt2:models.common.geom.Point) : boolean;
-		static clone(pt:models.common.geom.Point) : models.common.geom.Point;
-		static round100(n:number) : number;
-		static toString(pt:models.common.geom.Point) : string;
-		static getNearest(pt:models.common.geom.Point, points:models.common.geom.Point[]) : models.common.geom.Point;
-	}
-	
-	export class Polygon implements models.common.ISelectable
-	{
-		constructor(fill?:models.common.fills.IFill, contours?:models.common.geom.Contour[], selected?:boolean);
-		contours : models.common.geom.Contour[];
-		fill : models.common.fills.IFill;
-		selected : boolean;
-		save(fills:models.common.fills.IFill[], out:models.common.XmlWriter) : void;
-		draw(g:createjs.Graphics, m?:createjs.Matrix2D) : void;
-		translate(dx:number, dy:number) : void;
-		isPointInside(px:number, py:number) : boolean;
-		isEdgeInside(edge:models.common.geom.Edge) : boolean;
-		isPolygonInside(p:models.common.geom.Polygon) : boolean;
-		translateVertex(point:models.common.geom.Point, dx:number, dy:number) : void;
-		getBounds(bounds?:models.common.geom.Bounds) : models.common.geom.Bounds;
-		applyFill(fill:models.common.fills.IFill, x1?:number, y1?:number, x2?:number, y2?:number) : void;
-		transform(m:models.common.geom.Matrix) : void;
-		getEdgesByPoint(x:number, y:number, edges?:models.common.geom.Edge[]) : models.common.geom.Edge[];
-		getEdges(edges?:models.common.geom.Edge[]) : models.common.geom.Edge[];
-		getPointInside() : models.common.geom.Point;
-		clone() : models.common.geom.Polygon;
-		replaceEdge(search:models.common.geom.Edge, replacement:models.common.geom.Edge[]) : void;
-		getReconstructed(additionalEdges:models.common.geom.Edge[], force?:boolean) : models.common.geom.Polygon[];
-		export(out:models.common.XmlWriter, fills:models.common.fills.IFill[]) : void;
-		split() : models.common.geom.Polygon[];
-		equ(p:models.common.geom.Polygon) : boolean;
-		roundPoints() : void;
-		isInRectangle(x:number, y:number, width:number, height:number) : boolean;
-		toString() : string;
-		static load(node:htmlparser.HtmlNodeElement, fills:models.common.fills.IFill[]) : models.common.geom.Polygon;
-	}
-	
-	export class Polygons
-	{
-		static findByPoint(polygons:models.common.geom.Polygon[], x:number, y:number) : models.common.geom.Polygon;
-		static isEdgeInside(polygons:models.common.geom.Polygon[], edge:models.common.geom.Edge) : boolean;
-		static reconstruct(edges:models.common.geom.Edge[], polygonsToDetectFill:models.common.geom.Polygon[]) : models.common.geom.Polygon[];
-		static mergeByCommonEdges(polygons:models.common.geom.Polygon[], edges:models.common.geom.StrokeEdge[]) : void;
-		static removeDublicates(polygons:models.common.geom.Polygon[]) : void;
-		static hasDublicates(polygons:models.common.geom.Polygon[]) : boolean;
-		static roundAndRemoveDegenerated(polygons:models.common.geom.Polygon[]) : void;
-	}
-	
-	export class StraightLine
-	{
-		constructor(x1:number, y1:number, x2:number, y2:number);
-		x1 : number;
-		y1 : number;
-		x2 : number;
-		y2 : number;
-		getBounds() : models.common.geom.Bounds;
-		getNearestPoint(x:number, y:number) : { point : models.common.geom.Point; t : number; };
-		getLength() : number;
-		getIntersectionPointX_rightRay(mx:number, my:number) : number;
-		isIntersect_rightRay(mx:number, my:number) : boolean;
-		getIntersection_straightSection(line:models.common.geom.StraightLine) : models.common.geom.Point;
-		toString() : string;
-		isDegeneratedToPoint() : boolean;
-		getFirstPart(t:number) : models.common.geom.StraightLine;
-		getSecondPart(t:number) : models.common.geom.StraightLine;
-		split(t:number) : models.common.geom.StraightLine[];
-		getPoint(t:number) : models.common.geom.Point;
-		getTangent(t:number) : number;
-	}
-	
-	export class StrokeEdge extends models.common.geom.Edge implements models.common.ISelectable
-	{
-		constructor(x1:number, y1:number, x2:number, y2:number, x3?:number, y3?:number, stroke?:models.common.strokes.IStroke, selected?:boolean);
-		stroke : models.common.strokes.IStroke;
-		selected : boolean;
-		draw(g:createjs.Graphics, m:createjs.Matrix2D) : void;
-		getNearestPoint(x:number, y:number) : { point : models.common.geom.Point; t : number; };
-		addTo(edges:models.common.geom.StrokeEdge[]) : void;
-		clone() : models.common.geom.Edge;
-		toString() : string;
-		static fromEdge(edge:models.common.geom.Edge, stroke?:models.common.strokes.IStroke, selected?:boolean) : models.common.geom.StrokeEdge;
-	}
-	
-	export class StrokeEdges
-	{
-		static load(node:htmlparser.HtmlNodeElement, strokes:models.common.strokes.IStroke[]) : models.common.geom.StrokeEdge[];
-		static save(edges:models.common.geom.StrokeEdge[], strokes:models.common.strokes.IStroke[], out:models.common.XmlWriter) : void;
-		static replace(edges:models.common.geom.StrokeEdge[], search:models.common.geom.Edge, replacement:models.common.geom.Edge[]) : boolean;
 	}
 }
 
@@ -8418,25 +7999,512 @@ declare module createjs.AbstractSoundInstance
 	}
 }
 
-declare module models.client.undo
+declare module nanofl.engine
 {
-	export class UndoQueue
+	interface ArrayRO<T> extends Array<T> { }
+	
+	export class ColorTools
 	{
+		static parse(s:string) : { a : number; b : number; g : number; r : number; };
+		static colorToString(color:string, alpha?:number) : string;
+		static rgbaToString(rgba:{ a : number; b : number; g : number; r : number; }) : string;
 		/**
-		 * This method may be called several times with different operations.
+		 * Converts an RGB color value to HSL. Conversion formula
+		 * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+		 * Assumes r, g, and b are contained in the set [0, 255] and
+		 * returns h, s, and l in the set [0, 1].
+		 *
+		 * @param Number r The red color value
+		 * @param Number g The green color value
+		 * @param Number b The blue color value
+		 * @return Array The HSL representation
 		 */
-		beginTransaction(operations:{ document : boolean; element : models.common.elements.Element; elements : boolean; figure : boolean; libraryAddItem : string; libraryItem : string; libraryRemoveItems : string[]; libraryRenameItem : { newNamePath : string; oldNamePath : string; }; timeline : boolean; transformations : boolean; }) : void;
-		cancelTransaction() : void;
-		revertTransaction() : void;
-		forgetTransaction() : void;
-		commitTransaction() : void;
-		undo() : void;
-		redo() : void;
-		canUndo() : boolean;
-		canRedo() : boolean;
-		documentSaved() : void;
-		isDocumentModified() : boolean;
+		static rgbToHsl(rgb:{ b : number; g : number; r : number; }) : { h : number; l : number; s : number; };
+		/**
+		 * Converts an HSL color value to RGB. Conversion formula
+		 * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+		 * Assumes h, s, and l are contained in the set [0, 1] and
+		 * returns r, g, and b in the set [0, 255].
+		 *
+		 * @param Number h The hue
+		 * @param Number s The saturation
+		 * @param Number l The lightness
+		 * @return Array The RGB representation
+		 */
+		static hslToRgb(hsl:{ h : number; l : number; s : number; }) : { b : number; g : number; r : number; };
+		/**
+		 * Converts an RGB color value to HSV. Conversion formula
+		 * adapted from http://en.wikipedia.org/wiki/HSV_color_space.
+		 * Assumes r, g, and b are contained in the set [0, 255] and
+		 * returns h, s, and v in the set [0, 1].
+		 *
+		 * @param Number r The red color value
+		 * @param Number g The green color value
+		 * @param Number b The blue color value
+		 * @return Array The HSV representation
+		 */
+		static rgbToHsv(rgb:{ b : number; g : number; r : number; }) : { h : number; s : number; v : number; };
+		/**
+		 * Converts an HSV color value to RGB. Conversion formula
+		 * adapted from http://en.wikipedia.org/wiki/HSV_color_space.
+		 * Assumes h, s, and v are contained in the set [0, 1] and
+		 * returns r, g, and b in the set [0, 255].
+		 *
+		 * @param Number h The hue
+		 * @param Number s The saturation
+		 * @param Number v The value
+		 * @return Array The RGB representation
+		 */
+		static hsvToRgb(hsv:{ h : number; s : number; v : number; }) : { b : number; g : number; r : number; };
+		static tweenRgba(start:{ a : number; b : number; g : number; r : number; }, finish:{ a : number; b : number; g : number; r : number; }, t:number) : { a : number; b : number; g : number; r : number; };
+		static tweenHsl(start:{ h : number; l : number; s : number; }, finish:{ h : number; l : number; s : number; }, t:number) : { h : number; l : number; s : number; };
+		static normalize(s:string) : string;
+	}
+	
+	export class DocumentProperties
+	{
+		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, language?:string, ide?:string);
+		title : string;
+		width : number;
+		height : number;
+		backgroundColor : string;
+		framerate : number;
+		language : string;
+		ide : string;
+		save(fileApi:nanofl.engine.FileApi, filePath:string) : void;
+		static load(filePath:string, fileApi:nanofl.engine.FileApi) : nanofl.engine.DocumentProperties;
+	}
+	
+	export interface FileApi
+	{
+		getTempDirectory() : string;
+		getPluginsDirectory() : string;
+		getToolsDirectory() : string;
+		readDirectory(dir:string) : string[];
+		getContent(filePath:string) : string;
+		saveContent(filePath:string, text:string) : void;
+		saveBinary(filePath:string, data:number[]) : void;
+		exists(path:string) : boolean;
+		isDirectory(path:string) : boolean;
+		run(filePath:string, args:string[], blocking:boolean) : void;
+		copy(srcPath:string, destPath:string) : void;
+		rename(oldPath:string, newPath:string) : void;
+		remove(path:string) : void;
+		findFiles(dirPath:string, onFile?:(arg:string) => void, onDir?:(arg:string) => boolean) : void;
+		getPluginPaths() : string[];
+	}
+	
+	export class FilterDef
+	{
+		constructor(name:string, params:any);
+		name : string;
+		params : any;
+		save(out:nanofl.engine.XmlWriter) : void;
+		equ(filter:nanofl.engine.FilterDef) : boolean;
+		clone() : nanofl.engine.FilterDef;
+		cloneTweened(t:number, finish:nanofl.engine.FilterDef) : nanofl.engine.FilterDef;
+		getFilter() : createjs.Filter;
+		getLabel() : string;
+		getProperties() : nanofl.engine.plugins.FilterProperty[];
+		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.FilterDef;
+	}
+	
+	type Font =
+	{
+		fallbacks : string[];
+		family : string;
+		variants : nanofl.engine.FontVariant[];
+	}
+	
+	export class FontVariant
+	{
+		constructor(style?:string, weight?:number, locals?:string[], url?:string, format?:string);
+		/**
+		 * "normal", "italic"
+		 */
+		style : string;
+		/**
+		 * 100=thin, 300=light, 400=normal, 600=semiBold, 700=bold, 800=extraBold
+		 */
+		weight : number;
+		/**
+		 * possible font name in system to prevent loading from web if exists locally ("Open Sans Bold", "OpenSans-Bold")
+		 */
+		locals : string[];
+		/**
+		 * url to font file (can be relative to library directory)
+		 */
+		url : string;
+		/**
+		 * font file format ("woff")
+		 */
+		format : string;
+		equ(e:nanofl.engine.FontVariant) : boolean;
+	}
+	
+	export class Frame
+	{
+		constructor(keyFrame:nanofl.engine.KeyFrame, subIndex:number);
+		keyFrame : nanofl.engine.KeyFrame;
+		subIndex : number;
+	}
+	
+	export class Guide
+	{
+		constructor(shape:nanofl.engine.elements.ShapeElement);
+		get(startProps:{ rotation : number; x : number; y : number; }, finishProps:{ rotation : number; x : number; y : number; }, orientToPath:boolean, t:number) : { rotation : number; x : number; y : number; };
+	}
+	
+	export interface ILayersContainer
+	{
+		layers : nanofl.engine.ArrayRO<nanofl.engine.Layer>;
 		toString() : string;
+	}
+	
+	export interface IPathElement extends nanofl.engine.ILayersContainer
+	{
+		visible : boolean;
+		matrix : nanofl.engine.geom.Matrix;
+		isScene() : boolean;
+		getNavigatorName() : string;
+		getNavigatorIcon() : string;
+		getChildren() : nanofl.engine.elements.Element[];
+		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		getTimeline() : nanofl.engine.ITimeline;
+	}
+	
+	export interface ISelectable
+	{
+		selected : boolean;
+	}
+	
+	export interface ITimeline
+	{
+		addLayer(layer:nanofl.engine.Layer) : void;
+		addLayersBlock(layersToAdd:nanofl.engine.Layer[], index?:number) : void;
+		removeLayers(index:number) : nanofl.engine.Layer[];
+		getTimelineState() : nanofl.ide.undo.states.TimelineState;
+		setTimelineState(state:nanofl.ide.undo.states.TimelineState) : void;
+	}
+	
+	export class KeyFrame
+	{
+		constructor(label?:string, duration?:number, motionTween?:nanofl.engine.tweens.MotionTween, elements?:nanofl.engine.elements.Element[]);
+		layer : nanofl.engine.Layer;
+		label : string;
+		duration : number;
+		motionTween : nanofl.engine.tweens.MotionTween;
+		elements : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
+		addElement(element:nanofl.engine.elements.Element, index?:number) : void;
+		removeElementAt(n:number) : void;
+		swapElement(i:number, j:number) : void;
+		duplicate(label?:string, duration?:number, elements?:nanofl.engine.elements.Element[]) : nanofl.engine.KeyFrame;
+		getShape(createIfNotExist:boolean) : nanofl.engine.elements.ShapeElement;
+		clone() : nanofl.engine.KeyFrame;
+		isEmpty() : boolean;
+		getElementsState() : { elements : nanofl.engine.elements.Element[]; };
+		setElementsState(state:{ elements : nanofl.engine.elements.Element[]; }) : void;
+		getTweenedElements(frameSubIndex:number) : nanofl.engine.TweenedElement[];
+		getNextKeyFrame() : nanofl.engine.KeyFrame;
+		getParentLayerFrame(frameSubIndex:number) : nanofl.engine.Frame;
+		hasGoodMotionTween() : boolean;
+		getParentGuide(frameSubIndex:number) : nanofl.engine.Guide;
+		save(out:nanofl.engine.XmlWriter) : void;
+		getIndex() : number;
+		getUsedItems() : nanofl.engine.libraryitems.LibraryItem[];
+		getUsedFilters() : string[];
+		static parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.KeyFrame;
+	}
+	
+	export class Layer
+	{
+		constructor(name:string, type?:string, visible?:boolean, locked?:boolean, parentIndex?:number);
+		name : string;
+		type : string;
+		visible : boolean;
+		locked : boolean;
+		parentIndex : number;
+		parentLayer : nanofl.engine.Layer;
+		keyFrames : nanofl.engine.ArrayRO<nanofl.engine.KeyFrame>;
+		getTotalFrames() : number;
+		getFrame(frameIndex:number) : nanofl.engine.Frame;
+		addKeyFrame(keyFrame:nanofl.engine.KeyFrame) : void;
+		insertFrame(frameIndex:number) : void;
+		convertToKeyFrame(frameIndex:number) : boolean;
+		removeFrame(frameIndex:number) : boolean;
+		removeInstance(namePath:string) : void;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		hasInstance(namePath:string) : boolean;
+		getHumanType() : string;
+		getIcon() : string;
+		getNestLevel(layers:nanofl.engine.ArrayRO<nanofl.engine.Layer>) : number;
+		getParentGuide(frameIndex:number) : nanofl.engine.Guide;
+		getChildLayers() : nanofl.engine.Layer[];
+		getTweenedElements(frameIndex:number) : nanofl.engine.TweenedElement[];
+		save(out:nanofl.engine.XmlWriter) : void;
+		clone() : nanofl.engine.Layer;
+		duplicate(keyFrames:nanofl.engine.ArrayRO<nanofl.engine.KeyFrame>, parentIndex:number) : nanofl.engine.Layer;
+		getIndex() : number;
+		getUsedItems() : nanofl.engine.libraryitems.LibraryItem[];
+		getUsedFilters() : string[];
+		static parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.Layer;
+	}
+	
+	export class Library
+	{
+		constructor(libraryDir:string, addEmptyScene:boolean);
+		libraryDir : string;
+		loadItems(fileApi:nanofl.engine.FileApi) : void;
+		parseItems(base:htmlparser.HtmlNodeElement) : void;
+		addFont(family:string, variants:nanofl.engine.FontVariant[]) : void;
+		renameItem(oldNamePath:string, newNamePath:string) : void;
+		compile(libraryDir:string) : string;
+		addItem(item:nanofl.engine.libraryitems.LibraryItem) : nanofl.engine.libraryitems.LibraryItem;
+		removeItem(namePath:string) : void;
+		getSceneItem() : nanofl.engine.libraryitems.MovieClipItem;
+		getSceneInstance() : nanofl.engine.elements.Instance;
+		getInstancableItems() : nanofl.engine.libraryitems.InstancableItem[];
+		getBitmaps() : nanofl.engine.libraryitems.BitmapItem[];
+		getSounds() : nanofl.engine.libraryitems.SoundItem[];
+		getFonts() : nanofl.engine.Font[];
+		getItem(namePath:string) : nanofl.engine.libraryitems.LibraryItem;
+		hasItem(namePath:string) : boolean;
+		save(fileApi:nanofl.engine.FileApi) : void;
+		realUrl(url:string) : string;
+		getItems(includeScene?:boolean) : nanofl.engine.libraryitems.LibraryItem[];
+		preload(ready:() => void) : void;
+		getItemCount() : number;
+		static SCENE_NAME_PATH : string;
+	}
+	
+	export class Plugins
+	{
+		static filters : Map<string, nanofl.engine.plugins.IFilterPlugin>;
+		static importers : Map<string, nanofl.ide.plugins.IImporterPlugin>;
+		static exporters : Map<string, nanofl.ide.plugins.IExporterPlugin>;
+		static languages : Map<string, nanofl.ide.plugins.ILanguagePlugin>;
+		static ides : Map<string, nanofl.ide.plugins.IIdePlugin>;
+		static registerFilter(plugin:nanofl.engine.plugins.IFilterPlugin) : void;
+		static registerImporter(plugin:nanofl.ide.plugins.IImporterPlugin) : void;
+		static registerExporter(plugin:nanofl.ide.plugins.IExporterPlugin) : void;
+		static registerLanguage(plugin:nanofl.ide.plugins.ILanguagePlugin) : void;
+		static registerIde(plugin:nanofl.ide.plugins.IIdePlugin) : void;
+	}
+	
+	export interface ServerApi
+	{
+		getTempDirectory() : string;
+		copyDir(fromPath:string, toPath:string, callb?:() => void) : void;
+		requestUrl(url:string, callb:(arg:string) => void) : void;
+		openInBrowser(url:string) : void;
+		uploadFileAsLibraryItem(library:nanofl.engine.Library, folderPath:string, file:File, callb:(arg:nanofl.engine.libraryitems.LibraryItem) => void) : void;
+		getFonts() : string[];
+	}
+	
+	type TweenedElement =
+	{
+		current : nanofl.engine.elements.Element;
+		original : nanofl.engine.elements.Element;
+	}
+	
+	export class VersionInfo
+	{
+		static ideVersion : string;
+		static playerVersion : string;
+		static fileFormatVersion : string;
+		static createjsUrl : string;
+		static playerUrl : string;
+	}
+	
+	export class XmlWriter
+	{
+		constructor();
+		begin(tag:string, attrs?:{ value : any; name : string; }[]) : nanofl.engine.XmlWriter;
+		end() : nanofl.engine.XmlWriter;
+		attr(name:string, value:any, defValue?:any) : nanofl.engine.XmlWriter;
+		content(s:string) : nanofl.engine.XmlWriter;
+		toString() : string;
+	}
+}
+
+declare module nanofl.engine.fills
+{
+	export class BaseFill
+	{
+		setLibrary(library:nanofl.engine.Library) : void;
+	}
+	
+	export class MatrixFill extends nanofl.engine.fills.BaseFill
+	{
+		constructor(matrix:nanofl.engine.geom.Matrix);
+		matrix : nanofl.engine.geom.Matrix;
+		clone() : nanofl.engine.fills.IFill;
+		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
+	}
+	
+	export interface IFill
+	{
+		begin(g:createjs.Graphics) : void;
+		clone() : nanofl.engine.fills.IFill;
+		equ(e:nanofl.engine.fills.IFill) : boolean;
+		applyAlpha(alpha:number) : void;
+		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
+		save(out:nanofl.engine.XmlWriter) : void;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		setLibrary(library:nanofl.engine.Library) : void;
+		toString() : string;
+	}
+	
+	export class BitmapFill extends nanofl.engine.fills.MatrixFill implements nanofl.engine.fills.IFill
+	{
+		constructor(bitmapPath:string, matrix:nanofl.engine.geom.Matrix, repeat?:string);
+		bitmapPath : string;
+		repeat : string;
+		save(out:nanofl.engine.XmlWriter) : void;
+		clone() : nanofl.engine.fills.IFill;
+		applyAlpha(alpha:number) : void;
+		begin(g:createjs.Graphics) : void;
+		getBitmapWidth() : number;
+		equ(e:nanofl.engine.fills.IFill) : boolean;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		setLibrary(library:nanofl.engine.Library) : void;
+		toString() : string;
+		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.fills.BitmapFill;
+	}
+	
+	export class LinearFill extends nanofl.engine.fills.MatrixFill implements nanofl.engine.fills.IFill
+	{
+		constructor(colors:string[], ratios:number[], matrix:nanofl.engine.geom.Matrix);
+		colors : string[];
+		ratios : number[];
+		save(out:nanofl.engine.XmlWriter) : void;
+		clone() : nanofl.engine.fills.IFill;
+		applyAlpha(alpha:number) : void;
+		begin(g:createjs.Graphics) : void;
+		equ(e:nanofl.engine.fills.IFill) : boolean;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		toString() : string;
+		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.fills.LinearFill;
+	}
+	
+	export class RadialFill extends nanofl.engine.fills.MatrixFill implements nanofl.engine.fills.IFill
+	{
+		constructor(colors:string[], ratios:number[], matrix:nanofl.engine.geom.Matrix);
+		colors : string[];
+		ratios : number[];
+		save(out:nanofl.engine.XmlWriter) : void;
+		clone() : nanofl.engine.fills.IFill;
+		applyAlpha(alpha:number) : void;
+		begin(g:createjs.Graphics) : void;
+		equ(e:nanofl.engine.fills.IFill) : boolean;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		toString() : string;
+		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.fills.RadialFill;
+	}
+	
+	export class SelectionFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
+	{
+		constructor(m:createjs.Matrix2D);
+		save(out:nanofl.engine.XmlWriter) : void;
+		clone() : nanofl.engine.fills.IFill;
+		applyAlpha(alpha:number) : void;
+		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
+		begin(g:createjs.Graphics) : void;
+		equ(e:nanofl.engine.fills.IFill) : boolean;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		toString() : string;
+	}
+	
+	export class SolidFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
+	{
+		constructor(color:string);
+		color : string;
+		save(out:nanofl.engine.XmlWriter) : void;
+		clone() : nanofl.engine.fills.IFill;
+		applyAlpha(alpha:number) : void;
+		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
+		begin(g:createjs.Graphics) : void;
+		equ(e:nanofl.engine.fills.IFill) : boolean;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		toString() : string;
+		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.fills.SolidFill;
+	}
+}
+
+declare module nanofl.ide.undo.states
+{
+	type DocumentState = nanofl.engine.DocumentProperties;
+	
+	export class ElementState
+	{
+		equ(state:nanofl.ide.undo.states.ElementState) : boolean;
+		toString() : string;
+	}
+	
+	export class ElementsState
+	{
+		constructor(layerElements:{ elements : nanofl.engine.elements.Element[]; }[]);
+		layerElements : { elements : nanofl.engine.elements.Element[]; }[];
+	}
+	
+	export class FigureState
+	{
+		constructor(shapeStates:nanofl.ide.undo.states.ShapeState[]);
+		shapeStates : nanofl.ide.undo.states.ShapeState[];
+		equ(state:nanofl.ide.undo.states.FigureState) : boolean;
+	}
+	
+	export class InstanceState extends nanofl.ide.undo.states.ElementState
+	{
+		constructor(name:string, colorEffect:nanofl.engine.coloreffects.ColorEffect, filters:nanofl.engine.FilterDef[]);
+		name : string;
+		colorEffect : nanofl.engine.coloreffects.ColorEffect;
+		filters : nanofl.engine.FilterDef[];
+		equ(_state:nanofl.ide.undo.states.ElementState) : boolean;
+	}
+	
+	type LibraryItemState = nanofl.engine.libraryitems.LibraryItem;
+	
+	type LibraryState = nanofl.engine.libraryitems.LibraryItem[];
+	
+	export class NavigatorState
+	{
+		constructor(first:{ frameIndex : number; layerIndex : number; namePath : string; }, nexts:{ layerIndex : number; frameIndex : number; elementIndex : number; }[]);
+		first : { frameIndex : number; layerIndex : number; namePath : string; };
+		nexts : { layerIndex : number; frameIndex : number; elementIndex : number; }[];
+	}
+	
+	export class ShapeState extends nanofl.ide.undo.states.ElementState
+	{
+		constructor(edges:nanofl.engine.geom.StrokeEdge[], polygons:nanofl.engine.geom.Polygon[]);
+		edges : nanofl.engine.geom.StrokeEdge[];
+		polygons : nanofl.engine.geom.Polygon[];
+		equ(_state:nanofl.ide.undo.states.ElementState) : boolean;
+		toString() : string;
+	}
+	
+	export class TextState extends nanofl.ide.undo.states.ElementState
+	{
+		constructor(width:number, height:number, selectable:boolean, border:boolean, textRuns:nanofl.TextRun[]);
+		width : number;
+		height : number;
+		selectable : boolean;
+		border : boolean;
+		textRuns : nanofl.TextRun[];
+		equ(_state:nanofl.ide.undo.states.ElementState) : boolean;
+	}
+	
+	export class TimelineState
+	{
+		constructor(layerStates:nanofl.engine.Layer[]);
+		layerStates : nanofl.engine.Layer[];
+	}
+	
+	export class TransformationsState
+	{
+		constructor(elementStates:nanofl.engine.geom.Matrix[]);
+		elementStates : nanofl.engine.geom.Matrix[];
+		equ(state:nanofl.ide.undo.states.TransformationsState) : boolean;
 	}
 }
 
@@ -8457,324 +8525,208 @@ declare module createjs.Sprite
 	}
 }
 
-declare module models.client
+declare module nanofl.engine.libraryitems
 {
-	enum ActiveView
+	export class LibraryItem
 	{
-		LIBRARY,
-		TIMELINE,
-		EDITOR
-	}
-	
-	type Application =
-	{
-		addRecent(path:string) : void;
-		clipboard : models.client.Clipboard;
-		createNewEmptyDocument(addEmptySceneToLibrary:boolean, docProp?:models.common.DocumentProperties) : models.client.Document;
-		document : models.client.Document;
-		fileApi : models.client.XpcomFileApi;
-		generateTempDocumentFilePath() : string;
-		loadDocument(path:string, activateAfterLoad?:boolean, callb?:(arg:models.client.Document) => void) : void;
-		newObjectParams : models.client.NewObjectParams;
-		plugins : models.client.IPlugins;
-		quit() : void;
-		saveDocumentIfNeed(callb:() => void) : void;
-		serverApi : models.client.ServerApi;
-	}
-	
-	export class Clipboard
-	{
-		constructor(app:models.client.Application);
-		copy(isCut?:boolean) : boolean;
-		canCut() : boolean;
-		canCopy() : boolean;
-		canPaste() : boolean;
-		cut() : boolean;
-		paste() : boolean;
-		restoreFocus() : void;
-	}
-	
-	export class Document
-	{
-		path : string;
-		properties : models.common.DocumentProperties;
-		library : models.client.EditorLibrary;
-		neverSaved : boolean;
-		navigator : models.client.Navigator;
-		editor : models.client.Editor;
-		undoQueue : models.client.undo.UndoQueue;
-		activate(isCenterView:boolean) : void;
-		setProperties(properties:models.common.DocumentProperties) : void;
-		updateTitle() : void;
-		save(callb?:() => void) : void;
-		saveAs(newPath?:string, callb?:() => void) : void;
-		test() : void;
-	}
-	
-	export class Editor
-	{
-		container : createjs.Container;
-		get_activeLayer() : models.client.EditorLayer;
-		figure : models.client.Figure;
-		get_magnet() : boolean
-	 	set_magnet(v:boolean) : boolean;
-		get_shift() : boolean
-	 	set_shift(v:boolean) : boolean;
-		get_zoomLevel() : number
-	 	set_zoomLevel(v:number) : number;
-		beginEditing(pathItem:models.client.PathItem, isCenterView?:boolean) : void;
-		updateShapes() : void;
-		updateElement(element:models.common.elements.Element) : void;
-		hasSelected() : boolean;
-		toggleSelection() : boolean;
-		select(obj:models.common.ISelectable, deselectOthers?:boolean) : void;
-		selectWoUpdate(obj:models.common.ISelectable, deselectOthers?:boolean) : void;
-		deselect(obj:models.common.ISelectable) : void;
-		deselectWoUpdate(obj:models.common.ISelectable) : void;
-		selectAll() : void;
-		deselectAll() : void;
-		deselectAllWoUpdate() : void;
-		selectLayers(layerIndexes:number[]) : void;
-		isSelectedAtPos(pos:models.common.geom.Point) : boolean;
-		getItemAtPos(pos:models.common.geom.Point) : models.client.editorelements.EditorElement;
-		getObjectAtPos(pos:models.common.geom.Point) : { layerIndex : number; obj : models.common.ISelectable; };
-		breakApartSelected() : void;
-		removeSelected() : void;
-		translateSelected(dx:number, dy:number, lowLevel?:boolean) : void;
-		updateTransformations() : void;
-		getItems(includeShape?:boolean) : models.client.editorelements.EditorElement[];
-		getSelectedItems() : models.client.editorelements.EditorElement[];
-		getObjectLayerIndex(obj:models.common.ISelectable) : number;
-		extractSelected() : models.common.elements.Element[];
-		isItemCanBeAdded(item:models.common.libraryitems.LibraryItem) : boolean;
-		addElement(element:models.common.elements.Element) : models.client.editorelements.EditorElement;
-		convertToSymbol() : void;
-		groupSelected() : void;
-		translateVertex(point:models.common.geom.Point, dx:number, dy:number, addUndoTransaction?:boolean) : void;
-		rebind(isCenterView?:boolean) : void;
-		update() : void;
-		showAllLayers() : void;
-		hideAllLayers() : void;
-		lockAllLayers() : void;
-		unlockAllLayers() : void;
-		getSelectedLayerIndexes() : number[];
-		removeTransformFromSelected() : void;
-		moveSelectedFront() : void;
-		moveSelectedForwards() : void;
-		moveSelectedBackwards() : void;
-		moveSelectedBack() : void;
-		swapInstance(instance:models.common.elements.Instance, newNamePath:string) : void;
-		getForClipboard() : string;
-		pasteFromXml(data:string) : boolean;
-		duplicateSelected() : void;
-		getObjectsInRectangle(x:number, y:number, width:number, height:number) : models.common.ISelectable[];
-		cutToClipboard() : void;
-		copyToClipboard() : void;
-		pasteFromClipboard() : void;
-	}
-	
-	export class EditorLayer
-	{
-		container : createjs.Container;
-		shape : models.client.editorelements.EditorElementShape;
-		get_editable() : boolean;
-		get_parentIndex() : number;
-		get_type() : string;
-		addElement(element:models.common.elements.Element, index?:number) : models.client.editorelements.EditorElement;
-		removeSelected() : void;
-		getItems(r?:models.client.editorelements.EditorElement[], includeShape?:boolean) : models.client.editorelements.EditorElement[];
-		getSelectedItems(r?:models.client.editorelements.EditorElement[]) : models.client.editorelements.EditorElement[];
-		hasSelected() : boolean;
-		isAllSelected() : boolean;
-		hasItem(item:models.client.editorelements.EditorElement) : boolean;
-		selectAll() : void;
-		deselectAll() : void;
-		breakApartSelectedItems() : void;
-		show() : void;
-		hide() : void;
-		lock() : void;
-		unlock() : void;
-		getItemAtPos(pos:models.common.geom.Point) : models.client.editorelements.EditorElement;
-		getEditablessReason() : string;
-		moveSelectedFront() : void;
-		moveSelectedForwards() : void;
-		moveSelectedBackwards() : void;
-		moveSelectedBack() : void;
-		magnetSelectedToGuide() : void;
-		getIndex() : number;
-		getTweenedElements(frameIndex:number) : models.common.TweenedElement[];
-		update() : void;
-		getChildLayers() : models.client.EditorLayer[];
-		getElementIndex(element:models.common.elements.Element) : number;
-		getElementByIndex(elementIndex:number) : models.common.elements.Element;
-		getElementsState() : { elements : models.common.elements.Element[]; };
-		duplicateSelected() : void;
-		isShowSelection() : boolean;
-	}
-	
-	export class EditorLibrary
-	{
-		constructor(app:models.client.Application, library:models.common.Library);
-		get_activeItem() : models.common.libraryitems.LibraryItem;
-		renameItem(namePath:string, newNamePath:string) : boolean;
-		removeItems(namePaths:string[]) : void;
-		copyAndChangeDir(libraryDir:string, callb?:() => void) : void;
-		getNextItemName() : string;
-		hasItem(namePath:string) : boolean;
-		addItem(item:models.common.libraryitems.LibraryItem) : void;
-		addFont(family:string, variants:models.common.FontVariant[]) : void;
+		namePath : string;
+		getType() : string;
+		getIcon() : string;
+		clone() : nanofl.engine.libraryitems.LibraryItem;
+		save(fileApi:nanofl.engine.FileApi) : void;
+		saveToXml(out:nanofl.engine.XmlWriter) : void;
+		getFilePathTemplate() : string;
 		preload(ready:() => void) : void;
-		getItem(namePath:string) : models.common.libraryitems.LibraryItem;
-		getSceneInstance() : models.common.elements.Instance;
-		getSceneItem() : models.common.libraryitems.MovieClipItem;
-		getItems() : models.common.libraryitems.LibraryItem[];
-		getRawLibrary() : models.common.Library;
-		getForClipboard() : string;
-		pasteFromXml(data:string) : boolean;
-		hasSelected() : boolean;
-		removeSelected() : void;
-		renameByUser(namePath:string) : boolean;
-		deselectAll() : void;
+		removeInstance(namePath:string) : void;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		getUsedItems() : nanofl.engine.libraryitems.LibraryItem[];
+		getUsedFilters() : string[];
+		duplicate(newNamePath:string) : nanofl.engine.libraryitems.LibraryItem;
+		remove() : void;
+		toString() : string;
+		static load(namePath:string, libraryDir:string, fileApi:nanofl.engine.FileApi) : nanofl.engine.libraryitems.LibraryItem;
+		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.LibraryItem;
+	}
+	
+	export class InstancableItem extends nanofl.engine.libraryitems.LibraryItem
+	{
+		linkedClass : string;
+		newInstance() : nanofl.engine.elements.Instance;
+		hasInstance(namePath:string) : boolean;
+		getDisplayObjectClassName() : string;
+		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
+	}
+	
+	export class BitmapItem extends nanofl.engine.libraryitems.InstancableItem
+	{
+		constructor(namePath:string, ext:string);
+		image : HTMLImageElement;
+		getType() : string;
+		clone() : nanofl.engine.libraryitems.LibraryItem;
+		getIcon() : string;
+		save(fileApi:nanofl.engine.FileApi) : void;
+		saveToXml(out:nanofl.engine.XmlWriter) : void;
+		getUrl() : string;
+		preload(ready:() => void) : void;
+		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
+		getDisplayObjectClassName() : string;
+		toString() : string;
+		static load(namePath:string, libraryDir:string, fileApi:nanofl.engine.FileApi) : nanofl.engine.libraryitems.BitmapItem;
+		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.BitmapItem;
+	}
+	
+	export class FolderItem extends nanofl.engine.libraryitems.LibraryItem
+	{
+		constructor(namePath:string);
+		opened : boolean;
+		clone() : nanofl.engine.libraryitems.LibraryItem;
+		getIcon() : string;
+		toString() : string;
+	}
+	
+	export class FontItem extends nanofl.engine.libraryitems.LibraryItem
+	{
+		constructor(namePath:string, variants:nanofl.engine.FontVariant[]);
+		variants : nanofl.engine.FontVariant[];
+		getType() : string;
+		clone() : nanofl.engine.libraryitems.LibraryItem;
+		getIcon() : string;
+		save(fileApi:nanofl.engine.FileApi) : void;
+		saveToXml(out:nanofl.engine.XmlWriter) : void;
+		toFont() : nanofl.engine.Font;
+		preload(ready:() => void) : void;
+		toString() : string;
+		static load(namePath:string, libraryDir:string, fileApi:nanofl.engine.FileApi) : nanofl.engine.libraryitems.FontItem;
+		static parse(namePath:string, fontNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.FontItem;
+	}
+	
+	export class LibraryItems
+	{
+		static saveToXml(items:nanofl.engine.libraryitems.LibraryItem[], out:nanofl.engine.XmlWriter) : void;
+		static loadFromXml(xml:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.LibraryItem[];
+	}
+	
+	export class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITimeline, nanofl.engine.ILayersContainer
+	{
+		constructor(namePath:string);
+		layers : nanofl.engine.ArrayRO<nanofl.engine.Layer>;
+		likeButton : boolean;
+		autoPlay : boolean;
+		loop : boolean;
+		getType() : string;
+		clone() : nanofl.engine.libraryitems.LibraryItem;
+		addLayer(layer:nanofl.engine.Layer) : void;
+		/**
+		 * Add block of layers into timeline.
+		 * Assume that layers' parentIndex referenced inside block.
+		 */
+		addLayersBlock(layersToAdd:nanofl.engine.Layer[], index?:number) : void;
+		removeLayers(index:number) : nanofl.engine.Layer[];
+		getFramesAt(frameIndex:number) : nanofl.engine.Frame[];
+		removeInstance(namePath:string) : void;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		getIcon() : string;
+		save(fileApi:nanofl.engine.FileApi) : void;
+		saveToXml(out:nanofl.engine.XmlWriter) : void;
+		getTotalFrames() : number;
+		getTimelineState() : nanofl.ide.undo.states.TimelineState;
+		setTimelineState(state:nanofl.ide.undo.states.TimelineState) : void;
+		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : nanofl.MovieClip;
+		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
+		hasInstance(namePath:string) : boolean;
+		getUsedItems() : nanofl.engine.libraryitems.LibraryItem[];
+		getUsedFilters() : string[];
+		getDisplayObjectClassName() : string;
+		toString() : string;
+		static load(namePath:string, libraryDir:string, fileApi:nanofl.engine.FileApi) : nanofl.engine.libraryitems.MovieClipItem;
+		static parse(namePath:string, movieClipNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MovieClipItem;
+	}
+	
+	export class SoundItem extends nanofl.engine.libraryitems.LibraryItem
+	{
+		constructor(namePath:string, ext:string);
+		linkage : string;
+		getType() : string;
+		clone() : nanofl.engine.libraryitems.LibraryItem;
+		getIcon() : string;
+		save(fileApi:nanofl.engine.FileApi) : void;
+		saveToXml(out:nanofl.engine.XmlWriter) : void;
+		getUrl() : string;
+		toString() : string;
+		static load(namePath:string, libraryDir:string, fileApi:nanofl.engine.FileApi) : nanofl.engine.libraryitems.SoundItem;
+		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.SoundItem;
+	}
+}
+
+declare module nanofl.engine.tweens
+{
+	export class MotionTween
+	{
+		constructor(easing:number, rotateCount:number, orientToPath:boolean);
+		easing : number;
+		rotateCount : number;
+		orientToPath : boolean;
+		save(out:nanofl.engine.XmlWriter) : void;
+		apply(frameSubIndex:number) : nanofl.engine.TweenedElement[];
+		clone() : nanofl.engine.tweens.MotionTween;
+		isGood() : boolean;
+		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.tweens.MotionTween;
+	}
+}
+
+declare module nanofl.ide.editorelements
+{
+	export class EditorElement implements nanofl.engine.ISelectable
+	{
+		frame : nanofl.engine.Frame;
+		originalElement : nanofl.engine.elements.Element;
+		currentElement : nanofl.engine.elements.Element;
+		metaDispObj : createjs.Container;
+		selected : boolean;
+		get_width() : number
+	 	set_width(v:number) : number;
+		get_height() : number
+	 	set_height(v:number) : number;
+		updateTransformations() : void;
 		update() : void;
-		getSelectedItems() : models.common.libraryitems.LibraryItem[];
-		gotoPrevItem(overwriteSelection:boolean) : void;
-		gotoNextItem(overwriteSelection:boolean) : void;
-		showPropertiesPopup() : void;
-		createEmptySymbol() : void;
-		createFolder() : void;
-		importImagesFromPaths(paths:string[], folderPath:string, ready?:() => void) : void;
-		importLibraryItemsFromFiles(files:File[], folderPath:string, callb?:(arg:models.common.libraryitems.LibraryItem[]) => void) : void;
+		rebind() : void;
+		getBounds() : createjs.Rectangle;
+		getTransformedBounds() : createjs.Rectangle;
+		hitTest(x:number, y:number) : boolean;
 	}
 	
-	export class Figure
+	export class EditorElementSelectBox extends nanofl.ide.editorelements.EditorElement
 	{
-		constructor(layers:models.client.EditorLayer[]);
-		getVertexAtPos(pt:models.common.geom.Point) : models.common.geom.Point;
-		getSameEdgeWithLayers(edge:models.common.geom.Edge) : { layerIndex : number; edge : models.common.geom.Edge; }[];
-		getEdgeAtPos(pt:models.common.geom.Point) : { dist : number; edge : models.common.geom.Edge; layerIndex : number; t : number; };
-		getStrokeEdgeAtPos(pt:models.common.geom.Point) : { dist : number; edge : models.common.geom.StrokeEdge; layerIndex : number; t : number; };
-		getPolygonEdgeAtPos(pt:models.common.geom.Point) : { dist : number; edge : models.common.geom.Edge; layerIndex : number; t : number; };
-		getPolygonAtPos(pt:models.common.geom.Point) : { layerIndex : number; polygon : models.common.geom.Polygon; };
-		translateVertex(point:models.common.geom.Point, dx:number, dy:number) : void;
-		hasSelected() : boolean;
-		hasSelectedEdges() : boolean;
-		hasSelectedPolygons() : boolean;
-		updateShapes() : void;
-		getSelectedEdgesStrokeParams() : { color : string; thickness : number; type : string; };
-		getSelectedPolygonsFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : models.common.geom.Matrix; ratios : number[]; type : string; };
-		selectAll() : void;
-		deselectAll() : void;
-		getBounds(bounds?:models.common.geom.Bounds) : models.common.geom.Bounds;
-		getSelectedBounds(bounds?:models.common.geom.Bounds) : models.common.geom.Bounds;
-		removeSelected() : void;
-		translateSelected(dx:number, dy:number) : void;
-		transformSelected(m:models.common.geom.Matrix) : void;
-		setSelectedPolygonsFillParams(params:{ bitmapPath : string; color : string; colors : string[]; matrix : models.common.geom.Matrix; ratios : number[]; }) : void;
-		setSelectedEdgesStrokeParams(params:{ color : string; thickness : number; }) : void;
-		setSelectedPolygonsFill(fill:models.common.fills.IFill, x1?:number, y1?:number, x2?:number, y2?:number) : void;
-		setSelectedEdgesStroke(stroke:models.common.strokes.IStroke) : void;
-		combine_vertex(x:number, y:number) : void;
-		combine_selected() : void;
-		extractSelected() : models.common.elements.ShapeElement;
-		combineLayerWithEdge(layerIndex:number, edge:models.common.geom.Edge) : void;
-		getMagnetPointEx(x:number, y:number, excludeSelf?:boolean) : { found : boolean; point : models.common.geom.Point; };
-		splitEdge(edge:models.common.geom.Edge, t:number) : models.common.geom.Point;
-		getSelectedStrokeEdges() : models.common.geom.StrokeEdge[];
+		updateTransformations() : void;
 	}
 	
-	type IPlugins =
+	export class EditorElementGroup extends nanofl.ide.editorelements.EditorElementSelectBox
 	{
-		exportDocument(pluginName:string, destFilePath?:string, callb?:(arg:boolean) => void) : void;
-		importDocument(pluginName:string, srcFilePath?:string, callb?:(arg:models.client.Document) => void) : void;
-		reload(alertOnSuccess?:boolean) : boolean;
+		get_element() : nanofl.engine.elements.GroupElement;
 	}
 	
-	export class Navigator
+	export class EditorElementInstance extends nanofl.ide.editorelements.EditorElementSelectBox
 	{
-		editPath : models.client.PathItem[];
-		get_pathItem() : models.client.PathItem;
-		navigateUp() : void;
-		navigateDown(container:models.common.IPathElement) : void;
-		navigateTo(editPath:models.client.PathItem[], isCenterView?:boolean) : void;
-		update(isCenterView:boolean) : void;
-		setLayerIndex(index:number) : void;
-		setFrameIndex(index:number) : void;
-		getInstanceNamePaths() : string[];
+		get_element() : nanofl.engine.elements.Instance;
 	}
 	
-	export class NewObjectParams
+	export class EditorElementShape extends nanofl.ide.editorelements.EditorElement
 	{
-		constructor(app:models.client.Application);
-		strokeType : string;
-		fillType : string;
-		get_stroke() : models.common.strokes.IStroke;
-		get_fill() : models.common.fills.IFill;
-		roundRadius : number;
-		textFormat : nanofl.TextRun;
-		setStroke(stroke:models.common.strokes.IStroke) : void;
-		setFill(fill:models.common.fills.IFill) : void;
-		setStrokeParams(p:{ color : string; thickness : number; }) : void;
-		getStrokeParams() : { color : string; thickness : number; type : string; };
-		setFillParams(p:{ bitmapPath : string; color : string; colors : string[]; matrix : models.common.geom.Matrix; ratios : number[]; }) : void;
-		getFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : models.common.geom.Matrix; ratios : number[]; type : string; };
-		getStrokeByType(type:string) : models.common.strokes.IStroke;
-		getFillByType(type:string) : models.common.fills.IFill;
+		get_element() : nanofl.engine.elements.ShapeElement;
 	}
 	
-	export class PathItem
+	export class EditorElementText extends nanofl.ide.editorelements.EditorElementSelectBox
 	{
-		constructor(element:models.common.IPathElement, layerIndex?:number, frameIndex?:number);
-		element : models.common.IPathElement;
-		layerIndex : number;
-		frameIndex : number;
-		setLayerIndex(n:number) : void;
-		setFrameIndex(n:number) : void;
-		get_layer() : models.common.Layer;
-		get_frame() : models.common.Frame;
-		equ(p:models.client.PathItem) : boolean;
-		clone() : models.client.PathItem;
-	}
-	
-	export interface ServerApi
-	{
-		getTempDirectory() : string;
-		copyDir(fromPath:string, toPath:string, callb?:() => void) : void;
-		requestUrl(url:string, callb:(arg:string) => void) : void;
-		openInBrowser(url:string) : void;
-		uploadFileAsLibraryItem(library:models.common.Library, folderPath:string, file:File, callb:(arg:models.common.libraryitems.LibraryItem) => void) : void;
-		getFonts() : string[];
-	}
-	
-	export class ShapePropertiesOptions
-	{
-		strokePane : boolean;
-		fillPane : boolean;
-		roundRadiusPane : boolean;
-		showStrokePane() : models.client.ShapePropertiesOptions;
-		showFillPane() : models.client.ShapePropertiesOptions;
-		showRoundRadiusPane() : models.client.ShapePropertiesOptions;
-	}
-	
-	export class XpcomFileApi implements models.common.FileApi
-	{
-		constructor();
-		getTempDirectory() : string;
-		getToolsDirectory() : string;
-		getPluginsDirectory() : string;
-		readDirectory(path:string) : string[];
-		exists(path:string) : boolean;
-		getContent(filePath:string) : string;
-		saveContent(filePath:string, text:string) : void;
-		saveBinary(filePath:string, data:number[]) : void;
-		isDirectory(path:string) : boolean;
-		run(filePath:string, args:string[], blocking:boolean) : void;
-		copy(srcPath:string, destPath:string) : void;
-		rename(oldName:string, newName:string) : void;
-		remove(path:string) : void;
-		findFiles(dirPath:string, onFile?:(arg:string) => void, onDir?:(arg:string) => boolean) : void;
-		getPluginPaths() : string[];
-		nativePath(path:string) : string;
-		basicRemove(path:string) : void;
-		basicRename(oldPath:string, newPath:string) : void;
+		get_element() : nanofl.engine.elements.TextElement;
+		update() : void;
+		hitTest(x:number, y:number) : boolean;
+		beginEditing() : void;
+		endEditing() : void;
+		setSelectionFormat(format:nanofl.TextRun) : void;
+		getSelectionFormat() : nanofl.TextRun;
+		setPosAndSize(obj:{ height : number; width : number; x : number; y : number; }) : void;
+		getMinSize() : { height : number; width : number; };
 	}
 }

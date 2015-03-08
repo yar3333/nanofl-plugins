@@ -2,6 +2,6 @@ package nanofl;
 
 extern class Bitmap extends createjs.Bitmap
 {
-	function new(symbol:models.common.libraryitems.InstancableItem) : Void;
+	function new(symbol:nanofl.engine.libraryitems.InstancableItem) : Void;
 	override function toString() : String;
 }
