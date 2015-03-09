@@ -7164,7 +7164,7 @@ declare module nanofl.ide
 		loadDocument(path:string, activateAfterLoad?:boolean, callb?:(arg:nanofl.ide.Document) => void) : void;
 		newObjectParams : nanofl.ide.NewObjectParams;
 		plugins : nanofl.ide.IPlugins;
-		quit() : void;
+		quit(force?:boolean) : void;
 		saveDocumentIfNeed(callb:() => void) : void;
 		serverApi : nanofl.engine.ServerApi;
 	}
