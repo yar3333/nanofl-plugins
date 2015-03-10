@@ -77,20 +77,26 @@ class SvgText
 		r.matrix = matrix.clone();
 		r.matrix.translate(x, y);
 		
-		if (textAnchor != "" && textAnchor != "start")
-		{
-			#if js
+		#if js
+			
 			var t : nanofl.TextField = cast r.createDisplayObject(null);
-			if (textAnchor == "middle")
+			
+			var fontHeight = nanofl.TextField.measureFontHeight(fontFamily, fontStyle, fontSize);
+			var fontBaselineCoef = nanofl.TextField.measureFontBaselineCoef(fontFamily, fontStyle);
+			r.matrix.translate(0, -fontHeight * fontBaselineCoef - nanofl.TextField.PADDING);
+			
+			switch (textAnchor)
 			{
-				var fontHeight = nanofl.TextField.measureFontHeight(fontFamily, fontStyle, fontSize);
-				var fontBaselineCoef = nanofl.TextField.measureFontBaselineCoef(fontFamily, fontStyle);
-				r.matrix.translate( -t.minWidth / 2, -fontHeight * fontBaselineCoef - nanofl.TextField.PADDING);
+				case "middle":		r.matrix.translate(-t.minWidth / 2, 0);
+				case "end":			r.matrix.translate(-t.minWidth + nanofl.TextField.PADDING, 0);
+				case _:				r.matrix.translate(-nanofl.TextField.PADDING, 0);
 			}
-			#else
+			
+		#else
+			
 			trace("Text-anchor in not supported on sys platform.");
-			#end
-		}
+			
+		#end
 		
 		return r;
 	}
