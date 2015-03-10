@@ -355,7 +355,7 @@ class SymbolLoader
 			font.face,
 			font.style,
 			textAttrs.getAttr("size", 12.0),
-			textAttrs.getAttr("alignment"),
+			textAttrs.getAttr("alignment", "left"),
 			0,
 			null,
 			null
