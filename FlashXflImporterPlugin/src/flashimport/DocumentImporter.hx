@@ -14,7 +14,7 @@ class DocumentImporter
 {
 	public static function process(importMediaScriptTemplate:String, fileApi:FileApi, srcFilePath:String, destFilePath:String, destDocProp:DocumentProperties, destLibrary:Library, fonts:Array<String>, runFlashToImportMedia:Bool, log:Dynamic->Void, callb:Bool->Void) : Void
 	{
-		if (runFlashToImportMedia)
+		if (runFlashToImportMedia && hasMedia(fileApi, srcFilePath))
 		{
 			importMedia
 			(
@@ -32,6 +32,12 @@ class DocumentImporter
 			importXmlFiles(fileApi, srcFilePath, destDocProp, destLibrary, fonts, log);
 			callb(true);
 		}
+	}
+	
+	static function hasMedia(fileApi:FileApi, srcFilePath:String) : Bool
+	{
+		var doc = new XmlDocument(fileApi.getContent(Path.directory(srcFilePath) + "/DOMDocument.xml"));
+		return doc.findOne(">DOMDocument>media>*") != null;
 	}
 	
 	static function importMedia(importMediaScriptTemplate:String, fileApi:FileApi, srcFilePath:String, destFilePath:String, destLibrary:Library, callb:Bool->Void)
