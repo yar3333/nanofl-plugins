@@ -10,6 +10,7 @@ typedef Application =
 	function generateTempDocumentFilePath() : String;
 	function loadDocument(path:String, ?activateAfterLoad:Bool, ?callb:nanofl.ide.Document -> Void) : Void;
 	var newObjectParams : nanofl.ide.NewObjectParams;
+	var pid : String;
 	var plugins : nanofl.ide.IPlugins;
 	function quit(?force:Bool) : Void;
 	function saveDocumentIfNeed(callb:Void -> Void) : Void;

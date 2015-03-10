@@ -740,13 +740,17 @@ flashimport.CurvedEdge.prototype = $extend(flashimport.StraightEdge.prototype,{
 flashimport.DocumentImporter = function() { };
 flashimport.DocumentImporter.__name__ = ["flashimport","DocumentImporter"];
 flashimport.DocumentImporter.process = function(importMediaScriptTemplate,fileApi,srcFilePath,destFilePath,destDocProp,destLibrary,fonts,runFlashToImportMedia,log,callb) {
-	if(runFlashToImportMedia) flashimport.DocumentImporter.importMedia(importMediaScriptTemplate,fileApi,srcFilePath,destFilePath,destLibrary,function(success) {
+	if(runFlashToImportMedia && flashimport.DocumentImporter.hasMedia(fileApi,srcFilePath)) flashimport.DocumentImporter.importMedia(importMediaScriptTemplate,fileApi,srcFilePath,destFilePath,destLibrary,function(success) {
 		if(success) flashimport.DocumentImporter.importXmlFiles(fileApi,srcFilePath,destDocProp,destLibrary,fonts,log);
 		callb(success);
 	}); else {
 		flashimport.DocumentImporter.importXmlFiles(fileApi,srcFilePath,destDocProp,destLibrary,fonts,log);
 		callb(true);
 	}
+};
+flashimport.DocumentImporter.hasMedia = function(fileApi,srcFilePath) {
+	var doc = new htmlparser.XmlDocument(fileApi.getContent(haxe.io.Path.directory(srcFilePath) + "/DOMDocument.xml"));
+	return htmlparser.HtmlParserTools.findOne(doc,">DOMDocument>media>*") != null;
 };
 flashimport.DocumentImporter.importMedia = function(importMediaScriptTemplate,fileApi,srcFilePath,destFilePath,destLibrary,callb) {
 	var destDir = haxe.io.Path.directory(destFilePath);
@@ -1085,7 +1089,7 @@ flashimport.SymbolLoader.prototype = {
 			this.log("FONT MAP: " + face + " -> " + font.face + " / " + (font.style != ""?font.style:"regular"));
 		}
 		var font1 = this.fontMap.get(face);
-		return new nanofl.TextRun(StringTools.replace(stdlib.Utf8.htmlUnescape(htmlparser.HtmlParserTools.findOne(textRun,">characters").innerHTML),"\r","\n"),htmlparser.HtmlParserTools.getAttr(textAttrs,"fillColor","#000000"),font1.face,font1.style,htmlparser.HtmlParserTools.getAttr(textAttrs,"size",12.0),htmlparser.HtmlParserTools.getAttr(textAttrs,"alignment"),0,null,null);
+		return new nanofl.TextRun(StringTools.replace(stdlib.Utf8.htmlUnescape(htmlparser.HtmlParserTools.findOne(textRun,">characters").innerHTML),"\r","\n"),htmlparser.HtmlParserTools.getAttr(textAttrs,"fillColor","#000000"),font1.face,font1.style,htmlparser.HtmlParserTools.getAttr(textAttrs,"size",12.0),htmlparser.HtmlParserTools.getAttr(textAttrs,"alignment","left"),0,null,null);
 	}
 	,loadColorEffect: function(color) {
 		if(color == null) return null;

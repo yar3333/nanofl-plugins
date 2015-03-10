@@ -7163,6 +7163,7 @@ declare module nanofl.ide
 		generateTempDocumentFilePath() : string;
 		loadDocument(path:string, activateAfterLoad?:boolean, callb?:(arg:nanofl.ide.Document) => void) : void;
 		newObjectParams : nanofl.ide.NewObjectParams;
+		pid : string;
 		plugins : nanofl.ide.IPlugins;
 		quit(force?:boolean) : void;
 		saveDocumentIfNeed(callb:() => void) : void;
@@ -8294,7 +8295,7 @@ declare module nanofl.engine
 	export interface ServerApi
 	{
 		getTempDirectory() : string;
-		copyDir(fromPath:string, toPath:string, callb?:() => void) : void;
+		copyDir(src:string, dest:string, overwrite?:boolean, callb?:() => void) : void;
 		requestUrl(url:string, callb:(arg:string) => void) : void;
 		openInBrowser(url:string) : void;
 		uploadFileAsLibraryItem(library:nanofl.engine.Library, folderPath:string, file:File, callb:(arg:nanofl.engine.libraryitems.LibraryItem) => void) : void;
