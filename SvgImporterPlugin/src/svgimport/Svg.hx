@@ -38,7 +38,7 @@ class Svg extends SvgGroup
 		else if (width  == 0) width = height;
 		else if (height == 0) height = width;
 		
-		super(svg, new Matrix(), null, gradients);
+		super(svg, null, gradients);
 	}
 	
 	private function dumpGroup(g:SvgGroup, indent:String)

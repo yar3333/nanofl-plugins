@@ -24,11 +24,9 @@ class SvgPath
 
 	public var segments : Array<Segment>;
 	
-	public function new(pathNode:Xml, mat:Matrix, baseStyles:Map<String, String>, gradients:Map<String, Grad>, isRect:Bool, isEllipse:Bool, isCircle=false) : Void
+	public function new(pathNode:Xml, baseStyles:Map<String, String>, gradients:Map<String, Grad>, isRect:Bool, isEllipse:Bool, isCircle=false) : Void
 	{
-		matrix = mat.clone();
-		
-		matrix.appendMatrix(Transform.load(pathNode.get("transform")));
+		matrix = Transform.load(pathNode.get("transform"));
 		
 		var styles = XmlTools.getStyles(pathNode, baseStyles, gradients);
 		name = pathNode.exists("id") ? pathNode.get("id") : "";

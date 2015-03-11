@@ -1,19 +1,10 @@
 import nanofl.engine.DocumentProperties;
-import nanofl.engine.elements.Element;
-import nanofl.engine.elements.GroupElement;
-import nanofl.engine.elements.ShapeElement;
 import nanofl.engine.FileApi;
-import nanofl.engine.KeyFrame;
-import nanofl.engine.Layer;
 import nanofl.engine.Library;
-import nanofl.engine.libraryitems.MovieClipItem;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IImporterPlugin;
 import svgimport.Svg;
-import svgimport.SvgElement;
-import svgimport.SvgGroup;
-import svgimport.SvgPath;
-import svgimport.SvgPathExporter;
+import svgimport.SvgGroupExporter;
 using StringTools;
 
 class SvgImporterPlugin implements IImporterPlugin
@@ -51,113 +42,12 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 	{
 		var xml = Xml.parse(fileApi.getContent(srcFilePath));
 		var svg = new Svg(xml);
-		var scene = loadFromSvg(svg, Library.SCENE_NAME_PATH);
-		library.addItem(scene);
+		
 		documentProperties.width = Math.round(svg.width);
 		documentProperties.height = Math.round(svg.height);
+		
+		SvgGroupExporter.run(svg, library, Library.SCENE_NAME_PATH);
+		
 		callb(true);
-	}
-	
-	public function loadFromXml(xml:Xml, namePath:String) : MovieClipItem
-	{
-		return loadFromSvg(new Svg(xml), namePath);
-	}
-	
-	public function loadFromSvg(svg:Svg, namePath:String) : MovieClipItem
-	{
-		var lastLayerIsGlobal = false;
-		var layers = [];
-		
-		for (child in svg.children)
-		{
-			switch (child)
-			{
-				case SvgElement.DisplayGroup(group):
-					if (group.name != null && group.name != "")
-					{
-						lastLayerIsGlobal = false;
-						createLayerWithFrame(layers, group.name);
-					}
-					else
-					{
-						if (!lastLayerIsGlobal)
-						{
-							lastLayerIsGlobal = true;
-							createLayerWithFrame(layers, "auto_" + layers.length);
-						}
-					}
-					
-					for (elem in loadElements(group))
-					{
-						var frame = layers[layers.length - 1].keyFrames[0];
-						if (frame.elements.length > 0 && Std.is(elem, ShapeElement))
-						{
-							frame = createLayerWithFrame(layers, "auto_" + layers.length);
-						}
-						
-						frame.addElement(elem);
-					}
-					
-				case SvgElement.DisplayPath(path):
-					if (!lastLayerIsGlobal)
-					{
-						lastLayerIsGlobal = true;
-						createLayerWithFrame(layers, "auto_" + layers.length);
-					}
-					
-					var frame = layers[layers.length - 1].keyFrames[0];
-					var shape = path.toElement();
-					if (shape != null) frame.addElement(new GroupElement([ shape ]));
-					
-				case SvgElement.DisplayText(text):
-					if (!lastLayerIsGlobal)
-					{
-						lastLayerIsGlobal = true;
-						createLayerWithFrame(layers, "auto_" + layers.length);
-					}
-					
-					var frame = layers[layers.length - 1].keyFrames[0];
-					frame.addElement(text.toElement());
-			}
-		}
-		
-		var r = new MovieClipItem(namePath);
-		layers.reverse();
-		for (layer in layers) r.addLayer(layer);
-		return r;
-	}
-	
-	function loadElements(g:SvgGroup) : Array<Element>
-	{
-		var r = new Array<Element>();
-		
-		for (child in g.children)
-		{
-			switch (child)
-			{
-				case SvgElement.DisplayGroup(group):
-					var group = new GroupElement(loadElements(group));
-					group.name = group.name;
-					r.push(group);
-					
-				case SvgElement.DisplayPath(path):
-					var shape = path.toElement();
-					if (shape != null) r.push(shape);
-					
-				case SvgElement.DisplayText(text):
-					r.push(text.toElement());
-			}
-		}
-		
-		return r;
-	}
-	
-	function createLayerWithFrame(parent:Array<Layer>, name:String) : KeyFrame
-	{
-		var layer = new Layer(name);
-		var keyFrame = new KeyFrame();
-		layer.addKeyFrame(keyFrame);
-		parent.push(layer);
-		return keyFrame;
 	}
 }
