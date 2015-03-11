@@ -19,13 +19,24 @@ class Transform
 					{
 						matrix.appendTransform(Std.parseFloat(params[0]), Std.parseFloat(params[1]));
 					}
+					else
+					{
+						trace("Transform/translate: expect two params.");
+					}
 					
 				case "scale":
-					var k = Std.parseFloat(re.matched(2));
-					matrix.appendTransform(0, 0, k, k);
+					var params = re.matched(2).split(",").map(function(s) return Std.parseFloat(s));
+					if (params.length > 0)
+					{
+						matrix.appendTransform(0, 0, params[0], params.length > 1 ? params[1] : params[0]);
+					}
+					else
+					{
+						trace("Transform/scale: expect one or two params.");
+					}
 					
 				case "rotate":
-					matrix.appendTransform(0, 0, 1, 1, -Std.parseFloat(re.matched(2)));
+					matrix.appendTransform(0, 0, 1, 1, Std.parseFloat(re.matched(2)));
 					
 				case "matrix":
 					var params = re.matched(2).split(",");
@@ -43,7 +54,7 @@ class Transform
 					}
 					
 				case _:
-					trace("Unknow tansform: '" + re.matched(1) + "'.");
+					trace("Unknow transform: '" + re.matched(1) + "'.");
 			}
 			
 			trans = re.matchedRight();
