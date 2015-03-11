@@ -1,7 +1,9 @@
 package svgimport;
 
 import nanofl.engine.elements.TextElement;
+import htmlparser.HtmlNodeElement;
 import nanofl.TextRun;
+using htmlparser.HtmlParserTools;
 
 class SvgText
 {
@@ -30,16 +32,16 @@ class SvgText
    
 	public var textAnchor : String;
    
-	public function new(textNode:Xml, baseStyles:Map<String, String>, gradients:Map<String, Grad>)
+	public function new(textNode:HtmlNodeElement, baseStyles:Map<String, String>, gradients:Map<String, Grad>)
 	{
-		matrix = Transform.load(textNode.get("transform"));
+		matrix = Transform.load(textNode.getAttribute("transform"));
 		
 		var styles = XmlTools.getStyles(textNode, baseStyles, gradients);
 		
-		name = textNode.exists("id") ? textNode.get("id") : "";
+		name = textNode.getAttr("id", "");
 		
-		x = XmlTools.getFloat(textNode, "x", 0.0);
-		y = XmlTools.getFloat(textNode, "y", 0.0);
+		x = textNode.getAttrFloat("x", 0);
+		y = textNode.getAttrFloat("y", 0);
 		
 		fill = XmlTools.getFillStyle(textNode, "fill", styles, gradients);
 		fillAlpha = XmlTools.getFloatStyle(textNode, "fill-opacity", styles, 1.0);
@@ -55,9 +57,9 @@ class SvgText
 		
 		kerning = XmlTools.getFloatStyle(textNode, "kerning", styles, 0);
 		letterSpacing = XmlTools.getFloatStyle(textNode, "letter-spacing", styles, 0);
-		textAnchor = textNode.exists("text-anchor") ? textNode.get("text-anchor") : "";
+		textAnchor = textNode.getAttr("text-anchor", "");
 		
-		text = ""; for (el in textNode) text += el.nodeValue;
+		text = textNode.innerText;
 	}
 	
 	public function toElement() : TextElement

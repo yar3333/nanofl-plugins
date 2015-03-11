@@ -1,7 +1,9 @@
 package svgimport;
 
+import htmlparser.HtmlNodeElement;
 import nanofl.engine.elements.ShapeElement;
 import svgimport.Segment;
+using htmlparser.HtmlParserTools;
 
 class SvgPath
 {
@@ -24,12 +26,12 @@ class SvgPath
 
 	public var segments : Array<Segment>;
 	
-	public function new(pathNode:Xml, baseStyles:Map<String, String>, gradients:Map<String, Grad>, isRect:Bool, isEllipse:Bool, isCircle=false) : Void
+	public function new(pathNode:HtmlNodeElement, baseStyles:Map<String, String>, gradients:Map<String, Grad>, isRect:Bool, isEllipse:Bool, isCircle=false) : Void
 	{
-		matrix = Transform.load(pathNode.get("transform"));
+		matrix = Transform.load(pathNode.getAttribute("transform"));
 		
 		var styles = XmlTools.getStyles(pathNode, baseStyles, gradients);
-		name = pathNode.exists("id") ? pathNode.get("id") : "";
+		name = pathNode.hasAttribute("id") ? pathNode.getAttribute("id") : "";
 		
 		alpha = XmlTools.getFloatStyle(pathNode, "opacity", styles, 1.0);
 		fill = XmlTools.getFillStyle(pathNode, "fill", styles,gradients);
@@ -45,12 +47,12 @@ class SvgPath
 
 		if (isRect)
 		{
-			var x = pathNode.exists("x") ? Std.parseFloat(pathNode.get("x")) : 0;
-			var y = pathNode.exists("y") ? Std.parseFloat(pathNode.get("y")) : 0;
-			var w = Std.parseFloat(pathNode.get("width"));
-			var h = Std.parseFloat(pathNode.get("height"));
-			var rx = pathNode.exists("rx") ? Std.parseFloat(pathNode.get("rx")) : 0.0;
-			var ry = pathNode.exists("ry") ? Std.parseFloat(pathNode.get("ry")) : rx;
+			var x = pathNode.getAttrFloat("x", 0);
+			var y = pathNode.getAttrFloat("y", 0);
+			var w = pathNode.getAttrFloat("width", 0);
+			var h = pathNode.getAttrFloat("height", 0);
+			var rx = pathNode.getAttrFloat("rx", 0);
+			var ry = pathNode.getAttrFloat("ry", rx);
 			
 			if (rx == 0 || ry == 0)
 			{
@@ -83,13 +85,13 @@ class SvgPath
 		}
 		else if (isEllipse)
 		{
-			var x = pathNode.exists("cx") ? Std.parseFloat(pathNode.get("cx")) : 0;
-			var y = pathNode.exists("cy") ? Std.parseFloat(pathNode.get("cy")) : 0;
-			var r = isCircle && pathNode.exists("r") ? Std.parseFloat(pathNode.get("r")) : 0.0;
-			var w = isCircle ? r : (pathNode.exists("rx") ? Std.parseFloat(pathNode.get("rx")) : 0.0);
+			var x = pathNode.getAttrFloat("cx", 0);
+			var y = pathNode.getAttrFloat("cy", 0);
+			var r = pathNode.getAttrFloat("r", 0);
+			var w = pathNode.getAttrFloat("rx", r);
 			var w_ = w * SIN45;
 			var cw_ = w * TAN22;
-			var h = isCircle ? r : (pathNode.exists("ry") ? Std.parseFloat(pathNode.get("ry")) : 0.0);
+			var h = pathNode.getAttrFloat("ry", r);
 			var h_ = h * SIN45;
 			var ch_ = h * TAN22;
 			
@@ -108,9 +110,23 @@ class SvgPath
 		}
 		else
 		{
-			var d = pathNode.exists("points") ? ("M" + pathNode.get("points") + "z") :
-					pathNode.exists("x1") ? ("M" + pathNode.get("x1") + "," + pathNode.get("y1") + " " + pathNode.get("x2") + "," + pathNode.get("y2") + "z") :
-					pathNode.get("d");
+			var d : String;
+			if (pathNode.hasAttribute("points"))
+			{
+				d = "M" + pathNode.getAttribute("points") + "z";
+			}
+			else
+			if (pathNode.hasAttribute("x1"))
+			{
+				d = "M" + pathNode.getAttribute("x1") + ","
+						+ pathNode.getAttribute("y1") + " "
+						+ pathNode.getAttribute("x2") + ","
+						+ pathNode.getAttribute("y2") + "z";
+			}
+			else
+			{
+				d = pathNode.getAttribute("d");
+			}
 			
 			for (segment in SegmentsParser.run(d))
 			{

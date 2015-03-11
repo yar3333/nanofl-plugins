@@ -7,4 +7,5 @@ extern class HtmlNode
 	function getPrevSiblingNode() : htmlparser.HtmlNode;
 	function getNextSiblingNode() : htmlparser.HtmlNode;
 	function toString() : String;
+	function toText() : String;
 }

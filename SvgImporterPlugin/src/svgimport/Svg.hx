@@ -1,5 +1,7 @@
 package svgimport;
 
+import htmlparser.HtmlNodeElement;
+
 class Svg extends SvgGroup
 {
 	public var height(default, null) : Float;
@@ -7,13 +9,13 @@ class Svg extends SvgGroup
 	
 	private var gradients : Map<String, Grad>;
 	
-	public function new(xml:Xml)
+	public function new(xml:HtmlNodeElement)
 	{
-		var svg = xml.firstElement();
+		var svg = xml.children.length > 0 ? xml.children[0] : null;
 		
-		if (svg == null || (svg.nodeName != "svg" && svg.nodeName != "svg:svg"))
+		if (svg == null || (svg.name != "svg" && svg.name != "svg:svg"))
 		{
-			throw "Not an SVG file (" + (svg == null ? "null" : svg.nodeName) + ")";
+			throw "Not an SVG file (" + (svg == null ? "null" : svg.name) + ")";
 		}
 		
 		gradients = new Map<String, Grad>();
@@ -25,9 +27,9 @@ class Svg extends SvgGroup
 		{
 			width = height = 400;
 			
-			if (svg.exists("viewBox"))
+			if (svg.hasAttribute("viewBox"))
 			{
-				var viewBoxValues = ~/\s+/g.split(svg.get("viewBox"));
+				var viewBoxValues = ~/\s+/g.split(svg.getAttribute("viewBox"));
 				if (viewBoxValues.length == 4)
 				{
 					width = Std.parseFloat(viewBoxValues[2]);

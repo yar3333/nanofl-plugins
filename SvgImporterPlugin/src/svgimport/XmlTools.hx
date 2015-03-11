@@ -1,12 +1,14 @@
 package svgimport;
 
+import htmlparser.HtmlNodeElement;
+
 class XmlTools
 {
 	private static var mStyleSplit = ~/;/g;
 	private static var mStyleValue = ~/\s*(.*)\s*:\s*(.*)\s*/;
 	private static var mURLMatch = ~/url\(#(.*)\)/;
 	
-	public static function getStyles(node:Xml, baseStyles:Map<String, String>, gradients:Map<String, Grad>) : Map<String, String>
+	public static function getStyles(node:HtmlNodeElement, baseStyles:Map<String, String>, gradients:Map<String, Grad>) : Map<String, String>
 	{
 		var styles = new Map<String, String>();
 		
@@ -18,9 +20,9 @@ class XmlTools
 			}
 		}
 		
-		if (node.exists("style")) 
+		if (node.hasAttribute("style")) 
 		{
-			var style = node.get("style");
+			var style = node.getAttribute("style");
 			var strings = mStyleSplit.split(style);
 			
 			for (s in strings)
@@ -35,34 +37,34 @@ class XmlTools
 		{
 			for (key in SvgAttributes.presentation)
 			{
-				if (node.exists(key)) styles.set(key, node.get(key));
+				if (node.hasAttribute(key)) styles.set(key, node.getAttribute(key));
 			}
 		}
 		
 		return styles;
 	}
 	
-	public static function getFloatStyle(node:Xml, key:String, inStyles:Map<String, String>, defaultValue:Float)
+	public static function getFloatStyle(node:HtmlNodeElement, key:String, inStyles:Map<String, String>, defaultValue:Float)
 	{
 		var s = getStyle(node, key, inStyles, "");
 		if (s == "") return defaultValue;
 		return Std.parseFloat(s);
 	}
 	
-	public static function getStyle(node:Xml, key:String, styles:Map<String, String>, defaultValue:String) : String
+	public static function getStyle(node:HtmlNodeElement, key:String, styles:Map<String, String>, defaultValue:String) : String
 	{
-		if (node != null && node.exists(key)) return node.get(key);
+		if (node != null && node.hasAttribute(key)) return node.getAttribute(key);
 		if (styles != null && styles.exists(key)) return styles.get(key);
 		return defaultValue;
 	}
 	
-	public static function getColorStyle(node:Xml, key:String, styles:Map<String, String>, defaultValue:String) : String
+	public static function getColorStyle(node:HtmlNodeElement, key:String, styles:Map<String, String>, defaultValue:String) : String
 	{
 		var s = getStyle(node, key, styles, defaultValue);
 		return s;
 	}
 	
-	public static function getFillStyle(node:Xml, key:String, styles:Map<String, String>, gradients:Map<String, Grad>) : FillType
+	public static function getFillStyle(node:HtmlNodeElement, key:String, styles:Map<String, String>, gradients:Map<String, Grad>) : FillType
 	{
 		var s = getStyle(node, key, styles, "");
 		
@@ -79,12 +81,7 @@ class XmlTools
 		return FillType.FillSolid(s);
 	}
 	
-	public static function getFloat(inXML:Xml, inName:String, inDef=0.0) : Float
-	{
-		return inXML.exists(inName) ? Std.parseFloat(inXML.get(inName)) : inDef;
-	}
-	
-	public static function getStrokeStyle(node:Xml, key:String, styles:Map<String, String>, defaultValue:String) : String
+	public static function getStrokeStyle(node:HtmlNodeElement, key:String, styles:Map<String, String>, defaultValue:String) : String
 	{
 		var s = getStyle(node, key, styles, defaultValue);
 		if (s == "none") return null;

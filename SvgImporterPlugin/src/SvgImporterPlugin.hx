@@ -1,3 +1,4 @@
+import htmlparser.XmlDocument;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
@@ -40,7 +41,7 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 	
 	public function importDocument(fileApi:FileApi, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, fonts:Array<String>, callb:Bool->Void)
 	{
-		var xml = Xml.parse(fileApi.getContent(srcFilePath));
+		var xml = new XmlDocument(fileApi.getContent(srcFilePath));
 		var svg = new Svg(xml);
 		
 		documentProperties.width = Math.round(svg.width);

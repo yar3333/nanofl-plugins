@@ -7805,6 +7805,7 @@ declare module htmlparser
 		getPrevSiblingNode() : htmlparser.HtmlNode;
 		getNextSiblingNode() : htmlparser.HtmlNode;
 		toString() : string;
+		toText() : string;
 	}
 	
 	export class HtmlNodeElement extends htmlparser.HtmlNode
@@ -7823,6 +7824,8 @@ declare module htmlparser
 		removeAttribute(name:string) : void;
 		hasAttribute(name:string) : boolean;
 		innerHTML : string;
+		innerText : string;
+		toText() : string;
 		find(selector:string) : htmlparser.HtmlNodeElement[];
 		replaceChild(node:htmlparser.HtmlNodeElement, newNode:htmlparser.HtmlNode) : void;
 		replaceChildWithInner(node:htmlparser.HtmlNodeElement, nodeContainer:htmlparser.HtmlNodeElement) : void;
@@ -7842,6 +7845,10 @@ declare module htmlparser
 		constructor(text:string);
 		text : string;
 		toString() : string;
+		/**
+		 * Return decoded text.
+		 */
+		toText() : string;
 	}
 	
 	export class HtmlParser
