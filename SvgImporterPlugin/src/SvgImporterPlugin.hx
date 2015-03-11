@@ -76,8 +76,7 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 					if (group.name != null && group.name != "")
 					{
 						lastLayerIsGlobal = false;
-						var frame = createLayerWithFrame(layers, group.name);
-						for (elem in loadElements(group)) frame.addElement(elem);
+						createLayerWithFrame(layers, group.name);
 					}
 					else
 					{
@@ -86,9 +85,17 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 							lastLayerIsGlobal = true;
 							createLayerWithFrame(layers, "auto_" + layers.length);
 						}
-						
+					}
+					
+					for (elem in loadElements(group))
+					{
 						var frame = layers[layers.length - 1].keyFrames[0];
-						for (elem in loadElements(group)) frame.addElement(elem);
+						if (frame.elements.length > 0 && Std.is(elem, ShapeElement))
+						{
+							frame = createLayerWithFrame(layers, "auto_" + layers.length);
+						}
+						
+						frame.addElement(elem);
 					}
 					
 				case SvgElement.DisplayPath(path):
@@ -115,6 +122,7 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 		}
 		
 		var r = new MovieClipItem(namePath);
+		layers.reverse();
 		for (layer in layers) r.addLayer(layer);
 		return r;
 	}
@@ -149,7 +157,7 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 		var layer = new Layer(name);
 		var keyFrame = new KeyFrame();
 		layer.addKeyFrame(keyFrame);
-		parent.unshift(layer);
+		parent.push(layer);
 		return keyFrame;
 	}
 }
