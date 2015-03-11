@@ -1,9 +1,9 @@
 package nanofl.ide.plugins;
 
-extern interface IExporterPlugin
+extern interface IDocumentExporterPlugin
 {
 	/**
-	 * Compiler name (for example: "JavaScript", "TypeScript", "Haxe").
+	 * Internal plugin name.
 	 */
 	var name : String;
 	var menuItemName : String;

@@ -4,10 +4,10 @@ import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
-import nanofl.ide.plugins.IImporterPlugin;
+import nanofl.ide.plugins.IDocumentImporterPlugin;
 using StringTools;
 
-class FlashXflImporterPlugin implements IImporterPlugin
+class FlashXflImporterPlugin implements IDocumentImporterPlugin
 {
 	static var embeddedIcon = "
 iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAACXBIWXMAAAsSAAALEgHS3X78AAAB
@@ -29,7 +29,7 @@ YII=
 	static var IMPORT_MEDIA_SCRIPT_TEMPLATE = Macro.embedFile("../../tools/FlashMediaImporter/bin/FlashMediaImporter.jsfl");
 	#end
 	
-	static function main() Plugins.registerImporter(new FlashXflImporterPlugin());
+	static function main() Plugins.registerDocumentImporter(new FlashXflImporterPlugin());
 	
 	public function new() { }
 	

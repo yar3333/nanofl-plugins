@@ -78,9 +78,9 @@ var FlashXflImporterPlugin = function() {
 	this.name = "FlashXflImporter";
 };
 FlashXflImporterPlugin.__name__ = ["FlashXflImporterPlugin"];
-FlashXflImporterPlugin.__interfaces__ = [nanofl.ide.plugins.IImporterPlugin];
+FlashXflImporterPlugin.__interfaces__ = [nanofl.ide.plugins.IDocumentImporterPlugin];
 FlashXflImporterPlugin.main = function() {
-	nanofl.engine.Plugins.registerImporter(new FlashXflImporterPlugin());
+	nanofl.engine.Plugins.registerDocumentImporter(new FlashXflImporterPlugin());
 };
 FlashXflImporterPlugin.prototype = {
 	importDocument: function(fileApi,srcFilePath,destFilePath,documentProperties,library,fonts,callb) {

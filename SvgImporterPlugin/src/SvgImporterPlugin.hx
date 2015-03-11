@@ -6,9 +6,10 @@ import nanofl.engine.FileApi;
 import nanofl.engine.KeyFrame;
 import nanofl.engine.Layer;
 import nanofl.engine.Library;
+import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.engine.libraryitems.MovieClipItem;
 import nanofl.engine.Plugins;
-import nanofl.ide.plugins.IImporterPlugin;
+import nanofl.ide.plugins.IDocumentImporterPlugin;
 import svgimport.Svg;
 import svgimport.SvgElement;
 import svgimport.SvgGroup;
@@ -16,7 +17,7 @@ import svgimport.SvgPath;
 import svgimport.SvgPathExporter;
 using StringTools;
 
-class SvgImporterPlugin implements IImporterPlugin
+class SvgImporterPlugin implements IDocumentImporterPlugin
 {
 	static var embeddedIcon = "
 iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAC
@@ -36,7 +37,7 @@ dtVLv3+J9sq9vO7zEQBH3MNsbX2fACIA4CstLWUoFFI7O7/lwsICkyWJ47+McXZmhvEGPf+en6fz
 ue+ALxPHGYEAAAAASUVORK5CYII=
 ";
 	
-	static function main() Plugins.registerImporter(new SvgImporterPlugin());
+	static function main() Plugins.registerDocumentImporter(new SvgImporterPlugin());
 	
 	public function new() { }
 	
@@ -47,6 +48,9 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 	public var fileFilterDescription = "Scalable Vector Graphics (*.svg)";
 	public var fileFilterExtensions = [ "svg" ];
 	
+	public var isImportDocumentSupported = true;
+	public var isImportSymbolSupported = false;
+	
 	public function importDocument(fileApi:FileApi, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, fonts:Array<String>, callb:Bool->Void)
 	{
 		var xml = Xml.parse(fileApi.getContent(srcFilePath));
@@ -56,6 +60,11 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 		documentProperties.width = Math.round(svg.width);
 		documentProperties.height = Math.round(svg.height);
 		callb(true);
+	}
+	
+	public function importSymbol(fileApi:FileApi, srcFilePath:String, libraryDir:String, fonts:Array<String>, callb:LibraryItem->Void)
+	{
+		
 	}
 	
 	public function loadFromXml(xml:Xml, namePath:String) : MovieClipItem

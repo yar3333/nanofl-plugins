@@ -2,12 +2,12 @@ import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
-import nanofl.ide.plugins.IExporterPlugin;
+import nanofl.ide.plugins.IDocumentExporterPlugin;
 import nanofl.engine.XmlWriter;
 
-class FlashXflExporterPlugin implements IExporterPlugin
+class FlashXflExporterPlugin implements IDocumentExporterPlugin
 {
-	static function main() Plugins.registerExporter(new FlashXflExporterPlugin());
+	static function main() Plugins.registerDocumentExporter(new FlashXflExporterPlugin());
 	
 	public function new() { }
 	
