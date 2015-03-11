@@ -7043,13 +7043,28 @@ declare module nanofl.ide.plugins
 	export interface IExporterPlugin
 	{
 		/**
-		 * Compiler name (for example: "JavaScript", "TypeScript", "Haxe").
+		 * Internal name (for example: "XflExporter", "SvgExporter").
 		 */
 		name : string;
+		/**
+		 * Like "Adobe Flash Document (*.fla)".
+		 */
 		menuItemName : string;
+		/**
+		 * Css class or image url in "url(pathToImage)" format.
+		 */
 		menuItemIcon : string;
+		/**
+		 * Like "Flash document".
+		 */
 		fileFilterDescription : string;
+		/**
+		 * Like [ "fla", "xfl" ].
+		 */
 		fileFilterExtensions : string[];
+		/**
+		 * Like "fla".
+		 */
 		fileDefaultExtension : string;
 		exportDocument(fileApi:nanofl.engine.FileApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library) : boolean;
 	}
@@ -7074,12 +7089,24 @@ declare module nanofl.ide.plugins
 	export interface IImporterPlugin
 	{
 		/**
-		 * Compiler name (for example: "JavaScript", "TypeScript", "Haxe").
+		 * Internal name (for example: "XflImporter", "SvgImporter").
 		 */
 		name : string;
+		/**
+		 * Like "Adobe Flash Document (*.fla)".
+		 */
 		menuItemName : string;
+		/**
+		 * Css class or image url in "url(pathToImage)" format.
+		 */
 		menuItemIcon : string;
+		/**
+		 * Like "Flash document".
+		 */
 		fileFilterDescription : string;
+		/**
+		 * Like [ "fla", "xfl" ].
+		 */
 		fileFilterExtensions : string[];
 		importDocument(fileApi:nanofl.engine.FileApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, fonts:string[], callb:(arg:boolean) => void) : void;
 	}
