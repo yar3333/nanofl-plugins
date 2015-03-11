@@ -7040,10 +7040,10 @@ declare module nanofl.engine.strokes
 
 declare module nanofl.ide.plugins
 {
-	export interface IDocumentExporterPlugin
+	export interface IExporterPlugin
 	{
 		/**
-		 * Internal plugin name.
+		 * Compiler name (for example: "JavaScript", "TypeScript", "Haxe").
 		 */
 		name : string;
 		menuItemName : string;
@@ -7052,34 +7052,6 @@ declare module nanofl.ide.plugins
 		fileFilterExtensions : string[];
 		fileDefaultExtension : string;
 		exportDocument(fileApi:nanofl.engine.FileApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library) : boolean;
-	}
-	
-	export interface IDocumentImporterPlugin
-	{
-		/**
-		 * Internal plugin name.
-		 */
-		name : string;
-		/**
-		 * Like "Adobe Flash Document (*.fla)".
-		 */
-		menuItemName : string;
-		/**
-		 * Css class or image url in "url(pathToImage)" format.
-		 */
-		menuItemIcon : string;
-		/**
-		 * Like "Flash document".
-		 */
-		fileFilterDescription : string;
-		/**
-		 * For example: [ "fla", "xfl" ].
-		 */
-		fileFilterExtensions : string[];
-		/**
-		 * If this function is not supported, method will not be called (isImportDocumentSupported must be false).
-		 */
-		importDocument(fileApi:nanofl.engine.FileApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, fonts:string[], callb:(arg:boolean) => void) : void;
 	}
 	
 	export interface IIdePlugin
@@ -7099,6 +7071,19 @@ declare module nanofl.ide.plugins
 		generateFiles(language:string, fileApi:nanofl.engine.FileApi, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library) : void;
 	}
 	
+	export interface IImporterPlugin
+	{
+		/**
+		 * Compiler name (for example: "JavaScript", "TypeScript", "Haxe").
+		 */
+		name : string;
+		menuItemName : string;
+		menuItemIcon : string;
+		fileFilterDescription : string;
+		fileFilterExtensions : string[];
+		importDocument(fileApi:nanofl.engine.FileApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, fonts:string[], callb:(arg:boolean) => void) : void;
+	}
+	
 	export interface ILanguagePlugin
 	{
 		/**
@@ -7112,63 +7097,6 @@ declare module nanofl.ide.plugins
 		 * "filePath" argument is a path to *.nfl file.
 		 */
 		generateFiles(fileApi:nanofl.engine.FileApi, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library) : void;
-	}
-	
-	export interface ILibraryItemExporterPlugin
-	{
-		/**
-		 * Internal plugin name.
-		 */
-		name : string;
-		/**
-		 * Like "Adobe Flash Document (*.fla)".
-		 */
-		menuItemName : string;
-		/**
-		 * Css class or image url in "url(pathToImage)" format.
-		 */
-		menuItemIcon : string;
-		/**
-		 * Like "Flash document".
-		 */
-		fileFilterDescription : string;
-		/**
-		 * For example: [ "fla", "xfl" ].
-		 */
-		fileFilterExtensions : string[];
-		/**
-		 * For example: "fla".
-		 */
-		fileDefaultExtension : string;
-		exportLibraryItem(fileApi:nanofl.engine.FileApi, item:nanofl.engine.libraryitems.LibraryItem, destFilePath:string, libraryDir:string) : boolean;
-	}
-	
-	export interface ILibraryItemImporterPlugin
-	{
-		/**
-		 * Internal plugin name.
-		 */
-		name : string;
-		/**
-		 * Like "Adobe Flash Document (*.fla)".
-		 */
-		menuItemName : string;
-		/**
-		 * Css class or image url in "url(pathToImage)" format.
-		 */
-		menuItemIcon : string;
-		/**
-		 * Like "Flash document".
-		 */
-		fileFilterDescription : string;
-		/**
-		 * For example: [ "fla", "xfl" ].
-		 */
-		fileFilterExtensions : string[];
-		/**
-		 * Import file as single library item then call callb(item) for success or callb(null) for fail.
-		 */
-		importLibraryItem(fileApi:nanofl.engine.FileApi, srcFilePath:string, libraryDir:string, fonts:string[], callb:(arg:nanofl.engine.libraryitems.LibraryItem) => void) : void;
 	}
 }
 
@@ -7445,9 +7373,7 @@ declare module nanofl.ide
 	type IPlugins =
 	{
 		exportDocument(pluginName:string, destFilePath?:string, callb?:(arg:boolean) => void) : void;
-		exportLibraryItem(pluginName:string, destFilePath?:string, callb?:(arg:boolean) => void) : void;
 		importDocument(pluginName:string, srcFilePath?:string, callb?:(arg:nanofl.ide.Document) => void) : void;
-		importLibraryItem(pluginName:string, srcFilePath?:string, callb?:(arg:nanofl.engine.libraryitems.LibraryItem) => void) : void;
 		reload(alertOnSuccess?:boolean) : boolean;
 	}
 	
@@ -8355,17 +8281,13 @@ declare module nanofl.engine
 	export class Plugins
 	{
 		static filters : Map<string, nanofl.engine.plugins.IFilterPlugin>;
-		static documentImporters : Map<string, nanofl.ide.plugins.IDocumentImporterPlugin>;
-		static documentExporters : Map<string, nanofl.ide.plugins.IDocumentExporterPlugin>;
-		static libraryItemImporters : Map<string, nanofl.ide.plugins.ILibraryItemImporterPlugin>;
-		static libraryItemExporters : Map<string, nanofl.ide.plugins.ILibraryItemExporterPlugin>;
+		static importers : Map<string, nanofl.ide.plugins.IImporterPlugin>;
+		static exporters : Map<string, nanofl.ide.plugins.IExporterPlugin>;
 		static languages : Map<string, nanofl.ide.plugins.ILanguagePlugin>;
 		static ides : Map<string, nanofl.ide.plugins.IIdePlugin>;
 		static registerFilter(plugin:nanofl.engine.plugins.IFilterPlugin) : void;
-		static registerDocumentImporter(plugin:nanofl.ide.plugins.IDocumentImporterPlugin) : void;
-		static registerDocumentExporter(plugin:nanofl.ide.plugins.IDocumentExporterPlugin) : void;
-		static registerLibraryItemImporter(plugin:nanofl.ide.plugins.ILibraryItemImporterPlugin) : void;
-		static registerLibraryItemExporter(plugin:nanofl.ide.plugins.ILibraryItemExporterPlugin) : void;
+		static registerImporter(plugin:nanofl.ide.plugins.IImporterPlugin) : void;
+		static registerExporter(plugin:nanofl.ide.plugins.IExporterPlugin) : void;
 		static registerLanguage(plugin:nanofl.ide.plugins.ILanguagePlugin) : void;
 		static registerIde(plugin:nanofl.ide.plugins.IIdePlugin) : void;
 	}
