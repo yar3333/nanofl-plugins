@@ -104,6 +104,9 @@ class SvgPath
 			segments.push(new QuadraticSegment(x - cw_, y - h, x, y - h));
 			segments.push(new QuadraticSegment(x + cw_, y - h, x + w_, y - h_));
 			segments.push(new QuadraticSegment(x + w, y - ch_, x + w, y));
+			
+			strokeCaps = "round";
+			strokeJoints = "round";
 		}
 		else
 		{
@@ -115,6 +118,9 @@ class SvgPath
 			{
 				segments.push(segment);
 			}
+			
+			strokeCaps = "round";
+			strokeJoints = "round";
 		}
 	}
 	
