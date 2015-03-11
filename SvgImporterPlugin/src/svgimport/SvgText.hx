@@ -18,8 +18,8 @@ class SvgText
 	public var fill : FillType;
 	public var fillAlpha : Float;
    
+	public var stroke : StrokeType;
 	public var strokeAlpha : Float;
-	public var strokeColor : String;
 	public var strokeWidth : Float;
    
 	public var fontFamily : String;
@@ -46,8 +46,8 @@ class SvgText
 		fill = XmlTools.getFillStyle(textNode, "fill", styles, gradients);
 		fillAlpha = XmlTools.getFloatStyle(textNode, "fill-opacity", styles, 1.0);
 		
+		stroke = XmlTools.getStrokeStyle(textNode, "stroke", styles, gradients);
 		strokeAlpha = XmlTools.getFloatStyle(textNode, "stroke-opacity", styles, 1.0);
-		strokeColor = XmlTools.getStrokeStyle(textNode, "stroke", styles, null);
 		strokeWidth = XmlTools.getFloatStyle(textNode, "stroke-width", styles, 1.0);
 		
 		fontFamily = XmlTools.getStyle(textNode, "font-family", styles, "");
@@ -73,7 +73,14 @@ class SvgText
 		
 		//trace(stdlib.Debug.getDump(this));
 		
-		var r = new TextElement(name, 0, 0, false, false, [ new TextRun(text, fillColor, fontFamily, "", fontSize, "left", strokeWidth, strokeColor, null) ], null);
+		var color = "#000000";
+		switch (stroke)
+		{
+			case StrokeType.StrokeSolid(c): color = c;
+			case _:
+		}
+		
+		var r = new TextElement(name, 0, 0, false, false, [ new TextRun(text, fillColor, fontFamily, "", fontSize, "left", strokeWidth, color, null) ], null);
 		r.matrix = matrix.clone();
 		r.matrix.translate(x, y);
 		

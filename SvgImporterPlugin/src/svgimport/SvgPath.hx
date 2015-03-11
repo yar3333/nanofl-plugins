@@ -17,8 +17,8 @@ class SvgPath
 	public var fill : FillType;
 	public var fillAlpha : Float;
 	
+	public var stroke : StrokeType;
 	public var strokeAlpha : Float;
-	public var strokeColor : String;
 	public var strokeWidth : Float;
 	public var strokeCaps : String;
 	public var strokeJoints : String;
@@ -34,10 +34,12 @@ class SvgPath
 		name = pathNode.hasAttribute("id") ? pathNode.getAttribute("id") : "";
 		
 		alpha = XmlTools.getFloatStyle(pathNode, "opacity", styles, 1.0);
+		
 		fill = XmlTools.getFillStyle(pathNode, "fill", styles,gradients);
 		fillAlpha = XmlTools.getFloatStyle(pathNode, "fill-opacity", styles, 1.0);
+		
+		stroke = XmlTools.getStrokeStyle(pathNode, "stroke", styles, gradients);
 		strokeAlpha = XmlTools.getFloatStyle(pathNode, "stroke-opacity", styles, 1.0);
-		strokeColor = XmlTools.getStrokeStyle(pathNode, "stroke", styles, null);
 		strokeWidth = XmlTools.getFloatStyle(pathNode, "stroke-width", styles, 1.0);
 		strokeCaps = XmlTools.getStyle(pathNode, "stroke-linecap", styles, "butt");
 		strokeJoints = XmlTools.getStyle(pathNode, "stroke-linejoin", styles, "miter");
@@ -151,7 +153,7 @@ class SvgPath
 			exporter.endFill();
 		}
 		
-		if (strokeColor != null && strokeColor != "")
+		if (stroke != null && stroke != StrokeType.StrokeNone)
 		{
 			exporter.beginStroke(this);
 			for (segment in segments) segment.export(exporter);

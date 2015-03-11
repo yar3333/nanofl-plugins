@@ -81,10 +81,20 @@ class XmlTools
 		return FillType.FillSolid(s);
 	}
 	
-	public static function getStrokeStyle(node:HtmlNodeElement, key:String, styles:Map<String, String>, defaultValue:String) : String
+	public static function getStrokeStyle(node:HtmlNodeElement, key:String, styles:Map<String, String>, gradients:Map<String, Grad>) : StrokeType
 	{
-		var s = getStyle(node, key, styles, defaultValue);
-		if (s == "none") return null;
-		return s;
+		var s = getStyle(node, key, styles, "");
+		
+		if (s == "") return StrokeType.StrokeSolid("#000000");
+		if (s == "none") return StrokeType.StrokeNone;
+		
+		if (mURLMatch.match(s))
+		{
+			var url = mURLMatch.matched(1);
+			if (gradients.exists(url)) return StrokeType.StrokeGrad(gradients.get(url));
+			throw "Unknown url:" + url;
+		}
+		
+		return StrokeType.StrokeSolid(s);
 	}
 }

@@ -10,6 +10,8 @@ import nanofl.engine.geom.Polygon;
 import nanofl.engine.geom.StrokeEdge;
 import nanofl.engine.strokes.IStroke;
 import nanofl.engine.strokes.SolidStroke;
+import nanofl.engine.strokes.LinearStroke;
+using StringTools;
 
 class SvgPathExporter
 {
@@ -71,21 +73,37 @@ class SvgPathExporter
 
 	public function beginStroke(path:SvgPath)
 	{
-		if (path.strokeColor != null)
+		switch (path.stroke)
 		{
-			stroke = new SolidStroke
-			(
-				path.strokeColor,
-				path.strokeWidth,
-				path.strokeCaps,
-				path.strokeJoints,
-				path.strokeMiterLimit,
-				false
-			);
-		}
-		else
-		{
-			stroke = null;
+			case StrokeType.StrokeNone:
+				stroke = null;
+				
+			case StrokeType.StrokeSolid(color):
+				stroke = new SolidStroke
+				(
+					color,
+					path.strokeWidth,
+					path.strokeCaps,
+					path.strokeJoints,
+					path.strokeMiterLimit,
+					false
+				);
+				
+			case StrokeType.StrokeGrad(grad):
+				stroke = new LinearStroke
+				(
+					grad.colors,
+					grad.ratios,
+					grad.x1,
+					grad.y1,
+					grad.x2,
+					grad.y2,
+					path.strokeWidth,
+					path.strokeCaps,
+					path.strokeJoints,
+					path.strokeMiterLimit,
+					false
+				);
 		}
 	}
 	

@@ -7014,6 +7014,24 @@ declare module nanofl.engine.strokes
 		toString() : string;
 	}
 	
+	export class LinearStroke extends nanofl.engine.strokes.BaseStroke implements nanofl.engine.strokes.IStroke
+	{
+		constructor(colors:string[], ratios:number[], x0:number, y0:number, x1:number, y1:number, thickness?:number, caps?:string, joints?:string, miterLimit?:number, ignoreScale?:boolean);
+		colors : string[];
+		ratios : number[];
+		x0 : number;
+		y0 : number;
+		x1 : number;
+		y1 : number;
+		save(out:nanofl.engine.XmlWriter) : void;
+		begin(g:createjs.Graphics) : void;
+		clone() : nanofl.engine.strokes.IStroke;
+		equ(e:nanofl.engine.strokes.IStroke) : boolean;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		applyAlpha(alpha:number) : void;
+		toString() : string;
+	}
+	
 	export class SelectionStroke extends nanofl.engine.strokes.BaseStroke implements nanofl.engine.strokes.IStroke
 	{
 		constructor(base:nanofl.engine.strokes.BaseStroke, m:createjs.Matrix2D);
