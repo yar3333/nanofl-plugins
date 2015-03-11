@@ -50,7 +50,7 @@ class SvgPath
 			var w = Std.parseFloat(pathNode.get("width"));
 			var h = Std.parseFloat(pathNode.get("height"));
 			var rx = pathNode.exists("rx") ? Std.parseFloat(pathNode.get("rx")) : 0.0;
-			var ry = pathNode.exists("ry") ? Std.parseFloat(pathNode.get("ry")) : 0.0;
+			var ry = pathNode.exists("ry") ? Std.parseFloat(pathNode.get("ry")) : rx;
 			
 			if (rx == 0 || ry == 0)
 			{
