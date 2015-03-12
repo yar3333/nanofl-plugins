@@ -25,8 +25,6 @@ class SvgGroup
 		id = groupNode.getAttr("id", "");
 		if (id != "") groups.set(id, this);
 		
-		trace("new SvgGroup(" + id + ")");
-		
 		name = groupNode.getAttr("inkscape:label", id);
 		loadChildren(groupNode, XmlTools.getStyles(groupNode, baseStyles));
 		matrix = Transform.load(groupNode.getAttribute("transform"));

@@ -57,10 +57,8 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 		documentProperties.width = Math.round(svg.width);
 		documentProperties.height = Math.round(svg.height);
 		
-		trace("begin export...");
 		for (group in svg.groups)
 		{
-			trace("export group " + group.id);
 			SvgGroupExporter.run(group, library);
 		}
 		
