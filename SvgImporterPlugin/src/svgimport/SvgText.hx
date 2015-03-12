@@ -45,11 +45,11 @@ class SvgText
 		y = textNode.getAttrFloat("y", 0);
 		
 		fill = XmlTools.getFillStyle(textNode, "fill", styles, gradients);
-		fillAlpha = XmlTools.getFloatStyle(textNode, "fill-opacity", styles, 1.0);
+		fillAlpha = XmlTools.getFloatStyle(textNode, "fill-opacity", styles, 1);
 		
 		stroke = XmlTools.getStrokeStyle(textNode, "stroke", styles, gradients);
-		strokeAlpha = XmlTools.getFloatStyle(textNode, "stroke-opacity", styles, 1.0);
-		strokeWidth = XmlTools.getFloatStyle(textNode, "stroke-width", styles, 1.0);
+		strokeAlpha = XmlTools.getFloatStyle(textNode, "stroke-opacity", styles, 1);
+		strokeWidth = XmlTools.getFloatStyle(textNode, "stroke-width", styles, 0);
 		
 		fontFamily = XmlTools.getStyle(textNode, "font-family", styles, "");
 		fontSize = XmlTools.getFloatStyle(textNode, "font-size", styles, 12);
