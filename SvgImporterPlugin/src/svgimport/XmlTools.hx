@@ -85,8 +85,7 @@ class XmlTools
 	{
 		var s = getStyle(node, key, styles, "");
 		
-		if (s == "") return StrokeType.StrokeSolid("#000000");
-		if (s == "none") return StrokeType.StrokeNone;
+		if (s == "" || s == "none") return StrokeType.StrokeNone;
 		
 		if (mURLMatch.match(s))
 		{
