@@ -1,8 +1,9 @@
 package svgimport;
 
-import nanofl.engine.elements.TextElement;
 import htmlparser.HtmlNodeElement;
+import nanofl.engine.elements.TextElement;
 import nanofl.TextRun;
+import svgimport.gradients.GradientType;
 using htmlparser.HtmlParserTools;
 
 class SvgText
@@ -32,11 +33,11 @@ class SvgText
    
 	public var textAnchor : String;
    
-	public function new(textNode:HtmlNodeElement, baseStyles:Map<String, String>, gradients:Map<String, Grad>)
+	public function new(textNode:HtmlNodeElement, baseStyles:Map<String, String>, gradients:Map<String, GradientType>)
 	{
 		matrix = Transform.load(textNode.getAttribute("transform"));
 		
-		var styles = XmlTools.getStyles(textNode, baseStyles, gradients);
+		var styles = XmlTools.getStyles(textNode, baseStyles);
 		
 		name = textNode.getAttr("id", "");
 		
@@ -68,7 +69,7 @@ class SvgText
 		{
 			case FillType.FillNone: null;
 			case FillType.FillSolid(color): color;
-			case FillType.FillGrad(grad): trace("Text gradients is not supported."); grad.colors[0];
+			case FillType.FillGrad(gradType): trace("Text gradients is not supported."); "#000000";
 		};
 		
 		//trace(stdlib.Debug.getDump(this));

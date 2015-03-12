@@ -1,7 +1,11 @@
 import htmlparser.XmlDocument;
 import nanofl.engine.DocumentProperties;
+import nanofl.engine.elements.Instance;
 import nanofl.engine.FileApi;
+import nanofl.engine.KeyFrame;
+import nanofl.engine.Layer;
 import nanofl.engine.Library;
+import nanofl.engine.libraryitems.MovieClipItem;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IImporterPlugin;
 import svgimport.Svg;
@@ -44,11 +48,30 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 		var xml = new XmlDocument(fileApi.getContent(srcFilePath));
 		var svg = new Svg(xml);
 		
+		if (svg.id == "")
+		{
+			svg.id = Library.SCENE_NAME_PATH;
+			svg.groups.set(Library.SCENE_NAME_PATH, svg);
+		}
+		
 		documentProperties.width = Math.round(svg.width);
 		documentProperties.height = Math.round(svg.height);
 		
-		for (group in svg.groups) SvgGroupExporter.run(group, library);
-		SvgGroupExporter.run(svg, library, Library.SCENE_NAME_PATH);
+		trace("begin export...");
+		for (group in svg.groups)
+		{
+			trace("export group " + group.id);
+			SvgGroupExporter.run(group, library);
+		}
+		
+		if (!svg.groups.exists(Library.SCENE_NAME_PATH))
+		{
+			var scene = new MovieClipItem(Library.SCENE_NAME_PATH);
+			scene.addLayer(new Layer("auto"));
+			scene.layers[0].addKeyFrame(new KeyFrame());
+			scene.layers[0].keyFrames[0].addElement(new Instance(svg.id));
+			library.addItem(scene);
+		}
 		
 		callb(true);
 	}

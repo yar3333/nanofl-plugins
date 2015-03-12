@@ -1,6 +1,7 @@
 package svgimport;
 
 import htmlparser.HtmlNodeElement;
+import svgimport.gradients.GradientType;
 
 class Svg extends SvgGroup
 {
@@ -36,7 +37,7 @@ class Svg extends SvgGroup
 		else if (width  == 0) width = height;
 		else if (height == 0) height = width;
 		
-		super(svg, null, new Map<String, SvgGroup>(), new Map<String, Grad>());
+		super(svg, null, new Map<String, SvgGroup>(), new Map<String, GradientType>());
 	}
 	private function dumpGroup(g:SvgGroup, indent:String)
 	{

@@ -1,9 +1,11 @@
 package svgimport;
 
+import svgimport.gradients.GradientType;
+
 enum StrokeType
 {
 	StrokeNone;
 	StrokeSolid(color:String);
-	StrokeGrad(grad:Grad);
+	StrokeGrad(gradType:GradientType);
 }
 

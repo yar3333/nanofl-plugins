@@ -2,6 +2,7 @@ package svgimport;
 
 import htmlparser.HtmlNodeElement;
 import nanofl.engine.elements.ShapeElement;
+import svgimport.gradients.GradientType;
 import svgimport.Segment;
 using htmlparser.HtmlParserTools;
 
@@ -26,11 +27,11 @@ class SvgPath
 
 	public var segments : Array<Segment>;
 	
-	public function new(pathNode:HtmlNodeElement, baseStyles:Map<String, String>, gradients:Map<String, Grad>, isRect:Bool, isEllipse:Bool, isCircle=false) : Void
+	public function new(pathNode:HtmlNodeElement, baseStyles:Map<String, String>, gradients:Map<String, GradientType>, isRect:Bool, isEllipse:Bool, isCircle=false) : Void
 	{
 		matrix = Transform.load(pathNode.getAttribute("transform"));
 		
-		var styles = XmlTools.getStyles(pathNode, baseStyles, gradients);
+		var styles = XmlTools.getStyles(pathNode, baseStyles);
 		name = pathNode.getAttr("id", "");
 		
 		alpha = XmlTools.getFloatStyle(pathNode, "opacity", styles, 1.0);
@@ -163,7 +164,11 @@ class SvgPath
 		var edgesAndPolygons = exporter.export();
 		
 		var shape = new ShapeElement(edgesAndPolygons.edges, edgesAndPolygons.polygons);
-		if (!matrix.isIdentity()) shape.transform(matrix);
+		
+		if (!matrix.isIdentity())
+		{
+			shape.transform(matrix);
+		}
 		
 		var effectiveStrokeAlpha = alpha * strokeAlpha;
 		if (effectiveStrokeAlpha != 1.0)

@@ -1,6 +1,7 @@
 package svgimport;
 
 import htmlparser.HtmlNodeElement;
+import svgimport.gradients.GradientType;
 using htmlparser.HtmlParserTools;
 using StringTools;
 
@@ -10,7 +11,7 @@ class XmlTools
 	private static var mStyleValue = ~/\s*(.*)\s*:\s*(.*)\s*/;
 	private static var mURLMatch = ~/url\(#(.*)\)/;
 	
-	public static function getStyles(node:HtmlNodeElement, baseStyles:Map<String, String>, gradients:Map<String, Grad>) : Map<String, String>
+	public static function getStyles(node:HtmlNodeElement, baseStyles:Map<String, String>) : Map<String, String>
 	{
 		var styles = new Map<String, String>();
 		
@@ -50,6 +51,7 @@ class XmlTools
 	{
 		var s = getStyle(node, key, inStyles, "");
 		if (s == "") return defaultValue;
+		if (s.endsWith("%")) return Std.parseFloat(s.substring(0, s.length - 1)) / 100;
 		return Std.parseFloat(s);
 	}
 	
@@ -66,7 +68,7 @@ class XmlTools
 		return s;
 	}
 	
-	public static function getFillStyle(node:HtmlNodeElement, key:String, styles:Map<String, String>, gradients:Map<String, Grad>) : FillType
+	public static function getFillStyle(node:HtmlNodeElement, key:String, styles:Map<String, String>, gradients:Map<String, GradientType>) : FillType
 	{
 		var s = getStyle(node, key, styles, "");
 		
@@ -83,7 +85,7 @@ class XmlTools
 		return FillType.FillSolid(s);
 	}
 	
-	public static function getStrokeStyle(node:HtmlNodeElement, key:String, styles:Map<String, String>, gradients:Map<String, Grad>) : StrokeType
+	public static function getStrokeStyle(node:HtmlNodeElement, key:String, styles:Map<String, String>, gradients:Map<String, GradientType>) : StrokeType
 	{
 		var s = getStyle(node, key, styles, "");
 		
