@@ -7,8 +7,6 @@ class Svg extends SvgGroup
 	public var height(default, null) : Float;
 	public var width(default, null) : Float;
 	
-	private var gradients : Map<String, Grad>;
-	
 	public function new(xml:HtmlNodeElement)
 	{
 		var svg = xml.children.length > 0 ? xml.children[0] : null;
@@ -17,8 +15,6 @@ class Svg extends SvgGroup
 		{
 			throw "Not an SVG file (" + (svg == null ? "null" : svg.name) + ")";
 		}
-		
-		gradients = new Map<String, Grad>();
 		
 		width = XmlTools.getFloatStyle(svg, "width", null, 0.0);
 		height = XmlTools.getFloatStyle(svg, "height", null, 0.0);
@@ -40,9 +36,8 @@ class Svg extends SvgGroup
 		else if (width  == 0) width = height;
 		else if (height == 0) height = width;
 		
-		super(svg, null, gradients);
+		super(svg, null, new Map<String, SvgGroup>(), new Map<String, Grad>());
 	}
-	
 	private function dumpGroup(g:SvgGroup, indent:String)
 	{
 		trace(indent + "Group:" + g.name);
@@ -52,9 +47,10 @@ class Svg extends SvgGroup
 			
 			switch (e)
 			{
-				case SvgElement.DisplayPath(path) : trace (indent + "Path" + "  " + path.matrix);
-				case SvgElement.DisplayGroup(group) : dumpGroup (group, indent+"   ");
-				case SvgElement.DisplayText(text) : trace (indent + "Text " + text.text);
+				case SvgElement.DisplayPath(path):		trace(indent + "Path" + "  " + path.matrix);
+				case SvgElement.DisplayGroup(group):	dumpGroup(group, indent+"   ");
+				case SvgElement.DisplayText(text):		trace(indent + "Text " + text.text);
+				case SvgElement.DisplayUse(id, _, _):	trace(indent + "Use " + id);
 			}
 		}
 	}

@@ -47,6 +47,7 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 		documentProperties.width = Math.round(svg.width);
 		documentProperties.height = Math.round(svg.height);
 		
+		for (group in svg.groups) SvgGroupExporter.run(group, library);
 		SvgGroupExporter.run(svg, library, Library.SCENE_NAME_PATH);
 		
 		callb(true);

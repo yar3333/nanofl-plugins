@@ -31,7 +31,7 @@ class SvgPath
 		matrix = Transform.load(pathNode.getAttribute("transform"));
 		
 		var styles = XmlTools.getStyles(pathNode, baseStyles, gradients);
-		name = pathNode.hasAttribute("id") ? pathNode.getAttribute("id") : "";
+		name = pathNode.getAttr("id", "");
 		
 		alpha = XmlTools.getFloatStyle(pathNode, "opacity", styles, 1.0);
 		

@@ -1,6 +1,8 @@
 package svgimport;
 
 import htmlparser.HtmlNodeElement;
+using htmlparser.HtmlParserTools;
+using StringTools;
 
 class XmlTools
 {
@@ -95,5 +97,21 @@ class XmlTools
 		}
 		
 		return StrokeType.StrokeSolid(s);
+	}
+	
+	public static function normalizeTag(s:String) : String
+	{
+		return s.startsWith("svg:") ? s.substring("svg:".length) : s;
+	}
+	
+	public static function getXlink(node:HtmlNodeElement) : String
+	{
+		var xlink = node.getAttr("xlink:href", "");
+		if (!xlink.startsWith("#"))
+		{
+			trace("Unkown xlink syntax: '" + xlink + "'.");
+			return null;
+		}
+		return xlink.substring(1);
 	}
 }

@@ -1,7 +1,6 @@
 package svgimport;
 
 import nanofl.engine.elements.Element;
-import nanofl.engine.elements.GroupElement;
 import nanofl.engine.elements.Instance;
 import nanofl.engine.elements.ShapeElement;
 import nanofl.engine.KeyFrame;
@@ -23,12 +22,15 @@ class SvgGroupExporter
 			switch (child)
 			{
 				case SvgElement.DisplayGroup(g):
-					var item = SvgGroupExporter.run(g, library);
-					if (item != null)
+					if (g.id == "" || !library.hasItem(g.id))
 					{
-						var instance = new Instance(item.namePath);
-						instance.matrix = g.matrix;
-						addElement(layers, instance, g.visible);
+						var item = SvgGroupExporter.run(g, library);
+						if (item != null)
+						{
+							var instance = new Instance(item.namePath);
+							instance.matrix = g.matrix;
+							addElement(layers, instance, g.visible);
+						}
 					}
 					
 				case SvgElement.DisplayPath(path):
@@ -36,10 +38,15 @@ class SvgGroupExporter
 					
 				case SvgElement.DisplayText(text):
 					addElement(layers, text.toElement());
+					
+				case SvgElement.DisplayUse(groupID, matrix, visible):
+					var instance = new Instance(groupID);
+					instance.matrix = matrix;
+					addElement(layers, instance, visible);
 			}
 		}
 		
-		var mc = new MovieClipItem(name != null ? name : (group.name != null && group.name != "" ? group.name : getNextAutoGroupName(library)));
+		var mc = new MovieClipItem(name != null ? name : (group.id != "" ? group.id : getNextLibraryItemAutoName(library)));
 		layers.reverse();
 		for (layer in layers) mc.addLayer(layer);
 		library.addItem(mc);
@@ -71,7 +78,7 @@ class SvgGroupExporter
 		return keyFrame;
 	}
 	
-	static function getNextAutoGroupName(library:Library) : String
+	static function getNextLibraryItemAutoName(library:Library) : String
 	{
 		var i = 0; while (library.hasItem("auto_" + i)) i++;
 		return "auto_" + i;
