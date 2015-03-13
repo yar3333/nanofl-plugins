@@ -3,6 +3,7 @@ package svgimport.gradients;
 import htmlparser.HtmlNodeElement;
 import nanofl.engine.geom.Bounds;
 using htmlparser.HtmlParserTools;
+using svgimport.XmlTools;
 
 class LinearGradient extends Gradient
 {
@@ -11,14 +12,24 @@ class LinearGradient extends Gradient
 	public var x2 : Float;
 	public var y2 : Float;
 	
-	function new(colors:Array<String>, alphas:Array<Float>, ratios:Array<Float>, matrix:Matrix, node:HtmlNodeElement) 
+	function new(node:HtmlNodeElement, baseType:GradientType) 
 	{
-		super(colors, alphas, ratios, matrix);
+		super(node, baseType);
 		
-		x1 = node.getAttrFloat("x1");
-		y1 = node.getAttrFloat("y1");
-		x2 = node.getAttrFloat("x2");
-		y2 = node.getAttrFloat("y2");
+		var base : LinearGradient = null;
+		if (baseType != null)
+		{
+			switch (baseType)
+			{
+				case GradientType.LINEAR(grad): base = grad;
+				case _:
+			};
+		}
+		
+		x1 = node.getFloatValue("x1", base != null ? base.x1 : 0);
+		y1 = node.getFloatValue("y1", base != null ? base.y1 : 0);
+		x2 = node.getFloatValue("x2", base != null ? base.x2 : 0);
+		y2 = node.getFloatValue("y2", base != null ? base.y2 : 0);
 		
 	}
 	
@@ -37,8 +48,8 @@ class LinearGradient extends Gradient
 		matrix.rotate(angle);
 		matrix.translate(tx, ty);
 		
-		matrix.appendMatrix(matrix);
+		matrix.appendMatrix(this.matrix);
 		
-		return matrix.clone();
+		return matrix;
 	}
 }

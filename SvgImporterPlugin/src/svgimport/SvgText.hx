@@ -5,6 +5,7 @@ import nanofl.engine.elements.TextElement;
 import nanofl.TextRun;
 import svgimport.gradients.GradientType;
 using htmlparser.HtmlParserTools;
+using svgimport.XmlTools;
 
 class SvgText
 {
@@ -41,8 +42,8 @@ class SvgText
 		
 		name = textNode.getAttr("id", "");
 		
-		x = textNode.getAttrFloat("x", 0);
-		y = textNode.getAttrFloat("y", 0);
+		x = textNode.getFloatValue("x", 0);
+		y = textNode.getFloatValue("y", 0);
 		
 		fill = XmlTools.getFillStyle(textNode, "fill", styles, gradients);
 		fillAlpha = XmlTools.getFloatStyle(textNode, "fill-opacity", styles, 1);

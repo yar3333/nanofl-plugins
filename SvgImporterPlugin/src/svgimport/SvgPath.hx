@@ -8,6 +8,7 @@ import svgimport.segments.MoveSegment;
 import svgimport.segments.QuadraticSegment;
 import svgimport.segments.Segment;
 using htmlparser.HtmlParserTools;
+using svgimport.XmlTools;
 
 class SvgPath
 {
@@ -53,12 +54,12 @@ class SvgPath
 
 		if (isRect)
 		{
-			var x = pathNode.getAttrFloat("x", 0);
-			var y = pathNode.getAttrFloat("y", 0);
-			var w = pathNode.getAttrFloat("width", 0);
-			var h = pathNode.getAttrFloat("height", 0);
-			var rx = pathNode.getAttrFloat("rx", 0);
-			var ry = pathNode.getAttrFloat("ry", rx);
+			var x = pathNode.getFloatValue("x", 0);
+			var y = pathNode.getFloatValue("y", 0);
+			var w = pathNode.getFloatValue("width", 0);
+			var h = pathNode.getFloatValue("height", 0);
+			var rx = pathNode.getFloatValue("rx", 0);
+			var ry = pathNode.getFloatValue("ry", rx);
 			
 			if (rx == 0 || ry == 0)
 			{
@@ -91,13 +92,13 @@ class SvgPath
 		}
 		else if (isEllipse)
 		{
-			var x = pathNode.getAttrFloat("cx", 0);
-			var y = pathNode.getAttrFloat("cy", 0);
-			var r = pathNode.getAttrFloat("r", 0);
-			var w = pathNode.getAttrFloat("rx", r);
+			var x = pathNode.getFloatValue("cx", 0);
+			var y = pathNode.getFloatValue("cy", 0);
+			var r = pathNode.getFloatValue("r", 0);
+			var w = pathNode.getFloatValue("rx", r);
 			var w_ = w * SIN45;
 			var cw_ = w * TAN22;
-			var h = pathNode.getAttrFloat("ry", r);
+			var h = pathNode.getFloatValue("ry", r);
 			var h_ = h * SIN45;
 			var ch_ = h * TAN22;
 			

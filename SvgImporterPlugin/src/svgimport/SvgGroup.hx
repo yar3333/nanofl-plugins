@@ -5,6 +5,7 @@ import svgimport.gradients.Gradient;
 import svgimport.gradients.GradientType;
 using htmlparser.HtmlParserTools;
 using StringTools;
+using svgimport.XmlTools;
 
 class SvgGroup
 {
@@ -91,6 +92,16 @@ class SvgGroup
 				case _:					trace("Unknown tag '" + child.name + "'.");
 			}
 		}
+		
+		for (child in defsNode.children)
+		{
+			switch (XmlTools.normalizeTag(child.name))
+			{
+				case "linearGradient":	loadGradient(child);
+				case "radialGradient":	loadGradient(child);
+				case _:
+			}
+		}
 	}
 	
 	function loadUse(node:HtmlNodeElement) : SvgElement
@@ -100,8 +111,8 @@ class SvgGroup
 		{
 			var matrix = Transform.load(node.getAttribute("transform"));
 			
-			var x = node.getAttrFloat("x", 0);
-			var y = node.getAttrFloat("y", 0);
+			var x = node.getFloatValue("x", 0);
+			var y = node.getFloatValue("y", 0);
 			if (x != 0 || y != 0) matrix.prependTransform(x, y);
 			
 			var visible = node.getAttribute("display") != "none";
@@ -114,6 +125,14 @@ class SvgGroup
 	
 	function loadGradient(node:HtmlNodeElement) : Void
 	{
-		gradients.set(node.getAttribute("id"), Gradient.load(node));
+		var baseGradID = XmlTools.getXlink(node);
+		if (baseGradID == null || gradients.exists(baseGradID))
+		{
+			var gradID = node.getAttribute("id");
+			if (!gradients.exists(gradID))
+			{
+				gradients.set(gradID, Gradient.load(node, baseGradID != null ? gradients.get(baseGradID) : null));
+			}
+		}
 	}
 }
