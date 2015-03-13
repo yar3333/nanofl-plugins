@@ -35,18 +35,13 @@ class LinearGradient extends Gradient
 	
 	public function getFullMatrix(bounds:Bounds) : Matrix
 	{
-		var sx = (bounds.maxX - bounds.minX) / 2;
-		var sy = (bounds.maxY - bounds.minY) / 2;
-		
-		var tx = (bounds.minX + bounds.maxX) / 2;
-		var ty = (bounds.minY + bounds.maxY) / 2;
-		
-		var angle = Math.atan2(y2 - y1, x2 - x1);
+		var w = (bounds.maxX - bounds.minX) / 2;
+		var h = (bounds.maxY - bounds.minY) / 2;
 		
 		var matrix = new Matrix();
-		matrix.scale(sx, sy);
-		matrix.rotate(angle);
-		matrix.translate(tx, ty);
+		matrix.scale(w * (x2 - x1), h * (y2 - y1));
+		matrix.rotate(Math.atan2(y2 - y1, x2 - x1));
+		matrix.translate(bounds.minX + (x1 + 1) * w, bounds.minY + (y1 + 1) * h);
 		
 		matrix.appendMatrix(this.matrix);
 		
