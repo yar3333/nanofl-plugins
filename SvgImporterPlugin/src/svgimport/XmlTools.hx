@@ -7,9 +7,8 @@ using StringTools;
 
 class XmlTools
 {
-	private static var mStyleSplit = ~/;/g;
-	private static var mStyleValue = ~/\s*(.*)\s*:\s*(.*)\s*/;
-	private static var mURLMatch = ~/url\(#(.*)\)/;
+	private static var reStyleValue = ~/^\s*(.+)\s*:\s*(.+)\s*$/;
+	private static var reURLMatch = ~/^\s*url\(#[^)]*\)\s*$/;
 	
 	public static function getStyles(node:HtmlNodeElement, baseStyles:Map<String, String>) : Map<String, String>
 	{
@@ -23,24 +22,20 @@ class XmlTools
 			}
 		}
 		
+		for (key in SvgAttributes.presentation)
+		{
+			if (node.hasAttribute(key)) styles.set(key, node.getAttribute(key));
+		}
+		
 		if (node.hasAttribute("style")) 
 		{
 			var style = node.getAttribute("style");
-			var strings = mStyleSplit.split(style);
-			
-			for (s in strings)
+			for (s in style.split(";"))
 			{
-				if (mStyleValue.match(s))
+				if (reStyleValue.match(s))
 				{
-					styles.set(mStyleValue.matched(1), mStyleValue.matched(2));
+					styles.set(reStyleValue.matched(1), reStyleValue.matched(2));
 				}
-			}
-		}
-		else
-		{
-			for (key in SvgAttributes.presentation)
-			{
-				if (node.hasAttribute(key)) styles.set(key, node.getAttribute(key));
 			}
 		}
 		
@@ -75,9 +70,9 @@ class XmlTools
 		if (s == "") return FillType.FillSolid("#000000");
 		if (s == "none") return FillType.FillNone;
 		
-		if (mURLMatch.match(s))
+		if (reURLMatch.match(s))
 		{
-			var url = mURLMatch.matched(1);
+			var url = reURLMatch.matched(1);
 			if (gradients.exists(url)) return FillType.FillGrad(gradients.get(url));
 			throw "Unknown url:" + url;
 		}
@@ -91,9 +86,9 @@ class XmlTools
 		
 		if (s == "" || s == "none") return StrokeType.StrokeNone;
 		
-		if (mURLMatch.match(s))
+		if (reURLMatch.match(s))
 		{
-			var url = mURLMatch.matched(1);
+			var url = reURLMatch.matched(1);
 			if (gradients.exists(url)) return StrokeType.StrokeGrad(gradients.get(url));
 			throw "Unknown url:" + url;
 		}
