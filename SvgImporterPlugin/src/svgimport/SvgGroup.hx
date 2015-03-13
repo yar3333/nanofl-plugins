@@ -9,7 +9,7 @@ using svgimport.XmlTools;
 
 class SvgGroup
 {
-	public var groups : Map<String, SvgGroup>;
+	public var elements : Map<String, SvgElement>;
 	private var gradients : Map<String, GradientType>;
 	
 	public var id : String;
@@ -18,18 +18,17 @@ class SvgGroup
 	public var matrix : Matrix;
 	public var visible : Bool;
 	
-	public function new(groupNode:HtmlNodeElement, baseStyles:Map<String, String>, groups:Map<String, SvgGroup>, gradients:Map<String, GradientType>) : Void
+	function new(groupNode:HtmlNodeElement, styles:Map<String, String>, elements:Map<String, SvgElement>, gradients:Map<String, GradientType>) : Void
 	{
-		this.groups = groups;
+		this.elements = elements;
 		this.gradients = gradients;
 		
-		id = groupNode.getAttr("id", "");
-		if (id != "") groups.set(id, this);
-		
+		id = groupNode.getAttr("id", ""); if (id != "") elements.set(id, SvgElement.DisplayGroup(this));
 		name = groupNode.getAttr("inkscape:label", id);
-		loadChildren(groupNode, XmlTools.getStyles(groupNode, baseStyles));
 		matrix = Transform.load(groupNode.getAttribute("transform"));
 		visible = groupNode.getAttribute("display") != "none";
+		
+		loadChildren(groupNode, XmlTools.getStyles(groupNode, styles));
 	}
 	
 	function loadChildren(xml:HtmlNodeElement, styles:Map<String, String>)
@@ -42,25 +41,25 @@ class SvgGroup
 					loadDefs(child);
 					
 				case "g":
-					children.push(SvgElement.DisplayGroup(new SvgGroup(child, styles, groups, gradients)));
+					children.push(SvgElement.DisplayGroup(new SvgGroup(child, styles, elements, gradients)));
 					
 				case"use":
 					var e = loadUse(child); if (e != null) children.push(e);
 					
 				case "path", "line", "polyline":
-					children.push(SvgElement.DisplayPath(new SvgPath(child, styles, gradients, false, false)));
+					children.push(SvgElement.DisplayPath(new SvgPath(child, styles, elements, gradients, false, false)));
 					
 				case "rect":
-					children.push(SvgElement.DisplayPath(new SvgPath(child, styles, gradients, true, false)));
+					children.push(SvgElement.DisplayPath(new SvgPath(child, styles, elements, gradients, true, false)));
 					
 				case "polygon":
-					children.push(SvgElement.DisplayPath(new SvgPath(child, styles, gradients, false, false)));
+					children.push(SvgElement.DisplayPath(new SvgPath(child, styles, elements, gradients, false, false)));
 					
 				case "ellipse":
-					children.push(SvgElement.DisplayPath(new SvgPath(child, styles, gradients, false, true)));
+					children.push(SvgElement.DisplayPath(new SvgPath(child, styles, elements, gradients, false, true)));
 					
 				case "circle":
-					children.push(SvgElement.DisplayPath(new SvgPath(child, styles, gradients, false, true, true)));
+					children.push(SvgElement.DisplayPath(new SvgPath(child, styles, elements, gradients, false, true, true)));
 					
 				case "text":
 					children.push(SvgElement.DisplayText(new SvgText(child, styles, gradients)));
@@ -88,7 +87,7 @@ class SvgGroup
 			{
 				case "linearGradient":	loadGradient(child);
 				case "radialGradient":	loadGradient(child);
-				case "g":				new SvgGroup(child, null, groups, gradients);
+				case "g":				new SvgGroup(child, null, elements, gradients);
 				case _:					trace("Unknown tag '" + child.name + "'.");
 			}
 		}

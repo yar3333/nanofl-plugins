@@ -5,6 +5,8 @@ using htmlparser.HtmlParserTools;
 
 class Gradient
 {
+	public var gradientUnits : String;
+	
 	public var colors : Array<String>;
 	public var alphas : Array<Float>;
 	public var ratios : Array<Float>;
@@ -23,6 +25,10 @@ class Gradient
 				case GradientType.RADIAL(grad): base = grad;
 			}
 		}
+		
+		gradientUnits = node.hasAttribute("gradientUnits")
+			? node.getAttribute("gradientUnits")
+			: (base != null ? cast base.gradientUnits : "");
 		
 		colors = base != null ? cast base.colors.copy() : new Array<String>();
 		alphas = base != null ? cast base.alphas.copy() : new Array<Float>();

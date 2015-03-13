@@ -1,4 +1,5 @@
 import htmlparser.XmlDocument;
+import svgimport.SvgElement;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.elements.Instance;
 import nanofl.engine.FileApi;
@@ -51,18 +52,31 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 		if (svg.id == "")
 		{
 			svg.id = Library.SCENE_NAME_PATH;
-			svg.groups.set(Library.SCENE_NAME_PATH, svg);
+			svg.elements.set(Library.SCENE_NAME_PATH, SvgElement.DisplayGroup(svg));
 		}
 		
 		documentProperties.width = Math.round(svg.width);
 		documentProperties.height = Math.round(svg.height);
 		
-		for (group in svg.groups)
+		for (element in svg.elements)
 		{
-			SvgGroupExporter.run(group, library);
+			switch (element)
+			{
+				case SvgElement.DisplayGroup(group):
+					SvgGroupExporter.run(group, library);
+					
+				case SvgElement.DisplayPath(path):
+					var mc = new MovieClipItem(path.id);
+					mc.addLayer(new Layer("auto"));
+					mc.layers[0].addKeyFrame(new KeyFrame([ path.toElement() ]));
+					library.addItem(mc);
+					
+				case _:
+					trace("ID for item type '" + element.getName() + "' is not supported.");
+			}
 		}
 		
-		if (!svg.groups.exists(Library.SCENE_NAME_PATH))
+		if (!svg.elements.exists(Library.SCENE_NAME_PATH))
 		{
 			var scene = new MovieClipItem(Library.SCENE_NAME_PATH);
 			scene.addLayer(new Layer("auto"));

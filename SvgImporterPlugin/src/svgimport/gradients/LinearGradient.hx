@@ -35,13 +35,26 @@ class LinearGradient extends Gradient
 	
 	public function getFullMatrix(bounds:Bounds) : Matrix
 	{
-		var w = (bounds.maxX - bounds.minX) / 2;
-		var h = (bounds.maxY - bounds.minY) / 2;
-		
 		var matrix = new Matrix();
-		matrix.scale(w * (x2 - x1), h * (y2 - y1));
-		matrix.rotate(Math.atan2(y2 - y1, x2 - x1));
-		matrix.translate(bounds.minX + (x1 + 1) * w, bounds.minY + (y1 + 1) * h);
+		
+		if (gradientUnits == "" || gradientUnits == "objectBoundingBox")
+		{
+			var w = (bounds.maxX - bounds.minX) / 2;
+			var h = (bounds.maxY - bounds.minY) / 2;
+			matrix.scale(w * (x2 - x1), h * (y2 - y1));
+			matrix.rotate(Math.atan2(y2 - y1, x2 - x1));
+			matrix.translate(bounds.minX + (x1 + 1) * w, bounds.minY + (y1 + 1) * h);
+		}
+		else if (gradientUnits == "userSpaceOnUse")
+		{
+			matrix.scale(x2 - x1, y2 - y1);
+			matrix.rotate(Math.atan2(y2 - y1, x2 - x1));
+			matrix.translate(x1, y1);
+		}
+		else
+		{
+			trace("Unknow gradientUnits '" + gradientUnits + "'.");
+		}
 		
 		matrix.appendMatrix(this.matrix);
 		

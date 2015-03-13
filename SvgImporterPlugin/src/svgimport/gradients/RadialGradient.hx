@@ -2,6 +2,7 @@ package svgimport.gradients;
 
 import htmlparser.HtmlNodeElement;
 import nanofl.engine.geom.Bounds;
+import nanofl.engine.geom.Matrix;
 using htmlparser.HtmlParserTools;
 using svgimport.XmlTools;
 
@@ -36,12 +37,24 @@ class RadialGradient extends Gradient
 	
 	public function getFullMatrix(bounds:Bounds) : Matrix
 	{
-		var w = bounds.maxX - bounds.minX;
-		var h = bounds.maxY - bounds.minY;
-		
 		var matrix = new Matrix();
-		matrix.scale(w * r, h * r);
-		matrix.translate(bounds.minX + w * cx, bounds.minY + h * cy);
+		
+		if (gradientUnits == "" || gradientUnits == "objectBoundingBox")
+		{
+			var w = bounds.maxX - bounds.minX;
+			var h = bounds.maxY - bounds.minY;
+			matrix.scale(w * r, h * r);
+			matrix.translate(bounds.minX + w * cx, bounds.minY + h * cy);
+		}
+		else if (gradientUnits == "userSpaceOnUse")
+		{
+			matrix.scale(r, r);
+			matrix.translate(cx, cy);
+		}
+		else
+		{
+			trace("Unknow gradientUnits '" + gradientUnits + "'.");
+		}
 		
 		matrix.appendMatrix(this.matrix);
 		

@@ -36,7 +36,19 @@ class Transform
 					}
 					
 				case "rotate":
-					matrix.appendTransform(0, 0, 1, 1, Std.parseFloat(re.matched(2)));
+					var params = re.matched(2).split(" ");
+					if (params.length == 1)
+					{
+						matrix.appendTransform(0, 0, 1, 1, Std.parseFloat(params[0]));
+					}
+					else
+					if (params.length == 2)
+					{
+						var xy = params[1].split(",").map(function(s) return Std.parseFloat(s));
+						matrix.appendTransform( xy[0],  xy[1], 1, 1, 0);
+						matrix.appendTransform(0, 0, 1, 1, Std.parseFloat(params[0]));
+						matrix.appendTransform(-xy[0], -xy[1]);
+					}
 					
 				case "matrix":
 					var params = re.matched(2).split(",");

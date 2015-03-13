@@ -37,7 +37,7 @@ class Svg extends SvgGroup
 		else if (width  == 0) width = height;
 		else if (height == 0) height = width;
 		
-		super(svg, null, new Map<String, SvgGroup>(), new Map<String, GradientType>());
+		super(svg, null, new Map<String, SvgElement>(), new Map<String, GradientType>());
 	}
 	private function dumpGroup(g:SvgGroup, indent:String)
 	{
