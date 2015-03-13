@@ -36,15 +36,12 @@ class RadialGradient extends Gradient
 	
 	public function getFullMatrix(bounds:Bounds) : Matrix
 	{
-		var sx = (bounds.maxX - bounds.minX) * r;
-		var sy = (bounds.maxY - bounds.minY) * r;
-		
-		var tx = bounds.minX + (bounds.maxX - bounds.minX) * cx;
-		var ty = bounds.minY + (bounds.maxY - bounds.minY) * cy;
+		var w = bounds.maxX - bounds.minX;
+		var h = bounds.maxY - bounds.minY;
 		
 		var matrix = new Matrix();
-		matrix.scale(sx, sy);
-		matrix.translate(tx, ty);
+		matrix.scale(w * r, h * r);
+		matrix.translate(bounds.minX + w * cx, bounds.minY + h * cy);
 		
 		matrix.appendMatrix(this.matrix);
 		
