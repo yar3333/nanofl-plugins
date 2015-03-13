@@ -3,7 +3,10 @@ package svgimport;
 import htmlparser.HtmlNodeElement;
 import nanofl.engine.elements.ShapeElement;
 import svgimport.gradients.GradientType;
-import svgimport.Segment;
+import svgimport.segments.DrawSegment;
+import svgimport.segments.MoveSegment;
+import svgimport.segments.QuadraticSegment;
+import svgimport.segments.Segment;
 using htmlparser.HtmlParserTools;
 
 class SvgPath

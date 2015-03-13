@@ -1,6 +1,10 @@
 package svgimport;
 
-import svgimport.Segment;
+import svgimport.segments.ArcSegment;
+import svgimport.segments.CubicSegment;
+import svgimport.segments.DrawSegment;
+import svgimport.segments.MoveSegment;
+import svgimport.segments.QuadraticSegment;
 
 enum SegmentType 
 {

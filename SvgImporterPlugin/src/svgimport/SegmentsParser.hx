@@ -1,6 +1,11 @@
 package svgimport;
 
-import svgimport.Segment;
+import svgimport.segments.ArcSegment;
+import svgimport.segments.CubicSegment;
+import svgimport.segments.DrawSegment;
+import svgimport.segments.MoveSegment;
+import svgimport.segments.QuadraticSegment;
+import svgimport.segments.Segment;
 
 class SegmentsParser
 {
@@ -213,14 +218,14 @@ class SegmentsParser
 				lastMoveX = a[0]+prevX();
 				lastMoveY = a[1]+prevY();
 				return new MoveSegment(lastMoveX, lastMoveY);
-			case LINE:  return new DrawSegment(a[0], a[1] );
-			case LINER: return new DrawSegment(a[0]+prevX(), a[1]+prevY() );
-			case HLINE:  return new DrawSegment(a[0], prevY() );
+			case LINE:  return new DrawSegment(a[0], a[1]);
+			case LINER: return new DrawSegment(a[0]+prevX(), a[1]+prevY());
+			case HLINE:  return new DrawSegment(a[0], prevY());
 			case HLINER: return new DrawSegment(a[0]+prevX(), prevY());
 			case VLINE:  return new DrawSegment(prevX(), a[0] );
 			case VLINER: return new DrawSegment(prevX(), a[0]+prevY());
 			case CUBIC:
-				return new CubicSegment(a[0], a[1], a[2], a[3], a[4], a[5] );
+				return new CubicSegment(a[0], a[1], a[2], a[3], a[4], a[5]);
 			case CUBICR:
 				var rx = prevX();
 				var ry = prevY();
@@ -228,7 +233,7 @@ class SegmentsParser
 			case SCUBIC:
 				var rx = prevX();
 				var ry = prevY();
-				return new CubicSegment(rx*2-prevCX(), ry*2-prevCY(), a[0], a[1], a[2], a[3] );
+				return new CubicSegment(rx*2-prevCX(), ry*2-prevCY(), a[0], a[1], a[2], a[3]);
 			case SCUBICR:
 				var rx = prevX();
 				var ry = prevY();
@@ -241,13 +246,13 @@ class SegmentsParser
 			case SQUAD:
 				var rx = prevX();
 				var ry = prevY();
-				return new QuadraticSegment(rx*2-prevCX(), rx*2-prevCY(), a[2], a[3] );
+				return new QuadraticSegment(rx*2-prevCX(), rx*2-prevCY(), a[2], a[3]);
 			case SQUADR:
 				var rx = prevX();
 				var ry = prevY();
 				return new QuadraticSegment(rx*2-prevCX(), ry*2-prevCY(), a[0]+rx, a[1]+ry);
 			case ARC:
-				return new ArcSegment(prevX(), prevY(), a[0], a[1], a[2], a[3] != 0., a[4] != 0., a[5], a[6] );
+				return new ArcSegment(prevX(), prevY(), a[0], a[1], a[2], a[3] != 0., a[4] != 0., a[5], a[6]);
 			case ARCR:
 				var rx = prevX();
 				var ry = prevY();
