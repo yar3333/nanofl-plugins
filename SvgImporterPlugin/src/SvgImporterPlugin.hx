@@ -49,14 +49,14 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 		var xml = new XmlDocument(fileApi.getContent(srcFilePath));
 		var svg = new Svg(xml);
 		
+		documentProperties.width = Math.round(svg.width);
+		documentProperties.height = Math.round(svg.height);
+		
 		if (svg.id == "")
 		{
 			svg.id = Library.SCENE_NAME_PATH;
 			svg.elements.set(Library.SCENE_NAME_PATH, SvgElement.DisplayGroup(svg));
 		}
-		
-		documentProperties.width = Math.round(svg.width);
-		documentProperties.height = Math.round(svg.height);
 		
 		for (element in svg.elements)
 		{
@@ -66,10 +66,7 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 					SvgGroupExporter.run(group, library);
 					
 				case SvgElement.DisplayPath(path):
-					var mc = new MovieClipItem(path.id);
-					mc.addLayer(new Layer("auto"));
-					mc.layers[0].addKeyFrame(new KeyFrame([ path.toElement() ]));
-					library.addItem(mc);
+					library.addItem(path.toLibraryItem());
 					
 				case _:
 					trace("ID for item type '" + element.getName() + "' is not supported.");

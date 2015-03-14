@@ -8,7 +8,7 @@ using StringTools;
 class XmlTools
 {
 	private static var reStyleValue = ~/^\s*(.+)\s*:\s*(.+)\s*$/;
-	private static var reURLMatch = ~/^\s*url\(#([^)]*)\)\s*$/;
+	private static var reURLMatch = ~/^\s*url\(#([^)]*)\)\s*/;
 	
 	public static function getStyles(node:HtmlNodeElement, baseStyles:Map<String, String>) : Map<String, String>
 	{
@@ -29,8 +29,7 @@ class XmlTools
 		
 		if (node.hasAttribute("style")) 
 		{
-			var style = node.getAttribute("style");
-			for (s in style.split(";"))
+			for (s in node.getAttribute("style").split(";"))
 			{
 				if (reStyleValue.match(s))
 				{

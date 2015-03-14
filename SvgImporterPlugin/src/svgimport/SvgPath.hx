@@ -1,5 +1,9 @@
 package svgimport;
 
+import nanofl.engine.KeyFrame;
+import nanofl.engine.Layer;
+import nanofl.engine.libraryitems.LibraryItem;
+import nanofl.engine.libraryitems.MovieClipItem;
 import svgimport.SvgElement;
 import htmlparser.HtmlNodeElement;
 import nanofl.engine.elements.ShapeElement;
@@ -15,6 +19,9 @@ class SvgPath
 {
 	private static var SIN45 = 0.70710678118654752440084436210485;
 	private static var TAN22 = 0.4142135623730950488016887242097;
+	
+	public var node : HtmlNodeElement;
+	var styles : Map<String, String>;
 	
 	public var id : String;
 	public var matrix : Matrix;
@@ -32,116 +39,116 @@ class SvgPath
 
 	public var segments : Array<Segment>;
 	
-	public function new(pathNode:HtmlNodeElement, baseStyles:Map<String, String>, elements:Map<String, SvgElement>, gradients:Map<String, GradientType>, isRect:Bool, isEllipse:Bool, isCircle=false) : Void
+	public function new(node:HtmlNodeElement, styles:Map<String, String>, elements:Map<String, SvgElement>, gradients:Map<String, GradientType>, ?id:String) : Void
 	{
-		var styles = XmlTools.getStyles(pathNode, baseStyles);
+		this.node = node;
+		this.styles = XmlTools.getStyles(node, styles);
 		
-		id = pathNode.getAttr("id", ""); if (id != "") elements.set(id, SvgElement.DisplayPath(this));
-		matrix = Transform.load(pathNode.getAttribute("transform"));
-		alpha = XmlTools.getFloatStyle(pathNode, "opacity", styles, 1.0);
+		this.id = id != null ? id : node.getAttr("id", ""); if (this.id != "") elements.set(this.id, SvgElement.DisplayPath(this));
+		matrix = Transform.load(node.getAttribute("transform"));
+		alpha = XmlTools.getFloatStyle(node, "opacity", styles, 1.0);
 		
-		fill = XmlTools.getFillStyle(pathNode, "fill", styles,gradients);
-		fillAlpha = XmlTools.getFloatStyle(pathNode, "fill-opacity", styles, 1.0);
+		fill = XmlTools.getFillStyle(node, "fill", styles,gradients);
+		fillAlpha = XmlTools.getFloatStyle(node, "fill-opacity", styles, 1.0);
 		
-		stroke = XmlTools.getStrokeStyle(pathNode, "stroke", styles, gradients);
-		strokeAlpha = XmlTools.getFloatStyle(pathNode, "stroke-opacity", styles, 1.0);
-		strokeWidth = XmlTools.getFloatStyle(pathNode, "stroke-width", styles, 1.0);
-		strokeCaps = XmlTools.getStyle(pathNode, "stroke-linecap", styles, "butt");
-		strokeJoints = XmlTools.getStyle(pathNode, "stroke-linejoin", styles, "miter");
-		strokeMiterLimit = XmlTools.getFloatStyle(pathNode, "stroke-miterlimit", styles, 4.0);
+		stroke = XmlTools.getStrokeStyle(node, "stroke", styles, gradients);
+		strokeAlpha = XmlTools.getFloatStyle(node, "stroke-opacity", styles, 1.0);
+		strokeWidth = XmlTools.getFloatStyle(node, "stroke-width", styles, 1.0);
+		strokeCaps = XmlTools.getStyle(node, "stroke-linecap", styles, "butt");
+		strokeJoints = XmlTools.getStyle(node, "stroke-linejoin", styles, "miter");
+		strokeMiterLimit = XmlTools.getFloatStyle(node, "stroke-miterlimit", styles, 4.0);
 		
 		segments = [];
-
-		if (isRect)
+		
+		switch (XmlTools.normalizeTag(node.name))
 		{
-			var x = pathNode.getFloatValue("x", 0);
-			var y = pathNode.getFloatValue("y", 0);
-			var w = pathNode.getFloatValue("width", 0);
-			var h = pathNode.getFloatValue("height", 0);
-			var rx = pathNode.getFloatValue("rx", 0);
-			var ry = pathNode.getFloatValue("ry", rx);
-			
-			if (rx == 0 || ry == 0)
-			{
-				segments.push(new MoveSegment(x, y));
-				segments.push(new DrawSegment(x + w, y));
-				segments.push(new DrawSegment(x + w, y + h));
-				segments.push(new DrawSegment(x, y + h));
-				segments.push(new DrawSegment(x, y));
-			}
-			else
-			{
-				segments.push(new MoveSegment(x, y + ry));
+			case "rect":
+				var x = node.getFloatValue("x", 0);
+				var y = node.getFloatValue("y", 0);
+				var w = node.getFloatValue("width", 0);
+				var h = node.getFloatValue("height", 0);
+				var rx = node.getFloatValue("rx", 0);
+				var ry = node.getFloatValue("ry", rx);
 				
-				// top-left
-				segments.push(new QuadraticSegment(x, y, x + rx, y));
-				segments.push(new DrawSegment(x + w - rx, y));
+				if (rx == 0 || ry == 0)
+				{
+					segments.push(new MoveSegment(x, y));
+					segments.push(new DrawSegment(x + w, y));
+					segments.push(new DrawSegment(x + w, y + h));
+					segments.push(new DrawSegment(x, y + h));
+					segments.push(new DrawSegment(x, y));
+				}
+				else
+				{
+					segments.push(new MoveSegment(x, y + ry));
+					
+					// top-left
+					segments.push(new QuadraticSegment(x, y, x + rx, y));
+					segments.push(new DrawSegment(x + w - rx, y));
+					
+					// top-right
+					segments.push(new QuadraticSegment(x + w, y, x + w, y + rx));
+					segments.push(new DrawSegment(x + w, y + h - ry));
+					
+					// bottom-right
+					segments.push(new QuadraticSegment(x + w, y + h, x + w - rx, y + h));
+					segments.push(new DrawSegment(x + rx, y + h));
+					
+					// bottom-left
+					segments.push(new QuadraticSegment(x, y + h, x, y + h - ry));
+					segments.push(new DrawSegment(x, y + ry));
+				}
 				
-				// top-right
-				segments.push(new QuadraticSegment(x + w, y, x + w, y + rx));
-				segments.push(new DrawSegment(x + w, y + h - ry));
+			case "ellipse", "circle":
+				var x = node.getFloatValue("cx", 0);
+				var y = node.getFloatValue("cy", 0);
+				var r = node.getFloatValue("r", 0);
+				var w = node.getFloatValue("rx", r);
+				var w_ = w * SIN45;
+				var cw_ = w * TAN22;
+				var h = node.getFloatValue("ry", r);
+				var h_ = h * SIN45;
+				var ch_ = h * TAN22;
 				
-				// bottom-right
-				segments.push(new QuadraticSegment(x + w, y + h, x + w - rx, y + h));
-				segments.push(new DrawSegment(x + rx, y + h));
+				segments.push(new MoveSegment(x + w, y));
+				segments.push(new QuadraticSegment(x + w, y + ch_, x + w_, y + h_));
+				segments.push(new QuadraticSegment(x + cw_, y + h, x, y + h));
+				segments.push(new QuadraticSegment(x - cw_, y + h, x - w_, y + h_));
+				segments.push(new QuadraticSegment(x - w, y + ch_, x - w, y));
+				segments.push(new QuadraticSegment(x - w, y - ch_, x - w_, y - h_));
+				segments.push(new QuadraticSegment(x - cw_, y - h, x, y - h));
+				segments.push(new QuadraticSegment(x + cw_, y - h, x + w_, y - h_));
+				segments.push(new QuadraticSegment(x + w, y - ch_, x + w, y));
 				
-				// bottom-left
-				segments.push(new QuadraticSegment(x, y + h, x, y + h - ry));
-				segments.push(new DrawSegment(x, y + ry));
-			}
-		}
-		else if (isEllipse)
-		{
-			var x = pathNode.getFloatValue("cx", 0);
-			var y = pathNode.getFloatValue("cy", 0);
-			var r = pathNode.getFloatValue("r", 0);
-			var w = pathNode.getFloatValue("rx", r);
-			var w_ = w * SIN45;
-			var cw_ = w * TAN22;
-			var h = pathNode.getFloatValue("ry", r);
-			var h_ = h * SIN45;
-			var ch_ = h * TAN22;
-			
-			segments.push(new MoveSegment(x + w, y));
-			segments.push(new QuadraticSegment(x + w, y + ch_, x + w_, y + h_));
-			segments.push(new QuadraticSegment(x + cw_, y + h, x, y + h));
-			segments.push(new QuadraticSegment(x - cw_, y + h, x - w_, y + h_));
-			segments.push(new QuadraticSegment(x - w, y + ch_, x - w, y));
-			segments.push(new QuadraticSegment(x - w, y - ch_, x - w_, y - h_));
-			segments.push(new QuadraticSegment(x - cw_, y - h, x, y - h));
-			segments.push(new QuadraticSegment(x + cw_, y - h, x + w_, y - h_));
-			segments.push(new QuadraticSegment(x + w, y - ch_, x + w, y));
-			
-			strokeCaps = "round";
-			strokeJoints = "round";
-		}
-		else
-		{
-			var d : String;
-			if (pathNode.hasAttribute("points"))
-			{
-				d = "M" + pathNode.getAttribute("points") + "z";
-			}
-			else
-			if (pathNode.hasAttribute("x1"))
-			{
-				d = "M" + pathNode.getAttribute("x1") + ","
-						+ pathNode.getAttribute("y1") + " "
-						+ pathNode.getAttribute("x2") + ","
-						+ pathNode.getAttribute("y2") + "z";
-			}
-			else
-			{
-				d = pathNode.getAttribute("d");
-			}
-			
-			for (segment in SegmentsParser.run(d))
-			{
-				segments.push(segment);
-			}
-			
-			strokeCaps = "round";
-			strokeJoints = "round";
+				strokeCaps = "round";
+				strokeJoints = "round";
+				
+			case _:
+				var d : String;
+				if (node.hasAttribute("points"))
+				{
+					d = "M" + node.getAttribute("points") + "z";
+				}
+				else
+				if (node.hasAttribute("x1"))
+				{
+					d = "M" + node.getAttribute("x1") + ","
+							+ node.getAttribute("y1") + " "
+							+ node.getAttribute("x2") + ","
+							+ node.getAttribute("y2") + "z";
+				}
+				else
+				{
+					d = node.getAttribute("d");
+				}
+				
+				for (segment in SegmentsParser.run(d))
+				{
+					segments.push(segment);
+				}
+				
+				strokeCaps = "round";
+				strokeJoints = "round";
 		}
 	}
 	
@@ -187,5 +194,13 @@ class SvgPath
 		}
 		
 		return shape;
+	}
+	
+	public function toLibraryItem() : LibraryItem
+	{
+		var mc = new MovieClipItem(id);
+		mc.addLayer(new Layer("auto"));
+		mc.layers[0].addKeyFrame(new KeyFrame([ toElement() ]));
+		return mc;
 	}
 }

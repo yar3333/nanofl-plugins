@@ -9,8 +9,11 @@ using svgimport.XmlTools;
 
 class SvgGroup
 {
+	public var node : HtmlNodeElement;
+	var styles : Map<String, String>;
+	
 	public var elements : Map<String, SvgElement>;
-	private var gradients : Map<String, GradientType>;
+	public var gradients : Map<String, GradientType>;
 	
 	public var id : String;
 	public var name : String;
@@ -18,20 +21,24 @@ class SvgGroup
 	public var matrix : Matrix;
 	public var visible : Bool;
 	
-	function new(groupNode:HtmlNodeElement, styles:Map<String, String>, elements:Map<String, SvgElement>, gradients:Map<String, GradientType>) : Void
+	public function new(node:HtmlNodeElement, styles:Map<String, String>, elements:Map<String, SvgElement>, gradients:Map<String, GradientType>, ?id:String) : Void
 	{
+		this.node = node;
+		this.styles = XmlTools.getStyles(node, styles);
+		
 		this.elements = elements;
 		this.gradients = gradients;
 		
-		id = groupNode.getAttr("id", ""); if (id != "") elements.set(id, SvgElement.DisplayGroup(this));
-		name = groupNode.getAttr("inkscape:label", id);
-		matrix = Transform.load(groupNode.getAttribute("transform"));
-		visible = groupNode.getAttribute("display") != "none";
+		this.id = id != null ? id : node.getAttr("id", ""); if (this.id != "") elements.set(this.id, SvgElement.DisplayGroup(this));
+		trace(this.id + " => " + this.styles);
+		name = node.getAttr("inkscape:label", this.id);
+		matrix = Transform.load(node.getAttribute("transform"));
+		visible = node.getAttribute("display") != "none";
 		
-		loadChildren(groupNode, XmlTools.getStyles(groupNode, styles));
+		loadChildren(node);
 	}
 	
-	function loadChildren(xml:HtmlNodeElement, styles:Map<String, String>)
+	function loadChildren(xml:HtmlNodeElement)
 	{
 		for (child in xml.children)
 		{
@@ -46,20 +53,8 @@ class SvgGroup
 				case"use":
 					var e = loadUse(child); if (e != null) children.push(e);
 					
-				case "path", "line", "polyline":
-					children.push(SvgElement.DisplayPath(new SvgPath(child, styles, elements, gradients, false, false)));
-					
-				case "rect":
-					children.push(SvgElement.DisplayPath(new SvgPath(child, styles, elements, gradients, true, false)));
-					
-				case "polygon":
-					children.push(SvgElement.DisplayPath(new SvgPath(child, styles, elements, gradients, false, false)));
-					
-				case "ellipse":
-					children.push(SvgElement.DisplayPath(new SvgPath(child, styles, elements, gradients, false, true)));
-					
-				case "circle":
-					children.push(SvgElement.DisplayPath(new SvgPath(child, styles, elements, gradients, false, true, true)));
+				case "path", "line", "polyline", "rect", "polygon", "ellipse", "circle":
+					children.push(SvgElement.DisplayPath(new SvgPath(child, styles, elements, gradients)));
 					
 				case "text":
 					children.push(SvgElement.DisplayText(new SvgText(child, styles, gradients)));
@@ -71,7 +66,7 @@ class SvgGroup
 					loadGradient(child);
 					
 				case "a":
-					loadChildren(child, styles);
+					loadChildren(child);
 					
 				case _:
 					trace("Unknown tag '" + child.name + "'.");
@@ -88,6 +83,7 @@ class SvgGroup
 				case "linearGradient":	loadGradient(child);
 				case "radialGradient":	loadGradient(child);
 				case "g":				new SvgGroup(child, null, elements, gradients);
+				case "path", "line", "polyline", "rect", "polygon", "ellipse", "circle": new SvgPath(child, null, elements, gradients);
 				case _:					trace("Unknown tag '" + child.name + "'.");
 			}
 		}
@@ -114,11 +110,15 @@ class SvgGroup
 			var y = node.getFloatValue("y", 0);
 			if (x != 0 || y != 0) matrix.prependTransform(x, y);
 			
-			var visible = node.getAttribute("display") != "none";
-
-			return SvgElement.DisplayUse(groupID, matrix, visible);
+			return SvgElement.DisplayUse
+			(
+				groupID,
+				matrix,
+				XmlTools.getStyles(node, styles),
+				node.getAttribute("display") != "none"
+			);
 		}
-		trace("Use: groupID not found.");
+		trace("Use: 'xlink:href' attribute must be specified.");
 		return null;
 	}
 	
