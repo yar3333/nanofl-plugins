@@ -10,7 +10,6 @@ using svgimport.XmlTools;
 class SvgGroup
 {
 	public var node : HtmlNodeElement;
-	var styles : Map<String, String>;
 	
 	public var elements : Map<String, SvgElement>;
 	public var gradients : Map<String, GradientType>;
@@ -24,21 +23,19 @@ class SvgGroup
 	public function new(node:HtmlNodeElement, styles:Map<String, String>, elements:Map<String, SvgElement>, gradients:Map<String, GradientType>, ?id:String) : Void
 	{
 		this.node = node;
-		this.styles = XmlTools.getStyles(node, styles);
 		
 		this.elements = elements;
 		this.gradients = gradients;
 		
 		this.id = id != null ? id : node.getAttr("id", ""); if (this.id != "") elements.set(this.id, SvgElement.DisplayGroup(this));
-		trace(this.id + " => " + this.styles);
 		name = node.getAttr("inkscape:label", this.id);
 		matrix = Transform.load(node.getAttribute("transform"));
 		visible = node.getAttribute("display") != "none";
 		
-		loadChildren(node);
+		loadChildren(node, XmlTools.getStyles(node, styles));
 	}
 	
-	function loadChildren(xml:HtmlNodeElement)
+	function loadChildren(xml:HtmlNodeElement, styles:Map<String, String>)
 	{
 		for (child in xml.children)
 		{
@@ -51,7 +48,7 @@ class SvgGroup
 					children.push(SvgElement.DisplayGroup(new SvgGroup(child, styles, elements, gradients)));
 					
 				case"use":
-					var e = loadUse(child); if (e != null) children.push(e);
+					var e = loadUse(child, styles); if (e != null) children.push(e);
 					
 				case "path", "line", "polyline", "rect", "polygon", "ellipse", "circle":
 					children.push(SvgElement.DisplayPath(new SvgPath(child, styles, elements, gradients)));
@@ -66,7 +63,7 @@ class SvgGroup
 					loadGradient(child);
 					
 				case "a":
-					loadChildren(child);
+					loadChildren(child, styles);
 					
 				case _:
 					trace("Unknown tag '" + child.name + "'.");
@@ -99,7 +96,7 @@ class SvgGroup
 		}
 	}
 	
-	function loadUse(node:HtmlNodeElement) : SvgElement
+	function loadUse(node:HtmlNodeElement, styles:Map<String, String>) : SvgElement
 	{
 		var groupID = XmlTools.getXlink(node);
 		if (groupID != null)
