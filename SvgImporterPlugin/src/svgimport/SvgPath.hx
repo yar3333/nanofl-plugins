@@ -21,7 +21,6 @@ class SvgPath
 	private static var TAN22 = 0.4142135623730950488016887242097;
 	
 	public var node : HtmlNodeElement;
-	var styles : Map<String, String>;
 	
 	public var id : String;
 	public var matrix : Matrix;
@@ -39,10 +38,11 @@ class SvgPath
 
 	public var segments : Array<Segment>;
 	
-	public function new(node:HtmlNodeElement, styles:Map<String, String>, elements:Map<String, SvgElement>, gradients:Map<String, GradientType>, ?id:String) : Void
+	public function new(node:HtmlNodeElement, baseStyles:Map<String, String>, elements:Map<String, SvgElement>, gradients:Map<String, GradientType>, ?id:String) : Void
 	{
 		this.node = node;
-		this.styles = XmlTools.getStyles(node, styles);
+		
+		var styles = XmlTools.getStyles(node, baseStyles);
 		
 		this.id = id != null ? id : node.getAttr("id", ""); if (this.id != "") elements.set(this.id, SvgElement.DisplayPath(this));
 		matrix = Transform.load(node.getAttribute("transform"));
