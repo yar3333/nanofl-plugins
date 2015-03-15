@@ -1,5 +1,6 @@
 package svgimport.gradients;
 
+import nanofl.engine.geom.PointTools;
 import htmlparser.HtmlNodeElement;
 import nanofl.engine.geom.Bounds;
 using htmlparser.HtmlParserTools;
@@ -37,23 +38,23 @@ class LinearGradient extends Gradient
 	{
 		var matrix = new Matrix();
 		
-		if (gradientUnits == "" || gradientUnits == "objectBoundingBox")
+		if (gradientUnits == "userSpaceOnUse")
 		{
-			var w = (bounds.maxX - bounds.minX) / 2;
-			var h = (bounds.maxY - bounds.minY) / 2;
-			matrix.scale(w * (x2 - x1), h * (y2 - y1));
+			var k = PointTools.getDist(x1, y1, x2, y2) / 2;
+			matrix.scale(k, k);
 			matrix.rotate(Math.atan2(y2 - y1, x2 - x1));
-			matrix.translate(bounds.minX + (x1 + 1) * w, bounds.minY + (y1 + 1) * h);
-		}
-		else if (gradientUnits == "userSpaceOnUse")
-		{
-			matrix.scale(x2 - x1, y2 - y1);
-			matrix.rotate(Math.atan2(y2 - y1, x2 - x1));
-			matrix.translate(x1, y1);
+			matrix.translate((x1 + x2) / 2, (y1 + y2) / 2);
 		}
 		else
 		{
-			trace("Unknow gradientUnits '" + gradientUnits + "'.");
+			var w = (bounds.maxX - bounds.minX) / 2;
+			var h = (bounds.maxY - bounds.minY) / 2;
+			var dx = (bounds.maxX - bounds.minX) * (x2-x1);
+			var dy = (bounds.maxY - bounds.minY) * (y2-y1);
+			var k = Math.sqrt(dx*dx + dy*dy) / 2;
+			matrix.scale(k, k);
+			matrix.rotate(Math.atan2(y2 - y1, x2 - x1));
+			matrix.translate(bounds.minX + (x1 + 1) * w, bounds.minY + (y1 + 1) * h);
 		}
 		
 		matrix.appendMatrix(this.matrix);
