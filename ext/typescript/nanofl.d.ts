@@ -8367,6 +8367,7 @@ declare module nanofl.engine
 		static fileFormatVersion : string;
 		static createjsUrl : string;
 		static playerUrl : string;
+		static compare(v1:string, v2:string) : number;
 	}
 	
 	export class XmlWriter

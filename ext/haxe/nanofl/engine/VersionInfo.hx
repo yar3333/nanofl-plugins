@@ -7,4 +7,5 @@ extern class VersionInfo
 	static var fileFormatVersion(default, null) : String;
 	static var createjsUrl(default, null) : String;
 	static var playerUrl(default, null) : String;
+	static function compare(v1:String, v2:String) : Int;
 }
