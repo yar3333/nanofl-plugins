@@ -59,7 +59,7 @@ class SvgText
 		
 		kerning = XmlTools.getFloatStyle(textNode, "kerning", styles, 0);
 		letterSpacing = XmlTools.getFloatStyle(textNode, "letter-spacing", styles, 0);
-		textAnchor = textNode.getAttr("text-anchor", "");
+		textAnchor = XmlTools.getStyle(textNode, "text-anchor", styles, "left");
 		
 		text = textNode.innerText;
 	}
