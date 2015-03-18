@@ -37,27 +37,27 @@ class RadialGradient extends Gradient
 	
 	public function getFullMatrix(bounds:Bounds) : Matrix
 	{
-		var matrix = new Matrix();
+		var m = new Matrix();
 		
 		if (gradientUnits == "" || gradientUnits == "objectBoundingBox")
 		{
 			var w = bounds.maxX - bounds.minX;
 			var h = bounds.maxY - bounds.minY;
-			matrix.scale(w * r, h * r);
-			matrix.translate(bounds.minX + w * cx, bounds.minY + h * cy);
+			m.scale(w * r, h * r);
+			m.translate(bounds.minX + w * cx, bounds.minY + h * cy);
 		}
 		else if (gradientUnits == "userSpaceOnUse")
 		{
-			matrix.scale(r, r);
-			matrix.translate(cx, cy);
+			m.scale(r, r);
+			m.translate(cx, cy);
 		}
 		else
 		{
 			trace("Unknow gradientUnits '" + gradientUnits + "'.");
 		}
 		
-		matrix.appendMatrix(this.matrix);
+		m.appendMatrix(matrix);
 		
-		return matrix;
+		return m;
 	}
 }

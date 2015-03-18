@@ -32,33 +32,48 @@ class LinearGradient extends Gradient
 		x2 = node.getFloatValue("x2", base != null ? base.x2 : 0);
 		y2 = node.getFloatValue("y2", base != null ? base.y2 : 0);
 		
+		if (x1 == 0 && y1 == 0 && x2 == 0 && y2 == 0)
+		{
+			x1 = 0.5;
+			x2 = 1.0;
+		}
 	}
 	
 	public function getFullMatrix(bounds:Bounds) : Matrix
 	{
-		var matrix = new Matrix();
+		var m = new Matrix();
 		
 		if (gradientUnits == "userSpaceOnUse")
 		{
-			var k = PointTools.getDist(x1, y1, x2, y2) / 2;
-			matrix.scale(k, k);
-			matrix.rotate(Math.atan2(y2 - y1, x2 - x1));
-			matrix.translate((x1 + x2) / 2, (y1 + y2) / 2);
+			var w = Math.abs(x2 - x1);
+			var h = Math.abs(y2 - y1);
+			
+			m.scale(Math.sqrt(w*w + h*h) / 2, 1);
+			
+			m.rotate(Math.atan2(y2 - y1, x2 - x1));
+			
+			m.translate((x1 + x2) / 2, (y1 + y2) / 2);
 		}
 		else
 		{
-			var w = (bounds.maxX - bounds.minX) / 2;
-			var h = (bounds.maxY - bounds.minY) / 2;
-			var dx = (bounds.maxX - bounds.minX) * (x2-x1);
-			var dy = (bounds.maxY - bounds.minY) * (y2-y1);
-			var k = Math.sqrt(dx*dx + dy*dy) / 2;
-			matrix.scale(k, k);
-			matrix.rotate(Math.atan2(y2 - y1, x2 - x1));
-			matrix.translate(bounds.minX + (x1 + 1) * w, bounds.minY + (y1 + 1) * h);
+			m.scale(0.5, 0.5);
+			m.translate(0.5, 0.5);
+			
+			var dx = x2 - x1;
+			var dy = y2 - y1;
+			m.scale(Math.sqrt(dx * dx + dy * dy), 1);
+			
+			m.rotate(Math.atan2(dy, dx));
+			
+			var w = bounds.maxX - bounds.minX;
+			var h = bounds.maxY - bounds.minY;
+			m.scale(w, h);
+			
+			m.translate(x1 * w, y1 * h);
 		}
 		
-		matrix.appendMatrix(this.matrix);
+		m.appendMatrix(matrix);
 		
-		return matrix;
+		return m;
 	}
 }
