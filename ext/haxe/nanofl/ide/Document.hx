@@ -14,5 +14,6 @@ extern class Document
 	function updateTitle() : Void;
 	function save(?callb:Void -> Void) : Void;
 	function saveAs(?newPath:String, ?callb:Void -> Void) : Void;
+	function resize(width:Int, height:Int) : Void;
 	function test() : Void;
 }

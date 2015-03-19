@@ -326,8 +326,7 @@ class SymbolLoader
 			text.getAttr("height", 0.0) + 4.0,
 			text.getAttr("isSelectable", true),
 			false,
-			TextRun.optimize(text.find(">textRuns>DOMTextRun").map(function(run) return loadTextRun(run))),
-			new TextRun(null, "#000000", "Times", "", 12, "left", 0, null, null)
+			TextRun.optimize(text.find(">textRuns>DOMTextRun").map(function(run) return loadTextRun(run)))
 		);	
 		r.matrix = MatrixParser.load(text.findOne(">matrix>Matrix"), 1.0, -2 + text.getAttr("left", 0.0), -2).prependMatrix(parentMatrix);
 		loadRegPoint(r, text.findOne(">transformationPoint>Point"));
@@ -348,7 +347,7 @@ class SymbolLoader
 		
 		var font = fontMap.get(face);
 		
-		return new TextRun
+		return TextRun.create
 		(
 			Utf8.htmlUnescape(textRun.findOne(">characters").innerHTML).replace("\r", "\n"),
 			textAttrs.getAttr("fillColor", "#000000"),
@@ -357,7 +356,6 @@ class SymbolLoader
 			textAttrs.getAttr("size", 12.0),
 			textAttrs.getAttr("alignment", "left"),
 			0,
-			null,
 			null
 		);
 	}

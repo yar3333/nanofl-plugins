@@ -2,7 +2,7 @@ package nanofl.engine.elements;
 
 extern class TextElement extends nanofl.engine.elements.Element
 {
-	function new(name:String, width:Float, height:Float, selectable:Bool, border:Bool, textRuns:Array<nanofl.TextRun>, newTextFormat:nanofl.TextRun) : Void;
+	function new(name:String, width:Float, height:Float, selectable:Bool, border:Bool, textRuns:Array<nanofl.TextRun>, ?newTextFormat:nanofl.TextRun) : Void;
 	var name : String;
 	var width : Float;
 	var height : Float;
@@ -18,4 +18,5 @@ extern class TextElement extends nanofl.engine.elements.Element
 	override function clone() : nanofl.engine.elements.Element;
 	override function getState() : nanofl.ide.undo.states.ElementState;
 	override function setState(_state:nanofl.ide.undo.states.ElementState) : Void;
+	override function transform(m:nanofl.engine.geom.Matrix) : Void;
 }

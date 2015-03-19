@@ -7,7 +7,7 @@ extern interface FileApi
 	function getToolsDirectory() : String;
 	function readDirectory(dir:String) : Array<String>;
 	function getContent(filePath:String) : String;
-	function saveContent(filePath:String, text:String) : Void;
+	function saveContent(filePath:String, text:String, ?append:Bool) : Void;
 	function saveBinary(filePath:String, data:Array<Int>) : Void;
 	function exists(path:String) : Bool;
 	function isDirectory(path:String) : Bool;

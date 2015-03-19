@@ -1075,7 +1075,7 @@ flashimport.SymbolLoader.prototype = {
 		var _g = this;
 		var r = new nanofl.engine.elements.TextElement(htmlparser.HtmlParserTools.getAttr(text,"name",""),htmlparser.HtmlParserTools.getAttr(text,"width",0.0) + 4.0,htmlparser.HtmlParserTools.getAttr(text,"height",0.0) + 4.0,htmlparser.HtmlParserTools.getAttr(text,"isSelectable",true),false,nanofl.TextRun.optimize(text.find(">textRuns>DOMTextRun").map(function(run) {
 			return _g.loadTextRun(run);
-		})),new nanofl.TextRun(null,"#000000","Times","",12,"left",0,null,null));
+		})));
 		r.matrix = flashimport.MatrixParser.load(htmlparser.HtmlParserTools.findOne(text,">matrix>Matrix"),1.0,-2 + htmlparser.HtmlParserTools.getAttr(text,"left",0.0),-2).prependMatrix(parentMatrix);
 		this.loadRegPoint(r,htmlparser.HtmlParserTools.findOne(text,">transformationPoint>Point"));
 		return r;
@@ -1089,7 +1089,7 @@ flashimport.SymbolLoader.prototype = {
 			this.log("FONT MAP: " + face + " -> " + font.face + " / " + (font.style != ""?font.style:"regular"));
 		}
 		var font1 = this.fontMap.get(face);
-		return new nanofl.TextRun(StringTools.replace(stdlib.Utf8.htmlUnescape(htmlparser.HtmlParserTools.findOne(textRun,">characters").innerHTML),"\r","\n"),htmlparser.HtmlParserTools.getAttr(textAttrs,"fillColor","#000000"),font1.face,font1.style,htmlparser.HtmlParserTools.getAttr(textAttrs,"size",12.0),htmlparser.HtmlParserTools.getAttr(textAttrs,"alignment","left"),0,null,null);
+		return nanofl.TextRun.create(StringTools.replace(stdlib.Utf8.htmlUnescape(htmlparser.HtmlParserTools.findOne(textRun,">characters").innerHTML),"\r","\n"),htmlparser.HtmlParserTools.getAttr(textAttrs,"fillColor","#000000"),font1.face,font1.style,htmlparser.HtmlParserTools.getAttr(textAttrs,"size",12.0),htmlparser.HtmlParserTools.getAttr(textAttrs,"alignment","left"),0,null);
 	}
 	,loadColorEffect: function(color) {
 		if(color == null) return null;

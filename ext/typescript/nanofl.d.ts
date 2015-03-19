@@ -7029,6 +7029,7 @@ declare module nanofl.engine.strokes
 		equ(e:nanofl.engine.strokes.IStroke) : boolean;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		applyAlpha(alpha:number) : void;
+		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.strokes.IStroke;
 		toString() : string;
 	}
 	
@@ -7210,7 +7211,7 @@ declare module nanofl.ide
 		newObjectParams : nanofl.ide.NewObjectParams;
 		pid : string;
 		plugins : nanofl.ide.IPlugins;
-		quit(force?:boolean) : void;
+		quit(force?:boolean, exitCode?:number) : void;
 		saveDocumentIfNeed(callb:() => void) : void;
 		serverApi : nanofl.engine.ServerApi;
 	}
@@ -7241,6 +7242,7 @@ declare module nanofl.ide
 		updateTitle() : void;
 		save(callb?:() => void) : void;
 		saveAs(newPath?:string, callb?:() => void) : void;
+		resize(width:number, height:number) : void;
 		test() : void;
 	}
 	
@@ -7487,7 +7489,7 @@ declare module nanofl.ide
 		readDirectory(path:string) : string[];
 		exists(path:string) : boolean;
 		getContent(filePath:string) : string;
-		saveContent(filePath:string, text:string) : void;
+		saveContent(filePath:string, text:string, append?:boolean) : void;
 		saveBinary(filePath:string, data:number[]) : void;
 		isDirectory(path:string) : boolean;
 		run(filePath:string, args:string[], blocking:boolean) : void;
@@ -7524,6 +7526,7 @@ declare module nanofl.engine.elements
 		setState(state:nanofl.ide.undo.states.ElementState) : void;
 		getUsedItems() : nanofl.engine.libraryitems.LibraryItem[];
 		getUsedFilters() : string[];
+		transform(m:nanofl.engine.geom.Matrix) : void;
 		toString() : string;
 		static parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.elements.Element;
 	}
@@ -7555,6 +7558,7 @@ declare module nanofl.engine.elements
 		getNavigatorIcon() : string;
 		getChildren() : nanofl.engine.elements.Element[];
 		getTimeline() : nanofl.engine.ITimeline;
+		transform(m:nanofl.engine.geom.Matrix) : void;
 	}
 	
 	export class Instance extends nanofl.engine.elements.Element implements nanofl.engine.IPathElement
@@ -7640,7 +7644,7 @@ declare module nanofl.engine.elements
 	
 	export class TextElement extends nanofl.engine.elements.Element
 	{
-		constructor(name:string, width:number, height:number, selectable:boolean, border:boolean, textRuns:nanofl.TextRun[], newTextFormat:nanofl.TextRun);
+		constructor(name:string, width:number, height:number, selectable:boolean, border:boolean, textRuns:nanofl.TextRun[], newTextFormat?:nanofl.TextRun);
 		name : string;
 		width : number;
 		height : number;
@@ -7656,6 +7660,7 @@ declare module nanofl.engine.elements
 		clone() : nanofl.engine.elements.Element;
 		getState() : nanofl.ide.undo.states.ElementState;
 		setState(_state:nanofl.ide.undo.states.ElementState) : void;
+		transform(m:nanofl.engine.geom.Matrix) : void;
 	}
 }
 
@@ -7940,25 +7945,6 @@ declare module nanofl
 		update(params?:any) : void;
 	}
 	
-	export class TextRun
-	{
-		constructor(characters:string, fillColor:string, family:string, style:string, size:number, align:string, strokeSize:number, strokeColor:string, backgroundColor:string);
-		characters : string;
-		fillColor : string;
-		family : string;
-		style : string;
-		size : number;
-		align : string;
-		strokeSize : number;
-		strokeColor : string;
-		backgroundColor : string;
-		getFontString() : string;
-		clone() : nanofl.TextRun;
-		duplicate(characters?:string) : nanofl.TextRun;
-		equ(textRun:nanofl.TextRun) : boolean;
-		static optimize(textRuns:nanofl.TextRun[]) : nanofl.TextRun[];
-	}
-	
 	export class TextField extends createjs.Container
 	{
 		constructor(width?:number, height?:number, selectable?:boolean, border?:boolean, dashedBorder?:boolean, textRuns?:nanofl.TextRun[], newTextFormat?:nanofl.TextRun);
@@ -7985,6 +7971,25 @@ declare module nanofl
 		static PADDING : number;
 		static measureFontHeight(family:string, style:string, size:number) : number;
 		static measureFontBaselineCoef(family:string, style:string) : number;
+	}
+	
+	export class TextRun
+	{
+		constructor();
+		characters : string;
+		fillColor : string;
+		family : string;
+		style : string;
+		size : number;
+		align : string;
+		strokeSize : number;
+		strokeColor : string;
+		getFontString() : string;
+		clone() : nanofl.TextRun;
+		duplicate(characters?:string) : nanofl.TextRun;
+		equ(textRun:nanofl.TextRun) : boolean;
+		static create(characters:string, fillColor:string, family:string, style:string, size:number, align:string, strokeSize:number, strokeColor:string) : nanofl.TextRun;
+		static optimize(textRuns:nanofl.TextRun[]) : nanofl.TextRun[];
 	}
 }
 
@@ -8135,7 +8140,7 @@ declare module nanofl.engine
 		getToolsDirectory() : string;
 		readDirectory(dir:string) : string[];
 		getContent(filePath:string) : string;
-		saveContent(filePath:string, text:string) : void;
+		saveContent(filePath:string, text:string, append?:boolean) : void;
 		saveBinary(filePath:string, data:number[]) : void;
 		exists(path:string) : boolean;
 		isDirectory(path:string) : boolean;
@@ -8693,6 +8698,7 @@ declare module nanofl.engine.libraryitems
 		getUsedItems() : nanofl.engine.libraryitems.LibraryItem[];
 		getUsedFilters() : string[];
 		getDisplayObjectClassName() : string;
+		transform(m:nanofl.engine.geom.Matrix) : void;
 		toString() : string;
 		static load(namePath:string, libraryDir:string, fileApi:nanofl.engine.FileApi) : nanofl.engine.libraryitems.MovieClipItem;
 		static parse(namePath:string, movieClipNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MovieClipItem;

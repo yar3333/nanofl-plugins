@@ -31,6 +31,7 @@ extern class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem im
 	override function getUsedItems() : Array<nanofl.engine.libraryitems.LibraryItem>;
 	override function getUsedFilters() : Array<String>;
 	override function getDisplayObjectClassName() : String;
+	function transform(m:nanofl.engine.geom.Matrix) : Void;
 	override function toString() : String;
 	static function load(namePath:String, libraryDir:String, fileApi:nanofl.engine.FileApi) : nanofl.engine.libraryitems.MovieClipItem;
 	static function parse(namePath:String, movieClipNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MovieClipItem;

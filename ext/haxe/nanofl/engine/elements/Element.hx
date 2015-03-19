@@ -20,6 +20,7 @@ extern class Element
 	function setState(state:nanofl.ide.undo.states.ElementState) : Void;
 	function getUsedItems() : Array<nanofl.engine.libraryitems.LibraryItem>;
 	function getUsedFilters() : Array<String>;
+	function transform(m:nanofl.engine.geom.Matrix) : Void;
 	function toString() : String;
 	static function parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.elements.Element;
 }
