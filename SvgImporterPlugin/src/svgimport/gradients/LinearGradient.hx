@@ -34,8 +34,8 @@ class LinearGradient extends Gradient
 		
 		if (x1 == 0 && y1 == 0 && x2 == 0 && y2 == 0)
 		{
-			x1 = 0.5;
-			x2 = 1.0;
+			x1 = 0.0;
+			x2 = 0.5;
 		}
 	}
 	
@@ -51,6 +51,8 @@ class LinearGradient extends Gradient
 			m.scale(Math.sqrt(w*w + h*h) / 2, 1);
 			
 			m.rotate(Math.atan2(y2 - y1, x2 - x1));
+			
+			m.appendMatrix(matrix);
 			
 			m.translate((x1 + x2) / 2, (y1 + y2) / 2);
 		}
@@ -69,10 +71,12 @@ class LinearGradient extends Gradient
 			var h = bounds.maxY - bounds.minY;
 			m.scale(w, h);
 			
-			m.translate(x1 * w, y1 * h);
+			m.translate(x1*w, y1*h);
+			
+			m.appendMatrix(matrix);
+			
+			m.translate(bounds.minX, bounds.minY);
 		}
-		
-		m.appendMatrix(matrix);
 		
 		return m;
 	}
