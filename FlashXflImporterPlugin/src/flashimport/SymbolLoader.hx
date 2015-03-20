@@ -353,10 +353,13 @@ class SymbolLoader
 			textAttrs.getAttr("fillColor", "#000000"),
 			font.face,
 			font.style,
-			textAttrs.getAttr("size", 12.0),
+			textAttrs.getAttrFloat("size", 12.0),
 			textAttrs.getAttr("alignment", "left"),
 			0,
-			null
+			"#000000",
+			textAttrs.getAttrBool("autoKern", false),
+			textAttrs.getAttrFloat("letterSpacing", 0),
+			textAttrs.getAttrFloat("lineSpacing", 2)
 		);
 	}
 	

@@ -82,7 +82,20 @@ class SvgText
 			case _:
 		}
 		
-		var r = new TextElement(name, 0, 0, false, false, [ TextRun.create(text, fillColor, fontFamily, "", fontSize, "left", strokeWidth, color) ]);
+		var r = new TextElement(name, 0, 0, false, false, [ TextRun.create
+		(
+			text,
+			fillColor,
+			fontFamily,
+			"",
+			fontSize,
+			"left",
+			strokeWidth,
+			color,
+			true,
+			letterSpacing,
+			0
+		) ]);
 		r.matrix = matrix.clone();
 		r.matrix.translate(x, y);
 		

@@ -7975,7 +7975,7 @@ declare module nanofl
 	
 	export class TextRun
 	{
-		constructor();
+		constructor(characters?:string, fillColor?:string, size?:number);
 		characters : string;
 		fillColor : string;
 		family : string;
@@ -7984,11 +7984,14 @@ declare module nanofl
 		align : string;
 		strokeSize : number;
 		strokeColor : string;
+		kerning : boolean;
+		letterSpacing : number;
+		lineSpacing : number;
 		getFontString() : string;
 		clone() : nanofl.TextRun;
 		duplicate(characters?:string) : nanofl.TextRun;
 		equ(textRun:nanofl.TextRun) : boolean;
-		static create(characters:string, fillColor:string, family:string, style:string, size:number, align:string, strokeSize:number, strokeColor:string) : nanofl.TextRun;
+		static create(characters:string, fillColor:string, family:string, style:string, size:number, align:string, strokeSize:number, strokeColor:string, kerning:boolean, letterSpacing:number, lineSpacing:number) : nanofl.TextRun;
 		static optimize(textRuns:nanofl.TextRun[]) : nanofl.TextRun[];
 	}
 }

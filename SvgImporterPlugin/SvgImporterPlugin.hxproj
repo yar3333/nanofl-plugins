@@ -48,7 +48,7 @@ cmd /C "IF EXIST support xcopy /E /Q /Y support ..\bin\$(ProjectName) &gt; nul"<
   <options>
     <option showHiddenPaths="False" />
     <option testMovie="Custom" />
-    <option testMovieCommand="..\..\ide\standalone.cmd ..\..\docs\svg_samples\410.svg" />
+    <option testMovieCommand="..\..\ide\standalone.cmd ..\..\site\content\docs\svg\images\twitter.svg -resize-fit 300x200" />
   </options>
   <!-- Plugin storage -->
   <storage />
