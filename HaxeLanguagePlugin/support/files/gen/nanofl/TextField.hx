@@ -6,7 +6,6 @@ extern class TextField extends createjs.Container
 	var height : Float;
 	var minHeight(default, never) : Float;
 	var minWidth(default, never) : Float;
-	var selectable : Bool;
 	var text : String;
 	var textRuns : Array<nanofl.TextRun>;
 	var width : Float;

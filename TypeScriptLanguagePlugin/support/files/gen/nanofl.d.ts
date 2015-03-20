@@ -55,7 +55,6 @@ declare module nanofl
 		height : number;
 		minHeight : number;
 		minWidth : number;
-		selectable : boolean;
 		text : string;
 		textRuns : TextRun[];
 		width : number;
