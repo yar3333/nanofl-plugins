@@ -1,5 +1,6 @@
 package svgimport;
 
+import createjs.Rectangle;
 import htmlparser.HtmlNodeElement;
 import svgimport.gradients.GradientType;
 using StringTools;
@@ -8,6 +9,8 @@ class Svg extends SvgGroup
 {
 	public var height(default, null) : Float;
 	public var width(default, null) : Float;
+	
+	public var viewBox : Rectangle;
 	
 	public function new(xml:HtmlNodeElement)
 	{
@@ -21,6 +24,23 @@ class Svg extends SvgGroup
 		width = 400.0;
 		height = 400.0;
 		
+		
+		if (svg.hasAttribute("viewBox"))
+		{
+			var params = ~/\s+/g.split(svg.getAttribute("viewBox"));
+			if (params.length == 4)
+			{
+				viewBox = new Rectangle
+				(
+					Std.parseFloat(params[0]),
+					Std.parseFloat(params[1]),
+					Std.parseFloat(params[2]),
+					Std.parseFloat(params[3])
+				);
+			}
+		}
+		
+		
 		if (svg.hasAttribute("width") && !svg.getAttribute("width").endsWith("%")
 		 && svg.hasAttribute("height") && !svg.getAttribute("height").endsWith("%"))
 		{
@@ -28,17 +48,22 @@ class Svg extends SvgGroup
 			height = XmlTools.getFloatStyle(svg, "height", null, 400.0);
 		}
 		else
-		if (svg.hasAttribute("viewBox"))
+		if (viewBox!=null)
 		{
-			var viewBoxValues = ~/\s+/g.split(svg.getAttribute("viewBox"));
-			if (viewBoxValues.length == 4)
-			{
-				width = Std.parseFloat(viewBoxValues[2]);
-				height = Std.parseFloat(viewBoxValues[3]);
-			}
+			width = viewBox.width;
+			height = viewBox.height;
 		}
 		
-		super(svg, null, new Map<String, SvgElement>(), new Map<String, GradientType>());
+		svgWidth = viewBox != null ? viewBox.width : width;
+		
+		super
+		(
+			svg,
+			svgWidth,
+			null,
+			new Map<String, SvgElement>(),
+			new Map<String, GradientType>()
+		);
 	}
 	
 }

@@ -13,7 +13,7 @@ class LinearGradient extends Gradient
 	public var x2 : Float;
 	public var y2 : Float;
 	
-	function new(node:HtmlNodeElement, baseType:GradientType) 
+	function new(node:HtmlNodeElement, baseType:GradientType, svgWidth:Float) 
 	{
 		super(node, baseType);
 		
@@ -27,15 +27,34 @@ class LinearGradient extends Gradient
 			};
 		}
 		
-		x1 = node.getFloatValue("x1", base != null ? base.x1 : 0);
-		y1 = node.getFloatValue("y1", base != null ? base.y1 : 0);
-		x2 = node.getFloatValue("x2", base != null ? base.x2 : 0);
-		y2 = node.getFloatValue("y2", base != null ? base.y2 : 0);
+		x1 = node.getFloatValue("x1", base != null ? base.x1 : null);
+		y1 = node.getFloatValue("y1", base != null ? base.y1 : null);
+		x2 = node.getFloatValue("x2", base != null ? base.x2 : null);
+		y2 = node.getFloatValue("y2", base != null ? base.y2 : null);
 		
-		if (x1 == 0 && y1 == 0 && x2 == 0 && y2 == 0)
+		if (gradientUnits != "userSpaceOnUse")
 		{
-			x1 = 0.0;
-			x2 = 0.5;
+			if (x1 == null && y1 == null && x2 == null && y2 == null)
+			{
+				x1 = 0;
+				y1 = 0;
+				x2 = 0.5;
+				y2 = 0;
+			}
+			else
+			{
+				if (x1 == null) x1 = 0;
+				if (y1 == null) y1 = 0;
+				if (x2 == null) x2 = 0;
+				if (y2 == null) y2 = 0;
+			}
+		}
+		else
+		{
+			if (x1 == null) x1 = 0;
+			if (y1 == null) y1 = 0;
+			if (x2 == null) x2 = svgWidth;
+			if (y2 == null) y2 = 0;
 		}
 	}
 	

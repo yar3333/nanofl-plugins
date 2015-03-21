@@ -9,6 +9,8 @@ using svgimport.XmlTools;
 
 class SvgGroup
 {
+	public var svgWidth : Float;
+	
 	public var node : HtmlNodeElement;
 	
 	public var elements : Map<String, SvgElement>;
@@ -20,8 +22,10 @@ class SvgGroup
 	public var matrix : Matrix;
 	public var visible : Bool;
 	
-	public function new(node:HtmlNodeElement, styles:Map<String, String>, elements:Map<String, SvgElement>, gradients:Map<String, GradientType>, ?id:String) : Void
+	public function new(node:HtmlNodeElement, svgWidth:Float, styles:Map<String, String>, elements:Map<String, SvgElement>, gradients:Map<String, GradientType>, ?id:String) : Void
 	{
+		this.svgWidth = svgWidth;
+		
 		this.node = node;
 		
 		this.elements = elements;
@@ -45,7 +49,7 @@ class SvgGroup
 					loadDefs(child);
 					
 				case "g":
-					children.push(SvgElement.DisplayGroup(new SvgGroup(child, styles, elements, gradients)));
+					children.push(SvgElement.DisplayGroup(new SvgGroup(child, svgWidth, styles, elements, gradients)));
 					
 				case"use":
 					var e = loadUse(child, styles); if (e != null) children.push(e);
@@ -79,7 +83,7 @@ class SvgGroup
 			{
 				case "linearGradient":	loadGradient(child);
 				case "radialGradient":	loadGradient(child);
-				case "g":				new SvgGroup(child, null, elements, gradients);
+				case "g":				new SvgGroup(child, svgWidth, null, elements, gradients);
 				case "path", "line", "polyline", "rect", "polygon", "ellipse", "circle": new SvgPath(child, null, elements, gradients);
 				case _:					trace("Unknown tag '" + child.name + "'.");
 			}
@@ -127,7 +131,7 @@ class SvgGroup
 			var gradID = node.getAttribute("id");
 			if (!gradients.exists(gradID))
 			{
-				gradients.set(gradID, Gradient.load(node, baseGradID != null ? gradients.get(baseGradID) : null));
+				gradients.set(gradID, Gradient.load(node, baseGradID != null ? gradients.get(baseGradID) : null, svgWidth));
 			}
 		}
 	}

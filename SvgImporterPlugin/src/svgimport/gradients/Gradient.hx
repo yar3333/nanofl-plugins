@@ -46,11 +46,11 @@ class Gradient
 		if (base != null) matrix.prependMatrix(base.matrix);
 	}
 	
-	public static function load(node:HtmlNodeElement, ?baseType:GradientType) : GradientType
+	public static function load(node:HtmlNodeElement, ?baseType:GradientType, svgWidth:Float) : GradientType
 	{
 		switch (XmlTools.normalizeTag(node.name))
 		{
-			case "linearGradient": return GradientType.LINEAR(new LinearGradient(node, baseType));
+			case "linearGradient": return GradientType.LINEAR(new LinearGradient(node, baseType, svgWidth));
 			case "radialGradient": return GradientType.RADIAL(new RadialGradient(node, baseType));
 			case _: throw "Unknow gradient tag '" + node.name + "'.";
 		};

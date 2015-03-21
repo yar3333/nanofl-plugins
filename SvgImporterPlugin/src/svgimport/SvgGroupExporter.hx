@@ -42,7 +42,7 @@ class SvgGroupExporter
 						switch (group.elements.get(id))
 						{
 							case SvgElement.DisplayGroup(base):
-								var g = new SvgGroup(base.node, styles, group.elements, group.gradients, getNextFreeID(group.elements, library, base.id));
+								var g = new SvgGroup(base.node, base.svgWidth, styles, group.elements, group.gradients, getNextFreeID(group.elements, library, base.id));
 								SvgGroupExporter.run(g, library);
 								id = g.id;
 								
