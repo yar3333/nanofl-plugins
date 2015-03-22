@@ -1,6 +1,5 @@
 package svgimport;
 
-import createjs.Rectangle;
 import htmlparser.HtmlNodeElement;
 import svgimport.gradients.GradientType;
 using StringTools;
