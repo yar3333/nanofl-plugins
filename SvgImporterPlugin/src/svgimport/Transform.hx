@@ -20,8 +20,13 @@ class Transform
 						matrix.appendTransform(Std.parseFloat(params[0]), Std.parseFloat(params[1]));
 					}
 					else
+					if (params.length == 1)
 					{
-						trace("Transform/translate: expect two params.");
+						matrix.appendTransform(Std.parseFloat(params[0]), 0);
+					}
+					else
+					{
+						trace("Transform/translate: expect two params (" + params.length + ").");
 					}
 					
 				case "scale":
