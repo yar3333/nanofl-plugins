@@ -50,7 +50,7 @@ class SvgText
 		
 		stroke = XmlTools.getStrokeStyle(textNode, "stroke", styles, gradients);
 		strokeAlpha = XmlTools.getFloatStyle(textNode, "stroke-opacity", styles, 1);
-		strokeWidth = XmlTools.getFloatStyle(textNode, "stroke-width", styles, 0);
+		strokeWidth = XmlTools.getFloatStyle(textNode, "stroke-width", styles, 1);
 		
 		fontFamily = XmlTools.getStyle(textNode, "font-family", styles, "");
 		fontSize = XmlTools.getFloatStyle(textNode, "font-size", styles, 12);
@@ -75,12 +75,12 @@ class SvgText
 		
 		//trace(stdlib.Debug.getDump(this));
 		
-		var color = "#000000";
-		switch (stroke)
+		var color = switch (stroke)
 		{
-			case StrokeType.StrokeSolid(c): color = c;
-			case _:
-		}
+			case StrokeType.StrokeSolid(c):	c;
+			case StrokeType.StrokeNone:		null;
+			case _:							"#000000";
+		};
 		
 		var r = new TextElement(name, 0, 0, false, false, [ TextRun.create
 		(
