@@ -39,19 +39,28 @@ class SvgGroupExporter
 				case SvgElement.DisplayUse(id, matrix, styles, visible):
 					if (styles.keys().hasNext())
 					{
-						switch (group.elements.get(id))
+						var element = group.elements.get(id);
+						if (element != null)
 						{
-							case SvgElement.DisplayGroup(base):
-								var g = new SvgGroup(base.node, base.svgWidth, styles, group.elements, group.gradients, getNextFreeID(group.elements, library, base.id));
-								SvgGroupExporter.run(g, library);
-								id = g.id;
-								
-							case SvgElement.DisplayPath(base):
-								var p = new SvgPath(base.node, styles, group.elements, group.gradients, getNextFreeID(group.elements, library, base.id));
-								library.addItem(p.toLibraryItem());
-								id = p.id;
-								
-							case _:
+							switch (element)
+							{
+								case SvgElement.DisplayGroup(base):
+									var g = new SvgGroup(base.node, base.svgWidth, styles, group.elements, group.gradients, getNextFreeID(group.elements, library, base.id));
+									SvgGroupExporter.run(g, library);
+									id = g.id;
+									
+								case SvgElement.DisplayPath(base):
+									var p = new SvgPath(base.node, styles, group.elements, group.gradients, getNextFreeID(group.elements, library, base.id));
+									var libraryItem = p.toLibraryItem();
+									if (libraryItem != null) library.addItem(libraryItem);
+									id = p.id;
+									
+								case _:
+							}
+						}
+						else
+						{
+							trace("WARNING: Element '" + id + "' is not found.");
 						}
 					}
 					
@@ -101,6 +110,8 @@ class SvgGroupExporter
 	
 	static function getElementMatrix(elem:SvgElement) : Matrix
 	{
+		if (elem == null) return new Matrix();
+		
 		switch (elem)
 		{
 			case SvgElement.DisplayGroup(g): return g.matrix;

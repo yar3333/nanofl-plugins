@@ -89,7 +89,8 @@ class XmlTools
 		{
 			var url = reURLMatch.matched(1);
 			if (gradients.exists(url)) return FillType.FillGrad(gradients.get(url));
-			throw "Unknown url:" + url;
+			trace("WARNING: Unknown url('" + url + "').");
+			return FillType.FillNone;
 		}
 		
 		return FillType.FillSolid(s);
@@ -105,7 +106,8 @@ class XmlTools
 		{
 			var url = reURLMatch.matched(1);
 			if (gradients.exists(url)) return StrokeType.StrokeGrad(gradients.get(url));
-			throw "Unknown url:" + url;
+			trace("WARNING: Unknown url('" + url + "').");
+			return StrokeType.StrokeNone;
 		}
 		
 		return StrokeType.StrokeSolid(s);
@@ -122,7 +124,7 @@ class XmlTools
 		if (xlink == "") return  null;
 		if (!xlink.startsWith("#"))
 		{
-			trace("Unkown xlink syntax: '" + xlink + "'.");
+			trace("WARNING: Unkown xlink syntax ('" + xlink + "').");
 			return null;
 		}
 		return xlink.substring(1);

@@ -11,10 +11,11 @@ class Transform
 		var re = ~/^\s*([a-zA-Z]+)\s*\(([^)]*)\)\s*/;
 		while (re.match(trans))
 		{
+			var params = ~/[ \t\r\n,]+/g.split(re.matched(2));
+			
 			switch (re.matched(1))
 			{
 				case "translate":
-					var params = re.matched(2).split(",");
 					if (params.length == 2)
 					{
 						matrix.appendTransform(Std.parseFloat(params[0]), Std.parseFloat(params[1]));
@@ -30,10 +31,9 @@ class Transform
 					}
 					
 				case "scale":
-					var params = re.matched(2).split(",").map(function(s) return Std.parseFloat(s));
 					if (params.length > 0)
 					{
-						matrix.appendTransform(0, 0, params[0], params.length > 1 ? params[1] : params[0]);
+						matrix.appendTransform(0, 0, Std.parseFloat(params[0]), params.length > 1 ? Std.parseFloat(params[1]) : Std.parseFloat(params[0]));
 					}
 					else
 					{
@@ -41,7 +41,6 @@ class Transform
 					}
 					
 				case "rotate":
-					var params = re.matched(2).split(" ");
 					if (params.length == 1)
 					{
 						matrix.appendTransform(0, 0, 1, 1, Std.parseFloat(params[0]));
@@ -49,14 +48,19 @@ class Transform
 					else
 					if (params.length == 2)
 					{
-						var xy = params[1].split(",").map(function(s) return Std.parseFloat(s));
-						matrix.appendTransform( xy[0],  xy[1], 1, 1, 0);
+						matrix.appendTransform( Std.parseFloat(params[1]),  0, 1, 1, 0);
 						matrix.appendTransform(0, 0, 1, 1, Std.parseFloat(params[0]));
-						matrix.appendTransform(-xy[0], -xy[1]);
+						matrix.appendTransform(-Std.parseFloat(params[1]), 0);
+					}
+					else
+					if (params.length == 3)
+					{
+						matrix.appendTransform( Std.parseFloat(params[1]),  Std.parseFloat(params[2]), 1, 1, 0);
+						matrix.appendTransform(0, 0, 1, 1, Std.parseFloat(params[0]));
+						matrix.appendTransform(-Std.parseFloat(params[1]), -Std.parseFloat(params[2]));
 					}
 					
 				case "matrix":
-					var params = re.matched(2).split(",");
 					if (params.length == 6)
 					{
 						matrix.append

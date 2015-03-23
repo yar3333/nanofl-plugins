@@ -198,9 +198,11 @@ class SvgPath
 	
 	public function toLibraryItem() : LibraryItem
 	{
+		var element = toElement();
+		if (element == null) return null;
 		var mc = new MovieClipItem(id);
 		mc.addLayer(new Layer("auto"));
-		mc.layers[0].addKeyFrame(new KeyFrame([ toElement() ]));
+		mc.layers[0].addKeyFrame(new KeyFrame([ element ]));
 		return mc;
 	}
 }

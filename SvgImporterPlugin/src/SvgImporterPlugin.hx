@@ -66,7 +66,8 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 					SvgGroupExporter.run(group, library);
 					
 				case SvgElement.DisplayPath(path):
-					library.addItem(path.toLibraryItem());
+					var libraryItem = path.toLibraryItem();
+					if (libraryItem != null) library.addItem(libraryItem);
 					
 				case _:
 					trace("ID for item type '" + element.getName() + "' is not supported.");
