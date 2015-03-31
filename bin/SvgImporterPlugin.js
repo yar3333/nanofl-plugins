@@ -1071,28 +1071,28 @@ svgimport.Transform.load = function(trans) {
 	var matrix = new nanofl.engine.geom.Matrix();
 	var re = new EReg("^\\s*([a-zA-Z]+)\\s*\\(([^)]*)\\)\\s*","");
 	while(re.match(trans)) {
-		var params = new EReg("[ \t\r\n,]+","g").split(re.matched(2));
+		var params = new EReg("[ \t\r\n,]+","g").split(re.matched(2)).map(Std.parseFloat);
 		var _g = re.matched(1);
 		switch(_g) {
 		case "translate":
-			if(params.length == 2) matrix.appendTransform(Std.parseFloat(params[0]),Std.parseFloat(params[1])); else if(params.length == 1) matrix.appendTransform(Std.parseFloat(params[0]),0); else console.log("Transform/translate: expect two params (" + params.length + ").");
+			if(params.length == 2) matrix.appendTransform(params[0],params[1]); else if(params.length == 1) matrix.appendTransform(params[0],0); else console.log("Transform/translate: invalid params '" + re.matched(2) + "'.");
 			break;
 		case "scale":
-			if(params.length > 0) matrix.appendTransform(0,0,Std.parseFloat(params[0]),params.length > 1?Std.parseFloat(params[1]):Std.parseFloat(params[0])); else console.log("Transform/scale: expect one or two params.");
+			if(params.length == 2) matrix.appendTransform(0,0,params[0],params[1]); else if(params.length == 1) matrix.appendTransform(0,0,params[0],params[0]); else console.log("Transform/scale: invalid params '" + re.matched(2) + "'.");
 			break;
 		case "rotate":
-			if(params.length == 1) matrix.appendTransform(0,0,1,1,Std.parseFloat(params[0])); else if(params.length == 2) {
-				matrix.appendTransform(Std.parseFloat(params[1]),0,1,1,0);
-				matrix.appendTransform(0,0,1,1,Std.parseFloat(params[0]));
-				matrix.appendTransform(-Std.parseFloat(params[1]),0);
+			if(params.length == 1) matrix.appendTransform(0,0,1,1,params[0]); else if(params.length == 2) {
+				matrix.appendTransform(params[1],0,1,1,0);
+				matrix.appendTransform(0,0,1,1,params[0]);
+				matrix.appendTransform(-params[1],0);
 			} else if(params.length == 3) {
-				matrix.appendTransform(Std.parseFloat(params[1]),Std.parseFloat(params[2]),1,1,0);
-				matrix.appendTransform(0,0,1,1,Std.parseFloat(params[0]));
-				matrix.appendTransform(-Std.parseFloat(params[1]),-Std.parseFloat(params[2]));
-			}
+				matrix.appendTransform(params[1],params[2],1,1,0);
+				matrix.appendTransform(0,0,1,1,params[0]);
+				matrix.appendTransform(-params[1],-params[2]);
+			} else console.log("Transform/rotate: invalid params '" + re.matched(2) + "'.");
 			break;
 		case "matrix":
-			if(params.length == 6) matrix.append(Std.parseFloat(params[0]),Std.parseFloat(params[1]),Std.parseFloat(params[2]),Std.parseFloat(params[3]),Std.parseFloat(params[4]),Std.parseFloat(params[5]));
+			if(params.length == 6) matrix.append(params[0],params[1],params[2],params[3],params[4],params[5]);
 			break;
 		default:
 			console.log("Unknow transform: '" + re.matched(1) + "'.");
@@ -1611,6 +1611,16 @@ var Bool = Boolean;
 Bool.__ename__ = ["Bool"];
 var Class = { __name__ : ["Class"]};
 var Enum = { };
+if(Array.prototype.map == null) Array.prototype.map = function(f) {
+	var a = [];
+	var _g1 = 0;
+	var _g = this.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		a[i] = f(this[i]);
+	}
+	return a;
+};
 SvgImporterPlugin.embeddedIcon = "\r\niVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAC\r\n5ElEQVQozz2LbUxbZQBGn7ctLVDpZQKi4KJjAYTGLBIEYU2gxTlKhAhZ0MQxZupMNoPBBbP5gX/Q\r\naKIGTDSaiM5snciHwB0lHTKENWxZMAxi1LBunSKDNh2jwAps7e199kPnv5Occ0ASqqoKkiIWi2lI\r\noqev356akhJ4cFty8JSz6wWSuO/+a/E/THgmnz7cfLx1QB62PZmf+/tIaxbPt2XTnLvD2z/oqjjy\r\n5tvvjY5NlNyfQRKeyYuFaQ8I5WhlAh/dplVMRr0S6itVNwd3q6lSvJJu0igt9kSmGcGfz43vJgkN\r\nAJwZGrXWW5O0n31ftfXlG3lifSOi9c1viL9ubInltTvaz1/PFZ+csG81ViVDPjNSAeDfsbj4qdne\r\n8XW4v5qLr9mbLj4++DiUGBGJqmjb/xherH5EnPvGa3CeXcUzxQUzAIDu3p+qzE/s9D6UbFABsOPQ\r\nTvK8jVHZwqhsIT02fn0kmwCYJhnU/JwdvpOnfqgVGRmZvvaXdFkFWYkcuxwQkiTBkmeEMcEAIQQ2\r\nNu/g4pVN3AqFUL4rnVeWIuK1724vaQXUD2eurug12ytF7aEP8OPZWQSTrHBOLGPwchSRjGpc+OMm\r\nDhz9AkPTW6Ld6WFg5W68ABC2WCzGru5eDMgu7LFasBlew6h7COHwbdTVvwytzoBL07/heftzeNXx\r\nCtxut6IF8K61vDyupKQYDfvsmByToY1LQEFhISSThLsRBaYkI/bvq8HUr1NY8gcQDAYJvT4uLIRg\r\nT3cXSbLj049oNpu5eOMfeuf+ZMtbx3jpgofvNDtIkgcaGwkgCiFEODMzkznZ2Xw41US/389nK2y8\r\ndtVLv3+J9sq9vO7zEQBH3MNsbX2fACIA4CstLWUoFFI7O7/lwsICkyWJ47+McXZmhvEGPf+en6fz\r\n9Gn6/QHVZrMRwCI0Gs1BAKt1dXUxl8sVLSsrUwAoDodDaWpqUgAoRUVFiizL0YaGhhiAdZ1O57gH\r\nue+ALxPHGYEAAAAASUVORK5CYII=\r\n";
 svgimport.SegmentsParser.MOVE = 77;
 svgimport.SegmentsParser.MOVER = 109;
