@@ -809,8 +809,6 @@ svgimport.SvgPath = function(node,baseStyles,elements,gradients,id) {
 			++_g1;
 			this.segments.push(segment);
 		}
-		this.strokeCaps = "round";
-		this.strokeJoints = "round";
 	}
 };
 svgimport.SvgPath.__name__ = true;

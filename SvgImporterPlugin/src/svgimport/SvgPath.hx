@@ -146,9 +146,6 @@ class SvgPath
 				{
 					segments.push(segment);
 				}
-				
-				strokeCaps = "round";
-				strokeJoints = "round";
 		}
 	}
 	
