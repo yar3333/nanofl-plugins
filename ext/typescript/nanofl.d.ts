@@ -7403,7 +7403,7 @@ declare module nanofl.ide
 		hasSelectedEdges() : boolean;
 		hasSelectedPolygons() : boolean;
 		updateShapes() : void;
-		getSelectedEdgesStrokeParams() : { bitmapPath : string; color : string; colors : string[]; ratios : number[]; thickness : number; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
+		getSelectedEdgesStrokeParams() : { bitmapPath : string; caps : string; color : string; colors : string[]; ignoreScale : boolean; joints : string; miterLimit : number; ratios : number[]; thickness : number; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
 		getSelectedPolygonsFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; ratios : number[]; type : string; };
 		selectAll() : void;
 		deselectAll() : void;
@@ -7413,7 +7413,7 @@ declare module nanofl.ide
 		translateSelected(dx:number, dy:number) : void;
 		transformSelected(m:nanofl.engine.geom.Matrix) : void;
 		setSelectedPolygonsFillParams(params:{ bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; ratios : number[]; }) : void;
-		setSelectedEdgesStrokeParams(params:{ bitmapPath : string; color : string; colors : string[]; ratios : number[]; thickness : number; x0 : number; x1 : number; y0 : number; y1 : number; }) : void;
+		setSelectedEdgesStrokeParams(params:{ bitmapPath : string; caps : string; color : string; colors : string[]; ignoreScale : boolean; joints : string; miterLimit : number; ratios : number[]; thickness : number; x0 : number; x1 : number; y0 : number; y1 : number; }) : void;
 		setSelectedPolygonsFill(fill:nanofl.engine.fills.IFill, x1?:number, y1?:number, x2?:number, y2?:number) : void;
 		setSelectedEdgesStroke(stroke:nanofl.engine.strokes.IStroke) : void;
 		combine_vertex(x:number, y:number) : void;
@@ -7456,8 +7456,8 @@ declare module nanofl.ide
 		textFormat : nanofl.TextRun;
 		setStroke(stroke:nanofl.engine.strokes.IStroke) : void;
 		setFill(fill:nanofl.engine.fills.IFill) : void;
-		setStrokeParams(p:{ bitmapPath : string; color : string; colors : string[]; ratios : number[]; thickness : number; x0 : number; x1 : number; y0 : number; y1 : number; }) : void;
-		getStrokeParams() : { color : string; thickness : number; type : string; };
+		setStrokeParams(p:{ bitmapPath : string; caps : string; color : string; colors : string[]; ignoreScale : boolean; joints : string; miterLimit : number; ratios : number[]; thickness : number; x0 : number; x1 : number; y0 : number; y1 : number; }) : void;
+		getStrokeParams() : { caps : string; color : string; ignoreScale : boolean; joints : string; miterLimit : number; thickness : number; type : string; };
 		setFillParams(p:{ bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; ratios : number[]; }) : void;
 		getFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; ratios : number[]; type : string; };
 		getStrokeByType(type:string) : nanofl.engine.strokes.IStroke;
@@ -7483,9 +7483,13 @@ declare module nanofl.ide
 		strokePane : boolean;
 		fillPane : boolean;
 		roundRadiusPane : boolean;
+		noneStroke : boolean;
+		noneFill : boolean;
 		showStrokePane() : nanofl.ide.ShapePropertiesOptions;
 		showFillPane() : nanofl.ide.ShapePropertiesOptions;
 		showRoundRadiusPane() : nanofl.ide.ShapePropertiesOptions;
+		disallowNoneStroke() : nanofl.ide.ShapePropertiesOptions;
+		disallowNoneFill() : nanofl.ide.ShapePropertiesOptions;
 	}
 	
 	export class XpcomFileApi implements nanofl.engine.FileApi
@@ -7627,8 +7631,8 @@ declare module nanofl.engine.elements
 		getNearestPolygonEdge(pt:nanofl.engine.geom.Point) : { dist : number; edge : nanofl.engine.geom.Edge; point : nanofl.engine.geom.Point; t : number; };
 		getNearestVertex(pt:nanofl.engine.geom.Point, excludeSelf?:boolean) : { dist : number; distMinusEdgeThickness : number; point : nanofl.engine.geom.Point; };
 		setSelectedEdgesStroke(stroke:nanofl.engine.strokes.IStroke) : void;
-		setSelectedEdgesStrokeParams(params:{ bitmapPath : string; color : string; colors : string[]; ratios : number[]; thickness : number; x0 : number; x1 : number; y0 : number; y1 : number; }) : void;
-		getSelectedEdgesStrokeParams() : { bitmapPath : string; color : string; colors : string[]; ratios : number[]; thickness : number; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
+		setSelectedEdgesStrokeParams(params:{ bitmapPath : string; caps : string; color : string; colors : string[]; ignoreScale : boolean; joints : string; miterLimit : number; ratios : number[]; thickness : number; x0 : number; x1 : number; y0 : number; y1 : number; }) : void;
+		getSelectedEdgesStrokeParams() : { bitmapPath : string; caps : string; color : string; colors : string[]; ignoreScale : boolean; joints : string; miterLimit : number; ratios : number[]; thickness : number; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
 		setSelectedPolygonsFill(fill:nanofl.engine.fills.IFill, x1?:number, y1?:number, x2?:number, y2?:number) : void;
 		setSelectedPolygonsFillParams(params:{ bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; ratios : number[]; }) : void;
 		getSelectedPolygonsFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; ratios : number[]; type : string; };

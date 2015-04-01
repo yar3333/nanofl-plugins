@@ -13,15 +13,19 @@ extern class NewObjectParams
 	function setFill(fill:nanofl.engine.fills.IFill) : Void;
 	function setStrokeParams(p:{ @:optional
 	var bitmapPath : String; @:optional
+	var caps : String; @:optional
 	var color : String; @:optional
 	var colors : Array<String>; @:optional
+	var ignoreScale : Bool; @:optional
+	var joints : String; @:optional
+	var miterLimit : Float; @:optional
 	var ratios : Array<Float>; @:optional
 	var thickness : Float; @:optional
 	var x0 : Float; @:optional
 	var x1 : Float; @:optional
 	var y0 : Float; @:optional
 	var y1 : Float; }) : Void;
-	function getStrokeParams() : { var color : String; var thickness : Float; var type : String; };
+	function getStrokeParams() : { var caps : String; var color : String; var ignoreScale : Bool; var joints : String; var miterLimit : Float; var thickness : Float; var type : String; };
 	function setFillParams(p:{ @:optional
 	var bitmapPath : String; @:optional
 	var color : String; @:optional

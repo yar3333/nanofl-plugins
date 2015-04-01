@@ -16,7 +16,7 @@ extern class Figure
 	@:profile
 	function updateShapes() : Void;
 	@:profile
-	function getSelectedEdgesStrokeParams() : { var bitmapPath : String; var color : String; var colors : Array<String>; var ratios : Array<Float>; var thickness : Float; var type : String; var x0 : Float; var x1 : Float; var y0 : Float; var y1 : Float; };
+	function getSelectedEdgesStrokeParams() : { var bitmapPath : String; var caps : String; var color : String; var colors : Array<String>; var ignoreScale : Bool; var joints : String; var miterLimit : Float; var ratios : Array<Float>; var thickness : Float; var type : String; var x0 : Float; var x1 : Float; var y0 : Float; var y1 : Float; };
 	@:profile
 	function getSelectedPolygonsFillParams() : { var bitmapPath : String; var color : String; var colors : Array<String>; var matrix : nanofl.engine.geom.Matrix; var ratios : Array<Float>; var type : String; };
 	function selectAll() : Void;
@@ -35,8 +35,12 @@ extern class Figure
 	var ratios : Array<Float>; }) : Void;
 	function setSelectedEdgesStrokeParams(params:{ @:optional
 	var bitmapPath : String; @:optional
+	var caps : String; @:optional
 	var color : String; @:optional
 	var colors : Array<String>; @:optional
+	var ignoreScale : Bool; @:optional
+	var joints : String; @:optional
+	var miterLimit : Float; @:optional
 	var ratios : Array<Float>; @:optional
 	var thickness : Float; @:optional
 	var x0 : Float; @:optional
