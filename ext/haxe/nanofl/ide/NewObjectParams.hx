@@ -12,8 +12,15 @@ extern class NewObjectParams
 	function setStroke(stroke:nanofl.engine.strokes.IStroke) : Void;
 	function setFill(fill:nanofl.engine.fills.IFill) : Void;
 	function setStrokeParams(p:{ @:optional
+	var bitmapPath : String; @:optional
 	var color : String; @:optional
-	var thickness : Float; }) : Void;
+	var colors : Array<String>; @:optional
+	var ratios : Array<Float>; @:optional
+	var thickness : Float; @:optional
+	var x0 : Float; @:optional
+	var x1 : Float; @:optional
+	var y0 : Float; @:optional
+	var y1 : Float; }) : Void;
 	function getStrokeParams() : { var color : String; var thickness : Float; var type : String; };
 	function setFillParams(p:{ @:optional
 	var bitmapPath : String; @:optional

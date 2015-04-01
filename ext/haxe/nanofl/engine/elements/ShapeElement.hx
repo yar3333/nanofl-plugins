@@ -8,7 +8,7 @@ extern class ShapeElement extends nanofl.engine.elements.Element
 	override function getType() : String;
 	override function save(out:nanofl.engine.XmlWriter) : Void;
 	function ensureNoTransform() : Void;
-	function drawOnGraphics(g:createjs.Graphics, m:createjs.Matrix2D) : Void;
+	function drawOnGraphics(g:createjs.Graphics, scaleSelection:Float) : Void;
 	override function createDisplayObject(frameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.DisplayObject;
 	override function updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.DisplayObject;
 	override function clone() : nanofl.engine.elements.Element;
@@ -31,9 +31,16 @@ extern class ShapeElement extends nanofl.engine.elements.Element
 	function getNearestVertex(pt:nanofl.engine.geom.Point, ?excludeSelf:Bool) : { var dist : Float; var distMinusEdgeThickness : Float; var point : nanofl.engine.geom.Point; };
 	function setSelectedEdgesStroke(stroke:nanofl.engine.strokes.IStroke) : Void;
 	function setSelectedEdgesStrokeParams(params:{ @:optional
+	var bitmapPath : String; @:optional
 	var color : String; @:optional
-	var thickness : Float; }) : Void;
-	function getSelectedEdgesStrokeParams() : { var color : String; var thickness : Float; var type : String; };
+	var colors : Array<String>; @:optional
+	var ratios : Array<Float>; @:optional
+	var thickness : Float; @:optional
+	var x0 : Float; @:optional
+	var x1 : Float; @:optional
+	var y0 : Float; @:optional
+	var y1 : Float; }) : Void;
+	function getSelectedEdgesStrokeParams() : { var bitmapPath : String; var color : String; var colors : Array<String>; var ratios : Array<Float>; var thickness : Float; var type : String; var x0 : Float; var x1 : Float; var y0 : Float; var y1 : Float; };
 	function setSelectedPolygonsFill(fill:nanofl.engine.fills.IFill, ?x1:Float, ?y1:Float, ?x2:Float, ?y2:Float) : Void;
 	function setSelectedPolygonsFillParams(params:{ @:optional
 	var bitmapPath : String; @:optional

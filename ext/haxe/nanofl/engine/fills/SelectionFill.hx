@@ -2,7 +2,7 @@ package nanofl.engine.fills;
 
 extern class SelectionFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
 {
-	function new(m:createjs.Matrix2D) : Void;
+	function new(scale:Float) : Void;
 	function save(out:nanofl.engine.XmlWriter) : Void;
 	function clone() : nanofl.engine.fills.IFill;
 	function applyAlpha(alpha:Float) : Void;

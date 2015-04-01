@@ -18,7 +18,7 @@ extern class Edge
 	function isStraight() : Bool;
 	function getIntersectionCount_rightRay(mx:Float, my:Float) : Int;
 	function getIntersectionPointsX_rightRay(mx:Float, my:Float) : Array<Float>;
-	function draw(g:createjs.Graphics, m:createjs.Matrix2D) : Void;
+	function drawTo(g:createjs.Graphics) : Void;
 	function equ(e:nanofl.engine.geom.Edge) : Bool;
 	function getNearestPoint(x:Float, y:Float) : { var point : nanofl.engine.geom.Point; var t : Float; };
 	function translate(dx:Float, dy:Float) : Void;

@@ -2,6 +2,11 @@ package nanofl.engine.strokes;
 
 extern interface IStroke
 {
+	var thickness : Float;
+	var caps : String;
+	var joints : String;
+	var miterLimit : Float;
+	var ignoreScale : Bool;
 	function begin(g:createjs.Graphics) : Void;
 	function clone() : nanofl.engine.strokes.IStroke;
 	function getSize() : Float;
