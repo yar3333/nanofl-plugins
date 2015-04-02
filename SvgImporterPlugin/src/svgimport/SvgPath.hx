@@ -80,23 +80,15 @@ class SvgPath
 				}
 				else
 				{
-					segments.push(new MoveSegment(x, y + ry));
-					
-					// top-left
-					segments.push(new QuadraticSegment(x, y, x + rx, y));
+					segments.push(new MoveSegment(x + rx, y));
 					segments.push(new DrawSegment(x + w - rx, y));
-					
-					// top-right
-					segments.push(new QuadraticSegment(x + w, y, x + w, y + rx));
+					segments.push(new QuadraticSegment(x + w, y, x + w, y + ry));
 					segments.push(new DrawSegment(x + w, y + h - ry));
-					
-					// bottom-right
 					segments.push(new QuadraticSegment(x + w, y + h, x + w - rx, y + h));
 					segments.push(new DrawSegment(x + rx, y + h));
-					
-					// bottom-left
 					segments.push(new QuadraticSegment(x, y + h, x, y + h - ry));
 					segments.push(new DrawSegment(x, y + ry));
+					segments.push(new QuadraticSegment(x, y, x + rx, y));
 				}
 				
 			case "ellipse", "circle":
