@@ -465,9 +465,7 @@ svgimport.SegmentsParser.prototype = {
 			var rx6 = this.prevX();
 			var ry6 = this.prevY();
 			return new svgimport.segments.ArcSegment(rx6,ry6,a[0],a[1],a[2],a[3] != 0.,a[4] != 0.,a[5] + rx6,a[6] + ry6);
-		case 90:
-			return new svgimport.segments.DrawSegment(this.lastMoveX,this.lastMoveY);
-		case 122:
+		case 90:case 122:
 			return new svgimport.segments.DrawSegment(this.lastMoveX,this.lastMoveY);
 		}
 		return null;
@@ -750,8 +748,8 @@ svgimport.SvgPath = function(node,baseStyles,elements,gradients,id) {
 	this.strokeJoints = svgimport.XmlTools.getStyle(node,"stroke-linejoin",styles,"miter");
 	this.strokeMiterLimit = svgimport.XmlTools.getFloatStyle(node,"stroke-miterlimit",styles,4.0);
 	this.segments = [];
-	var _g = svgimport.XmlTools.normalizeTag(node.name);
-	switch(_g) {
+	var tag = svgimport.XmlTools.normalizeTag(node.name);
+	switch(tag) {
 	case "rect":
 		var x = svgimport.XmlTools.getFloatValue(node,"x",0);
 		var y = svgimport.XmlTools.getFloatValue(node,"y",0);
@@ -766,15 +764,15 @@ svgimport.SvgPath = function(node,baseStyles,elements,gradients,id) {
 			this.segments.push(new svgimport.segments.DrawSegment(x,y + h));
 			this.segments.push(new svgimport.segments.DrawSegment(x,y));
 		} else {
-			this.segments.push(new svgimport.segments.MoveSegment(x,y + ry));
-			this.segments.push(new svgimport.segments.QuadraticSegment(x,y,x + rx,y));
+			this.segments.push(new svgimport.segments.MoveSegment(x + rx,y));
 			this.segments.push(new svgimport.segments.DrawSegment(x + w - rx,y));
-			this.segments.push(new svgimport.segments.QuadraticSegment(x + w,y,x + w,y + rx));
+			this.segments.push(new svgimport.segments.QuadraticSegment(x + w,y,x + w,y + ry));
 			this.segments.push(new svgimport.segments.DrawSegment(x + w,y + h - ry));
 			this.segments.push(new svgimport.segments.QuadraticSegment(x + w,y + h,x + w - rx,y + h));
 			this.segments.push(new svgimport.segments.DrawSegment(x + rx,y + h));
 			this.segments.push(new svgimport.segments.QuadraticSegment(x,y + h,x,y + h - ry));
 			this.segments.push(new svgimport.segments.DrawSegment(x,y + ry));
+			this.segments.push(new svgimport.segments.QuadraticSegment(x,y,x + rx,y));
 		}
 		break;
 	case "ellipse":case "circle":
@@ -799,16 +797,15 @@ svgimport.SvgPath = function(node,baseStyles,elements,gradients,id) {
 		this.strokeCaps = "round";
 		this.strokeJoints = "round";
 		break;
-	default:
-		var d;
-		if(node.hasAttribute("points")) d = "M" + node.getAttribute("points") + "z"; else if(node.hasAttribute("x1")) d = "M" + node.getAttribute("x1") + "," + node.getAttribute("y1") + " " + node.getAttribute("x2") + "," + node.getAttribute("y2") + "z"; else d = node.getAttribute("d");
-		var _g1 = 0;
-		var _g2 = svgimport.SegmentsParser.run(d);
-		while(_g1 < _g2.length) {
-			var segment = _g2[_g1];
-			++_g1;
-			this.segments.push(segment);
-		}
+	case "polyline":
+		this.segments = this.segments.concat(svgimport.SegmentsParser.run("M" + node.getAttribute("points")));
+		break;
+	case "polygon":
+		this.segments = this.segments.concat(svgimport.SegmentsParser.run("M" + node.getAttribute("points") + "z"));
+		break;
+	case "path":
+		this.segments = this.segments.concat(svgimport.SegmentsParser.run(node.getAttribute("d")));
+		break;
 	}
 };
 svgimport.SvgPath.__name__ = true;
@@ -1368,6 +1365,9 @@ svgimport.segments.Segment.prototype = {
 	}
 	,'export': function(exporter) {
 		throw "Segment.export() must be overriden.";
+	}
+	,toString: function() {
+		return "Segment(" + this.prevX() + "," + this.prevY() + ", " + this.x + "," + this.y + ")";
 	}
 	,__class__: svgimport.segments.Segment
 };

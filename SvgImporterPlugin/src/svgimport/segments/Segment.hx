@@ -19,4 +19,6 @@ class Segment
 	public function prevCY() return y;
 
 	public function export(exporter:SvgPathExporter) throw "Segment.export() must be overriden.";
+	
+	public function toString() return "Segment(" + prevX() + "," + prevY() + ", " + x + "," + y + ")";
 }

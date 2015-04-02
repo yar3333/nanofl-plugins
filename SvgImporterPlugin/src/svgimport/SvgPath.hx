@@ -115,29 +115,14 @@ class SvgPath
 				strokeCaps = "round";
 				strokeJoints = "round";
 				
-			case _:
-				var d : String;
-				if (node.hasAttribute("points"))
-				{
-					d = "M" + node.getAttribute("points") + "z";
-				}
-				else
-				if (node.hasAttribute("x1"))
-				{
-					d = "M" + node.getAttribute("x1") + ","
-							+ node.getAttribute("y1") + " "
-							+ node.getAttribute("x2") + ","
-							+ node.getAttribute("y2") + "z";
-				}
-				else
-				{
-					d = node.getAttribute("d");
-				}
+			case "polyline":
+				segments = segments.concat(SegmentsParser.run("M" + node.getAttribute("points")));
 				
-				for (segment in SegmentsParser.run(d))
-				{
-					segments.push(segment);
-				}
+			case "polygon":
+				segments = segments.concat(SegmentsParser.run("M" + node.getAttribute("points") + "z"));
+				
+			case "path":
+				segments = segments.concat(SegmentsParser.run(node.getAttribute("d")));
 		}
 	}
 	

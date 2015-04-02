@@ -214,53 +214,75 @@ class SegmentsParser
 				lastMoveX = a[0];
 				lastMoveY = a[1];
 				return new MoveSegment(lastMoveX, lastMoveY);
+				
 			case MOVER:
-				lastMoveX = a[0]+prevX();
-				lastMoveY = a[1]+prevY();
+				lastMoveX = a[0] + prevX();
+				lastMoveY = a[1] + prevY();
 				return new MoveSegment(lastMoveX, lastMoveY);
-			case LINE:  return new DrawSegment(a[0], a[1]);
-			case LINER: return new DrawSegment(a[0]+prevX(), a[1]+prevY());
-			case HLINE:  return new DrawSegment(a[0], prevY());
-			case HLINER: return new DrawSegment(a[0]+prevX(), prevY());
-			case VLINE:  return new DrawSegment(prevX(), a[0] );
-			case VLINER: return new DrawSegment(prevX(), a[0]+prevY());
+				
+			case LINE:
+				return new DrawSegment(a[0], a[1]);
+				
+			case LINER:
+				return new DrawSegment(a[0] + prevX(), a[1] + prevY());
+				
+			case HLINE:
+				return new DrawSegment(a[0], prevY());
+				
+			case HLINER:
+				return new DrawSegment(a[0] + prevX(), prevY());
+				
+			case VLINE:
+				return new DrawSegment(prevX(), a[0]);
+				
+			case VLINER:
+				return new DrawSegment(prevX(), a[0] + prevY());
+				
 			case CUBIC:
 				return new CubicSegment(a[0], a[1], a[2], a[3], a[4], a[5]);
+				
 			case CUBICR:
 				var rx = prevX();
 				var ry = prevY();
-				return new CubicSegment(a[0]+rx, a[1]+ry, a[2]+rx, a[3]+ry, a[4]+rx, a[5]+ry);
+				return new CubicSegment(a[0] + rx, a[1] + ry, a[2] + rx, a[3] + ry, a[4] + rx, a[5] + ry);
+				
 			case SCUBIC:
 				var rx = prevX();
 				var ry = prevY();
-				return new CubicSegment(rx*2-prevCX(), ry*2-prevCY(), a[0], a[1], a[2], a[3]);
+				return new CubicSegment(rx * 2 - prevCX(), ry * 2 - prevCY(), a[0], a[1], a[2], a[3]);
+				
 			case SCUBICR:
 				var rx = prevX();
 				var ry = prevY();
-				return new CubicSegment(rx*2-prevCX(), ry*2-prevCY(), a[0]+rx, a[1]+ry, a[2]+rx, a[3]+ry);
-			case QUAD: return new QuadraticSegment(a[0], a[1], a[2], a[3] );
+				return new CubicSegment(rx * 2 - prevCX(), ry * 2 - prevCY(), a[0] + rx, a[1] + ry, a[2] + rx, a[3] + ry);
+				
+			case QUAD:
+				return new QuadraticSegment(a[0], a[1], a[2], a[3]);
+				
 			case QUADR:
 				var rx = prevX();
 				var ry = prevY();
-				return new QuadraticSegment(a[0]+rx, a[1]+ry, a[2]+rx, a[3]+ry);
+				return new QuadraticSegment(a[0] + rx, a[1] + ry, a[2] + rx, a[3] + ry);
+				
 			case SQUAD:
 				var rx = prevX();
 				var ry = prevY();
-				return new QuadraticSegment(rx*2-prevCX(), rx*2-prevCY(), a[2], a[3]);
+				return new QuadraticSegment(rx * 2 - prevCX(), rx * 2 - prevCY(), a[2], a[3]);
+				
 			case SQUADR:
 				var rx = prevX();
 				var ry = prevY();
-				return new QuadraticSegment(rx*2-prevCX(), ry*2-prevCY(), a[0]+rx, a[1]+ry);
+				return new QuadraticSegment(rx * 2 - prevCX(), ry * 2 - prevCY(), a[0] + rx, a[1] + ry);
+				
 			case ARC:
 				return new ArcSegment(prevX(), prevY(), a[0], a[1], a[2], a[3] != 0., a[4] != 0., a[5], a[6]);
+				
 			case ARCR:
 				var rx = prevX();
 				var ry = prevY();
-				return new ArcSegment(rx, ry, a[0], a[1], a[2], a[3] != 0., a[4] != 0., a[5]+rx, a[6]+ry);
-			case CLOSE:
-				return new DrawSegment(lastMoveX, lastMoveY);
+				return new ArcSegment(rx, ry, a[0], a[1], a[2], a[3] != 0., a[4] != 0., a[5] + rx, a[6] + ry);
 				
-			case CLOSER:
+			case CLOSE, CLOSER:
 				return new DrawSegment(lastMoveX, lastMoveY);
         }
 		
