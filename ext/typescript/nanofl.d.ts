@@ -6714,8 +6714,7 @@ declare module nanofl.engine.geom
 		static ensureUnique<T>(edges:T[]) : boolean;
 		static concatUnique<T>(edgesA:nanofl.engine.geom.Edge[], edgesB:T[]) : nanofl.engine.geom.Edge[];
 		static appendUnique<T>(edgesA:T[], edgesB:T[]) : T[];
-		static drawStrokeSorted(edges:nanofl.engine.geom.StrokeEdge[], g:createjs.Graphics, scaleSelection:number) : void;
-		static draw<T>(edges:T[], g:createjs.Graphics) : void;
+		static draw<T>(edges:T[], g:createjs.Graphics, fixLineJoinsInClosedContours:boolean) : void;
 		static getBounds(edges:nanofl.engine.geom.Edge[], bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 		static getStrokedBounds(edges:nanofl.engine.geom.StrokeEdge[], bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 		static export<T>(edges:T[], out:nanofl.engine.XmlWriter) : void;
@@ -6904,6 +6903,7 @@ declare module nanofl.engine.geom
 		static load(node:htmlparser.HtmlNodeElement, strokes:nanofl.engine.strokes.IStroke[]) : nanofl.engine.geom.StrokeEdge[];
 		static save(edges:nanofl.engine.geom.StrokeEdge[], strokes:nanofl.engine.strokes.IStroke[], out:nanofl.engine.XmlWriter) : void;
 		static replace(edges:nanofl.engine.geom.StrokeEdge[], search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[]) : boolean;
+		static drawSorted(edges:nanofl.engine.geom.StrokeEdge[], g:createjs.Graphics, scaleSelection:number) : void;
 	}
 }
 
