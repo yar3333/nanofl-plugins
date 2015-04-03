@@ -1,5 +1,6 @@
 package svgimport;
 
+import nanofl.engine.geom.Polygons;
 import nanofl.engine.ColorTools;
 import nanofl.engine.fills.LinearFill;
 import nanofl.engine.fills.RadialFill;
@@ -19,7 +20,7 @@ using Lambda;
 class SvgPathExporter
 {
 	var edges(default, null) = new Array<StrokeEdge>();
-	var polygons(default, null) = new Array<Polygon>();
+	var polygonAndFillRules(default, null) = new Array<{ polygon:Polygon, fillRuleEvenOdd:Bool }>();
 	
 	var stroke : IStroke = null;
 	var fillPath : SvgPath = null;
@@ -32,7 +33,7 @@ class SvgPathExporter
 	public function beginFill(path:SvgPath)
 	{
 		fillPath = path.fill != FillType.FillNone ? path : null;
-		polygons.push(new Polygon(null));
+		polygonAndFillRules.push({ polygon:new Polygon(null), fillRuleEvenOdd:path.fillRuleEvenOdd });
 	}
 	
 	public function endFill()
@@ -41,7 +42,7 @@ class SvgPathExporter
 		{
 			closeContour();
 			
-			var polygon = polygons[polygons.length - 1];
+			var polygon = polygonAndFillRules[polygonAndFillRules.length - 1].polygon;
 			
 			switch (fillPath.fill)
 			{
@@ -115,7 +116,7 @@ class SvgPathExporter
 		if (fillPath != null)
 		{
 			closeContour();
-			polygons[polygons.length - 1].contours.push(new Contour([]));
+			polygonAndFillRules[polygonAndFillRules.length - 1].polygon.contours.push(new Contour([]));
 		}
 		
 		this.x = x;
@@ -126,7 +127,7 @@ class SvgPathExporter
 	{
 		if (fillPath != null)
 		{
-			var contours = polygons[polygons.length - 1].contours;
+			var contours = polygonAndFillRules[polygonAndFillRules.length - 1].polygon.contours;
 			contours[contours.length - 1].edges.push(new Edge(this.x, this.y, x, y));
 		}
 		else
@@ -142,7 +143,7 @@ class SvgPathExporter
 	{
 		if (fillPath != null)
 		{
-			var contours = polygons[polygons.length - 1].contours;
+			var contours = polygonAndFillRules[polygonAndFillRules.length - 1].polygon.contours;
 			contours[contours.length - 1].edges.push(new Edge(this.x, this.y, controlX, controlY, anchorX, anchorY));
 		}
 		else
@@ -156,13 +157,17 @@ class SvgPathExporter
 	
 	public function export() : { edges:Array<StrokeEdge>, polygons:Array<Polygon> }
 	{
-		var polygons = []; for (p in this.polygons) polygons = polygons.concat(p.split());
+		var polygons = [];
+		for (pf in polygonAndFillRules)
+		{
+			polygons = polygons.concat(Polygons.fromEdges(pf.polygon.getEdges(), pf.polygon.fill, pf.fillRuleEvenOdd));
+		}
 		return { edges:edges, polygons:polygons };
 	}
 	
 	function closeContour()
 	{
-		var contours = polygons[polygons.length - 1].contours;
+		var contours = polygonAndFillRules[polygonAndFillRules.length - 1].polygon.contours;
 		if (contours.length > 0)
 		{
 			var edges = contours[contours.length - 1].edges;

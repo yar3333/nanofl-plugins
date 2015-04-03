@@ -28,6 +28,7 @@ class SvgPath
 	
 	public var fill : FillType;
 	public var fillAlpha : Float;
+	public var fillRuleEvenOdd : Bool;
 	
 	public var stroke : StrokeType;
 	public var strokeAlpha : Float;
@@ -50,6 +51,7 @@ class SvgPath
 		
 		fill = XmlTools.getFillStyle(node, "fill", styles,gradients);
 		fillAlpha = XmlTools.getFloatStyle(node, "fill-opacity", styles, 1.0);
+		fillRuleEvenOdd = XmlTools.getStyle(node, "fill-rule", styles, "nonzero") == "evenodd";
 		
 		stroke = XmlTools.getStrokeStyle(node, "stroke", styles, gradients);
 		strokeAlpha = XmlTools.getFloatStyle(node, "stroke-opacity", styles, 1.0);

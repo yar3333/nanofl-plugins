@@ -741,6 +741,7 @@ svgimport.SvgPath = function(node,baseStyles,elements,gradients,id) {
 	this.alpha = svgimport.XmlTools.getFloatStyle(node,"opacity",styles,1.0);
 	this.fill = svgimport.XmlTools.getFillStyle(node,"fill",styles,gradients);
 	this.fillAlpha = svgimport.XmlTools.getFloatStyle(node,"fill-opacity",styles,1.0);
+	this.fillRuleEvenOdd = svgimport.XmlTools.getStyle(node,"fill-rule",styles,"nonzero") == "evenodd";
 	this.stroke = svgimport.XmlTools.getStrokeStyle(node,"stroke",styles,gradients);
 	this.strokeAlpha = svgimport.XmlTools.getFloatStyle(node,"stroke-opacity",styles,1.0);
 	this.strokeWidth = svgimport.XmlTools.getFloatStyle(node,"stroke-width",styles,1.0);
@@ -748,8 +749,8 @@ svgimport.SvgPath = function(node,baseStyles,elements,gradients,id) {
 	this.strokeJoints = svgimport.XmlTools.getStyle(node,"stroke-linejoin",styles,"miter");
 	this.strokeMiterLimit = svgimport.XmlTools.getFloatStyle(node,"stroke-miterlimit",styles,4.0);
 	this.segments = [];
-	var tag = svgimport.XmlTools.normalizeTag(node.name);
-	switch(tag) {
+	var _g = svgimport.XmlTools.normalizeTag(node.name);
+	switch(_g) {
 	case "rect":
 		var x = svgimport.XmlTools.getFloatValue(node,"x",0);
 		var y = svgimport.XmlTools.getFloatValue(node,"y",0);
@@ -859,19 +860,19 @@ svgimport.SvgPathExporter = function() {
 	this.x = null;
 	this.fillPath = null;
 	this.stroke = null;
-	this.polygons = new Array();
+	this.polygonAndFillRules = new Array();
 	this.edges = new Array();
 };
 svgimport.SvgPathExporter.__name__ = true;
 svgimport.SvgPathExporter.prototype = {
 	beginFill: function(path) {
 		if(path.fill != svgimport.FillType.FillNone) this.fillPath = path; else this.fillPath = null;
-		this.polygons.push(new nanofl.engine.geom.Polygon(null));
+		this.polygonAndFillRules.push({ polygon : new nanofl.engine.geom.Polygon(null), fillRuleEvenOdd : path.fillRuleEvenOdd});
 	}
 	,endFill: function() {
 		if(this.fillPath != null) {
 			this.closeContour();
-			var polygon = this.polygons[this.polygons.length - 1];
+			var polygon = this.polygonAndFillRules[this.polygonAndFillRules.length - 1].polygon;
 			{
 				var _g = this.fillPath.fill;
 				switch(_g[1]) {
@@ -931,14 +932,14 @@ svgimport.SvgPathExporter.prototype = {
 	,moveTo: function(x,y) {
 		if(this.fillPath != null) {
 			this.closeContour();
-			this.polygons[this.polygons.length - 1].contours.push(new nanofl.engine.geom.Contour([]));
+			this.polygonAndFillRules[this.polygonAndFillRules.length - 1].polygon.contours.push(new nanofl.engine.geom.Contour([]));
 		}
 		this.x = x;
 		this.y = y;
 	}
 	,lineTo: function(x,y) {
 		if(this.fillPath != null) {
-			var contours = this.polygons[this.polygons.length - 1].contours;
+			var contours = this.polygonAndFillRules[this.polygonAndFillRules.length - 1].polygon.contours;
 			contours[contours.length - 1].edges.push(new nanofl.engine.geom.Edge(this.x,this.y,x,y));
 		} else if(this.stroke != null) this.edges.push(new nanofl.engine.geom.StrokeEdge(this.x,this.y,x,y,null,null,this.stroke));
 		this.x = x;
@@ -946,7 +947,7 @@ svgimport.SvgPathExporter.prototype = {
 	}
 	,curveTo: function(controlX,controlY,anchorX,anchorY) {
 		if(this.fillPath != null) {
-			var contours = this.polygons[this.polygons.length - 1].contours;
+			var contours = this.polygonAndFillRules[this.polygonAndFillRules.length - 1].polygon.contours;
 			contours[contours.length - 1].edges.push(new nanofl.engine.geom.Edge(this.x,this.y,controlX,controlY,anchorX,anchorY));
 		} else if(this.stroke != null) this.edges.push(new nanofl.engine.geom.StrokeEdge(this.x,this.y,controlX,controlY,anchorX,anchorY,this.stroke));
 		this.x = anchorX;
@@ -955,16 +956,16 @@ svgimport.SvgPathExporter.prototype = {
 	,'export': function() {
 		var polygons = [];
 		var _g = 0;
-		var _g1 = this.polygons;
+		var _g1 = this.polygonAndFillRules;
 		while(_g < _g1.length) {
-			var p = _g1[_g];
+			var pf = _g1[_g];
 			++_g;
-			polygons = polygons.concat(p.split());
+			polygons = polygons.concat(nanofl.engine.geom.Polygons.fromEdges(pf.polygon.getEdges(),pf.polygon.fill,pf.fillRuleEvenOdd));
 		}
 		return { edges : this.edges, polygons : polygons};
 	}
 	,closeContour: function() {
-		var contours = this.polygons[this.polygons.length - 1].contours;
+		var contours = this.polygonAndFillRules[this.polygonAndFillRules.length - 1].polygon.contours;
 		if(contours.length > 0) {
 			var edges = contours[contours.length - 1].edges;
 			if(edges.length > 0) {
