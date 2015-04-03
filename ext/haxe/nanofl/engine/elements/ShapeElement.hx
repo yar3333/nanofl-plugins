@@ -58,6 +58,7 @@ extern class ShapeElement extends nanofl.engine.elements.Element
 	function getSelectedBounds(?bounds:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 	override function transform(m:nanofl.engine.geom.Matrix) : Void;
 	function transformSelected(m:nanofl.engine.geom.Matrix) : Void;
+	function combine(shape:nanofl.engine.elements.ShapeElement) : Void;
 	function combine_strokeEdge(edge:nanofl.engine.geom.StrokeEdge) : Void;
 	function combine_edge(edge:nanofl.engine.geom.Edge) : Void;
 	function combine_vertex(x:Float, y:Float) : Void;
@@ -66,7 +67,6 @@ extern class ShapeElement extends nanofl.engine.elements.Element
 	override function getState() : nanofl.ide.undo.states.ElementState;
 	override function setState(_state:nanofl.ide.undo.states.ElementState) : Void;
 	function replaceEdge(search:nanofl.engine.geom.Edge, replacement:Array<nanofl.engine.geom.Edge>) : Void;
-	function combine(shape:nanofl.engine.elements.ShapeElement) : Void;
 	override function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	override function toString() : String;
 }

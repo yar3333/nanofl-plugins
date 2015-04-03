@@ -6654,7 +6654,7 @@ declare module nanofl.engine.geom
 		isNestedTo(outer:nanofl.engine.geom.Contour, canEqu:boolean) : boolean;
 		clone() : nanofl.engine.geom.Contour;
 		isClockwise() : boolean;
-		reverse() : void;
+		reverse() : nanofl.engine.geom.Contour;
 		getCommonEdges(contour:nanofl.engine.geom.Contour) : nanofl.engine.geom.Edge[];
 		indexIn(contours:nanofl.engine.geom.Contour[]) : number;
 		equ(c:nanofl.engine.geom.Contour) : boolean;
@@ -6676,8 +6676,9 @@ declare module nanofl.engine.geom
 		x3 : number;
 		y3 : number;
 		isStraight() : boolean;
-		getIntersectionCount_rightRay(mx:number, my:number) : number;
-		getIntersectionPointsX_rightRay(mx:number, my:number) : number[];
+		getIntersectionCount_rightRay(x:number, y:number) : number;
+		getIntersectionDirectedCount_rightRay(x:number, y:number) : number;
+		getIntersectionPointsX_rightRay(x:number, y:number) : number[];
 		drawTo(g:createjs.Graphics) : void;
 		equ(e:nanofl.engine.geom.Edge) : boolean;
 		getNearestPoint(x:number, y:number) : { point : nanofl.engine.geom.Point; t : number; };
@@ -6716,7 +6717,6 @@ declare module nanofl.engine.geom
 		static appendUnique<T>(edgesA:T[], edgesB:T[]) : T[];
 		static draw<T>(edges:T[], g:createjs.Graphics, fixLineJoinsInClosedContours:boolean) : void;
 		static getBounds(edges:nanofl.engine.geom.Edge[], bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
-		static getStrokedBounds(edges:nanofl.engine.geom.StrokeEdge[], bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 		static export<T>(edges:T[], out:nanofl.engine.XmlWriter) : void;
 		static exportStroked(edges:nanofl.engine.geom.StrokeEdge[], out:nanofl.engine.XmlWriter) : void;
 		static load(s:string) : nanofl.engine.geom.Edge[];
@@ -6727,6 +6727,7 @@ declare module nanofl.engine.geom
 		static replace(edges:nanofl.engine.geom.Edge[], search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[], pos?:number) : number;
 		static intersect(edgesA:nanofl.engine.geom.Edge[], edgesB:nanofl.engine.geom.Edge[], onReplace?:(arg0:nanofl.engine.geom.Edge, arg1:nanofl.engine.geom.Edge[]) => void) : void;
 		static roundAndRemoveDegenerated<T>(edges:T[]) : void;
+		static isPointInside(edges:nanofl.engine.geom.Edge[], x:number, y:number, fillEvenOdd:boolean) : boolean;
 	}
 	
 	export class Matrix
@@ -6829,7 +6830,10 @@ declare module nanofl.engine.geom
 		draw(g:createjs.Graphics, scaleSelection:number) : void;
 		translate(dx:number, dy:number) : void;
 		isPointInside(px:number, py:number) : boolean;
+		hasPoint(px:number, py:number) : boolean;
+		hasEdge(edge:nanofl.engine.geom.Edge) : boolean;
 		isEdgeInside(edge:nanofl.engine.geom.Edge) : boolean;
+		isEdgeAtLeastPartiallyInside(edge:nanofl.engine.geom.Edge) : boolean;
 		isPolygonInside(p:nanofl.engine.geom.Polygon) : boolean;
 		translateVertex(point:nanofl.engine.geom.Point, dx:number, dy:number) : void;
 		getBounds(bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
@@ -6840,7 +6844,6 @@ declare module nanofl.engine.geom
 		getPointInside() : nanofl.engine.geom.Point;
 		clone() : nanofl.engine.geom.Polygon;
 		replaceEdge(search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[]) : void;
-		getReconstructed(additionalEdges:nanofl.engine.geom.Edge[], force?:boolean) : nanofl.engine.geom.Polygon[];
 		export(out:nanofl.engine.XmlWriter, fills:nanofl.engine.fills.IFill[]) : void;
 		split() : nanofl.engine.geom.Polygon[];
 		equ(p:nanofl.engine.geom.Polygon) : boolean;
@@ -6855,11 +6858,12 @@ declare module nanofl.engine.geom
 	{
 		static findByPoint(polygons:nanofl.engine.geom.Polygon[], x:number, y:number) : nanofl.engine.geom.Polygon;
 		static isEdgeInside(polygons:nanofl.engine.geom.Polygon[], edge:nanofl.engine.geom.Edge) : boolean;
-		static reconstruct(edges:nanofl.engine.geom.Edge[], polygonsToDetectFill:nanofl.engine.geom.Polygon[]) : nanofl.engine.geom.Polygon[];
 		static mergeByCommonEdges(polygons:nanofl.engine.geom.Polygon[], edges:nanofl.engine.geom.StrokeEdge[]) : void;
 		static removeDublicates(polygons:nanofl.engine.geom.Polygon[]) : void;
 		static hasDublicates(polygons:nanofl.engine.geom.Polygon[]) : boolean;
 		static roundAndRemoveDegenerated(polygons:nanofl.engine.geom.Polygon[]) : void;
+		static getReconstructed(polygons:nanofl.engine.geom.Polygon[], additionalEdges:nanofl.engine.geom.Edge[], force?:boolean) : nanofl.engine.geom.Polygon[];
+		static fromEdges(edges:nanofl.engine.geom.Edge[], fill:nanofl.engine.fills.IFill, fillEvenOdd:boolean) : nanofl.engine.geom.Polygon[];
 	}
 	
 	export class StraightLine
@@ -6903,6 +6907,7 @@ declare module nanofl.engine.geom
 		static load(node:htmlparser.HtmlNodeElement, strokes:nanofl.engine.strokes.IStroke[]) : nanofl.engine.geom.StrokeEdge[];
 		static save(edges:nanofl.engine.geom.StrokeEdge[], strokes:nanofl.engine.strokes.IStroke[], out:nanofl.engine.XmlWriter) : void;
 		static replace(edges:nanofl.engine.geom.StrokeEdge[], search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[]) : boolean;
+		static getBounds(edges:nanofl.engine.geom.StrokeEdge[], bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 		static drawSorted(edges:nanofl.engine.geom.StrokeEdge[], g:createjs.Graphics, scaleSelection:number) : void;
 	}
 }
@@ -7641,6 +7646,7 @@ declare module nanofl.engine.elements
 		getSelectedBounds(bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 		transform(m:nanofl.engine.geom.Matrix) : void;
 		transformSelected(m:nanofl.engine.geom.Matrix) : void;
+		combine(shape:nanofl.engine.elements.ShapeElement) : void;
 		combine_strokeEdge(edge:nanofl.engine.geom.StrokeEdge) : void;
 		combine_edge(edge:nanofl.engine.geom.Edge) : void;
 		combine_vertex(x:number, y:number) : void;
@@ -7649,7 +7655,6 @@ declare module nanofl.engine.elements
 		getState() : nanofl.ide.undo.states.ElementState;
 		setState(_state:nanofl.ide.undo.states.ElementState) : void;
 		replaceEdge(search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[]) : void;
-		combine(shape:nanofl.engine.elements.ShapeElement) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		toString() : string;
 	}

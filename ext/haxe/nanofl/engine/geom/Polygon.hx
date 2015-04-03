@@ -10,7 +10,10 @@ extern class Polygon implements nanofl.engine.ISelectable
 	function draw(g:createjs.Graphics, scaleSelection:Float) : Void;
 	function translate(dx:Float, dy:Float) : Void;
 	function isPointInside(px:Float, py:Float) : Bool;
+	function hasPoint(px:Float, py:Float) : Bool;
+	function hasEdge(edge:nanofl.engine.geom.Edge) : Bool;
 	function isEdgeInside(edge:nanofl.engine.geom.Edge) : Bool;
+	function isEdgeAtLeastPartiallyInside(edge:nanofl.engine.geom.Edge) : Bool;
 	function isPolygonInside(p:nanofl.engine.geom.Polygon) : Bool;
 	function translateVertex(point:nanofl.engine.geom.Point, dx:Float, dy:Float) : Void;
 	function getBounds(?bounds:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
@@ -21,7 +24,6 @@ extern class Polygon implements nanofl.engine.ISelectable
 	function getPointInside() : nanofl.engine.geom.Point;
 	function clone() : nanofl.engine.geom.Polygon;
 	function replaceEdge(search:nanofl.engine.geom.Edge, replacement:Array<nanofl.engine.geom.Edge>) : Void;
-	function getReconstructed(additionalEdges:Array<nanofl.engine.geom.Edge>, ?force:Bool) : Array<nanofl.engine.geom.Polygon>;
 	function export(out:nanofl.engine.XmlWriter, fills:Array<nanofl.engine.fills.IFill>) : Void;
 	function split() : Array<nanofl.engine.geom.Polygon>;
 	function equ(p:nanofl.engine.geom.Polygon) : Bool;
