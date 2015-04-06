@@ -1,5 +1,7 @@
 package svgimport;
 
+import nanofl.engine.elements.ShapeElement;
+import nanofl.engine.geom.Edges;
 import nanofl.engine.geom.Polygons;
 import nanofl.engine.ColorTools;
 import nanofl.engine.fills.LinearFill;
@@ -155,14 +157,18 @@ class SvgPathExporter
 		this.y = anchorY;
 	}
 	
-	public function export() : { edges:Array<StrokeEdge>, polygons:Array<Polygon> }
+	public function export() : ShapeElement
 	{
-		var polygons = [];
+		var shape = new ShapeElement();
 		for (pf in polygonAndFillRules)
 		{
-			polygons = polygons.concat(Polygons.fromEdges(pf.polygon.getEdges(), pf.polygon.fill, pf.fillRuleEvenOdd));
+			shape.combine(new ShapeElement([], Polygons.fromEdges(pf.polygon.getEdges(), pf.polygon.fill, pf.fillRuleEvenOdd)));
 		}
-		return { edges:edges, polygons:polygons };
+		
+		Edges.selfIntersect(cast edges);
+		shape.combine(new ShapeElement(edges));
+		
+		return shape;
 	}
 	
 	function closeContour()

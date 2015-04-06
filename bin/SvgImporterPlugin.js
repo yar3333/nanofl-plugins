@@ -836,8 +836,7 @@ svgimport.SvgPath.prototype = {
 			}
 			exporter.endStroke();
 		}
-		var edgesAndPolygons = exporter["export"]();
-		var shape = new nanofl.engine.elements.ShapeElement(edgesAndPolygons.edges,edgesAndPolygons.polygons);
+		var shape = exporter["export"]();
 		if(!this.matrix.isIdentity()) shape.transform(this.matrix);
 		var effectiveStrokeAlpha = this.alpha * this.strokeAlpha;
 		if(effectiveStrokeAlpha != 1.0 && shape.edges.length > 0) shape.edges[0].stroke.applyAlpha(effectiveStrokeAlpha);
@@ -954,15 +953,17 @@ svgimport.SvgPathExporter.prototype = {
 		this.y = anchorY;
 	}
 	,'export': function() {
-		var polygons = [];
+		var shape = new nanofl.engine.elements.ShapeElement();
 		var _g = 0;
 		var _g1 = this.polygonAndFillRules;
 		while(_g < _g1.length) {
 			var pf = _g1[_g];
 			++_g;
-			polygons = polygons.concat(nanofl.engine.geom.Polygons.fromEdges(pf.polygon.getEdges(),pf.polygon.fill,pf.fillRuleEvenOdd));
+			shape.combine(new nanofl.engine.elements.ShapeElement([],nanofl.engine.geom.Polygons.fromEdges(pf.polygon.getEdges(),pf.polygon.fill,pf.fillRuleEvenOdd)));
 		}
-		return { edges : this.edges, polygons : polygons};
+		nanofl.engine.geom.Edges.selfIntersect(this.edges);
+		shape.combine(new nanofl.engine.elements.ShapeElement(this.edges));
+		return shape;
 	}
 	,closeContour: function() {
 		var contours = this.polygonAndFillRules[this.polygonAndFillRules.length - 1].polygon.contours;

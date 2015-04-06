@@ -148,9 +148,7 @@ class SvgPath
 			exporter.endStroke();
 		}
 		
-		var edgesAndPolygons = exporter.export();
-		
-		var shape = new ShapeElement(edgesAndPolygons.edges, edgesAndPolygons.polygons);
+		var shape = exporter.export();
 		
 		if (!matrix.isIdentity())
 		{

@@ -6663,7 +6663,7 @@ declare module nanofl.engine.geom
 	
 	export class Contours
 	{
-		static find<T>(edges:T[]) : nanofl.engine.geom.Contour[];
+		static find(edges:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Contour[];
 	}
 	
 	export class Edge
@@ -6712,7 +6712,8 @@ declare module nanofl.engine.geom
 	export class Edges
 	{
 		static showSelection : boolean;
-		static ensureUnique<T>(edges:T[]) : boolean;
+		static isUnique<T>(edges:T[]) : boolean;
+		static makeUnique<T>(edges:T[]) : void;
 		static concatUnique<T>(edgesA:nanofl.engine.geom.Edge[], edgesB:T[]) : nanofl.engine.geom.Edge[];
 		static appendUnique<T>(edgesA:T[], edgesB:T[]) : T[];
 		static draw<T>(edges:T[], g:createjs.Graphics, fixLineJoinsInClosedContours:boolean) : void;
@@ -6726,8 +6727,10 @@ declare module nanofl.engine.geom
 		 */
 		static replace(edges:nanofl.engine.geom.Edge[], search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[], pos?:number) : number;
 		static intersect(edgesA:nanofl.engine.geom.Edge[], edgesB:nanofl.engine.geom.Edge[], onReplace?:(arg0:nanofl.engine.geom.Edge, arg1:nanofl.engine.geom.Edge[]) => void) : void;
+		static selfIntersect(edges:nanofl.engine.geom.Edge[]) : void;
 		static roundAndRemoveDegenerated<T>(edges:T[]) : void;
 		static isPointInside(edges:nanofl.engine.geom.Edge[], x:number, y:number, fillEvenOdd:boolean) : boolean;
+		static getSequences(edges:nanofl.engine.geom.Edge[]) : { equEdge : nanofl.engine.geom.Edge; edges : nanofl.engine.geom.Edge[]; }[];
 	}
 	
 	export class Matrix
