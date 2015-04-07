@@ -21,6 +21,7 @@ import nanofl.engine.fills.RadialFill;
 import nanofl.engine.fills.SolidFill;
 import nanofl.engine.FilterDef;
 import nanofl.engine.geom.Matrix;
+import nanofl.engine.geom.PointTools;
 import nanofl.engine.KeyFrame;
 import nanofl.engine.Layer;
 import nanofl.engine.Library;
@@ -252,21 +253,36 @@ class SymbolLoader
 				
 			case "LinearGradient":
 				var gradients = fill.find(">GradientEntry");
+				var m = MatrixParser.load(fill.findOne(">matrix>Matrix"), 1 / 819.2);
+				var p0 = m.transformPoint(-1, 0);
+				var p1 = m.transformPoint( 1, 0);
 				return new LinearFill
 				(
-					gradients.map(function(g) return ColorTools.colorToString(g.getAttr("color"), g.getAttr("alpha", 1.0))),
+					gradients.map(function(g) return ColorTools.colorToString(g.getAttr("color", "#000000"), g.getAttr("alpha", 1.0))),
 					gradients.map(function(g) return g.getAttr("ratio")),
-					MatrixParser.load(fill.findOne(">matrix>Matrix"), 1 / 819.2)
+					p0.x,
+					p0.y,
+					p1.x,
+					p1.y
 				);
 				//writeRegPoint(element.findOne(">transformationPoint>Point"));
 				
 			case "RadialGradient":
+				var focalPointRatio = fill.getAttr("focalPointRatio", 0.0);
 				var gradients = fill.find(">GradientEntry");
+				var m = MatrixParser.load(fill.findOne(">matrix>Matrix"), 1 / 819.2);
+				var p0 = m.transformPoint(0, 0);
+				var p1 = m.transformPoint(1, 0);
 				return new RadialFill
 				(
-					gradients.map(function(g) return ColorTools.colorToString(g.getAttr("color"), g.getAttr("alpha", 1.0))),
+					gradients.map(function(g) return ColorTools.colorToString(g.getAttr("color", "#000000"), g.getAttr("alpha", 1.0))),
 					gradients.map(function(g) return g.getAttr("ratio")),
-					MatrixParser.load(fill.findOne(">matrix>Matrix"), 1 / 819.2)
+					p0.x + (p1.x - p0.x) * focalPointRatio,
+					p0.y + (p1.y - p0.y) * focalPointRatio,
+					0,
+					p0.x,
+					p0.y,
+					PointTools.getDist(p0.x, p0.y, p1.x, p1.y)
 				);
 				//writeRegPoint(element.findOne(">transformationPoint>Point"));
 				
@@ -274,8 +290,8 @@ class SymbolLoader
 				return new BitmapFill
 				(
 					fill.getAttr("bitmapPath"),
-					MatrixParser.load(fill.findOne(">matrix>Matrix"), 20),
-					fill.getAttr("bitmapIsClipped", true) ? "no-repeat" : "repeat"
+					fill.getAttr("bitmapIsClipped", true) ? "no-repeat" : "repeat",
+					MatrixParser.load(fill.findOne(">matrix>Matrix"), 20)
 				);
 				
 			case _:

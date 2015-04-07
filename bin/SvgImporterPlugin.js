@@ -885,11 +885,13 @@ svgimport.SvgPathExporter.prototype = {
 					switch(gradType[1]) {
 					case 0:
 						var grad = gradType[2];
-						polygon.fill = new nanofl.engine.fills.LinearFill(this.getGradientRgbaColors(grad),grad.ratios,grad.getFullMatrix(bounds));
+						var params = grad.getAbsoluteParams(bounds);
+						polygon.fill = new nanofl.engine.fills.LinearFill(this.getGradientRgbaColors(grad),grad.ratios,params.x1,params.y1,params.x2,params.y2);
 						break;
 					case 1:
 						var grad1 = gradType[2];
-						polygon.fill = new nanofl.engine.fills.RadialFill(this.getGradientRgbaColors(grad1),grad1.ratios,grad1.getFullMatrix(bounds));
+						var params1 = grad1.getAbsoluteParams(bounds);
+						polygon.fill = new nanofl.engine.fills.RadialFill(this.getGradientRgbaColors(grad1),grad1.ratios,params1.fx,params1.fy,0,params1.cx,params1.cy,params1.r);
 						break;
 					}
 					break;
@@ -1281,30 +1283,16 @@ svgimport.gradients.LinearGradient = function(node,baseType,svgWidth) {
 svgimport.gradients.LinearGradient.__name__ = true;
 svgimport.gradients.LinearGradient.__super__ = svgimport.gradients.Gradient;
 svgimport.gradients.LinearGradient.prototype = $extend(svgimport.gradients.Gradient.prototype,{
-	getFullMatrix: function(bounds) {
+	getAbsoluteParams: function(bounds) {
 		var m = new nanofl.engine.geom.Matrix();
-		if(this.gradientUnits == "userSpaceOnUse") {
-			var w = Math.abs(this.x2 - this.x1);
-			var h = Math.abs(this.y2 - this.y1);
-			m.scale(Math.sqrt(w * w + h * h) / 2,1);
-			m.rotate(Math.atan2(this.y2 - this.y1,this.x2 - this.x1));
-			m.appendMatrix(this.matrix);
-			m.translate((this.x1 + this.x2) / 2,(this.y1 + this.y2) / 2);
-		} else {
-			m.scale(0.5,0.5);
-			m.translate(0.5,0.5);
-			var dx = this.x2 - this.x1;
-			var dy = this.y2 - this.y1;
-			m.scale(Math.sqrt(dx * dx + dy * dy),1);
-			m.rotate(Math.atan2(dy,dx));
-			var w1 = bounds.maxX - bounds.minX;
-			var h1 = bounds.maxY - bounds.minY;
-			m.scale(w1,h1);
-			m.translate(this.x1 * w1,this.y1 * h1);
-			m.appendMatrix(this.matrix);
+		if(this.gradientUnits == "userSpaceOnUse") m = this.matrix; else {
+			m.scale(bounds.maxX - bounds.minX,bounds.maxY - bounds.minY);
 			m.translate(bounds.minX,bounds.minY);
+			m.appendMatrix(this.matrix);
 		}
-		return m;
+		var p1 = m.transformPoint(this.x1,this.y1);
+		var p2 = m.transformPoint(this.x2,this.y2);
+		return { x1 : p1.x, y1 : p1.y, x2 : p2.x, y2 : p2.y};
 	}
 	,__class__: svgimport.gradients.LinearGradient
 });
@@ -1327,19 +1315,17 @@ svgimport.gradients.RadialGradient = function(node,baseType) {
 svgimport.gradients.RadialGradient.__name__ = true;
 svgimport.gradients.RadialGradient.__super__ = svgimport.gradients.Gradient;
 svgimport.gradients.RadialGradient.prototype = $extend(svgimport.gradients.Gradient.prototype,{
-	getFullMatrix: function(bounds) {
+	getAbsoluteParams: function(bounds) {
 		var m = new nanofl.engine.geom.Matrix();
-		if(this.gradientUnits == "" || this.gradientUnits == "objectBoundingBox") {
+		if(this.gradientUnits == "userSpaceOnUse") m = this.matrix; else {
 			var w = bounds.maxX - bounds.minX;
 			var h = bounds.maxY - bounds.minY;
 			m.scale(w * this.r,h * this.r);
 			m.translate(bounds.minX + w * this.cx,bounds.minY + h * this.cy);
-		} else if(this.gradientUnits == "userSpaceOnUse") {
-			m.scale(this.r,this.r);
-			m.translate(this.cx,this.cy);
-		} else console.log("Unknow gradientUnits '" + this.gradientUnits + "'.");
-		m.appendMatrix(this.matrix);
-		return m;
+		}
+		var pc = m.transformPoint(this.cx,this.cy);
+		var pf = m.transformPoint(this.fx,this.fy);
+		return { cx : pc.x, cy : pc.y, fx : pf.x, fy : pf.y, r : this.r};
 	}
 	,__class__: svgimport.gradients.RadialGradient
 });

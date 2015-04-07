@@ -55,8 +55,12 @@ class SvgPathExporter
 					var bounds = polygon.getBounds();
 					polygon.fill = switch (gradType)
 					{
-						case GradientType.LINEAR(grad): new LinearFill(getGradientRgbaColors(grad), grad.ratios, grad.getFullMatrix(bounds));
-						case GradientType.RADIAL(grad): new RadialFill(getGradientRgbaColors(grad), grad.ratios, grad.getFullMatrix(bounds));
+						case GradientType.LINEAR(grad):
+							var params = grad.getAbsoluteParams(bounds);
+							new LinearFill(getGradientRgbaColors(grad), grad.ratios, params.x1, params.y1, params.x2, params.y2);
+						case GradientType.RADIAL(grad):
+							var params = grad.getAbsoluteParams(bounds);
+							new RadialFill(getGradientRgbaColors(grad), grad.ratios, params.fx, params.fy, 0, params.cx, params.cy, params.r);
 					};
 					
 				case FillType.FillNone:

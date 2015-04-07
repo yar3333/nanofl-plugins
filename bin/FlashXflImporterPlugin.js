@@ -1034,20 +1034,27 @@ flashimport.SymbolLoader.prototype = {
 			return new nanofl.engine.fills.SolidFill(nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(fill,"color","#000000"),htmlparser.HtmlParserTools.getAttr(fill,"alpha",1.0)));
 		case "LinearGradient":
 			var gradients = fill.find(">GradientEntry");
+			var m = flashimport.MatrixParser.load(htmlparser.HtmlParserTools.findOne(fill,">matrix>Matrix"),0.001220703125);
+			var p0 = m.transformPoint(-1,0);
+			var p1 = m.transformPoint(1,0);
 			return new nanofl.engine.fills.LinearFill(gradients.map(function(g) {
-				return nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(g,"color"),htmlparser.HtmlParserTools.getAttr(g,"alpha",1.0));
+				return nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(g,"color","#000000"),htmlparser.HtmlParserTools.getAttr(g,"alpha",1.0));
 			}),gradients.map(function(g1) {
 				return htmlparser.HtmlParserTools.getAttr(g1,"ratio");
-			}),flashimport.MatrixParser.load(htmlparser.HtmlParserTools.findOne(fill,">matrix>Matrix"),0.001220703125));
+			}),p0.x,p0.y,p1.x,p1.y);
 		case "RadialGradient":
+			var focalPointRatio = htmlparser.HtmlParserTools.getAttr(fill,"focalPointRatio",0.0);
 			var gradients1 = fill.find(">GradientEntry");
+			var m1 = flashimport.MatrixParser.load(htmlparser.HtmlParserTools.findOne(fill,">matrix>Matrix"),0.001220703125);
+			var p01 = m1.transformPoint(0,0);
+			var p11 = m1.transformPoint(1,0);
 			return new nanofl.engine.fills.RadialFill(gradients1.map(function(g2) {
-				return nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(g2,"color"),htmlparser.HtmlParserTools.getAttr(g2,"alpha",1.0));
+				return nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(g2,"color","#000000"),htmlparser.HtmlParserTools.getAttr(g2,"alpha",1.0));
 			}),gradients1.map(function(g3) {
 				return htmlparser.HtmlParserTools.getAttr(g3,"ratio");
-			}),flashimport.MatrixParser.load(htmlparser.HtmlParserTools.findOne(fill,">matrix>Matrix"),0.001220703125));
+			}),p01.x + (p11.x - p01.x) * focalPointRatio,p01.y + (p11.y - p01.y) * focalPointRatio,0,p01.x,p01.y,nanofl.engine.geom.PointTools.getDist(p01.x,p01.y,p11.x,p11.y));
 		case "BitmapFill":
-			return new nanofl.engine.fills.BitmapFill(htmlparser.HtmlParserTools.getAttr(fill,"bitmapPath"),flashimport.MatrixParser.load(htmlparser.HtmlParserTools.findOne(fill,">matrix>Matrix"),20),htmlparser.HtmlParserTools.getAttr(fill,"bitmapIsClipped",true)?"no-repeat":"repeat");
+			return new nanofl.engine.fills.BitmapFill(htmlparser.HtmlParserTools.getAttr(fill,"bitmapPath"),htmlparser.HtmlParserTools.getAttr(fill,"bitmapIsClipped",true)?"no-repeat":"repeat",flashimport.MatrixParser.load(htmlparser.HtmlParserTools.findOne(fill,">matrix>Matrix"),20));
 		default:
 			this.log("WARNING: unknow fill type '" + fill.name + "'.");
 			return new nanofl.engine.fills.SolidFill("#FFFFFF");

@@ -1,6 +1,5 @@
 package svgimport.gradients;
 
-import nanofl.engine.geom.PointTools;
 import htmlparser.HtmlNodeElement;
 import nanofl.engine.geom.Bounds;
 using htmlparser.HtmlParserTools;
@@ -58,45 +57,30 @@ class LinearGradient extends Gradient
 		}
 	}
 	
-	public function getFullMatrix(bounds:Bounds) : Matrix
+	public function getAbsoluteParams(bounds:Bounds) : { x1:Float, y1:Float, x2:Float, y2:Float }
 	{
 		var m = new Matrix();
 		
 		if (gradientUnits == "userSpaceOnUse")
 		{
-			var w = Math.abs(x2 - x1);
-			var h = Math.abs(y2 - y1);
-			
-			m.scale(Math.sqrt(w*w + h*h) / 2, 1);
-			
-			m.rotate(Math.atan2(y2 - y1, x2 - x1));
-			
-			m.appendMatrix(matrix);
-			
-			m.translate((x1 + x2) / 2, (y1 + y2) / 2);
+			m = matrix;
 		}
 		else
 		{
-			m.scale(0.5, 0.5);
-			m.translate(0.5, 0.5);
-			
-			var dx = x2 - x1;
-			var dy = y2 - y1;
-			m.scale(Math.sqrt(dx * dx + dy * dy), 1);
-			
-			m.rotate(Math.atan2(dy, dx));
-			
-			var w = bounds.maxX - bounds.minX;
-			var h = bounds.maxY - bounds.minY;
-			m.scale(w, h);
-			
-			m.translate(x1*w, y1*h);
-			
-			m.appendMatrix(matrix);
-			
+			m.scale(bounds.maxX - bounds.minX, bounds.maxY - bounds.minY);
 			m.translate(bounds.minX, bounds.minY);
+			m.appendMatrix(matrix);
 		}
 		
-		return m;
+		var p1 = m.transformPoint(x1, y1);
+		var p2 = m.transformPoint(x2, y2);
+		
+		return
+		{
+			x1: p1.x,
+			y1: p1.y,
+			x2: p2.x,
+			y2: p2.y
+		};
 	}
 }

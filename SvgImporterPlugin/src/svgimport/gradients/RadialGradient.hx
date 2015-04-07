@@ -35,29 +35,32 @@ class RadialGradient extends Gradient
 		r  = node.getFloatValue("r",  base != null ? base.r  : 0.5);
 	}
 	
-	public function getFullMatrix(bounds:Bounds) : Matrix
+	public function getAbsoluteParams(bounds:Bounds) : { cx:Float, cy:Float, fx:Float, fy:Float, r:Float }
 	{
 		var m = new Matrix();
 		
-		if (gradientUnits == "" || gradientUnits == "objectBoundingBox")
+		if (gradientUnits == "userSpaceOnUse")
+		{
+			m = matrix;
+		}
+		else
 		{
 			var w = bounds.maxX - bounds.minX;
 			var h = bounds.maxY - bounds.minY;
 			m.scale(w * r, h * r);
 			m.translate(bounds.minX + w * cx, bounds.minY + h * cy);
 		}
-		else if (gradientUnits == "userSpaceOnUse")
-		{
-			m.scale(r, r);
-			m.translate(cx, cy);
-		}
-		else
-		{
-			trace("Unknow gradientUnits '" + gradientUnits + "'.");
-		}
 		
-		m.appendMatrix(matrix);
+		var pc = m.transformPoint(cx, cy);
+		var pf = m.transformPoint(fx, fy);
 		
-		return m;
-	}
+		return
+		{
+			cx: pc.x,
+			cy: pc.y,
+			fx: pf.x,
+			fy: pf.y,
+			r: r // TODO: calculate r
+		};
+	}	
 }
