@@ -888,6 +888,7 @@ svgimport.SvgPathExporter.prototype = {
 						break;
 					case 1:
 						var grad1 = gradType[2];
+						if(grad1.spreadMethod != "" && grad1.spreadMethod != "pad") console.log("Radial spread method 'pad' is only supported ('" + grad1.spreadMethod + "').");
 						var params1 = grad1.getAbsoluteParams(bounds);
 						polygon.fill = new nanofl.engine.fills.RadialFill(this.getGradientRgbaColors(grad1),grad1.ratios,params1.fx,params1.fy,0,params1.cx,params1.cy,params1.r);
 						break;
@@ -1309,6 +1310,7 @@ svgimport.gradients.RadialGradient = function(node,baseType) {
 	this.fx = svgimport.XmlTools.getFloatValue(node,"fx",base != null?base.fx:this.cx);
 	this.fy = svgimport.XmlTools.getFloatValue(node,"fy",base != null?base.fy:this.cy);
 	this.r = svgimport.XmlTools.getFloatValue(node,"r",base != null?base.r:0.5);
+	this.spreadMethod = htmlparser.HtmlParserTools.getAttr(node,"spreadMethod",base != null?base.spreadMethod:"pad");
 };
 svgimport.gradients.RadialGradient.__name__ = true;
 svgimport.gradients.RadialGradient.__super__ = svgimport.gradients.Gradient;

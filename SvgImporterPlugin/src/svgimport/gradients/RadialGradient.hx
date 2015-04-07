@@ -14,6 +14,8 @@ class RadialGradient extends Gradient
 	public var fy : Float;
 	public var r : Float;
 	
+	public var spreadMethod : String;
+	
 	function new(node:HtmlNodeElement, baseType:GradientType) 
 	{
 		super(node, baseType);
@@ -33,6 +35,8 @@ class RadialGradient extends Gradient
 		fx = node.getFloatValue("fx", base != null ? base.fx : cx);
 		fy = node.getFloatValue("fy", base != null ? base.fy : cy);
 		r  = node.getFloatValue("r",  base != null ? base.r  : 0.5);
+		
+		spreadMethod = node.getAttr("spreadMethod", base != null ? base.spreadMethod : "pad");
 	}
 	
 	public function getAbsoluteParams(bounds:Bounds) : { cx:Float, cy:Float, fx:Float, fy:Float, r:Float }

@@ -59,6 +59,10 @@ class SvgPathExporter
 							var params = grad.getAbsoluteParams(bounds);
 							new LinearFill(getGradientRgbaColors(grad), grad.ratios, params.x1, params.y1, params.x2, params.y2);
 						case GradientType.RADIAL(grad):
+							if (grad.spreadMethod != "" && grad.spreadMethod != "pad")
+							{
+								trace("Radial spread method 'pad' is only supported ('" + grad.spreadMethod + "').");
+							}
 							var params = grad.getAbsoluteParams(bounds);
 							new RadialFill(getGradientRgbaColors(grad), grad.ratios, params.fx, params.fy, 0, params.cx, params.cy, params.r);
 					};
