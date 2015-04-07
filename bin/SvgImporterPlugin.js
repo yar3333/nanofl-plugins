@@ -838,10 +838,8 @@ svgimport.SvgPath.prototype = {
 		}
 		var shape = exporter["export"]();
 		if(!this.matrix.isIdentity()) shape.transform(this.matrix);
-		var effectiveStrokeAlpha = this.alpha * this.strokeAlpha;
-		if(effectiveStrokeAlpha != 1.0 && shape.edges.length > 0) shape.edges[0].stroke.applyAlpha(effectiveStrokeAlpha);
-		var effectiveFillAlpha = this.alpha * this.fillAlpha;
-		if(effectiveFillAlpha != 1.0 && shape.polygons.length > 0) shape.polygons[0].fill.applyAlpha(effectiveFillAlpha);
+		shape.applyStrokeAlpha(this.alpha * this.strokeAlpha);
+		shape.applyFillAlpha(this.alpha * this.fillAlpha);
 		return shape;
 	}
 	,toLibraryItem: function() {

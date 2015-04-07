@@ -7699,6 +7699,8 @@ declare module nanofl.engine.elements
 		setState(_state:nanofl.ide.undo.states.ElementState) : void;
 		replaceEdge(search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[]) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		applyStrokeAlpha(alpha:number) : void;
+		applyFillAlpha(alpha:number) : void;
 		toString() : string;
 	}
 	

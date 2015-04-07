@@ -155,17 +155,8 @@ class SvgPath
 			shape.transform(matrix);
 		}
 		
-		var effectiveStrokeAlpha = alpha * strokeAlpha;
-		if (effectiveStrokeAlpha != 1.0 && shape.edges.length > 0)
-		{
-			shape.edges[0].stroke.applyAlpha(effectiveStrokeAlpha);
-		}
-		
-		var effectiveFillAlpha = alpha * fillAlpha;		
-		if (effectiveFillAlpha != 1.0 && shape.polygons.length > 0)
-		{
-			shape.polygons[0].fill.applyAlpha(effectiveFillAlpha);
-		}
+		shape.applyStrokeAlpha(alpha * strokeAlpha);
+		shape.applyFillAlpha(alpha * fillAlpha);
 		
 		return shape;
 	}

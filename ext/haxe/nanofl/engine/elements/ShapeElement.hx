@@ -76,5 +76,7 @@ extern class ShapeElement extends nanofl.engine.elements.Element
 	override function setState(_state:nanofl.ide.undo.states.ElementState) : Void;
 	function replaceEdge(search:nanofl.engine.geom.Edge, replacement:Array<nanofl.engine.geom.Edge>) : Void;
 	override function swapInstance(oldNamePath:String, newNamePath:String) : Void;
+	function applyStrokeAlpha(alpha:Float) : Void;
+	function applyFillAlpha(alpha:Float) : Void;
 	override function toString() : String;
 }
