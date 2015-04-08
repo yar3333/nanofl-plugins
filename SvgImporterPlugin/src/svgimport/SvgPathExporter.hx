@@ -1,5 +1,6 @@
 package svgimport;
 
+import nanofl.engine.geom.StrokeEdges;
 import nanofl.engine.elements.ShapeElement;
 import nanofl.engine.geom.Edges;
 import nanofl.engine.geom.Polygons;
@@ -173,7 +174,8 @@ class SvgPathExporter
 			shape.combine(new ShapeElement([], Polygons.fromEdges(pf.polygon.getEdges(), pf.polygon.fill, pf.fillRuleEvenOdd)));
 		}
 		
-		Edges.selfIntersect(cast edges);
+		StrokeEdges.selfIntersect(edges);
+		
 		shape.combine(new ShapeElement(edges));
 		
 		return shape;
