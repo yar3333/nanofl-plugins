@@ -39,8 +39,7 @@ extern class ShapeElement extends nanofl.engine.elements.Element
 	var ignoreScale : Bool; @:optional
 	var joints : String; @:optional
 	var miterLimit : Float; @:optional
-	var r0 : Float; @:optional
-	var r1 : Float; @:optional
+	var r : Float; @:optional
 	var ratios : Array<Float>; @:optional
 	var thickness : Float; var type : String; @:optional
 	var x0 : Float; @:optional
@@ -54,8 +53,7 @@ extern class ShapeElement extends nanofl.engine.elements.Element
 	var color : String; @:optional
 	var colors : Array<String>; @:optional
 	var matrix : nanofl.engine.geom.Matrix; @:optional
-	var r0 : Float; @:optional
-	var r1 : Float; @:optional
+	var r : Float; @:optional
 	var ratios : Array<Float>; var type : String; @:optional
 	var x0 : Float; @:optional
 	var x1 : Float; @:optional

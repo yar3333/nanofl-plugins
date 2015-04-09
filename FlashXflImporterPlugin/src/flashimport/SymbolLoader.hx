@@ -277,12 +277,11 @@ class SymbolLoader
 				(
 					gradients.map(function(g) return ColorTools.colorToString(g.getAttr("color", "#000000"), g.getAttr("alpha", 1.0))),
 					gradients.map(function(g) return g.getAttr("ratio")),
-					p0.x + (p1.x - p0.x) * focalPointRatio,
-					p0.y + (p1.y - p0.y) * focalPointRatio,
-					0,
 					p0.x,
 					p0.y,
-					PointTools.getDist(p0.x, p0.y, p1.x, p1.y)
+					PointTools.getDist(p0.x, p0.y, p1.x, p1.y),
+					p0.x + (p1.x - p0.x) * focalPointRatio,
+					p0.y + (p1.y - p0.y) * focalPointRatio
 				);
 				//writeRegPoint(element.findOne(">transformationPoint>Point"));
 				

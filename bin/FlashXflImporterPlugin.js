@@ -1052,7 +1052,7 @@ flashimport.SymbolLoader.prototype = {
 				return nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(g2,"color","#000000"),htmlparser.HtmlParserTools.getAttr(g2,"alpha",1.0));
 			}),gradients1.map(function(g3) {
 				return htmlparser.HtmlParserTools.getAttr(g3,"ratio");
-			}),p01.x + (p11.x - p01.x) * focalPointRatio,p01.y + (p11.y - p01.y) * focalPointRatio,0,p01.x,p01.y,nanofl.engine.geom.PointTools.getDist(p01.x,p01.y,p11.x,p11.y));
+			}),p01.x,p01.y,nanofl.engine.geom.PointTools.getDist(p01.x,p01.y,p11.x,p11.y),p01.x + (p11.x - p01.x) * focalPointRatio,p01.y + (p11.y - p01.y) * focalPointRatio);
 		case "BitmapFill":
 			return new nanofl.engine.fills.BitmapFill(htmlparser.HtmlParserTools.getAttr(fill,"bitmapPath"),htmlparser.HtmlParserTools.getAttr(fill,"bitmapIsClipped",true)?"no-repeat":"repeat",flashimport.MatrixParser.load(htmlparser.HtmlParserTools.findOne(fill,">matrix>Matrix"),20));
 		default:

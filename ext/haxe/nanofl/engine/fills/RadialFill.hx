@@ -2,15 +2,14 @@ package nanofl.engine.fills;
 
 extern class RadialFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
 {
-	function new(colors:Array<String>, ratios:Array<Float>, x0:Float, y0:Float, r0:Float, x1:Float, y1:Float, r1:Float) : Void;
+	function new(colors:Array<String>, ratios:Array<Float>, cx:Float, cy:Float, r:Float, fx:Float, fy:Float) : Void;
 	var colors : Array<String>;
 	var ratios : Array<Float>;
-	var x0 : Float;
-	var y0 : Float;
-	var r0 : Float;
-	var x1 : Float;
-	var y1 : Float;
-	var r1 : Float;
+	var cx : Float;
+	var cy : Float;
+	var r : Float;
+	var fx : Float;
+	var fy : Float;
 	function save(out:nanofl.engine.XmlWriter) : Void;
 	function clone() : nanofl.engine.fills.IFill;
 	function applyAlpha(alpha:Float) : Void;

@@ -7053,15 +7053,14 @@ declare module nanofl.engine.strokes
 	
 	export class RadialStroke extends nanofl.engine.strokes.BaseStroke implements nanofl.engine.strokes.IStroke
 	{
-		constructor(colors:string[], ratios:number[], x0:number, y0:number, r0:number, x1:number, y1:number, r1:number, thickness?:number, caps?:string, joints?:string, miterLimit?:number, ignoreScale?:boolean);
+		constructor(colors:string[], ratios:number[], cx:number, cy:number, r:number, fx:number, fy:number, thickness?:number, caps?:string, joints?:string, miterLimit?:number, ignoreScale?:boolean);
 		colors : string[];
 		ratios : number[];
-		x0 : number;
-		y0 : number;
-		r0 : number;
-		x1 : number;
-		y1 : number;
-		r1 : number;
+		cx : number;
+		cy : number;
+		r : number;
+		fx : number;
+		fy : number;
 		save(out:nanofl.engine.XmlWriter) : void;
 		begin(g:createjs.Graphics) : void;
 		clone() : nanofl.engine.strokes.IStroke;
@@ -7104,8 +7103,7 @@ declare module nanofl.engine.strokes
 		ignoreScale : boolean;
 		joints : string;
 		miterLimit : number;
-		r0 : number;
-		r1 : number;
+		r : number;
 		ratios : number[];
 		thickness : number;
 		x0 : number;
@@ -7453,8 +7451,8 @@ declare module nanofl.ide
 		hasSelectedEdges() : boolean;
 		hasSelectedPolygons() : boolean;
 		updateShapes() : void;
-		getSelectedEdgesStrokeParams() : { bitmapPath : string; caps : string; color : string; colors : string[]; ignoreScale : boolean; joints : string; miterLimit : number; r0 : number; r1 : number; ratios : number[]; thickness : number; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
-		getSelectedPolygonsFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; r0 : number; r1 : number; ratios : number[]; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
+		getSelectedEdgesStrokeParams() : { bitmapPath : string; caps : string; color : string; colors : string[]; ignoreScale : boolean; joints : string; miterLimit : number; r : number; ratios : number[]; thickness : number; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
+		getSelectedPolygonsFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; r : number; ratios : number[]; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
 		selectAll() : void;
 		deselectAll() : void;
 		getBounds(bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
@@ -7507,9 +7505,9 @@ declare module nanofl.ide
 		setStroke(stroke:nanofl.engine.strokes.IStroke) : void;
 		setFill(fill:nanofl.engine.fills.IFill) : void;
 		setStrokeParams(p:nanofl.engine.strokes.StrokeParams) : void;
-		getStrokeParams() : { bitmapPath : string; caps : string; color : string; colors : string[]; ignoreScale : boolean; joints : string; miterLimit : number; r0 : number; r1 : number; ratios : number[]; thickness : number; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
+		getStrokeParams() : { bitmapPath : string; caps : string; color : string; colors : string[]; ignoreScale : boolean; joints : string; miterLimit : number; r : number; ratios : number[]; thickness : number; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
 		setFillParams(p:nanofl.engine.fills.FillParams) : void;
-		getFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; r0 : number; r1 : number; ratios : number[]; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
+		getFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; r : number; ratios : number[]; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
 		getStrokeByType(type:string) : nanofl.engine.strokes.IStroke;
 		getFillByType(type:string) : nanofl.engine.fills.IFill;
 	}
@@ -7682,10 +7680,10 @@ declare module nanofl.engine.elements
 		getNearestVertex(pt:nanofl.engine.geom.Point, excludeSelf?:boolean) : { dist : number; distMinusEdgeThickness : number; point : nanofl.engine.geom.Point; };
 		setSelectedEdgesStroke(stroke:nanofl.engine.strokes.IStroke) : void;
 		setSelectedEdgesStrokeParams(params:nanofl.engine.strokes.StrokeParams) : void;
-		getSelectedEdgesStrokeParams() : { bitmapPath : string; caps : string; color : string; colors : string[]; ignoreScale : boolean; joints : string; miterLimit : number; r0 : number; r1 : number; ratios : number[]; thickness : number; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
+		getSelectedEdgesStrokeParams() : { bitmapPath : string; caps : string; color : string; colors : string[]; ignoreScale : boolean; joints : string; miterLimit : number; r : number; ratios : number[]; thickness : number; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
 		setSelectedPolygonsFill(fill:nanofl.engine.fills.IFill, x1?:number, y1?:number, x2?:number, y2?:number) : void;
 		setSelectedPolygonsFillParams(params:nanofl.engine.fills.FillParams) : void;
-		getSelectedPolygonsFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; r0 : number; r1 : number; ratios : number[]; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
+		getSelectedPolygonsFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; r : number; ratios : number[]; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
 		floodFill(fill:nanofl.engine.fills.IFill, x1:number, y1:number, x2:number, y2:number) : void;
 		getBounds(bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 		getSelectedBounds(bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
@@ -8498,8 +8496,7 @@ declare module nanofl.engine.fills
 		color : string;
 		colors : string[];
 		matrix : nanofl.engine.geom.Matrix;
-		r0 : number;
-		r1 : number;
+		r : number;
 		ratios : number[];
 		x0 : number;
 		x1 : number;
@@ -8529,15 +8526,14 @@ declare module nanofl.engine.fills
 	
 	export class RadialFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
 	{
-		constructor(colors:string[], ratios:number[], x0:number, y0:number, r0:number, x1:number, y1:number, r1:number);
+		constructor(colors:string[], ratios:number[], cx:number, cy:number, r:number, fx:number, fy:number);
 		colors : string[];
 		ratios : number[];
-		x0 : number;
-		y0 : number;
-		r0 : number;
-		x1 : number;
-		y1 : number;
-		r1 : number;
+		cx : number;
+		cy : number;
+		r : number;
+		fx : number;
+		fy : number;
 		save(out:nanofl.engine.XmlWriter) : void;
 		clone() : nanofl.engine.fills.IFill;
 		applyAlpha(alpha:number) : void;

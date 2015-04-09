@@ -65,7 +65,16 @@ class SvgPathExporter
 								trace("Radial spread method 'pad' is only supported ('" + grad.spreadMethod + "').");
 							}
 							var params = grad.getAbsoluteParams(bounds);
-							new RadialFill(getGradientRgbaColors(grad), grad.ratios, params.fx, params.fy, 0, params.cx, params.cy, params.r);
+							new RadialFill
+							(
+								getGradientRgbaColors(grad),
+								grad.ratios,
+								params.cx,
+								params.cy,
+								params.r,
+								params.fx,
+								params.fy
+							);
 					};
 					
 				case FillType.FillNone:

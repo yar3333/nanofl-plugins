@@ -890,7 +890,7 @@ svgimport.SvgPathExporter.prototype = {
 						var grad1 = gradType[2];
 						if(grad1.spreadMethod != "" && grad1.spreadMethod != "pad") console.log("Radial spread method 'pad' is only supported ('" + grad1.spreadMethod + "').");
 						var params1 = grad1.getAbsoluteParams(bounds);
-						polygon.fill = new nanofl.engine.fills.RadialFill(this.getGradientRgbaColors(grad1),grad1.ratios,params1.fx,params1.fy,0,params1.cx,params1.cy,params1.r);
+						polygon.fill = new nanofl.engine.fills.RadialFill(this.getGradientRgbaColors(grad1),grad1.ratios,params1.cx,params1.cy,params1.r,params1.fx,params1.fy);
 						break;
 					}
 					break;

@@ -17,9 +17,7 @@ typedef StrokeParams =
 	@:optional
 	var miterLimit : Float;
 	@:optional
-	var r0 : Float;
-	@:optional
-	var r1 : Float;
+	var r : Float;
 	@:optional
 	var ratios : Array<Float>;
 	@:optional
