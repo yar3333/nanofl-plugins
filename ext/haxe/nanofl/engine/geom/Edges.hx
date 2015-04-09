@@ -7,6 +7,7 @@ extern class Edges
 	static function makeUnique<T>(edges:Array<T>) : Void;
 	static function concatUnique<T>(edgesA:Array<nanofl.engine.geom.Edge>, edgesB:Array<T>) : Array<nanofl.engine.geom.Edge>;
 	static function appendUnique<T>(edgesA:Array<T>, edgesB:Array<T>) : Array<T>;
+	static function has<T>(edges:Array<T>, edge:T) : Bool;
 	static function draw<T>(edges:Array<T>, g:createjs.Graphics, fixLineJoinsInClosedContours:Bool) : Void;
 	static function getBounds(edges:Array<nanofl.engine.geom.Edge>, ?bounds:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 	static function export<T>(edges:Array<T>, out:nanofl.engine.XmlWriter) : Void;

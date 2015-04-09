@@ -7,4 +7,5 @@ extern class StrokeEdges
 	static function replace(edges:Array<nanofl.engine.geom.StrokeEdge>, search:nanofl.engine.geom.Edge, replacement:Array<nanofl.engine.geom.Edge>) : Bool;
 	static function getBounds(edges:Array<nanofl.engine.geom.StrokeEdge>, ?bounds:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 	static function drawSorted(edges:Array<nanofl.engine.geom.StrokeEdge>, g:createjs.Graphics, scaleSelection:Float) : Void;
+	static function selfIntersect(edges:Array<nanofl.engine.geom.StrokeEdge>) : Void;
 }

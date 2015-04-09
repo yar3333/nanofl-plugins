@@ -6716,6 +6716,7 @@ declare module nanofl.engine.geom
 		static makeUnique<T>(edges:T[]) : void;
 		static concatUnique<T>(edgesA:nanofl.engine.geom.Edge[], edgesB:T[]) : nanofl.engine.geom.Edge[];
 		static appendUnique<T>(edgesA:T[], edgesB:T[]) : T[];
+		static has<T>(edges:T[], edge:T) : boolean;
 		static draw<T>(edges:T[], g:createjs.Graphics, fixLineJoinsInClosedContours:boolean) : void;
 		static getBounds(edges:nanofl.engine.geom.Edge[], bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 		static export<T>(edges:T[], out:nanofl.engine.XmlWriter) : void;
@@ -6912,6 +6913,7 @@ declare module nanofl.engine.geom
 		static replace(edges:nanofl.engine.geom.StrokeEdge[], search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[]) : boolean;
 		static getBounds(edges:nanofl.engine.geom.StrokeEdge[], bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 		static drawSorted(edges:nanofl.engine.geom.StrokeEdge[], g:createjs.Graphics, scaleSelection:number) : void;
+		static selfIntersect(edges:nanofl.engine.geom.StrokeEdge[]) : void;
 	}
 }
 

@@ -962,7 +962,7 @@ svgimport.SvgPathExporter.prototype = {
 			++_g;
 			shape.combine(new nanofl.engine.elements.ShapeElement([],nanofl.engine.geom.Polygons.fromEdges(pf.polygon.getEdges(),pf.polygon.fill,pf.fillRuleEvenOdd)));
 		}
-		nanofl.engine.geom.Edges.selfIntersect(this.edges);
+		nanofl.engine.geom.StrokeEdges.selfIntersect(this.edges);
 		shape.combine(new nanofl.engine.elements.ShapeElement(this.edges));
 		return shape;
 	}
