@@ -1,5 +1,6 @@
 package svgimport;
 
+import nanofl.engine.strokes.RadialStroke;
 import nanofl.engine.geom.StrokeEdges;
 import nanofl.engine.elements.ShapeElement;
 import nanofl.engine.geom.Edges;
@@ -122,9 +123,22 @@ class SvgPathExporter
 							false
 						);
 						
-					case _:
-						trace("Stroke: not linear gradients are not supported.");
-						stroke = new SolidStroke("#000000");
+					case GradientType.RADIAL(grad):
+						stroke = new RadialStroke
+						(
+							getGradientRgbaColors(grad),
+							grad.ratios,
+							grad.cx,
+							grad.cy,
+							grad.r,
+							grad.fx,
+							grad.fy,
+							path.strokeWidth,
+							path.strokeCaps,
+							path.strokeJoints,
+							path.strokeMiterLimit,
+							false
+						);
 				};
 		}
 	}
