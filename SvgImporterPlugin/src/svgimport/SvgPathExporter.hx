@@ -197,7 +197,7 @@ class SvgPathExporter
 			shape.combine(new ShapeElement([], Polygons.fromEdges(pf.polygon.getEdges(), pf.polygon.fill, pf.fillRuleEvenOdd)));
 		}
 		
-		StrokeEdges.selfIntersect(edges);
+		Edges.intersectSelf(edges);
 		
 		shape.combine(new ShapeElement(edges));
 		
