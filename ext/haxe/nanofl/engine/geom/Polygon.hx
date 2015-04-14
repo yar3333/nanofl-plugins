@@ -26,7 +26,7 @@ extern class Polygon implements nanofl.engine.ISelectable
 	function export(out:nanofl.engine.XmlWriter, fills:Array<nanofl.engine.fills.IFill>) : Void;
 	function split() : Array<nanofl.engine.geom.Polygon>;
 	function equ(p:nanofl.engine.geom.Polygon) : Bool;
-	function roundPoints() : Void;
+	function normalize() : Void;
 	function isInRectangle(x:Float, y:Float, width:Float, height:Float) : Bool;
 	function toString() : String;
 	static var showSelection : Bool;

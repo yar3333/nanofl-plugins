@@ -36,8 +36,8 @@ extern class Edge
 	function asBezierCurve() : nanofl.engine.geom.BezierCurve;
 	function clone() : nanofl.engine.geom.Edge;
 	function indexIn<T>(edges:Array<T>) : Int;
-	function isDegeneratedToPoint() : Bool;
-	function roundCoords() : Void;
+	function isDegenerated() : Bool;
+	function roundPoints() : Void;
 	function getLength() : Float;
 	function getPart(t:Float) : nanofl.engine.geom.Edge;
 	function getPoint(t:Float) : nanofl.engine.geom.Point;

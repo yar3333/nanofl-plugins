@@ -21,7 +21,7 @@ extern class BezierCurve
 	function getIntersectionCount_rightRay(mx:Float, my:Float) : Int;
 	function getIntersection_straightSection(line:nanofl.engine.geom.StraightLine) : { var curves : Array<nanofl.engine.geom.BezierCurve>; var lines : Array<nanofl.engine.geom.StraightLine>; };
 	function getIntersection_bezierCurve(curve:nanofl.engine.geom.BezierCurve) : nanofl.engine.geom.BezierCurve.BezierCurvesIntersection;
-	function isDegeneratedToPoint() : Bool;
+	function isDegenerated() : Bool;
 	function getFirstPart(t:Float) : nanofl.engine.geom.BezierCurve;
 	function getSecondPart(t:Float) : nanofl.engine.geom.BezierCurve;
 	function getPart(t1:Float, t2:Float) : nanofl.engine.geom.BezierCurve;

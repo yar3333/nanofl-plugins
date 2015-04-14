@@ -6609,7 +6609,7 @@ declare module nanofl.engine.geom
 		getIntersectionCount_rightRay(mx:number, my:number) : number;
 		getIntersection_straightSection(line:nanofl.engine.geom.StraightLine) : { curves : nanofl.engine.geom.BezierCurve[]; lines : nanofl.engine.geom.StraightLine[]; };
 		getIntersection_bezierCurve(curve:nanofl.engine.geom.BezierCurve) : nanofl.engine.geom.BezierCurve.BezierCurvesIntersection;
-		isDegeneratedToPoint() : boolean;
+		isDegenerated() : boolean;
 		getFirstPart(t:number) : nanofl.engine.geom.BezierCurve;
 		getSecondPart(t:number) : nanofl.engine.geom.BezierCurve;
 		getPart(t1:number, t2:number) : nanofl.engine.geom.BezierCurve;
@@ -6652,7 +6652,7 @@ declare module nanofl.engine.geom
 		hasPoint(px:number, py:number) : boolean;
 		hasEdge(edge:nanofl.engine.geom.Edge) : boolean;
 		isEdgeInside(edge:nanofl.engine.geom.Edge) : boolean;
-		isNestedTo(outer:nanofl.engine.geom.Contour, canEqu:boolean) : boolean;
+		isNestedTo(outer:nanofl.engine.geom.Contour, allowCommonEdges:boolean) : boolean;
 		clone() : nanofl.engine.geom.Contour;
 		isClockwise() : boolean;
 		reverse() : nanofl.engine.geom.Contour;
@@ -6697,8 +6697,8 @@ declare module nanofl.engine.geom
 		asBezierCurve() : nanofl.engine.geom.BezierCurve;
 		clone() : nanofl.engine.geom.Edge;
 		indexIn<T>(edges:T[]) : number;
-		isDegeneratedToPoint() : boolean;
-		roundCoords() : void;
+		isDegenerated() : boolean;
+		roundPoints() : void;
 		getLength() : number;
 		getPart(t:number) : nanofl.engine.geom.Edge;
 		getPoint(t:number) : nanofl.engine.geom.Point;
@@ -6714,8 +6714,8 @@ declare module nanofl.engine.geom
 	export class Edges
 	{
 		static showSelection : boolean;
-		static isUnique<T>(edges:T[]) : boolean;
-		static makeUnique<T>(edges:T[]) : void;
+		static hasDuplicates<T>(edges:T[]) : boolean;
+		static removeDublicates<T>(edges:T[]) : void;
 		static concatUnique<T, Z>(edgesA:T[], edgesB:Z[]) : T[];
 		static appendUnique<T, Z>(edgesA:T[], edgesB:Z[]) : T[];
 		static has<T>(edges:T[], edge:T) : boolean;
@@ -6729,7 +6729,9 @@ declare module nanofl.engine.geom
 		static replaceAt<T>(edges:T[], n:number, replacement:nanofl.engine.geom.Edge[], reverse:boolean) : void;
 		static intersect<T>(edgesA:T[], edgesB:T[], onReplace?:(arg0:nanofl.engine.geom.Edge, arg1:nanofl.engine.geom.Edge[]) => void) : void;
 		static intersectSelf<T>(edges:T[], onReplace?:(arg0:nanofl.engine.geom.Edge, arg1:nanofl.engine.geom.Edge[]) => void) : void;
-		static roundAndRemoveDegenerated<T>(edges:T[]) : void;
+		static normalize<T>(edges:T[]) : void;
+		static roundPoints<T>(edges:T[]) : void;
+		static removeDegenerated<T>(edges:T[]) : void;
 		static isPointInside(edges:nanofl.engine.geom.Edge[], x:number, y:number, fillEvenOdd:boolean) : boolean;
 		static getSequences(edges:nanofl.engine.geom.Edge[]) : { equEdge : nanofl.engine.geom.Edge; edges : nanofl.engine.geom.Edge[]; }[];
 		static isSequence<T>(edges:T[]) : boolean;
@@ -6858,7 +6860,7 @@ declare module nanofl.engine.geom
 		export(out:nanofl.engine.XmlWriter, fills:nanofl.engine.fills.IFill[]) : void;
 		split() : nanofl.engine.geom.Polygon[];
 		equ(p:nanofl.engine.geom.Polygon) : boolean;
-		roundPoints() : void;
+		normalize() : void;
 		isInRectangle(x:number, y:number, width:number, height:number) : boolean;
 		toString() : string;
 		static showSelection : boolean;
@@ -6872,7 +6874,7 @@ declare module nanofl.engine.geom
 		static mergeByCommonEdges(polygons:nanofl.engine.geom.Polygon[], edges:nanofl.engine.geom.StrokeEdge[]) : void;
 		static removeDublicates(polygons:nanofl.engine.geom.Polygon[]) : void;
 		static hasDublicates(polygons:nanofl.engine.geom.Polygon[]) : boolean;
-		static roundAndRemoveDegenerated(polygons:nanofl.engine.geom.Polygon[]) : void;
+		static normalize(polygons:nanofl.engine.geom.Polygon[]) : void;
 		static getReconstructed(polygons:nanofl.engine.geom.Polygon[], additionalEdges:nanofl.engine.geom.Edge[], force?:boolean) : nanofl.engine.geom.Polygon[];
 		static fromEdges(edges:nanofl.engine.geom.Edge[], fill:nanofl.engine.fills.IFill, fillEvenOdd:boolean) : nanofl.engine.geom.Polygon[];
 	}
@@ -6891,7 +6893,7 @@ declare module nanofl.engine.geom
 		getIntersectionPointX_rightRay(mx:number, my:number) : number;
 		isIntersect_rightRay(mx:number, my:number) : boolean;
 		getIntersection_straightSection(line:nanofl.engine.geom.StraightLine) : nanofl.engine.geom.Point;
-		isDegeneratedToPoint() : boolean;
+		isDegenerated() : boolean;
 		getFirstPart(t:number) : nanofl.engine.geom.StraightLine;
 		getSecondPart(t:number) : nanofl.engine.geom.StraightLine;
 		split(tt:number[]) : nanofl.engine.geom.StraightLine[];
@@ -7470,7 +7472,7 @@ declare module nanofl.ide
 		setSelectedEdgesStrokeParams(params:nanofl.engine.strokes.StrokeParams) : void;
 		setSelectedPolygonsFill(fill:nanofl.engine.fills.IFill, x1?:number, y1?:number, x2?:number, y2?:number) : void;
 		setSelectedEdgesStroke(stroke:nanofl.engine.strokes.IStroke) : void;
-		resolveSelfIntersections() : void;
+		combineSelf() : void;
 		combineSelected() : void;
 		extractSelected() : nanofl.engine.elements.ShapeElement;
 		getMagnetPointEx(x:number, y:number, excludeSelf?:boolean) : { found : boolean; point : nanofl.engine.geom.Point; };
@@ -7695,7 +7697,7 @@ declare module nanofl.engine.elements
 		transform(m:nanofl.engine.geom.Matrix) : void;
 		transformSelected(m:nanofl.engine.geom.Matrix) : void;
 		combine(shape:nanofl.engine.elements.ShapeElement) : void;
-		resolveSelfIntersections() : void;
+		combineSelf() : void;
 		combineSelected() : void;
 		extractSelected() : nanofl.engine.elements.ShapeElement;
 		getState() : nanofl.ide.undo.states.ElementState;

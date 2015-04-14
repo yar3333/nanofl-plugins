@@ -12,7 +12,7 @@ extern class Contour
 	function hasPoint(px:Float, py:Float) : Bool;
 	function hasEdge(edge:nanofl.engine.geom.Edge) : Bool;
 	function isEdgeInside(edge:nanofl.engine.geom.Edge) : Bool;
-	function isNestedTo(outer:nanofl.engine.geom.Contour, canEqu:Bool) : Bool;
+	function isNestedTo(outer:nanofl.engine.geom.Contour, allowCommonEdges:Bool) : Bool;
 	function clone() : nanofl.engine.geom.Contour;
 	function isClockwise() : Bool;
 	function reverse() : nanofl.engine.geom.Contour;

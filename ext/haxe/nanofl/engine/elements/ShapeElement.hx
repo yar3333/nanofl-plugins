@@ -65,7 +65,7 @@ extern class ShapeElement extends nanofl.engine.elements.Element
 	override function transform(m:nanofl.engine.geom.Matrix) : Void;
 	function transformSelected(m:nanofl.engine.geom.Matrix) : Void;
 	function combine(shape:nanofl.engine.elements.ShapeElement) : Void;
-	function resolveSelfIntersections() : Void;
+	function combineSelf() : Void;
 	function combineSelected() : Void;
 	function extractSelected() : nanofl.engine.elements.ShapeElement;
 	override function getState() : nanofl.ide.undo.states.ElementState;

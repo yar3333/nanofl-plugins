@@ -194,10 +194,11 @@ class SvgPathExporter
 		var shape = new ShapeElement();
 		for (pf in polygonAndFillRules)
 		{
-			shape.combine(new ShapeElement([], Polygons.fromEdges(pf.polygon.getEdges(), pf.polygon.fill, pf.fillRuleEvenOdd)));
+			var edgesToCreatePolygons = pf.polygon.getEdges();
+			shape.combine(new ShapeElement([], Polygons.fromEdges(edgesToCreatePolygons, pf.polygon.fill, pf.fillRuleEvenOdd)));
 		}
 		
-		Edges.roundAndRemoveDegenerated(edges);
+		Edges.normalize(edges);
 		Edges.intersectSelf(edges);
 		
 		shape.combine(new ShapeElement(edges));

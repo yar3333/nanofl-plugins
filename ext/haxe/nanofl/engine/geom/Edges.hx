@@ -3,8 +3,8 @@ package nanofl.engine.geom;
 extern class Edges
 {
 	static var showSelection : Bool;
-	static function isUnique<T>(edges:Array<T>) : Bool;
-	static function makeUnique<T>(edges:Array<T>) : Void;
+	static function hasDuplicates<T>(edges:Array<T>) : Bool;
+	static function removeDublicates<T>(edges:Array<T>) : Void;
 	static function concatUnique<T, Z>(edgesA:Array<T>, edgesB:Array<Z>) : Array<T>;
 	static function appendUnique<T, Z>(edgesA:Array<T>, edgesB:Array<Z>) : Array<T>;
 	static function has<T>(edges:Array<T>, edge:T) : Bool;
@@ -18,7 +18,9 @@ extern class Edges
 	static function replaceAt<T>(edges:Array<T>, n:Int, replacement:Array<nanofl.engine.geom.Edge>, reverse:Bool) : Void;
 	static function intersect<T>(edgesA:Array<T>, edgesB:Array<T>, ?onReplace:nanofl.engine.geom.Edge -> Array<nanofl.engine.geom.Edge> -> Void) : Void;
 	static function intersectSelf<T>(edges:Array<T>, ?onReplace:nanofl.engine.geom.Edge -> Array<nanofl.engine.geom.Edge> -> Void) : Void;
-	static function roundAndRemoveDegenerated<T>(edges:Array<T>) : Void;
+	static function normalize<T>(edges:Array<T>) : Void;
+	static function roundPoints<T>(edges:Array<T>) : Void;
+	static function removeDegenerated<T>(edges:Array<T>) : Void;
 	static function isPointInside(edges:Array<nanofl.engine.geom.Edge>, x:Float, y:Float, fillEvenOdd:Bool) : Bool;
 	static function getSequences(edges:Array<nanofl.engine.geom.Edge>) : Array<{ var equEdge : nanofl.engine.geom.Edge; var edges : Array<nanofl.engine.geom.Edge>; }>;
 	static function isSequence<T>(edges:Array<T>) : Bool;
