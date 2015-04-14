@@ -12,7 +12,6 @@ extern class BezierCurve
 	var p1(default, null) : nanofl.engine.geom.Point;
 	var p2(default, null) : nanofl.engine.geom.Point;
 	var p3(default, null) : nanofl.engine.geom.Point;
-	function update(?x1:Float, ?y1:Float, ?x2:Float, ?y2:Float, ?x3:Float, ?y3:Float) : Void;
 	function getNearestPoint(x:Float, y:Float) : { var dist : Float; var nor : nanofl.engine.geom.Point; var onCurve : Bool; var orientedDist : Float; var point : nanofl.engine.geom.Point; var t : Float; };
 	function getNearestPointP(pt:nanofl.engine.geom.Point) : { var dist : Float; var nor : nanofl.engine.geom.Point; var onCurve : Bool; var orientedDist : Float; var point : nanofl.engine.geom.Point; var t : Float; };
 	function getPoint(t:Float) : nanofl.engine.geom.Point;
@@ -35,5 +34,6 @@ extern class BezierCurve
 	function reverse() : Void;
 	function getLength() : Float;
 	function getTangent(t:Float) : Float;
+	function isLiesOnCurve(long:nanofl.engine.geom.BezierCurve) : Bool;
 	function toString() : String;
 }

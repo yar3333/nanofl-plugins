@@ -10,6 +10,7 @@ extern class BitmapStroke extends nanofl.engine.strokes.BaseStroke implements na
 	override function clone() : nanofl.engine.strokes.IStroke;
 	override function equ(e:nanofl.engine.strokes.IStroke) : Bool;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
+	override function setLibrary(library:nanofl.engine.Library) : Void;
 	function applyAlpha(alpha:Float) : Void;
 	function toString() : String;
 }

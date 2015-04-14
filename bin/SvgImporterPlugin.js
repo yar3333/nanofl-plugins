@@ -919,9 +919,10 @@ svgimport.SvgPathExporter.prototype = {
 					var grad = gradType[2];
 					this.stroke = new nanofl.engine.strokes.LinearStroke(this.getGradientRgbaColors(grad),grad.ratios,grad.x1,grad.y1,grad.x2,grad.y2,path.strokeWidth,path.strokeCaps,path.strokeJoints,path.strokeMiterLimit,false);
 					break;
-				default:
-					console.log("Stroke: not linear gradients are not supported.");
-					this.stroke = new nanofl.engine.strokes.SolidStroke("#000000");
+				case 1:
+					var grad1 = gradType[2];
+					this.stroke = new nanofl.engine.strokes.RadialStroke(this.getGradientRgbaColors(grad1),grad1.ratios,grad1.cx,grad1.cy,grad1.r,grad1.fx,grad1.fy,path.strokeWidth,path.strokeCaps,path.strokeJoints,path.strokeMiterLimit,false);
+					break;
 				}
 				break;
 			}
@@ -962,7 +963,8 @@ svgimport.SvgPathExporter.prototype = {
 			++_g;
 			shape.combine(new nanofl.engine.elements.ShapeElement([],nanofl.engine.geom.Polygons.fromEdges(pf.polygon.getEdges(),pf.polygon.fill,pf.fillRuleEvenOdd)));
 		}
-		nanofl.engine.geom.StrokeEdges.selfIntersect(this.edges);
+		nanofl.engine.geom.Edges.roundAndRemoveDegenerated(this.edges);
+		nanofl.engine.geom.Edges.intersectSelf(this.edges);
 		shape.combine(new nanofl.engine.elements.ShapeElement(this.edges));
 		return shape;
 	}

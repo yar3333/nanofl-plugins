@@ -42,9 +42,10 @@ extern class Edge
 	function getPart(t:Float) : nanofl.engine.geom.Edge;
 	function getPoint(t:Float) : nanofl.engine.geom.Point;
 	function getTangent(t:Float) : Float;
-	function split(t:Float) : Array<nanofl.engine.geom.Edge>;
+	function split(tt:Array<Float>) : Array<nanofl.engine.geom.Edge>;
 	function isInRectangle(x:Float, y:Float, width:Float, height:Float) : Bool;
 	static function fromStraightLine(line:nanofl.engine.geom.StraightLine) : nanofl.engine.geom.Edge;
 	static function fromBezierCurve(curve:nanofl.engine.geom.BezierCurve) : nanofl.engine.geom.Edge;
 	static function getIntersection(edgeA:nanofl.engine.geom.Edge, edgeB:nanofl.engine.geom.Edge) : nanofl.engine.geom.Edge.EdgesItersection;
+	static function getLiesReplacement<T>(edgeA:T, edgeB:T) : { var a : Array<nanofl.engine.geom.Edge>; var b : Array<nanofl.engine.geom.Edge>; };
 }

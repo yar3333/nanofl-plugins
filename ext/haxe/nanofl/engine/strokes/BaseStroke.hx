@@ -16,7 +16,6 @@ extern class BaseStroke
 	 */
 	var miterLimit : Float;
 	var ignoreScale : Bool;
-	function getSize() : Float;
 	function clone() : nanofl.engine.strokes.IStroke;
 	function equ(e:nanofl.engine.strokes.IStroke) : Bool;
 	function setLibrary(library:nanofl.engine.Library) : Void;

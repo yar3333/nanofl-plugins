@@ -60,15 +60,13 @@ extern class ShapeElement extends nanofl.engine.elements.Element
 	var y0 : Float; @:optional
 	var y1 : Float; };
 	function floodFill(fill:nanofl.engine.fills.IFill, x1:Float, y1:Float, x2:Float, y2:Float) : Void;
-	function getBounds(?bounds:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
-	function getSelectedBounds(?bounds:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
+	function getBounds(?bounds:nanofl.engine.geom.Bounds, ?useStrokeThickness:Bool) : nanofl.engine.geom.Bounds;
+	function getSelectedBounds(?bounds:nanofl.engine.geom.Bounds, ?useStrokeThickness:Bool) : nanofl.engine.geom.Bounds;
 	override function transform(m:nanofl.engine.geom.Matrix) : Void;
 	function transformSelected(m:nanofl.engine.geom.Matrix) : Void;
 	function combine(shape:nanofl.engine.elements.ShapeElement) : Void;
-	function combine_strokeEdge(edge:nanofl.engine.geom.StrokeEdge) : Void;
-	function combine_edge(edge:nanofl.engine.geom.Edge) : Void;
-	function combine_vertex(x:Float, y:Float) : Void;
-	function combine_selected() : Void;
+	function resolveSelfIntersections() : Void;
+	function combineSelected() : Void;
 	function extractSelected() : nanofl.engine.elements.ShapeElement;
 	override function getState() : nanofl.ide.undo.states.ElementState;
 	override function setState(_state:nanofl.ide.undo.states.ElementState) : Void;

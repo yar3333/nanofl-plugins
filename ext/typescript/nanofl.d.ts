@@ -6600,7 +6600,6 @@ declare module nanofl.engine.geom
 		p1 : nanofl.engine.geom.Point;
 		p2 : nanofl.engine.geom.Point;
 		p3 : nanofl.engine.geom.Point;
-		update(x1?:number, y1?:number, x2?:number, y2?:number, x3?:number, y3?:number) : void;
 		getNearestPoint(x:number, y:number) : { dist : number; nor : nanofl.engine.geom.Point; onCurve : boolean; orientedDist : number; point : nanofl.engine.geom.Point; t : number; };
 		getNearestPointP(pt:nanofl.engine.geom.Point) : { dist : number; nor : nanofl.engine.geom.Point; onCurve : boolean; orientedDist : number; point : nanofl.engine.geom.Point; t : number; };
 		getPoint(t:number) : nanofl.engine.geom.Point;
@@ -6623,6 +6622,7 @@ declare module nanofl.engine.geom
 		reverse() : void;
 		getLength() : number;
 		getTangent(t:number) : number;
+		isLiesOnCurve(long:nanofl.engine.geom.BezierCurve) : boolean;
 		toString() : string;
 	}
 	
@@ -6636,7 +6636,8 @@ declare module nanofl.engine.geom
 	
 	export class BoundsTools
 	{
-		static updateByRect(bounds:nanofl.engine.geom.Bounds, rect:createjs.Rectangle) : nanofl.engine.geom.Bounds;
+		static updateByRect(bounds:nanofl.engine.geom.Bounds, rect:{ height : number; width : number; x : number; y : number; }) : nanofl.engine.geom.Bounds;
+		static isIntersect(a:nanofl.engine.geom.Bounds, b:nanofl.engine.geom.Bounds) : boolean;
 	}
 	
 	export class Contour
@@ -6702,11 +6703,12 @@ declare module nanofl.engine.geom
 		getPart(t:number) : nanofl.engine.geom.Edge;
 		getPoint(t:number) : nanofl.engine.geom.Point;
 		getTangent(t:number) : number;
-		split(t:number) : nanofl.engine.geom.Edge[];
+		split(tt:number[]) : nanofl.engine.geom.Edge[];
 		isInRectangle(x:number, y:number, width:number, height:number) : boolean;
 		static fromStraightLine(line:nanofl.engine.geom.StraightLine) : nanofl.engine.geom.Edge;
 		static fromBezierCurve(curve:nanofl.engine.geom.BezierCurve) : nanofl.engine.geom.Edge;
 		static getIntersection(edgeA:nanofl.engine.geom.Edge, edgeB:nanofl.engine.geom.Edge) : nanofl.engine.geom.Edge.EdgesItersection;
+		static getLiesReplacement<T>(edgeA:T, edgeB:T) : { a : nanofl.engine.geom.Edge[]; b : nanofl.engine.geom.Edge[]; };
 	}
 	
 	export class Edges
@@ -6714,24 +6716,30 @@ declare module nanofl.engine.geom
 		static showSelection : boolean;
 		static isUnique<T>(edges:T[]) : boolean;
 		static makeUnique<T>(edges:T[]) : void;
-		static concatUnique<T>(edgesA:nanofl.engine.geom.Edge[], edgesB:T[]) : nanofl.engine.geom.Edge[];
-		static appendUnique<T>(edgesA:T[], edgesB:T[]) : T[];
+		static concatUnique<T, Z>(edgesA:T[], edgesB:Z[]) : T[];
+		static appendUnique<T, Z>(edgesA:T[], edgesB:Z[]) : T[];
 		static has<T>(edges:T[], edge:T) : boolean;
 		static draw<T>(edges:T[], g:createjs.Graphics, fixLineJoinsInClosedContours:boolean) : void;
-		static getBounds(edges:nanofl.engine.geom.Edge[], bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
+		static getBounds<T>(edges:T[], bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 		static export<T>(edges:T[], out:nanofl.engine.XmlWriter) : void;
 		static exportStroked(edges:nanofl.engine.geom.StrokeEdge[], out:nanofl.engine.XmlWriter) : void;
 		static load(s:string) : nanofl.engine.geom.Edge[];
 		static save(edges:nanofl.engine.geom.Edge[]) : string;
-		/**
-		 * The pos is a random index in edges array. Method return a new pos after replace (pos may be increazed if inserts before pos).
-		 */
-		static replace(edges:nanofl.engine.geom.Edge[], search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[], pos?:number) : number;
-		static intersect(edgesA:nanofl.engine.geom.Edge[], edgesB:nanofl.engine.geom.Edge[], onReplace?:(arg0:nanofl.engine.geom.Edge, arg1:nanofl.engine.geom.Edge[]) => void) : void;
-		static selfIntersect(edges:nanofl.engine.geom.Edge[]) : void;
+		static replace<T>(edges:T[], search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[]) : number;
+		static replaceAt<T>(edges:T[], n:number, replacement:nanofl.engine.geom.Edge[], reverse:boolean) : void;
+		static intersect<T>(edgesA:T[], edgesB:T[], onReplace?:(arg0:nanofl.engine.geom.Edge, arg1:nanofl.engine.geom.Edge[]) => void) : void;
+		static intersectSelf<T>(edges:T[], onReplace?:(arg0:nanofl.engine.geom.Edge, arg1:nanofl.engine.geom.Edge[]) => void) : void;
 		static roundAndRemoveDegenerated<T>(edges:T[]) : void;
 		static isPointInside(edges:nanofl.engine.geom.Edge[], x:number, y:number, fillEvenOdd:boolean) : boolean;
 		static getSequences(edges:nanofl.engine.geom.Edge[]) : { equEdge : nanofl.engine.geom.Edge; edges : nanofl.engine.geom.Edge[]; }[];
+		static isSequence<T>(edges:T[]) : boolean;
+		static hasDegenerated<T>(edges:T[]) : boolean;
+	}
+	
+	export class Equation
+	{
+		static solveCube(a:number, b:number, c:number, d:number) : number[];
+		static solveQuadratic(a:number, b:number, c:number) : number[];
 	}
 	
 	export class Matrix
@@ -6820,8 +6828,8 @@ declare module nanofl.engine.geom
 		static equ(pt1:nanofl.engine.geom.Point, pt2:nanofl.engine.geom.Point) : boolean;
 		static clone(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 		static round100(n:number) : number;
-		static toString(pt:nanofl.engine.geom.Point) : string;
 		static getNearest(pt:nanofl.engine.geom.Point, points:nanofl.engine.geom.Point[]) : nanofl.engine.geom.Point;
+		static toString(pt:nanofl.engine.geom.Point) : string;
 	}
 	
 	export class Polygon implements nanofl.engine.ISelectable
@@ -6843,7 +6851,6 @@ declare module nanofl.engine.geom
 		getBounds(bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 		applyFill(fill:nanofl.engine.fills.IFill, x1?:number, y1?:number, x2?:number, y2?:number) : void;
 		transform(m:nanofl.engine.geom.Matrix) : void;
-		getEdgesByPoint(x:number, y:number, edges?:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Edge[];
 		getEdges(edges?:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Edge[];
 		getPointInside() : nanofl.engine.geom.Point;
 		clone() : nanofl.engine.geom.Polygon;
@@ -6877,19 +6884,21 @@ declare module nanofl.engine.geom
 		y1 : number;
 		x2 : number;
 		y2 : number;
+		clone() : nanofl.engine.geom.StraightLine;
 		getBounds() : nanofl.engine.geom.Bounds;
 		getNearestPoint(x:number, y:number) : { point : nanofl.engine.geom.Point; t : number; };
 		getLength() : number;
 		getIntersectionPointX_rightRay(mx:number, my:number) : number;
 		isIntersect_rightRay(mx:number, my:number) : boolean;
 		getIntersection_straightSection(line:nanofl.engine.geom.StraightLine) : nanofl.engine.geom.Point;
-		toString() : string;
 		isDegeneratedToPoint() : boolean;
 		getFirstPart(t:number) : nanofl.engine.geom.StraightLine;
 		getSecondPart(t:number) : nanofl.engine.geom.StraightLine;
-		split(t:number) : nanofl.engine.geom.StraightLine[];
+		split(tt:number[]) : nanofl.engine.geom.StraightLine[];
 		getPoint(t:number) : nanofl.engine.geom.Point;
 		getTangent(t:number) : number;
+		isLiesOnLine(long:nanofl.engine.geom.StraightLine) : boolean;
+		toString() : string;
 	}
 	
 	export class StrokeEdge extends nanofl.engine.geom.Edge implements nanofl.engine.ISelectable
@@ -6910,10 +6919,8 @@ declare module nanofl.engine.geom
 	{
 		static load(node:htmlparser.HtmlNodeElement, strokes:nanofl.engine.strokes.IStroke[]) : nanofl.engine.geom.StrokeEdge[];
 		static save(edges:nanofl.engine.geom.StrokeEdge[], strokes:nanofl.engine.strokes.IStroke[], out:nanofl.engine.XmlWriter) : void;
-		static replace(edges:nanofl.engine.geom.StrokeEdge[], search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[]) : boolean;
 		static getBounds(edges:nanofl.engine.geom.StrokeEdge[], bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 		static drawSorted(edges:nanofl.engine.geom.StrokeEdge[], g:createjs.Graphics, scaleSelection:number) : void;
-		static selfIntersect(edges:nanofl.engine.geom.StrokeEdge[]) : void;
 	}
 }
 
@@ -6991,7 +6998,6 @@ declare module nanofl.engine.strokes
 		 */
 		miterLimit : number;
 		ignoreScale : boolean;
-		getSize() : number;
 		clone() : nanofl.engine.strokes.IStroke;
 		equ(e:nanofl.engine.strokes.IStroke) : boolean;
 		setLibrary(library:nanofl.engine.Library) : void;
@@ -7008,12 +7014,11 @@ declare module nanofl.engine.strokes
 		ignoreScale : boolean;
 		begin(g:createjs.Graphics) : void;
 		clone() : nanofl.engine.strokes.IStroke;
-		getSize() : number;
 		equ(e:nanofl.engine.strokes.IStroke) : boolean;
-		save(out:nanofl.engine.XmlWriter) : void;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		applyAlpha(alpha:number) : void;
 		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.strokes.IStroke;
+		save(out:nanofl.engine.XmlWriter) : void;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		setLibrary(library:nanofl.engine.Library) : void;
 		toString() : string;
 	}
@@ -7028,6 +7033,7 @@ declare module nanofl.engine.strokes
 		clone() : nanofl.engine.strokes.IStroke;
 		equ(e:nanofl.engine.strokes.IStroke) : boolean;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		setLibrary(library:nanofl.engine.Library) : void;
 		applyAlpha(alpha:number) : void;
 		toString() : string;
 	}
@@ -7464,10 +7470,9 @@ declare module nanofl.ide
 		setSelectedEdgesStrokeParams(params:nanofl.engine.strokes.StrokeParams) : void;
 		setSelectedPolygonsFill(fill:nanofl.engine.fills.IFill, x1?:number, y1?:number, x2?:number, y2?:number) : void;
 		setSelectedEdgesStroke(stroke:nanofl.engine.strokes.IStroke) : void;
-		combine_vertex(x:number, y:number) : void;
-		combine_selected() : void;
+		resolveSelfIntersections() : void;
+		combineSelected() : void;
 		extractSelected() : nanofl.engine.elements.ShapeElement;
-		combineLayerWithEdge(layerIndex:number, edge:nanofl.engine.geom.Edge) : void;
 		getMagnetPointEx(x:number, y:number, excludeSelf?:boolean) : { found : boolean; point : nanofl.engine.geom.Point; };
 		splitEdge(edge:nanofl.engine.geom.Edge, t:number) : nanofl.engine.geom.Point;
 		getSelectedStrokeEdges() : nanofl.engine.geom.StrokeEdge[];
@@ -7685,15 +7690,13 @@ declare module nanofl.engine.elements
 		setSelectedPolygonsFillParams(params:nanofl.engine.fills.FillParams) : void;
 		getSelectedPolygonsFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; r : number; ratios : number[]; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
 		floodFill(fill:nanofl.engine.fills.IFill, x1:number, y1:number, x2:number, y2:number) : void;
-		getBounds(bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
-		getSelectedBounds(bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
+		getBounds(bounds?:nanofl.engine.geom.Bounds, useStrokeThickness?:boolean) : nanofl.engine.geom.Bounds;
+		getSelectedBounds(bounds?:nanofl.engine.geom.Bounds, useStrokeThickness?:boolean) : nanofl.engine.geom.Bounds;
 		transform(m:nanofl.engine.geom.Matrix) : void;
 		transformSelected(m:nanofl.engine.geom.Matrix) : void;
 		combine(shape:nanofl.engine.elements.ShapeElement) : void;
-		combine_strokeEdge(edge:nanofl.engine.geom.StrokeEdge) : void;
-		combine_edge(edge:nanofl.engine.geom.Edge) : void;
-		combine_vertex(x:number, y:number) : void;
-		combine_selected() : void;
+		resolveSelfIntersections() : void;
+		combineSelected() : void;
 		extractSelected() : nanofl.engine.elements.ShapeElement;
 		getState() : nanofl.ide.undo.states.ElementState;
 		setState(_state:nanofl.ide.undo.states.ElementState) : void;

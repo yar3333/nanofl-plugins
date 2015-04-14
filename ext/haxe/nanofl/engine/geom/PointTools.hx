@@ -17,6 +17,6 @@ extern class PointTools
 	static function clone(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 	@:noUsing
 	static function round100(n:Float) : Float;
-	static function toString(pt:nanofl.engine.geom.Point) : String;
 	static function getNearest(pt:nanofl.engine.geom.Point, points:Array<nanofl.engine.geom.Point>) : nanofl.engine.geom.Point;
+	static function toString(pt:nanofl.engine.geom.Point) : String;
 }

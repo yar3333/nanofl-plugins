@@ -55,10 +55,9 @@ extern class Figure
 	function setSelectedEdgesStrokeParams(params:nanofl.engine.strokes.StrokeParams) : Void;
 	function setSelectedPolygonsFill(fill:nanofl.engine.fills.IFill, ?x1:Float, ?y1:Float, ?x2:Float, ?y2:Float) : Void;
 	function setSelectedEdgesStroke(stroke:nanofl.engine.strokes.IStroke) : Void;
-	function combine_vertex(x:Float, y:Float) : Void;
-	function combine_selected() : Void;
+	function resolveSelfIntersections() : Void;
+	function combineSelected() : Void;
 	function extractSelected() : nanofl.engine.elements.ShapeElement;
-	function combineLayerWithEdge(layerIndex:Int, edge:nanofl.engine.geom.Edge) : Void;
 	function getMagnetPointEx(x:Float, y:Float, ?excludeSelf:Bool) : { var found : Bool; var point : nanofl.engine.geom.Point; };
 	function splitEdge(edge:nanofl.engine.geom.Edge, t:Float) : nanofl.engine.geom.Point;
 	function getSelectedStrokeEdges() : Array<nanofl.engine.geom.StrokeEdge>;

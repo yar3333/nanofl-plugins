@@ -197,6 +197,7 @@ class SvgPathExporter
 			shape.combine(new ShapeElement([], Polygons.fromEdges(pf.polygon.getEdges(), pf.polygon.fill, pf.fillRuleEvenOdd)));
 		}
 		
+		Edges.roundAndRemoveDegenerated(edges);
 		Edges.intersectSelf(edges);
 		
 		shape.combine(new ShapeElement(edges));
