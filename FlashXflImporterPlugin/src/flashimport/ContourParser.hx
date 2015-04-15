@@ -124,9 +124,9 @@ class ContourParser
 			if (r >= 0x80000000) r = -(~r + 1);
 			#end
 			
-			return PointTools.round100(r / 5120); // 256*20
+			return PointTools.roundGap(r / 5120); // 256*20
 		}
 		
-		return PointTools.round100(0.05 * Std.parseFloat(s));
+		return PointTools.roundGap(0.05 * Std.parseFloat(s));
 	}
 }

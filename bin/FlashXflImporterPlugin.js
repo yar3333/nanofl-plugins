@@ -395,9 +395,9 @@ flashimport.ContourParser.prototype = {
 			var low = StringTools.rpad(HxOverrides.substr(s,n + 1,null),"0",2);
 			var r = Std.parseInt("0x" + high + low);
 			if(r >= -2147483648) r = -(~r + 1);
-			return nanofl.engine.geom.PointTools.round100(r / 5120);
+			return nanofl.engine.geom.PointTools.roundGap(r / 5120);
 		}
-		return nanofl.engine.geom.PointTools.round100(0.05 * Std.parseFloat(s));
+		return nanofl.engine.geom.PointTools.roundGap(0.05 * Std.parseFloat(s));
 	}
 	,__class__: flashimport.ContourParser
 };

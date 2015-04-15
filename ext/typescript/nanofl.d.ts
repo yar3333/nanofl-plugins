@@ -6718,7 +6718,6 @@ declare module nanofl.engine.geom
 		static removeDublicates<T>(edges:T[]) : void;
 		static concatUnique<T, Z>(edgesA:T[], edgesB:Z[]) : T[];
 		static appendUnique<T, Z>(edgesA:T[], edgesB:Z[]) : T[];
-		static has<T>(edges:T[], edge:T) : boolean;
 		static draw<T>(edges:T[], g:createjs.Graphics, fixLineJoinsInClosedContours:boolean) : void;
 		static getBounds<T>(edges:T[], bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 		static export<T>(edges:T[], out:nanofl.engine.XmlWriter) : void;
@@ -6829,7 +6828,8 @@ declare module nanofl.engine.geom
 		static moveInDirection(start:nanofl.engine.geom.Point, endX:number, endY:number, len:number) : nanofl.engine.geom.Point;
 		static equ(pt1:nanofl.engine.geom.Point, pt2:nanofl.engine.geom.Point) : boolean;
 		static clone(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
-		static round100(n:number) : number;
+		static roundGap(n:number) : number;
+		static roundGapP(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 		static getNearest(pt:nanofl.engine.geom.Point, points:nanofl.engine.geom.Point[]) : nanofl.engine.geom.Point;
 		static toString(pt:nanofl.engine.geom.Point) : string;
 	}
