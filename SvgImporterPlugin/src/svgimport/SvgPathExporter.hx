@@ -191,17 +191,37 @@ class SvgPathExporter
 	
 	public function export() : ShapeElement
 	{
+		//trace("SvgPathExporter.export vvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+		
 		var shape = new ShapeElement();
 		for (pf in polygonAndFillRules)
 		{
 			var edgesToCreatePolygons = pf.polygon.getEdges();
-			shape.combine(new ShapeElement([], Polygons.fromEdges(edgesToCreatePolygons, pf.polygon.fill, pf.fillRuleEvenOdd)));
+			
+			//trace("Polygons.fromEdges vvvvvvvvvvvvvvv edgesToCreatePolygons = " + edgesToCreatePolygons.length + "; " + edgesToCreatePolygons);
+			var polygons = Polygons.fromEdges(edgesToCreatePolygons, pf.polygon.fill, pf.fillRuleEvenOdd);
+			//trace("Polygons.fromEdges ^^^^^^^^^^^^^^^ polygons = " + polygons.length);
+			
+			var shape2 = new ShapeElement([], polygons);
+			
+			//trace("shape.combine vvvvvvvvvvvvvvvvv " + shape.getEdgeCount() + " + " + shape2.getEdgeCount());
+			shape.combine(shape2);
+			//trace("shape.combine ^^^^^^^^^^^^^^^^^");
 		}
 		
+		//trace("normalize vvvvvvvvvvvvvv");
 		Edges.normalize(edges);
-		Edges.intersectSelf(edges);
+		//trace("normalize ^^^^^^^^^^^^^^");
 		
+		//trace("intersectSelf vvvvvvvvvvvvvv");
+		Edges.intersectSelf(edges);
+		//trace("intersectSelf ^^^^^^^^^^^^^^");
+		
+		//trace("shape.combine stroke vvvvvvvvvvvvvv");
 		shape.combine(new ShapeElement(edges));
+		//trace("shape.combine stroke ^^^^^^^^^^^^^^");
+		
+		//trace("SvgPathExporter.export ^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 		
 		return shape;
 	}
