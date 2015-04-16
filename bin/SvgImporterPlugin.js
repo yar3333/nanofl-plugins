@@ -962,7 +962,9 @@ svgimport.SvgPathExporter.prototype = {
 			var pf = _g1[_g];
 			++_g;
 			var edgesToCreatePolygons = pf.polygon.getEdges();
-			shape.combine(new nanofl.engine.elements.ShapeElement([],nanofl.engine.geom.Polygons.fromEdges(edgesToCreatePolygons,pf.polygon.fill,pf.fillRuleEvenOdd)));
+			var polygons = nanofl.engine.geom.Polygons.fromEdges(edgesToCreatePolygons,pf.polygon.fill,pf.fillRuleEvenOdd);
+			var shape2 = new nanofl.engine.elements.ShapeElement([],polygons);
+			shape.combine(shape2);
 		}
 		nanofl.engine.geom.Edges.normalize(this.edges);
 		nanofl.engine.geom.Edges.intersectSelf(this.edges);

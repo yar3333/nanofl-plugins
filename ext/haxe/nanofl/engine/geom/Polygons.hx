@@ -9,5 +9,6 @@ extern class Polygons
 	static function hasDublicates(polygons:Array<nanofl.engine.geom.Polygon>) : Bool;
 	static function normalize(polygons:Array<nanofl.engine.geom.Polygon>) : Void;
 	static function getReconstructed(polygons:Array<nanofl.engine.geom.Polygon>, additionalEdges:Array<nanofl.engine.geom.Edge>, ?force:Bool) : Array<nanofl.engine.geom.Polygon>;
+	@:profile
 	static function fromEdges(edges:Array<nanofl.engine.geom.Edge>, fill:nanofl.engine.fills.IFill, fillEvenOdd:Bool) : Array<nanofl.engine.geom.Polygon>;
 }

@@ -20,6 +20,5 @@ extern class StraightLine
 	function split(tt:Array<Float>) : Array<nanofl.engine.geom.StraightLine>;
 	function getPoint(t:Float) : nanofl.engine.geom.Point;
 	function getTangent(t:Float) : Float;
-	function isLiesOnLine(long:nanofl.engine.geom.StraightLine) : Bool;
 	function toString() : String;
 }

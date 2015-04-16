@@ -6600,8 +6600,8 @@ declare module nanofl.engine.geom
 		p1 : nanofl.engine.geom.Point;
 		p2 : nanofl.engine.geom.Point;
 		p3 : nanofl.engine.geom.Point;
-		getNearestPoint(x:number, y:number) : { dist : number; nor : nanofl.engine.geom.Point; onCurve : boolean; orientedDist : number; point : nanofl.engine.geom.Point; t : number; };
-		getNearestPointP(pt:nanofl.engine.geom.Point) : { dist : number; nor : nanofl.engine.geom.Point; onCurve : boolean; orientedDist : number; point : nanofl.engine.geom.Point; t : number; };
+		getNearestPoint(x:number, y:number) : { dist : number; nor : nanofl.engine.geom.Point; orientedDist : number; point : nanofl.engine.geom.Point; t : number; };
+		getNearestPointP(pt:nanofl.engine.geom.Point) : { dist : number; nor : nanofl.engine.geom.Point; orientedDist : number; point : nanofl.engine.geom.Point; t : number; };
 		getPoint(t:number) : nanofl.engine.geom.Point;
 		getNor(t:number) : nanofl.engine.geom.Point;
 		getBounds() : nanofl.engine.geom.Bounds;
@@ -6622,7 +6622,6 @@ declare module nanofl.engine.geom
 		reverse() : void;
 		getLength() : number;
 		getTangent(t:number) : number;
-		isLiesOnCurve(long:nanofl.engine.geom.BezierCurve) : boolean;
 		toString() : string;
 	}
 	
@@ -6636,8 +6635,12 @@ declare module nanofl.engine.geom
 	
 	export class BoundsTools
 	{
-		static updateByRect(bounds:nanofl.engine.geom.Bounds, rect:{ height : number; width : number; x : number; y : number; }) : nanofl.engine.geom.Bounds;
-		static isIntersect(a:nanofl.engine.geom.Bounds, b:nanofl.engine.geom.Bounds) : boolean;
+		static extendR(bounds:nanofl.engine.geom.Bounds, rect:{ height : number; width : number; x : number; y : number; }) : nanofl.engine.geom.Bounds;
+		static extend(bounds:nanofl.engine.geom.Bounds, b:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
+		static isIntersect(a:nanofl.engine.geom.Bounds, b:nanofl.engine.geom.Bounds, gap?:number) : boolean;
+		static isPointInside(bounds:nanofl.engine.geom.Bounds, x:number, y:number, gap?:number) : boolean;
+		static clone(bounds:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
+		static toString(bounds:nanofl.engine.geom.Bounds) : string;
 	}
 	
 	export class Contour
@@ -6693,9 +6696,11 @@ declare module nanofl.engine.geom
 		getMiddlePoint() : nanofl.engine.geom.Point;
 		hasCommonVertices(edge:nanofl.engine.geom.Edge) : boolean;
 		transform(m:nanofl.engine.geom.Matrix) : void;
+		splitByClosePoint(x:number, y:number) : nanofl.engine.geom.Edge[];
 		asStraightLine() : nanofl.engine.geom.StraightLine;
 		asBezierCurve() : nanofl.engine.geom.BezierCurve;
 		clone() : nanofl.engine.geom.Edge;
+		duplicate(e:nanofl.engine.geom.Edge) : nanofl.engine.geom.Edge;
 		indexIn<T>(edges:T[]) : number;
 		isDegenerated() : boolean;
 		roundPoints() : void;
@@ -6708,7 +6713,6 @@ declare module nanofl.engine.geom
 		static fromStraightLine(line:nanofl.engine.geom.StraightLine) : nanofl.engine.geom.Edge;
 		static fromBezierCurve(curve:nanofl.engine.geom.BezierCurve) : nanofl.engine.geom.Edge;
 		static getIntersection(edgeA:nanofl.engine.geom.Edge, edgeB:nanofl.engine.geom.Edge) : nanofl.engine.geom.Edge.EdgesItersection;
-		static getLiesReplacement<T>(edgeA:T, edgeB:T) : { a : nanofl.engine.geom.Edge[]; b : nanofl.engine.geom.Edge[]; };
 	}
 	
 	export class Edges
@@ -6728,9 +6732,9 @@ declare module nanofl.engine.geom
 		static replaceAt<T>(edges:T[], n:number, replacement:nanofl.engine.geom.Edge[], reverse:boolean) : void;
 		static intersect<T>(edgesA:T[], edgesB:T[], onReplace?:(arg0:nanofl.engine.geom.Edge, arg1:nanofl.engine.geom.Edge[]) => void) : void;
 		static intersectSelf<T>(edges:T[], onReplace?:(arg0:nanofl.engine.geom.Edge, arg1:nanofl.engine.geom.Edge[]) => void) : void;
-		static normalize<T>(edges:T[]) : void;
-		static roundPoints<T>(edges:T[]) : void;
-		static removeDegenerated<T>(edges:T[]) : void;
+		static normalize<T>(edges:T[]) : T[];
+		static roundPoints<T>(edges:T[]) : T[];
+		static removeDegenerated<T>(edges:T[]) : T[];
 		static isPointInside(edges:nanofl.engine.geom.Edge[], x:number, y:number, fillEvenOdd:boolean) : boolean;
 		static getSequences(edges:nanofl.engine.geom.Edge[]) : { equEdge : nanofl.engine.geom.Edge; edges : nanofl.engine.geom.Edge[]; }[];
 		static isSequence<T>(edges:T[]) : boolean;
@@ -6899,7 +6903,6 @@ declare module nanofl.engine.geom
 		split(tt:number[]) : nanofl.engine.geom.StraightLine[];
 		getPoint(t:number) : nanofl.engine.geom.Point;
 		getTangent(t:number) : number;
-		isLiesOnLine(long:nanofl.engine.geom.StraightLine) : boolean;
 		toString() : string;
 	}
 	
@@ -6913,6 +6916,7 @@ declare module nanofl.engine.geom
 		transform(m:nanofl.engine.geom.Matrix) : void;
 		translate(dx:number, dy:number) : void;
 		clone() : nanofl.engine.geom.Edge;
+		duplicate(e:nanofl.engine.geom.Edge) : nanofl.engine.geom.Edge;
 		toString() : string;
 		static fromEdge(edge:nanofl.engine.geom.Edge, stroke?:nanofl.engine.strokes.IStroke, selected?:boolean) : nanofl.engine.geom.StrokeEdge;
 	}
@@ -7706,6 +7710,7 @@ declare module nanofl.engine.elements
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		applyStrokeAlpha(alpha:number) : void;
 		applyFillAlpha(alpha:number) : void;
+		getEdgeCount() : number;
 		toString() : string;
 	}
 	

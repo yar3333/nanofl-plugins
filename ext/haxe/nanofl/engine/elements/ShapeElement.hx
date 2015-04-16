@@ -74,5 +74,6 @@ extern class ShapeElement extends nanofl.engine.elements.Element
 	override function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	function applyStrokeAlpha(alpha:Float) : Void;
 	function applyFillAlpha(alpha:Float) : Void;
+	function getEdgeCount() : Int;
 	override function toString() : String;
 }

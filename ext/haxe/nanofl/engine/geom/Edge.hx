@@ -32,9 +32,11 @@ extern class Edge
 	function getMiddlePoint() : nanofl.engine.geom.Point;
 	function hasCommonVertices(edge:nanofl.engine.geom.Edge) : Bool;
 	function transform(m:nanofl.engine.geom.Matrix) : Void;
+	function splitByClosePoint(x:Float, y:Float) : Array<nanofl.engine.geom.Edge>;
 	function asStraightLine() : nanofl.engine.geom.StraightLine;
 	function asBezierCurve() : nanofl.engine.geom.BezierCurve;
 	function clone() : nanofl.engine.geom.Edge;
+	function duplicate(e:nanofl.engine.geom.Edge) : nanofl.engine.geom.Edge;
 	function indexIn<T>(edges:Array<T>) : Int;
 	function isDegenerated() : Bool;
 	function roundPoints() : Void;
@@ -46,6 +48,6 @@ extern class Edge
 	function isInRectangle(x:Float, y:Float, width:Float, height:Float) : Bool;
 	static function fromStraightLine(line:nanofl.engine.geom.StraightLine) : nanofl.engine.geom.Edge;
 	static function fromBezierCurve(curve:nanofl.engine.geom.BezierCurve) : nanofl.engine.geom.Edge;
+	@:profile
 	static function getIntersection(edgeA:nanofl.engine.geom.Edge, edgeB:nanofl.engine.geom.Edge) : nanofl.engine.geom.Edge.EdgesItersection;
-	static function getLiesReplacement<T>(edgeA:T, edgeB:T) : { var a : Array<nanofl.engine.geom.Edge>; var b : Array<nanofl.engine.geom.Edge>; };
 }

@@ -10,6 +10,7 @@ extern class StrokeEdge extends nanofl.engine.geom.Edge implements nanofl.engine
 	override function transform(m:nanofl.engine.geom.Matrix) : Void;
 	override function translate(dx:Float, dy:Float) : Void;
 	override function clone() : nanofl.engine.geom.Edge;
+	override function duplicate(e:nanofl.engine.geom.Edge) : nanofl.engine.geom.Edge;
 	override function toString() : String;
 	static function fromEdge(edge:nanofl.engine.geom.Edge, ?stroke:nanofl.engine.strokes.IStroke, ?selected:Bool) : nanofl.engine.geom.StrokeEdge;
 }
