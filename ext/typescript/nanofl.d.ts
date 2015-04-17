@@ -6739,6 +6739,8 @@ declare module nanofl.engine.geom
 		static getSequences(edges:nanofl.engine.geom.Edge[]) : { equEdge : nanofl.engine.geom.Edge; edges : nanofl.engine.geom.Edge[]; }[];
 		static isSequence<T>(edges:T[]) : boolean;
 		static hasDegenerated<T>(edges:T[]) : boolean;
+		static getPointUseCount<T>(edges:T[], x:number, y:number) : number;
+		static equIgnoreOrder(edgesA:nanofl.engine.geom.Edge[], edgesB:nanofl.engine.geom.Edge[]) : boolean;
 	}
 	
 	export class Equation
