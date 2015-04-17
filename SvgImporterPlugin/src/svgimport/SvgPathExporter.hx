@@ -191,37 +191,37 @@ class SvgPathExporter
 	
 	public function export() : ShapeElement
 	{
-		//trace("SvgPathExporter.export vvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+		trace("SvgPathExporter.export vvvvvvvvvvvvvvvvvvvvvvvvvvvv");
 		
 		var shape = new ShapeElement();
 		for (pf in polygonAndFillRules)
 		{
 			var edgesToCreatePolygons = pf.polygon.getEdges();
 			
-			//trace("Polygons.fromEdges vvvvvvvvvvvvvvv edgesToCreatePolygons = " + edgesToCreatePolygons.length + "; " + edgesToCreatePolygons);
+			trace("Polygons.fromEdges vvvvvvvvvvvvvvv edgesToCreatePolygons = " + edgesToCreatePolygons.length + "; " + edgesToCreatePolygons);
 			var polygons = Polygons.fromEdges(edgesToCreatePolygons, pf.polygon.fill, pf.fillRuleEvenOdd);
-			//trace("Polygons.fromEdges ^^^^^^^^^^^^^^^ polygons = " + polygons.length);
+			trace("Polygons.fromEdges ^^^^^^^^^^^^^^^ polygons = " + polygons.length);
 			
 			var shape2 = new ShapeElement([], polygons);
 			
-			//trace("shape.combine vvvvvvvvvvvvvvvvv " + shape.getEdgeCount() + " + " + shape2.getEdgeCount());
+			trace("shape.combine vvvvvvvvvvvvvvvvv " + shape.getEdgeCount() + " + " + shape2.getEdgeCount());
 			shape.combine(shape2);
-			//trace("shape.combine ^^^^^^^^^^^^^^^^^");
+			trace("shape.combine ^^^^^^^^^^^^^^^^^");
 		}
 		
-		//trace("normalize vvvvvvvvvvvvvv");
+		trace("normalize vvvvvvvvvvvvvv");
 		Edges.normalize(edges);
-		//trace("normalize ^^^^^^^^^^^^^^");
+		trace("normalize ^^^^^^^^^^^^^^");
 		
-		//trace("intersectSelf vvvvvvvvvvvvvv");
+		trace("intersectSelf vvvvvvvvvvvvvv");
 		Edges.intersectSelf(edges);
-		//trace("intersectSelf ^^^^^^^^^^^^^^");
+		trace("intersectSelf ^^^^^^^^^^^^^^");
 		
-		//trace("shape.combine stroke vvvvvvvvvvvvvv");
+		trace("shape.combine stroke vvvvvvvvvvvvvv");
 		shape.combine(new ShapeElement(edges));
-		//trace("shape.combine stroke ^^^^^^^^^^^^^^");
+		trace("shape.combine stroke ^^^^^^^^^^^^^^");
 		
-		//trace("SvgPathExporter.export ^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+		trace("SvgPathExporter.export ^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 		
 		return shape;
 	}
