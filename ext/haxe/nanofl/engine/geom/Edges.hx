@@ -14,6 +14,7 @@ extern class Edges
 	static function load(s:String) : Array<nanofl.engine.geom.Edge>;
 	static function save(edges:Array<nanofl.engine.geom.Edge>) : String;
 	static function replace<T>(edges:Array<T>, search:nanofl.engine.geom.Edge, replacement:Array<nanofl.engine.geom.Edge>) : Int;
+	static function replaceAll<T>(edges:Array<T>, search:nanofl.engine.geom.Edge, replacement:Array<nanofl.engine.geom.Edge>) : Void;
 	static function replaceAt<T>(edges:Array<T>, n:Int, replacement:Array<nanofl.engine.geom.Edge>, reverse:Bool) : Void;
 	@:profile
 	static function intersect<T>(edgesA:Array<T>, edgesB:Array<T>, ?onReplace:nanofl.engine.geom.Edge -> Array<nanofl.engine.geom.Edge> -> Void) : Void;

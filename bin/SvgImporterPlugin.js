@@ -9,7 +9,7 @@ var EReg = function(r,opt) {
 	opt = opt.split("u").join("");
 	this.r = new RegExp(r,opt);
 };
-EReg.__name__ = true;
+EReg.__name__ = ["EReg"];
 EReg.prototype = {
 	match: function(s) {
 		if(this.r.global) this.r.lastIndex = 0;
@@ -25,14 +25,57 @@ EReg.prototype = {
 		var sz = this.r.m.index + this.r.m[0].length;
 		return this.r.s.substr(sz,this.r.s.length - sz);
 	}
+	,matchedPos: function() {
+		if(this.r.m == null) throw "No string matched";
+		return { pos : this.r.m.index, len : this.r.m[0].length};
+	}
+	,matchSub: function(s,pos,len) {
+		if(len == null) len = -1;
+		if(this.r.global) {
+			this.r.lastIndex = pos;
+			this.r.m = this.r.exec(len < 0?s:HxOverrides.substr(s,0,pos + len));
+			var b = this.r.m != null;
+			if(b) this.r.s = s;
+			return b;
+		} else {
+			var b1 = this.match(len < 0?HxOverrides.substr(s,pos,null):HxOverrides.substr(s,pos,len));
+			if(b1) {
+				this.r.s = s;
+				this.r.m.index += pos;
+			}
+			return b1;
+		}
+	}
 	,split: function(s) {
 		var d = "#__delim__#";
 		return s.replace(this.r,d).split(d);
 	}
+	,replace: function(s,by) {
+		return s.replace(this.r,by);
+	}
+	,map: function(s,f) {
+		var offset = 0;
+		var buf = new StringBuf();
+		do {
+			if(offset >= s.length) break; else if(!this.matchSub(s,offset)) {
+				buf.add(HxOverrides.substr(s,offset,null));
+				break;
+			}
+			var p = this.matchedPos();
+			buf.add(HxOverrides.substr(s,offset,p.pos - offset));
+			buf.add(f(this));
+			if(p.len == 0) {
+				buf.add(HxOverrides.substr(s,p.pos,1));
+				offset = p.pos + 1;
+			} else offset = p.pos + p.len;
+		} while(this.r.global);
+		if(!this.r.global && offset > 0 && offset < s.length) buf.add(HxOverrides.substr(s,offset,null));
+		return buf.b;
+	}
 	,__class__: EReg
 };
 var HxOverrides = function() { };
-HxOverrides.__name__ = true;
+HxOverrides.__name__ = ["HxOverrides"];
 HxOverrides.cca = function(s,index) {
 	var x = s.charCodeAt(index);
 	if(x != x) return undefined;
@@ -55,7 +98,7 @@ HxOverrides.iter = function(a) {
 	}};
 };
 var Lambda = function() { };
-Lambda.__name__ = true;
+Lambda.__name__ = ["Lambda"];
 Lambda.array = function(it) {
 	var a = new Array();
 	var $it0 = $iterator(it)();
@@ -75,10 +118,27 @@ Lambda.mapi = function(it,f) {
 	}
 	return l;
 };
+Lambda.count = function(it,pred) {
+	var n = 0;
+	if(pred == null) {
+		var $it0 = $iterator(it)();
+		while( $it0.hasNext() ) {
+			var _ = $it0.next();
+			n++;
+		}
+	} else {
+		var $it1 = $iterator(it)();
+		while( $it1.hasNext() ) {
+			var x = $it1.next();
+			if(pred(x)) n++;
+		}
+	}
+	return n;
+};
 var List = function() {
 	this.length = 0;
 };
-List.__name__ = true;
+List.__name__ = ["List"];
 List.prototype = {
 	add: function(item) {
 		var x = [item];
@@ -99,18 +159,66 @@ List.prototype = {
 	,__class__: List
 };
 var IMap = function() { };
-IMap.__name__ = true;
-Math.__name__ = true;
+IMap.__name__ = ["IMap"];
+IMap.prototype = {
+	__class__: IMap
+};
+Math.__name__ = ["Math"];
+var Reflect = function() { };
+Reflect.__name__ = ["Reflect"];
+Reflect.field = function(o,field) {
+	try {
+		return o[field];
+	} catch( e ) {
+		return null;
+	}
+};
+Reflect.fields = function(o) {
+	var a = [];
+	if(o != null) {
+		var hasOwnProperty = Object.prototype.hasOwnProperty;
+		for( var f in o ) {
+		if(f != "__id__" && f != "hx__closures__" && hasOwnProperty.call(o,f)) a.push(f);
+		}
+	}
+	return a;
+};
 var Std = function() { };
-Std.__name__ = true;
+Std.__name__ = ["Std"];
 Std.string = function(s) {
 	return js.Boot.__string_rec(s,"");
+};
+Std.parseInt = function(x) {
+	var v = parseInt(x,10);
+	if(v == 0 && (HxOverrides.cca(x,1) == 120 || HxOverrides.cca(x,1) == 88)) v = parseInt(x);
+	if(isNaN(v)) return null;
+	return v;
 };
 Std.parseFloat = function(x) {
 	return parseFloat(x);
 };
+Std.random = function(x) {
+	if(x <= 0) return 0; else return Math.floor(Math.random() * x);
+};
+var StringBuf = function() {
+	this.b = "";
+};
+StringBuf.__name__ = ["StringBuf"];
+StringBuf.prototype = {
+	add: function(x) {
+		this.b += Std.string(x);
+	}
+	,__class__: StringBuf
+};
 var StringTools = function() { };
-StringTools.__name__ = true;
+StringTools.__name__ = ["StringTools"];
+StringTools.htmlEscape = function(s,quotes) {
+	s = s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+	if(quotes) return s.split("\"").join("&quot;").split("'").join("&#039;"); else return s;
+};
+StringTools.htmlUnescape = function(s) {
+	return s.split("&gt;").join(">").split("&lt;").join("<").split("&quot;").join("\"").split("&#039;").join("'").split("&amp;").join("&");
+};
 StringTools.startsWith = function(s,start) {
 	return s.length >= start.length && HxOverrides.substr(s,0,start.length) == start;
 };
@@ -119,8 +227,47 @@ StringTools.endsWith = function(s,end) {
 	var slen = s.length;
 	return slen >= elen && HxOverrides.substr(s,slen - elen,elen) == end;
 };
+StringTools.isSpace = function(s,pos) {
+	var c = HxOverrides.cca(s,pos);
+	return c > 8 && c < 14 || c == 32;
+};
+StringTools.ltrim = function(s) {
+	var l = s.length;
+	var r = 0;
+	while(r < l && StringTools.isSpace(s,r)) r++;
+	if(r > 0) return HxOverrides.substr(s,r,l - r); else return s;
+};
+StringTools.rtrim = function(s) {
+	var l = s.length;
+	var r = 0;
+	while(r < l && StringTools.isSpace(s,l - r - 1)) r++;
+	if(r > 0) return HxOverrides.substr(s,0,l - r); else return s;
+};
+StringTools.trim = function(s) {
+	return StringTools.ltrim(StringTools.rtrim(s));
+};
+StringTools.lpad = function(s,c,l) {
+	if(c.length <= 0) return s;
+	while(s.length < l) s = c + s;
+	return s;
+};
+StringTools.rpad = function(s,c,l) {
+	if(c.length <= 0) return s;
+	while(s.length < l) s = s + c;
+	return s;
+};
 StringTools.replace = function(s,sub,by) {
 	return s.split(sub).join(by);
+};
+StringTools.hex = function(n,digits) {
+	var s = "";
+	var hexChars = "0123456789ABCDEF";
+	do {
+		s = hexChars.charAt(n & 15) + s;
+		n >>>= 4;
+	} while(n > 0);
+	if(digits != null) while(s.length < digits) s = "0" + s;
+	return s;
 };
 var SvgImporterPlugin = function() {
 	this.fileFilterExtensions = ["svg"];
@@ -129,7 +276,7 @@ var SvgImporterPlugin = function() {
 	this.menuItemName = "Scalable Vector Graphics (*.svg)";
 	this.name = "SvgImporter";
 };
-SvgImporterPlugin.__name__ = true;
+SvgImporterPlugin.__name__ = ["SvgImporterPlugin"];
 SvgImporterPlugin.__interfaces__ = [nanofl.ide.plugins.IImporterPlugin];
 SvgImporterPlugin.main = function() {
 	nanofl.engine.Plugins.registerImporter(new SvgImporterPlugin());
@@ -173,12 +320,112 @@ SvgImporterPlugin.prototype = {
 	}
 	,__class__: SvgImporterPlugin
 };
+var ValueType = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] };
+ValueType.TNull = ["TNull",0];
+ValueType.TNull.__enum__ = ValueType;
+ValueType.TInt = ["TInt",1];
+ValueType.TInt.__enum__ = ValueType;
+ValueType.TFloat = ["TFloat",2];
+ValueType.TFloat.__enum__ = ValueType;
+ValueType.TBool = ["TBool",3];
+ValueType.TBool.__enum__ = ValueType;
+ValueType.TObject = ["TObject",4];
+ValueType.TObject.__enum__ = ValueType;
+ValueType.TFunction = ["TFunction",5];
+ValueType.TFunction.__enum__ = ValueType;
+ValueType.TClass = function(c) { var $x = ["TClass",6,c]; $x.__enum__ = ValueType; return $x; };
+ValueType.TEnum = function(e) { var $x = ["TEnum",7,e]; $x.__enum__ = ValueType; return $x; };
+ValueType.TUnknown = ["TUnknown",8];
+ValueType.TUnknown.__enum__ = ValueType;
+var Type = function() { };
+Type.__name__ = ["Type"];
+Type.getClassName = function(c) {
+	var a = c.__name__;
+	return a.join(".");
+};
+Type.getEnumName = function(e) {
+	var a = e.__ename__;
+	return a.join(".");
+};
+Type["typeof"] = function(v) {
+	var _g = typeof(v);
+	switch(_g) {
+	case "boolean":
+		return ValueType.TBool;
+	case "string":
+		return ValueType.TClass(String);
+	case "number":
+		if(Math.ceil(v) == v % 2147483648.0) return ValueType.TInt;
+		return ValueType.TFloat;
+	case "object":
+		if(v == null) return ValueType.TNull;
+		var e = v.__enum__;
+		if(e != null) return ValueType.TEnum(e);
+		var c;
+		if((v instanceof Array) && v.__enum__ == null) c = Array; else c = v.__class__;
+		if(c != null) return ValueType.TClass(c);
+		return ValueType.TObject;
+	case "function":
+		if(v.__name__ || v.__ename__) return ValueType.TObject;
+		return ValueType.TFunction;
+	case "undefined":
+		return ValueType.TNull;
+	default:
+		return ValueType.TUnknown;
+	}
+};
+Type.enumConstructor = function(e) {
+	return e[0];
+};
 var haxe = {};
+haxe.Utf8 = function(size) {
+	this.__b = "";
+};
+haxe.Utf8.__name__ = ["haxe","Utf8"];
+haxe.Utf8.iter = function(s,chars) {
+	var _g1 = 0;
+	var _g = s.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		chars(HxOverrides.cca(s,i));
+	}
+};
+haxe.Utf8.encode = function(s) {
+	throw "Not implemented";
+	return s;
+};
+haxe.Utf8.decode = function(s) {
+	throw "Not implemented";
+	return s;
+};
+haxe.Utf8.compare = function(a,b) {
+	if(a > b) return 1; else if(a == b) return 0; else return -1;
+};
+haxe.Utf8.prototype = {
+	addChar: function(c) {
+		this.__b += String.fromCharCode(c);
+	}
+	,__class__: haxe.Utf8
+};
 haxe.ds = {};
+haxe.ds.IntMap = function() {
+	this.h = { };
+};
+haxe.ds.IntMap.__name__ = ["haxe","ds","IntMap"];
+haxe.ds.IntMap.__interfaces__ = [IMap];
+haxe.ds.IntMap.prototype = {
+	set: function(key,value) {
+		this.h[key] = value;
+	}
+	,get: function(key) {
+		return this.h[key];
+	}
+	,__class__: haxe.ds.IntMap
+};
 haxe.ds.StringMap = function() {
 	this.h = { };
 };
-haxe.ds.StringMap.__name__ = true;
+haxe.ds.StringMap.__name__ = ["haxe","ds","StringMap"];
 haxe.ds.StringMap.__interfaces__ = [IMap];
 haxe.ds.StringMap.prototype = {
 	set: function(key,value) {
@@ -209,7 +456,7 @@ haxe.ds.StringMap.prototype = {
 };
 var js = {};
 js.Boot = function() { };
-js.Boot.__name__ = true;
+js.Boot.__name__ = ["js","Boot"];
 js.Boot.getClass = function(o) {
 	if((o instanceof Array) && o.__enum__ == null) return Array; else return o.__class__;
 };
@@ -322,8 +569,547 @@ js.Boot.__instanceof = function(o,cl) {
 		return o.__enum__ == cl;
 	}
 };
+js.Boot.__cast = function(o,t) {
+	if(js.Boot.__instanceof(o,t)) return o; else throw "Cannot cast " + Std.string(o) + " to " + Std.string(t);
+};
+var stdlib = {};
+stdlib.Debug = function() { };
+stdlib.Debug.__name__ = ["stdlib","Debug"];
+stdlib.Debug.getDump = function(v,limit,level,prefix) {
+	if(prefix == null) prefix = "";
+	if(level == null) level = 0;
+	if(limit == null) limit = 10;
+	if(level >= limit) return "...\n";
+	prefix += "\t";
+	var s = "?\n";
+	{
+		var _g = Type["typeof"](v);
+		switch(_g[1]) {
+		case 3:
+			s = "BOOL(" + (v?"true":"false") + ")\n";
+			break;
+		case 0:
+			s = "NULL\n";
+			break;
+		case 6:
+			var c = _g[2];
+			if(c == String) s = "STRING(" + Std.string(v) + ")\n"; else if(c == Array) {
+				s = "ARRAY(" + Std.string(v.length) + ")\n";
+				var _g1 = 0;
+				var _g2;
+				_g2 = js.Boot.__cast(v , Array);
+				while(_g1 < _g2.length) {
+					var item = _g2[_g1];
+					++_g1;
+					s += prefix + stdlib.Debug.getDump(item,limit,level + 1,prefix);
+				}
+			} else if(c == List) {
+				s = "LIST(" + Lambda.count(v) + ")\n";
+				var $it0 = (js.Boot.__cast(v , List)).iterator();
+				while( $it0.hasNext() ) {
+					var item1 = $it0.next();
+					s += prefix + stdlib.Debug.getDump(item1,limit,level + 1,prefix);
+				}
+			} else if(c == haxe.ds.StringMap) {
+				s = "StringMap\n";
+				var map;
+				map = js.Boot.__cast(v , haxe.ds.StringMap);
+				var $it1 = map.keys();
+				while( $it1.hasNext() ) {
+					var key = $it1.next();
+					s += prefix + key + " => " + stdlib.Debug.getDump(map.get(key),limit,level + 1,prefix);
+				}
+			} else s = "CLASS(" + Type.getClassName(c) + ")\n" + stdlib.Debug.getObjectDump(v,limit,level + 1,prefix);
+			break;
+		case 7:
+			var e = _g[2];
+			s = "ENUM(" + Type.getEnumName(e) + ") = " + Type.enumConstructor(v) + "\n";
+			break;
+		case 2:
+			s = "FLOAT(" + Std.string(v) + ")\n";
+			break;
+		case 1:
+			s = "INT(" + Std.string(v) + ")\n";
+			break;
+		case 4:
+			s = "OBJECT" + "\n" + stdlib.Debug.getObjectDump(v,limit,level + 1,prefix);
+			break;
+		case 5:case 8:
+			s = "FUNCTION OR UNKNOW\n";
+			break;
+		}
+	}
+	return s;
+};
+stdlib.Debug.getObjectDump = function(obj,limit,level,prefix) {
+	var s = "";
+	var _g = 0;
+	var _g1 = Reflect.fields(obj);
+	while(_g < _g1.length) {
+		var fieldName = _g1[_g];
+		++_g;
+		s += prefix + fieldName + " : " + stdlib.Debug.getDump(Reflect.field(obj,fieldName),limit,level,prefix);
+	}
+	return s;
+};
+stdlib.Debug.assert = function(e,message,pos) {
+};
+stdlib.Debug.traceStack = function(v,pos) {
+};
+stdlib.Std = function() { };
+stdlib.Std.__name__ = ["stdlib","Std"];
+stdlib.Std["is"] = function(v,t) {
+	return js.Boot.__instanceof(v,t);
+};
+stdlib.Std.string = function(s) {
+	return Std.string(s);
+};
+stdlib.Std["int"] = function(x) {
+	return x | 0;
+};
+stdlib.Std.parseInt = function(x,defaultValue) {
+	if(x != null) {
+		if(new EReg("^\\s*[+-]?\\s*((?:0x[0-9a-fA-F]{1,7})|(?:\\d{1,9}))\\s*$","").match(x)) return Std.parseInt(x); else return defaultValue;
+	} else return defaultValue;
+};
+stdlib.Std.parseFloat = function(x,defaultValue) {
+	if(x != null) {
+		if(new EReg("^\\s*[+-]?\\s*\\d{1,9}(?:[.]\\d+)?(?:e[+-]?\\d{1,9})?\\s*$","").match(x)) return Std.parseFloat(x); else return defaultValue;
+	} else return defaultValue;
+};
+stdlib.Std.random = function(x) {
+	return Std.random(x);
+};
+stdlib.Std.bool = function(v) {
+	return v != false && v != null && v != 0 && v != "" && v != "0" && (!(typeof(v) == "string") || (js.Boot.__cast(v , String)).toLowerCase() != "false" && (js.Boot.__cast(v , String)).toLowerCase() != "off" && (js.Boot.__cast(v , String)).toLowerCase() != "null");
+};
+stdlib.Std.parseValue = function(x) {
+	var value = x;
+	var valueLC;
+	if(value != null) valueLC = value.toLowerCase(); else valueLC = null;
+	var parsedValue;
+	if(valueLC == "true") value = true; else if(valueLC == "false") value = false; else if(valueLC == "null") value = null; else if((parsedValue = stdlib.Std.parseInt(value)) != null) value = parsedValue; else if((parsedValue = stdlib.Std.parseFloat(value)) != null) value = parsedValue;
+	return value;
+};
+stdlib.Std.hash = function(obj) {
+	var r = new haxe.ds.StringMap();
+	var _g = 0;
+	var _g1 = Reflect.fields(obj);
+	while(_g < _g1.length) {
+		var key = _g1[_g];
+		++_g;
+		var value = Reflect.field(obj,key);
+		r.set(key,value);
+	}
+	return r;
+};
+stdlib.Std.min = function(a,b) {
+	if(a < b) return a; else return b;
+};
+stdlib.Std.max = function(a,b) {
+	if(a > b) return a; else return b;
+};
+stdlib.Std.sign = function(n) {
+	if(n > 0) return 1; else if(n < 0) return -1; else return 0;
+};
+stdlib.Std.array = function(it) {
+	var r = new Array();
+	while( it.hasNext() ) {
+		var e = it.next();
+		r.push(e);
+	}
+	return r;
+};
+stdlib.StringTools = function() { };
+stdlib.StringTools.__name__ = ["stdlib","StringTools"];
+stdlib.StringTools.urlEncode = function(s) {
+	return encodeURIComponent(s);
+};
+stdlib.StringTools.urlDecode = function(s) {
+	return decodeURIComponent(s.split("+").join(" "));
+};
+stdlib.StringTools.htmlEscape = function(s) {
+	return StringTools.replace(StringTools.htmlEscape(s),"\n","&#xA;");
+};
+stdlib.StringTools.htmlUnescape = function(s) {
+	return StringTools.htmlUnescape(StringTools.replace(s,"&#xA;","\n"));
+};
+stdlib.StringTools.startsWith = function(s,start) {
+	return StringTools.startsWith(s,start);
+};
+stdlib.StringTools.endsWith = function(s,end) {
+	return StringTools.endsWith(s,end);
+};
+stdlib.StringTools.isSpace = function(s,pos) {
+	return StringTools.isSpace(s,pos);
+};
+stdlib.StringTools.ltrim = function(s,chars) {
+	if(chars == null) return StringTools.ltrim(s);
+	while(s.length > 0 && chars.indexOf(HxOverrides.substr(s,0,1)) >= 0) s = HxOverrides.substr(s,1,null);
+	return s;
+};
+stdlib.StringTools.rtrim = function(s,chars) {
+	if(chars == null) return StringTools.rtrim(s);
+	while(s.length > 0 && chars.indexOf(HxOverrides.substr(s,s.length - 1,1)) >= 0) s = HxOverrides.substr(s,0,s.length - 1);
+	return s;
+};
+stdlib.StringTools.trim = function(s,chars) {
+	if(chars == null) return StringTools.trim(s);
+	return stdlib.StringTools.rtrim(stdlib.StringTools.ltrim(s,chars),chars);
+};
+stdlib.StringTools.rpad = function(s,c,l) {
+	return StringTools.rpad(s,c,l);
+};
+stdlib.StringTools.lpad = function(s,c,l) {
+	return StringTools.lpad(s,c,l);
+};
+stdlib.StringTools.replace = function(s,sub,by) {
+	return StringTools.replace(s,sub,by);
+};
+stdlib.StringTools.hex = function(n,digits) {
+	return StringTools.hex(n,digits);
+};
+stdlib.StringTools.fastCodeAt = function(s,index) {
+	return s.charCodeAt(index);
+};
+stdlib.StringTools.isEOF = function(c) {
+	return c != c;
+};
+stdlib.StringTools.hexdec = function(s) {
+	return stdlib.Std.parseInt("0x" + s);
+};
+stdlib.StringTools.addcslashes = function(s) {
+	return new EReg("['\"\t\r\n\\\\]","g").map(s,function(re) {
+		return "\\" + re.matched(0);
+	});
+};
+stdlib.StringTools.stripTags = function(str,allowedTags) {
+	if(allowedTags == null) allowedTags = "";
+	var allowedTagsArray = [];
+	if(allowedTags != "") {
+		var re = new EReg("[a-zA-Z0-9]+","i");
+		var pos = 0;
+		while(re.matchSub(allowedTags,pos)) {
+			allowedTagsArray.push(re.matched(0));
+			pos = re.matchedPos().pos + re.matchedPos().len;
+		}
+	}
+	var matches = [];
+	var re1 = new EReg("</?[\\S][^>]*>","g");
+	str = re1.map(str,function(_) {
+		var html = re1.matched(0);
+		var allowed = false;
+		if(allowedTagsArray.length > 0) {
+			var htmlLC = html.toLowerCase();
+			var _g = 0;
+			while(_g < allowedTagsArray.length) {
+				var allowedTag = allowedTagsArray[_g];
+				++_g;
+				if(StringTools.startsWith(htmlLC,"<" + allowedTag + ">") || StringTools.startsWith(htmlLC,"<" + allowedTag + " ") || StringTools.startsWith(htmlLC,"</" + allowedTag)) {
+					allowed = true;
+					break;
+				}
+			}
+		}
+		if(allowed) return html; else return "";
+	});
+	return str;
+};
+stdlib.StringTools.regexEscape = function(s) {
+	return new EReg("([\\-\\[\\]/\\{\\}\\(\\)\\*\\+\\?\\.\\\\\\^\\$\\|])","g").replace(s,"\\$1");
+};
+stdlib.StringTools.jsonEscape = function(s) {
+	if(s == null) return "null";
+	var r = new stdlib.Utf8(s.length + (s.length / 5 | 0));
+	r.__b += "\"";
+	haxe.Utf8.iter(s,function(c) {
+		switch(c) {
+		case 92:
+			r.__b += "\\";
+			r.__b += "\\";
+			break;
+		case 34:
+			r.__b += "\\";
+			r.__b += "\"";
+			break;
+		case 9:
+			r.__b += "\\";
+			r.__b += "t";
+			break;
+		case 10:
+			r.__b += "\\";
+			r.__b += "n";
+			break;
+		case 13:
+			r.__b += "\\";
+			r.__b += "r";
+			break;
+		default:
+			if(c < 32) {
+				r.__b += "\\";
+				r.__b += "u";
+				var t = StringTools.hex(c,4);
+				r.addChar(t.charCodeAt(0));
+				r.addChar(t.charCodeAt(1));
+				r.addChar(t.charCodeAt(2));
+				r.addChar(t.charCodeAt(3));
+			} else r.__b += String.fromCharCode(c);
+		}
+	});
+	r.__b += "\"";
+	return r.__b;
+};
+stdlib.StringTools.isEmpty = function(s) {
+	return s == null || s == "";
+};
+stdlib.StringTools.capitalize = function(s) {
+	if(stdlib.StringTools.isEmpty(s)) return s; else return HxOverrides.substr(s,0,1).toUpperCase() + HxOverrides.substr(s,1,null);
+};
+stdlib.Utf8 = function(size) {
+	haxe.Utf8.call(this,size);
+};
+stdlib.Utf8.__name__ = ["stdlib","Utf8"];
+stdlib.Utf8.iter = function(s,chars) {
+	haxe.Utf8.iter(s,chars);
+};
+stdlib.Utf8.encode = function(s) {
+	return haxe.Utf8.encode(s);
+};
+stdlib.Utf8.decode = function(s) {
+	return haxe.Utf8.decode(s);
+};
+stdlib.Utf8.charCodeAt = function(s,index) {
+	return HxOverrides.cca(s,index);
+};
+stdlib.Utf8.validate = function(s) {
+	return true;
+};
+stdlib.Utf8.$length = function(s) {
+	return s.length;
+};
+stdlib.Utf8.compare = function(a,b) {
+	return haxe.Utf8.compare(a,b);
+};
+stdlib.Utf8.sub = function(s,pos,len) {
+	return HxOverrides.substr(s,pos,len);
+};
+stdlib.Utf8.replace = function(s,from,to) {
+	var codes = [];
+	haxe.Utf8.iter(s,function(c) {
+		codes.push(c);
+	});
+	var r = new stdlib.Utf8();
+	var len = from.length;
+	if(codes.length < len) return s;
+	var _g1 = 0;
+	var _g = codes.length - len + 1;
+	while(_g1 < _g) {
+		var i = [_g1++];
+		var found = [true];
+		var j = [0];
+		haxe.Utf8.iter(from,(function(j,found,i) {
+			return function(cc) {
+				if(found[0]) {
+					if(codes[i[0] + j[0]] != cc) found[0] = false;
+					j[0]++;
+				}
+			};
+		})(j,found,i));
+		if(found[0]) r.addString(to); else r.__b += String.fromCharCode(codes[i[0]]);
+	}
+	var _g11 = codes.length - len + 1;
+	var _g2 = codes.length;
+	while(_g11 < _g2) {
+		var i1 = _g11++;
+		r.__b += String.fromCharCode(codes[i1]);
+	}
+	return r.__b;
+};
+stdlib.Utf8.compactSpaces = function(s) {
+	var r = new stdlib.Utf8();
+	var prevSpace = false;
+	haxe.Utf8.iter(s,function(c) {
+		if(c == 32 || c == 13 || c == 10 || c == 9) {
+			if(!prevSpace) {
+				r.__b += " ";
+				prevSpace = true;
+			}
+		} else {
+			r.__b += String.fromCharCode(c);
+			prevSpace = false;
+		}
+	});
+	return r.__b;
+};
+stdlib.Utf8.htmlUnescape = function(s) {
+	var r = new stdlib.Utf8();
+	var $escape = null;
+	haxe.Utf8.iter(s,function(c) {
+		if($escape != null) {
+			if(c == 59) {
+				var chr = stdlib.Utf8.htmlUnescapeChar($escape);
+				if(chr != null) r.__b += String.fromCharCode(chr);
+				$escape = null;
+			} else $escape += String.fromCharCode(c);
+		} else if(c == 38) $escape = ""; else r.__b += String.fromCharCode(c);
+	});
+	return r.__b;
+};
+stdlib.Utf8.htmlEscape = function(utf8Str,chars) {
+	if(chars == null) chars = "";
+	chars = "&<>" + chars;
+	var r = new stdlib.Utf8();
+	haxe.Utf8.iter(utf8Str,function(c) {
+		var s;
+		var this1 = stdlib.Utf8.get_htmlEscapeMap();
+		s = this1.get(c);
+		if(s != null && c >= 0 && c <= 255 && chars.indexOf(String.fromCharCode(c)) >= 0) r.addString(s); else r.__b += String.fromCharCode(c);
+	});
+	return r.__b;
+};
+stdlib.Utf8.htmlUnescapeChar = function(escape) {
+	if(StringTools.startsWith(escape,"#x")) return stdlib.Std.parseInt("0x" + HxOverrides.substr(escape,2,null)); else if(StringTools.startsWith(escape,"#")) return stdlib.Std.parseInt(HxOverrides.substr(escape,1,null)); else {
+		var r;
+		var this1 = stdlib.Utf8.get_htmlUnescapeMap();
+		r = this1.get(escape);
+		if(r != null) return r;
+	}
+	console.log("Unknow escape sequence: " + escape);
+	return null;
+};
+stdlib.Utf8.get_htmlEscapeMap = function() {
+	if(stdlib.Utf8.htmlEscapeMap == null) {
+		var _g = new haxe.ds.IntMap();
+		_g.set(32,"&nbsp;");
+		_g.set(38,"&amp;");
+		_g.set(60,"&lt;");
+		_g.set(62,"&gt;");
+		_g.set(34,"&quot;");
+		_g.set(39,"&#39;");
+		_g.set(13,"&#xD;");
+		_g.set(10,"&#xA;");
+		stdlib.Utf8.htmlEscapeMap = _g;
+	}
+	return stdlib.Utf8.htmlEscapeMap;
+};
+stdlib.Utf8.get_htmlUnescapeMap = function() {
+	if(stdlib.Utf8.htmlUnescapeMap == null) {
+		var _g = new haxe.ds.StringMap();
+		_g.set("nbsp",32);
+		_g.set("amp",38);
+		_g.set("lt",60);
+		_g.set("gt",62);
+		_g.set("quot",34);
+		_g.set("euro",8364);
+		_g.set("iexcl",161);
+		_g.set("cent",162);
+		_g.set("pound",163);
+		_g.set("curren",164);
+		_g.set("yen",165);
+		_g.set("brvbar",166);
+		_g.set("sect",167);
+		_g.set("uml",168);
+		_g.set("copy",169);
+		_g.set("ordf",170);
+		_g.set("not",172);
+		_g.set("shy",173);
+		_g.set("reg",174);
+		_g.set("macr",175);
+		_g.set("deg",176);
+		_g.set("plusmn",177);
+		_g.set("sup2",178);
+		_g.set("sup3",179);
+		_g.set("acute",180);
+		_g.set("micro",181);
+		_g.set("para",182);
+		_g.set("middot",183);
+		_g.set("cedil",184);
+		_g.set("sup1",185);
+		_g.set("ordm",186);
+		_g.set("raquo",187);
+		_g.set("frac14",188);
+		_g.set("frac12",189);
+		_g.set("frac34",190);
+		_g.set("iquest",191);
+		_g.set("Agrave",192);
+		_g.set("Aacute",193);
+		_g.set("Acirc",194);
+		_g.set("Atilde",195);
+		_g.set("Auml",196);
+		_g.set("Aring",197);
+		_g.set("AElig",198);
+		_g.set("Ccedil",199);
+		_g.set("Egrave",200);
+		_g.set("Eacute",201);
+		_g.set("Ecirc",202);
+		_g.set("Euml",203);
+		_g.set("Igrave",204);
+		_g.set("Iacute",205);
+		_g.set("Icirc",206);
+		_g.set("Iuml",207);
+		_g.set("ETH",208);
+		_g.set("Ntilde",209);
+		_g.set("Ograve",210);
+		_g.set("Oacute",211);
+		_g.set("Ocirc",212);
+		_g.set("Otilde",213);
+		_g.set("Ouml",214);
+		_g.set("times",215);
+		_g.set("Oslash",216);
+		_g.set("Ugrave",217);
+		_g.set("Uacute",218);
+		_g.set("Ucirc",219);
+		_g.set("Uuml",220);
+		_g.set("Yacute",221);
+		_g.set("THORN",222);
+		_g.set("szlig",223);
+		_g.set("agrave",224);
+		_g.set("aacute",225);
+		_g.set("acirc",226);
+		_g.set("atilde",227);
+		_g.set("auml",228);
+		_g.set("aring",229);
+		_g.set("aelig",230);
+		_g.set("ccedil",231);
+		_g.set("egrave",232);
+		_g.set("eacute",233);
+		_g.set("ecirc",234);
+		_g.set("euml",235);
+		_g.set("igrave",236);
+		_g.set("iacute",237);
+		_g.set("icirc",238);
+		_g.set("iuml",239);
+		_g.set("eth",240);
+		_g.set("ntilde",241);
+		_g.set("ograve",242);
+		_g.set("oacute",243);
+		_g.set("ocirc",244);
+		_g.set("otilde",245);
+		_g.set("ouml",246);
+		_g.set("divide",247);
+		_g.set("oslash",248);
+		_g.set("ugrave",249);
+		_g.set("uacute",250);
+		_g.set("ucirc",251);
+		_g.set("uuml",252);
+		_g.set("yacute",253);
+		_g.set("thorn",254);
+		stdlib.Utf8.htmlUnescapeMap = _g;
+	}
+	return stdlib.Utf8.htmlUnescapeMap;
+};
+stdlib.Utf8.__super__ = haxe.Utf8;
+stdlib.Utf8.prototype = $extend(haxe.Utf8.prototype,{
+	addString: function(s) {
+		var _g = this;
+		haxe.Utf8.iter(s,function(c) {
+			_g.__b += String.fromCharCode(c);
+		});
+	}
+	,__class__: stdlib.Utf8
+});
 var svgimport = {};
-svgimport.FillType = { __ename__ : true, __constructs__ : ["FillNone","FillSolid","FillGrad"] };
+svgimport.FillType = { __ename__ : ["svgimport","FillType"], __constructs__ : ["FillNone","FillSolid","FillGrad"] };
 svgimport.FillType.FillNone = ["FillNone",0];
 svgimport.FillType.FillNone.__enum__ = svgimport.FillType;
 svgimport.FillType.FillSolid = function(color) { var $x = ["FillSolid",1,color]; $x.__enum__ = svgimport.FillType; return $x; };
@@ -334,11 +1120,11 @@ svgimport.Rectangle = function(x,y,width,height) {
 	this.width = width;
 	this.height = height;
 };
-svgimport.Rectangle.__name__ = true;
+svgimport.Rectangle.__name__ = ["svgimport","Rectangle"];
 svgimport.Rectangle.prototype = {
 	__class__: svgimport.Rectangle
 };
-svgimport.SegmentType = { __ename__ : true, __constructs__ : ["MOVE","DRAW","CURVE","CUBIC","ARC"] };
+svgimport.SegmentType = { __ename__ : ["svgimport","SegmentType"], __constructs__ : ["MOVE","DRAW","CURVE","CUBIC","ARC"] };
 svgimport.SegmentType.MOVE = function(seg) { var $x = ["MOVE",0,seg]; $x.__enum__ = svgimport.SegmentType; return $x; };
 svgimport.SegmentType.DRAW = function(seg) { var $x = ["DRAW",1,seg]; $x.__enum__ = svgimport.SegmentType; return $x; };
 svgimport.SegmentType.CURVE = function(seg) { var $x = ["CURVE",2,seg]; $x.__enum__ = svgimport.SegmentType; return $x; };
@@ -354,7 +1140,7 @@ svgimport.SegmentsParser = function() {
 		}
 	}
 };
-svgimport.SegmentsParser.__name__ = true;
+svgimport.SegmentsParser.__name__ = ["svgimport","SegmentsParser"];
 svgimport.SegmentsParser.run = function(pathToParse) {
 	return new svgimport.SegmentsParser().parse(pathToParse);
 };
@@ -542,7 +1328,7 @@ svgimport.SegmentsParser.prototype = {
 	}
 	,__class__: svgimport.SegmentsParser
 };
-svgimport.StrokeType = { __ename__ : true, __constructs__ : ["StrokeNone","StrokeSolid","StrokeGrad"] };
+svgimport.StrokeType = { __ename__ : ["svgimport","StrokeType"], __constructs__ : ["StrokeNone","StrokeSolid","StrokeGrad"] };
 svgimport.StrokeType.StrokeNone = ["StrokeNone",0];
 svgimport.StrokeType.StrokeNone.__enum__ = svgimport.StrokeType;
 svgimport.StrokeType.StrokeSolid = function(color) { var $x = ["StrokeSolid",1,color]; $x.__enum__ = svgimport.StrokeType; return $x; };
@@ -563,7 +1349,7 @@ svgimport.SvgGroup = function(node,svgWidth,styles,elements,gradients,id) {
 	this.visible = node.getAttribute("display") != "none";
 	this.loadChildren(node,svgimport.XmlTools.getStyles(node,styles));
 };
-svgimport.SvgGroup.__name__ = true;
+svgimport.SvgGroup.__name__ = ["svgimport","SvgGroup"];
 svgimport.SvgGroup.prototype = {
 	loadChildren: function(xml,styles) {
 		var _g = 0;
@@ -688,20 +1474,20 @@ svgimport.Svg = function(xml) {
 	if(this.viewBox != null) this.svgWidth = this.viewBox.width; else this.svgWidth = this.width;
 	svgimport.SvgGroup.call(this,svg,this.svgWidth,null,new haxe.ds.StringMap(),new haxe.ds.StringMap());
 };
-svgimport.Svg.__name__ = true;
+svgimport.Svg.__name__ = ["svgimport","Svg"];
 svgimport.Svg.__super__ = svgimport.SvgGroup;
 svgimport.Svg.prototype = $extend(svgimport.SvgGroup.prototype,{
 	__class__: svgimport.Svg
 });
 svgimport.SvgAttributes = function() { };
-svgimport.SvgAttributes.__name__ = true;
-svgimport.SvgElement = { __ename__ : true, __constructs__ : ["DisplayPath","DisplayGroup","DisplayText","DisplayUse"] };
+svgimport.SvgAttributes.__name__ = ["svgimport","SvgAttributes"];
+svgimport.SvgElement = { __ename__ : ["svgimport","SvgElement"], __constructs__ : ["DisplayPath","DisplayGroup","DisplayText","DisplayUse"] };
 svgimport.SvgElement.DisplayPath = function(path) { var $x = ["DisplayPath",0,path]; $x.__enum__ = svgimport.SvgElement; return $x; };
 svgimport.SvgElement.DisplayGroup = function(group) { var $x = ["DisplayGroup",1,group]; $x.__enum__ = svgimport.SvgElement; return $x; };
 svgimport.SvgElement.DisplayText = function(text) { var $x = ["DisplayText",2,text]; $x.__enum__ = svgimport.SvgElement; return $x; };
 svgimport.SvgElement.DisplayUse = function(name,matrix,styles,visible) { var $x = ["DisplayUse",3,name,matrix,styles,visible]; $x.__enum__ = svgimport.SvgElement; return $x; };
 svgimport.SvgGroupExporter = function() { };
-svgimport.SvgGroupExporter.__name__ = true;
+svgimport.SvgGroupExporter.__name__ = ["svgimport","SvgGroupExporter"];
 svgimport.SvgGroupExporter.run = function(group,library) {
 	var layers = [];
 	var _g = 0;
@@ -879,7 +1665,7 @@ svgimport.SvgPath = function(node,baseStyles,elements,gradients,id) {
 		break;
 	}
 };
-svgimport.SvgPath.__name__ = true;
+svgimport.SvgPath.__name__ = ["svgimport","SvgPath"];
 svgimport.SvgPath.prototype = {
 	toElement: function() {
 		if(this.segments.length == 0) return null;
@@ -930,7 +1716,9 @@ svgimport.SvgPathExporter = function() {
 	this.polygonAndFillRules = new Array();
 	this.edges = new Array();
 };
-svgimport.SvgPathExporter.__name__ = true;
+svgimport.SvgPathExporter.__name__ = ["svgimport","SvgPathExporter"];
+svgimport.SvgPathExporter.log = function(s) {
+};
 svgimport.SvgPathExporter.prototype = {
 	beginFill: function(path) {
 		if(path.fill != svgimport.FillType.FillNone) this.fillPath = path; else this.fillPath = null;
@@ -1025,32 +1813,73 @@ svgimport.SvgPathExporter.prototype = {
 		this.y = anchorY;
 	}
 	,'export': function() {
-		console.log("SvgPathExporter.export vvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+		svgimport.SvgPathExporter.log("SvgPathExporter.export vvvvvvvvvvvvvvvvvvvvvvvvvvvv");
 		var shape = new nanofl.engine.elements.ShapeElement();
 		var _g = 0;
 		var _g1 = this.polygonAndFillRules;
 		while(_g < _g1.length) {
 			var pf = _g1[_g];
 			++_g;
-			var edgesToCreatePolygons = pf.polygon.getEdges();
-			console.log("Polygons.fromEdges vvvvvvvvvvvvvvv edgesToCreatePolygons = " + edgesToCreatePolygons.length + "; " + Std.string(edgesToCreatePolygons));
-			var polygons = nanofl.engine.geom.Polygons.fromEdges(edgesToCreatePolygons,pf.polygon.fill,pf.fillRuleEvenOdd);
-			console.log("Polygons.fromEdges ^^^^^^^^^^^^^^^ polygons = " + polygons.length);
+			svgimport.SvgPathExporter.log("Polygons.fromEdges vvvvvvvvvvvvvvv");
+			var polygons = nanofl.engine.geom.Polygons.fromContours(pf.polygon.contours,pf.polygon.fill,pf.fillRuleEvenOdd);
+			svgimport.SvgPathExporter.log("Polygons.fromEdges ^^^^^^^^^^^^^^^ polygons = " + polygons.length);
 			var shape2 = new nanofl.engine.elements.ShapeElement([],polygons);
-			console.log("shape.combine vvvvvvvvvvvvvvvvv " + shape.getEdgeCount() + " + " + shape2.getEdgeCount());
+			svgimport.SvgPathExporter.log("shape.combine vvvvvvvvvvvvvvvvv " + shape.getEdgeCount() + " + " + shape2.getEdgeCount());
 			shape.combine(shape2);
-			console.log("shape.combine ^^^^^^^^^^^^^^^^^");
+			svgimport.SvgPathExporter.log("shape.combine ^^^^^^^^^^^^^^^^^");
 		}
-		console.log("normalize vvvvvvvvvvvvvv");
+		svgimport.SvgPathExporter.log("normalize vvvvvvvvvvvvvv");
+		var _g2 = 0;
+		var _g11 = this.edges;
+		while(_g2 < _g11.length) {
+			var e = _g11[_g2];
+			++_g2;
+			null;
+		}
 		nanofl.engine.geom.Edges.normalize(this.edges);
-		console.log("normalize ^^^^^^^^^^^^^^");
-		console.log("intersectSelf vvvvvvvvvvvvvv");
+		var _g3 = 0;
+		var _g12 = this.edges;
+		while(_g3 < _g12.length) {
+			var e1 = _g12[_g3];
+			++_g3;
+			null;
+		}
+		svgimport.SvgPathExporter.log("normalize ^^^^^^^^^^^^^^");
+		svgimport.SvgPathExporter.log("intersectSelf vvvvvvvvvvvvvv");
+		var _g4 = 0;
+		var _g13 = this.edges;
+		while(_g4 < _g13.length) {
+			var e2 = _g13[_g4];
+			++_g4;
+			null;
+		}
 		nanofl.engine.geom.Edges.intersectSelf(this.edges);
-		console.log("intersectSelf ^^^^^^^^^^^^^^");
-		console.log("shape.combine stroke vvvvvvvvvvvvvv");
+		var _g5 = 0;
+		var _g14 = this.edges;
+		while(_g5 < _g14.length) {
+			var e3 = _g14[_g5];
+			++_g5;
+			null;
+		}
+		svgimport.SvgPathExporter.log("intersectSelf ^^^^^^^^^^^^^^");
+		svgimport.SvgPathExporter.log("shape.combine stroke vvvvvvvvvvvvvv");
+		var _g6 = 0;
+		var _g15 = this.edges;
+		while(_g6 < _g15.length) {
+			var e4 = _g15[_g6];
+			++_g6;
+			null;
+		}
 		shape.combine(new nanofl.engine.elements.ShapeElement(this.edges));
-		console.log("shape.combine stroke ^^^^^^^^^^^^^^");
-		console.log("SvgPathExporter.export ^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+		var _g7 = 0;
+		var _g16 = this.edges;
+		while(_g7 < _g16.length) {
+			var e5 = _g16[_g7];
+			++_g7;
+			null;
+		}
+		svgimport.SvgPathExporter.log("shape.combine stroke ^^^^^^^^^^^^^^");
+		svgimport.SvgPathExporter.log("SvgPathExporter.export ^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 		return shape;
 	}
 	,closeContour: function() {
@@ -1091,7 +1920,7 @@ svgimport.SvgText = function(textNode,baseStyles,gradients) {
 	this.textAnchor = svgimport.XmlTools.getStyle(textNode,"text-anchor",styles,"left");
 	this.text = textNode.innerText;
 };
-svgimport.SvgText.__name__ = true;
+svgimport.SvgText.__name__ = ["svgimport","SvgText"];
 svgimport.SvgText.prototype = {
 	toElement: function() {
 		var fillColor;
@@ -1150,7 +1979,7 @@ svgimport.SvgText.prototype = {
 	,__class__: svgimport.SvgText
 };
 svgimport.Transform = function() { };
-svgimport.Transform.__name__ = true;
+svgimport.Transform.__name__ = ["svgimport","Transform"];
 svgimport.Transform.load = function(trans) {
 	if(trans == null || trans == "") return new nanofl.engine.geom.Matrix();
 	var matrix = new nanofl.engine.geom.Matrix();
@@ -1187,7 +2016,7 @@ svgimport.Transform.load = function(trans) {
 	return matrix;
 };
 svgimport.XmlTools = function() { };
-svgimport.XmlTools.__name__ = true;
+svgimport.XmlTools.__name__ = ["svgimport","XmlTools"];
 svgimport.XmlTools.getStyles = function(node,baseStyles) {
 	var styles = new haxe.ds.StringMap();
 	if(baseStyles != null) {
@@ -1315,7 +2144,7 @@ svgimport.gradients.Gradient = function(node,baseType) {
 	this.matrix = svgimport.Transform.load(node.getAttribute("gradientTransform"));
 	if(base != null) this.matrix.prependMatrix(base.matrix);
 };
-svgimport.gradients.Gradient.__name__ = true;
+svgimport.gradients.Gradient.__name__ = ["svgimport","gradients","Gradient"];
 svgimport.gradients.Gradient.load = function(node,baseType,svgWidth) {
 	var _g = svgimport.XmlTools.normalizeTag(node.name);
 	switch(_g) {
@@ -1330,7 +2159,7 @@ svgimport.gradients.Gradient.load = function(node,baseType,svgWidth) {
 svgimport.gradients.Gradient.prototype = {
 	__class__: svgimport.gradients.Gradient
 };
-svgimport.gradients.GradientType = { __ename__ : true, __constructs__ : ["LINEAR","RADIAL"] };
+svgimport.gradients.GradientType = { __ename__ : ["svgimport","gradients","GradientType"], __constructs__ : ["LINEAR","RADIAL"] };
 svgimport.gradients.GradientType.LINEAR = function(grad) { var $x = ["LINEAR",0,grad]; $x.__enum__ = svgimport.gradients.GradientType; return $x; };
 svgimport.gradients.GradientType.RADIAL = function(grad) { var $x = ["RADIAL",1,grad]; $x.__enum__ = svgimport.gradients.GradientType; return $x; };
 svgimport.gradients.LinearGradient = function(node,baseType,svgWidth) {
@@ -1366,7 +2195,7 @@ svgimport.gradients.LinearGradient = function(node,baseType,svgWidth) {
 		if(this.y2 == null) this.y2 = 0;
 	}
 };
-svgimport.gradients.LinearGradient.__name__ = true;
+svgimport.gradients.LinearGradient.__name__ = ["svgimport","gradients","LinearGradient"];
 svgimport.gradients.LinearGradient.__super__ = svgimport.gradients.Gradient;
 svgimport.gradients.LinearGradient.prototype = $extend(svgimport.gradients.Gradient.prototype,{
 	getAbsoluteParams: function(bounds) {
@@ -1399,7 +2228,7 @@ svgimport.gradients.RadialGradient = function(node,baseType) {
 	this.r = svgimport.XmlTools.getFloatValue(node,"r",base != null?base.r:0.5);
 	this.spreadMethod = htmlparser.HtmlParserTools.getAttr(node,"spreadMethod",base != null?base.spreadMethod:"pad");
 };
-svgimport.gradients.RadialGradient.__name__ = true;
+svgimport.gradients.RadialGradient.__name__ = ["svgimport","gradients","RadialGradient"];
 svgimport.gradients.RadialGradient.__super__ = svgimport.gradients.Gradient;
 svgimport.gradients.RadialGradient.prototype = $extend(svgimport.gradients.Gradient.prototype,{
 	getAbsoluteParams: function(bounds) {
@@ -1421,7 +2250,7 @@ svgimport.segments.Segment = function(inX,inY) {
 	this.x = inX;
 	this.y = inY;
 };
-svgimport.segments.Segment.__name__ = true;
+svgimport.segments.Segment.__name__ = ["svgimport","segments","Segment"];
 svgimport.segments.Segment.prototype = {
 	getType: function() {
 		return null;
@@ -1456,7 +2285,7 @@ svgimport.segments.ArcSegment = function(x0,y0,rx,ry,rotation,isLargeArc,isSweep
 	this.isLargeArc = isLargeArc;
 	this.isSweep = isSweep;
 };
-svgimport.segments.ArcSegment.__name__ = true;
+svgimport.segments.ArcSegment.__name__ = ["svgimport","segments","ArcSegment"];
 svgimport.segments.ArcSegment.arcToCubicCurves = function(x1,y1,rx,ry,angle,isLargeArc,isSweep,x2,y2,recursive) {
 	var rad = Math.PI / 180 * angle;
 	var res = new Array();
@@ -1564,7 +2393,7 @@ svgimport.segments.CubicSegment = function(inCX1,inCY1,inCX2,inCY2,inX,inY) {
 	this.cx2 = inCX2;
 	this.cy2 = inCY2;
 };
-svgimport.segments.CubicSegment.__name__ = true;
+svgimport.segments.CubicSegment.__name__ = ["svgimport","segments","CubicSegment"];
 svgimport.segments.CubicSegment.__super__ = svgimport.segments.Segment;
 svgimport.segments.CubicSegment.prototype = $extend(svgimport.segments.Segment.prototype,{
 	prevCX: function() {
@@ -1614,7 +2443,7 @@ svgimport.segments.CubicSegment.prototype = $extend(svgimport.segments.Segment.p
 svgimport.segments.DrawSegment = function(inX,inY) {
 	svgimport.segments.Segment.call(this,inX,inY);
 };
-svgimport.segments.DrawSegment.__name__ = true;
+svgimport.segments.DrawSegment.__name__ = ["svgimport","segments","DrawSegment"];
 svgimport.segments.DrawSegment.__super__ = svgimport.segments.Segment;
 svgimport.segments.DrawSegment.prototype = $extend(svgimport.segments.Segment.prototype,{
 	'export': function(exporter) {
@@ -1628,7 +2457,7 @@ svgimport.segments.DrawSegment.prototype = $extend(svgimport.segments.Segment.pr
 svgimport.segments.MoveSegment = function(inX,inY) {
 	svgimport.segments.Segment.call(this,inX,inY);
 };
-svgimport.segments.MoveSegment.__name__ = true;
+svgimport.segments.MoveSegment.__name__ = ["svgimport","segments","MoveSegment"];
 svgimport.segments.MoveSegment.__super__ = svgimport.segments.Segment;
 svgimport.segments.MoveSegment.prototype = $extend(svgimport.segments.Segment.prototype,{
 	'export': function(exporter) {
@@ -1644,7 +2473,7 @@ svgimport.segments.QuadraticSegment = function(inCX,inCY,inX,inY) {
 	this.cx = inCX;
 	this.cy = inCY;
 };
-svgimport.segments.QuadraticSegment.__name__ = true;
+svgimport.segments.QuadraticSegment.__name__ = ["svgimport","segments","QuadraticSegment"];
 svgimport.segments.QuadraticSegment.__super__ = svgimport.segments.Segment;
 svgimport.segments.QuadraticSegment.prototype = $extend(svgimport.segments.Segment.prototype,{
 	prevCX: function() {
@@ -1674,8 +2503,8 @@ Math.isNaN = function(i1) {
 	return isNaN(i1);
 };
 String.prototype.__class__ = String;
-String.__name__ = true;
-Array.__name__ = true;
+String.__name__ = ["String"];
+Array.__name__ = ["Array"];
 var Int = { __name__ : ["Int"]};
 var Dynamic = { __name__ : ["Dynamic"]};
 var Float = Number;

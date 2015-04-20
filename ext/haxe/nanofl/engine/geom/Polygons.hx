@@ -10,5 +10,5 @@ extern class Polygons
 	static function normalize(polygons:Array<nanofl.engine.geom.Polygon>) : Void;
 	static function getReconstructed(polygons:Array<nanofl.engine.geom.Polygon>, additionalEdges:Array<nanofl.engine.geom.Edge>, ?force:Bool) : Array<nanofl.engine.geom.Polygon>;
 	@:profile
-	static function fromEdges(edges:Array<nanofl.engine.geom.Edge>, fill:nanofl.engine.fills.IFill, fillEvenOdd:Bool) : Array<nanofl.engine.geom.Polygon>;
+	static function fromContours(originalContours:Array<nanofl.engine.geom.Contour>, fill:nanofl.engine.fills.IFill, fillEvenOdd:Bool) : Array<nanofl.engine.geom.Polygon>;
 }

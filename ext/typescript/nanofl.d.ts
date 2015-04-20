@@ -6655,7 +6655,7 @@ declare module nanofl.engine.geom
 		hasPoint(px:number, py:number) : boolean;
 		hasEdge(edge:nanofl.engine.geom.Edge) : boolean;
 		isEdgeInside(edge:nanofl.engine.geom.Edge) : boolean;
-		isNestedTo(outer:nanofl.engine.geom.Contour, allowCommonEdges:boolean) : boolean;
+		isNestedTo(outer:nanofl.engine.geom.Contour) : boolean;
 		clone() : nanofl.engine.geom.Contour;
 		isClockwise() : boolean;
 		reverse() : nanofl.engine.geom.Contour;
@@ -6668,6 +6668,7 @@ declare module nanofl.engine.geom
 	export class Contours
 	{
 		static find(edges:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Contour[];
+		static removeTailEdges(edges:nanofl.engine.geom.Edge[]) : void;
 	}
 	
 	export class Edge
@@ -6729,6 +6730,7 @@ declare module nanofl.engine.geom
 		static load(s:string) : nanofl.engine.geom.Edge[];
 		static save(edges:nanofl.engine.geom.Edge[]) : string;
 		static replace<T>(edges:T[], search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[]) : number;
+		static replaceAll<T>(edges:T[], search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[]) : void;
 		static replaceAt<T>(edges:T[], n:number, replacement:nanofl.engine.geom.Edge[], reverse:boolean) : void;
 		static intersect<T>(edgesA:T[], edgesB:T[], onReplace?:(arg0:nanofl.engine.geom.Edge, arg1:nanofl.engine.geom.Edge[]) => void) : void;
 		static intersectSelf<T>(edges:T[], onReplace?:(arg0:nanofl.engine.geom.Edge, arg1:nanofl.engine.geom.Edge[]) => void) : void;
@@ -6882,7 +6884,7 @@ declare module nanofl.engine.geom
 		static hasDublicates(polygons:nanofl.engine.geom.Polygon[]) : boolean;
 		static normalize(polygons:nanofl.engine.geom.Polygon[]) : void;
 		static getReconstructed(polygons:nanofl.engine.geom.Polygon[], additionalEdges:nanofl.engine.geom.Edge[], force?:boolean) : nanofl.engine.geom.Polygon[];
-		static fromEdges(edges:nanofl.engine.geom.Edge[], fill:nanofl.engine.fills.IFill, fillEvenOdd:boolean) : nanofl.engine.geom.Polygon[];
+		static fromContours(originalContours:nanofl.engine.geom.Contour[], fill:nanofl.engine.fills.IFill, fillEvenOdd:boolean) : nanofl.engine.geom.Polygon[];
 	}
 	
 	export class StraightLine
