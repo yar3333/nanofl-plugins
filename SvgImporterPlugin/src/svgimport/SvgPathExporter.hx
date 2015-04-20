@@ -191,37 +191,41 @@ class SvgPathExporter
 	
 	public function export() : ShapeElement
 	{
-		trace("SvgPathExporter.export vvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+		log("SvgPathExporter.export vvvvvvvvvvvvvvvvvvvvvvvvvvvv");
 		
 		var shape = new ShapeElement();
 		for (pf in polygonAndFillRules)
 		{
-			var edgesToCreatePolygons = pf.polygon.getEdges();
-			
-			trace("Polygons.fromEdges vvvvvvvvvvvvvvv edgesToCreatePolygons = " + edgesToCreatePolygons.length + "; " + edgesToCreatePolygons);
-			var polygons = Polygons.fromEdges(edgesToCreatePolygons, pf.polygon.fill, pf.fillRuleEvenOdd);
-			trace("Polygons.fromEdges ^^^^^^^^^^^^^^^ polygons = " + polygons.length);
+			log("Polygons.fromEdges vvvvvvvvvvvvvvv");
+			var polygons = Polygons.fromContours(pf.polygon.contours, pf.polygon.fill, pf.fillRuleEvenOdd);
+			log("Polygons.fromEdges ^^^^^^^^^^^^^^^ polygons = " + polygons.length);
 			
 			var shape2 = new ShapeElement([], polygons);
 			
-			trace("shape.combine vvvvvvvvvvvvvvvvv " + shape.getEdgeCount() + " + " + shape2.getEdgeCount());
+			log("shape.combine vvvvvvvvvvvvvvvvv " + shape.getEdgeCount() + " + " + shape2.getEdgeCount());
 			shape.combine(shape2);
-			trace("shape.combine ^^^^^^^^^^^^^^^^^");
+			log("shape.combine ^^^^^^^^^^^^^^^^^");
 		}
 		
-		trace("normalize vvvvvvvvvvvvvv");
+		log("normalize vvvvvvvvvvvvvv");
+		for (e in edges) stdlib.Debug.assert(e.stroke != null, "(1)");
 		Edges.normalize(edges);
-		trace("normalize ^^^^^^^^^^^^^^");
+		for (e in edges) stdlib.Debug.assert(e.stroke != null, "(2)");
+		log("normalize ^^^^^^^^^^^^^^");
 		
-		trace("intersectSelf vvvvvvvvvvvvvv");
+		log("intersectSelf vvvvvvvvvvvvvv");
+		for (e in edges) stdlib.Debug.assert(e.stroke != null, "(3)");
 		Edges.intersectSelf(edges);
-		trace("intersectSelf ^^^^^^^^^^^^^^");
+		for (e in edges) stdlib.Debug.assert(e.stroke != null, "(4)");
+		log("intersectSelf ^^^^^^^^^^^^^^");
 		
-		trace("shape.combine stroke vvvvvvvvvvvvvv");
+		log("shape.combine stroke vvvvvvvvvvvvvv");
+		for (e in edges) stdlib.Debug.assert(e.stroke != null, "(5)");
 		shape.combine(new ShapeElement(edges));
-		trace("shape.combine stroke ^^^^^^^^^^^^^^");
+		for (e in edges) stdlib.Debug.assert(e.stroke != null, "(6)");
+		log("shape.combine stroke ^^^^^^^^^^^^^^");
 		
-		trace("SvgPathExporter.export ^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+		log("SvgPathExporter.export ^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 		
 		return shape;
 	}
@@ -247,5 +251,10 @@ class SvgPathExporter
 	function getGradientRgbaColors(grad:Gradient) : Array<String>
 	{
 		return grad.colors.mapi(function(i, c) return ColorTools.colorToString(c, grad.alphas[i])).array();
+	}
+	
+	static function log(s:String) : Void
+	{
+		//trace(s);
 	}
 }
