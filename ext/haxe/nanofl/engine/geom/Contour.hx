@@ -16,6 +16,7 @@ extern class Contour
 	function clone() : nanofl.engine.geom.Contour;
 	function isClockwise() : Bool;
 	function isCounterClockwise() : Bool;
+	function normalize() : Void;
 	function reverse() : nanofl.engine.geom.Contour;
 	function getCommonEdges(contour:nanofl.engine.geom.Contour) : Array<nanofl.engine.geom.Edge>;
 	function indexIn(contours:Array<nanofl.engine.geom.Contour>) : Int;

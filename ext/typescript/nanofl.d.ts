@@ -6659,6 +6659,7 @@ declare module nanofl.engine.geom
 		clone() : nanofl.engine.geom.Contour;
 		isClockwise() : boolean;
 		isCounterClockwise() : boolean;
+		normalize() : void;
 		reverse() : nanofl.engine.geom.Contour;
 		getCommonEdges(contour:nanofl.engine.geom.Contour) : nanofl.engine.geom.Edge[];
 		indexIn(contours:nanofl.engine.geom.Contour[]) : number;
@@ -6741,7 +6742,7 @@ declare module nanofl.engine.geom
 		static intersectSelf<T>(edges:T[], onReplace?:(arg0:nanofl.engine.geom.Edge, arg1:nanofl.engine.geom.Edge[]) => void) : void;
 		static normalize<T>(edges:T[]) : T[];
 		static roundPoints<T>(edges:T[]) : T[];
-		static removeDegenerated<T>(edges:T[]) : T[];
+		static removeDegenerated<T>(edges:T[], removeAlsoCurvesWithStartAndEndEquals?:boolean) : T[];
 		static isPointInside(edges:nanofl.engine.geom.Edge[], x:number, y:number, fillEvenOdd:boolean) : boolean;
 		static getSequences(edges:nanofl.engine.geom.Edge[]) : { equEdge : nanofl.engine.geom.Edge; edges : nanofl.engine.geom.Edge[]; }[];
 		static isSequence<T>(edges:T[]) : boolean;
