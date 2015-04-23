@@ -1,5 +1,6 @@
 package svgimport;
 
+import nanofl.engine.geom.Contours;
 import nanofl.engine.strokes.RadialStroke;
 import nanofl.engine.geom.StrokeEdges;
 import nanofl.engine.elements.ShapeElement;
@@ -191,13 +192,18 @@ class SvgPathExporter
 	
 	public function export() : ShapeElement
 	{
-		log("SvgPathExporter.export vvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+		log("SvgPathExporter.export vvvvvvvvvvvvvvvvvvvvvvvvvvvv edges = " + (polygonAndFillRules.length > 0 ? polygonAndFillRules[0].polygon.getEdges().length : 0));
 		
 		var shape = new ShapeElement();
 		for (pf in polygonAndFillRules)
 		{
-			log("Polygons.fromEdges vvvvvvvvvvvvvvv");
+			log("Polygons.fromEdges vvvvvvvvvvvvvvv contours.edges = " + Contours.getEdges(pf.polygon.contours).length  + "; fill = " + pf.polygon.fill + "; fillRuleEvenOdd = " + pf.fillRuleEvenOdd);
+			if (Contours.getEdges(pf.polygon.contours).length >= 500)
+			{
+				log("------------------- CONTOURS FOR Polygons.fromContours:\n" + pf.polygon.contours.join(",\n"));
+			}
 			var polygons = Polygons.fromContours(pf.polygon.contours, pf.polygon.fill, pf.fillRuleEvenOdd);
+			for (p in polygons) p.assertCorrect();
 			log("Polygons.fromEdges ^^^^^^^^^^^^^^^ polygons = " + polygons.length);
 			
 			var shape2 = new ShapeElement([], polygons);

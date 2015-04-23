@@ -21,6 +21,7 @@ extern class Edge
 	function getIntersectionPointsX_rightRay(x:Float, y:Float) : Array<Float>;
 	function drawTo(g:createjs.Graphics) : Void;
 	function equ(e:nanofl.engine.geom.Edge) : Bool;
+	function equDirected(e:nanofl.engine.geom.Edge) : Bool;
 	function getNearestPoint(x:Float, y:Float) : { var point : nanofl.engine.geom.Point; var t : Float; };
 	function translate(dx:Float, dy:Float) : Void;
 	function translateVertex(point:nanofl.engine.geom.Point, dx:Float, dy:Float) : Void;
@@ -28,6 +29,7 @@ extern class Edge
 	function translateEnd(dx:Float, dy:Float) : Void;
 	function reverse() : nanofl.engine.geom.Edge;
 	function getBounds(?bounds:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
+	function getBoundsRO() : nanofl.engine.geom.Bounds;
 	function toString() : String;
 	function getMiddlePoint() : nanofl.engine.geom.Point;
 	function hasCommonVertices(edge:nanofl.engine.geom.Edge) : Bool;
@@ -48,6 +50,5 @@ extern class Edge
 	function isInRectangle(x:Float, y:Float, width:Float, height:Float) : Bool;
 	static function fromStraightLine(line:nanofl.engine.geom.StraightLine) : nanofl.engine.geom.Edge;
 	static function fromBezierCurve(curve:nanofl.engine.geom.BezierCurve) : nanofl.engine.geom.Edge;
-	@:profile
 	static function getIntersection(edgeA:nanofl.engine.geom.Edge, edgeB:nanofl.engine.geom.Edge) : nanofl.engine.geom.Edge.EdgesItersection;
 }

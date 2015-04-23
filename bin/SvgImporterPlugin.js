@@ -652,7 +652,7 @@ stdlib.Debug.getObjectDump = function(obj,limit,level,prefix) {
 	}
 	return s;
 };
-stdlib.Debug.assert = function(e,message,pos) {
+stdlib.Debug.assert = function(e,message,getMessage,pos) {
 };
 stdlib.Debug.traceStack = function(v,pos) {
 };
@@ -1813,15 +1813,22 @@ svgimport.SvgPathExporter.prototype = {
 		this.y = anchorY;
 	}
 	,'export': function() {
-		svgimport.SvgPathExporter.log("SvgPathExporter.export vvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+		svgimport.SvgPathExporter.log("SvgPathExporter.export vvvvvvvvvvvvvvvvvvvvvvvvvvvv edges = " + (this.polygonAndFillRules.length > 0?this.polygonAndFillRules[0].polygon.getEdges().length:0));
 		var shape = new nanofl.engine.elements.ShapeElement();
 		var _g = 0;
 		var _g1 = this.polygonAndFillRules;
 		while(_g < _g1.length) {
 			var pf = _g1[_g];
 			++_g;
-			svgimport.SvgPathExporter.log("Polygons.fromEdges vvvvvvvvvvvvvvv");
+			svgimport.SvgPathExporter.log("Polygons.fromEdges vvvvvvvvvvvvvvv contours.edges = " + nanofl.engine.geom.Contours.getEdges(pf.polygon.contours).length + "; fill = " + Std.string(pf.polygon.fill) + "; fillRuleEvenOdd = " + (pf.fillRuleEvenOdd == null?"null":"" + pf.fillRuleEvenOdd));
+			if(nanofl.engine.geom.Contours.getEdges(pf.polygon.contours).length >= 500) svgimport.SvgPathExporter.log("------------------- CONTOURS FOR Polygons.fromContours:\n" + pf.polygon.contours.join(",\n"));
 			var polygons = nanofl.engine.geom.Polygons.fromContours(pf.polygon.contours,pf.polygon.fill,pf.fillRuleEvenOdd);
+			var _g2 = 0;
+			while(_g2 < polygons.length) {
+				var p = polygons[_g2];
+				++_g2;
+				p.assertCorrect();
+			}
 			svgimport.SvgPathExporter.log("Polygons.fromEdges ^^^^^^^^^^^^^^^ polygons = " + polygons.length);
 			var shape2 = new nanofl.engine.elements.ShapeElement([],polygons);
 			svgimport.SvgPathExporter.log("shape.combine vvvvvvvvvvvvvvvvv " + shape.getEdgeCount() + " + " + shape2.getEdgeCount());
@@ -1829,53 +1836,53 @@ svgimport.SvgPathExporter.prototype = {
 			svgimport.SvgPathExporter.log("shape.combine ^^^^^^^^^^^^^^^^^");
 		}
 		svgimport.SvgPathExporter.log("normalize vvvvvvvvvvvvvv");
-		var _g2 = 0;
+		var _g3 = 0;
 		var _g11 = this.edges;
-		while(_g2 < _g11.length) {
-			var e = _g11[_g2];
-			++_g2;
+		while(_g3 < _g11.length) {
+			var e = _g11[_g3];
+			++_g3;
 			null;
 		}
 		nanofl.engine.geom.Edges.normalize(this.edges);
-		var _g3 = 0;
+		var _g4 = 0;
 		var _g12 = this.edges;
-		while(_g3 < _g12.length) {
-			var e1 = _g12[_g3];
-			++_g3;
+		while(_g4 < _g12.length) {
+			var e1 = _g12[_g4];
+			++_g4;
 			null;
 		}
 		svgimport.SvgPathExporter.log("normalize ^^^^^^^^^^^^^^");
 		svgimport.SvgPathExporter.log("intersectSelf vvvvvvvvvvvvvv");
-		var _g4 = 0;
+		var _g5 = 0;
 		var _g13 = this.edges;
-		while(_g4 < _g13.length) {
-			var e2 = _g13[_g4];
-			++_g4;
+		while(_g5 < _g13.length) {
+			var e2 = _g13[_g5];
+			++_g5;
 			null;
 		}
 		nanofl.engine.geom.Edges.intersectSelf(this.edges);
-		var _g5 = 0;
+		var _g6 = 0;
 		var _g14 = this.edges;
-		while(_g5 < _g14.length) {
-			var e3 = _g14[_g5];
-			++_g5;
+		while(_g6 < _g14.length) {
+			var e3 = _g14[_g6];
+			++_g6;
 			null;
 		}
 		svgimport.SvgPathExporter.log("intersectSelf ^^^^^^^^^^^^^^");
 		svgimport.SvgPathExporter.log("shape.combine stroke vvvvvvvvvvvvvv");
-		var _g6 = 0;
+		var _g7 = 0;
 		var _g15 = this.edges;
-		while(_g6 < _g15.length) {
-			var e4 = _g15[_g6];
-			++_g6;
+		while(_g7 < _g15.length) {
+			var e4 = _g15[_g7];
+			++_g7;
 			null;
 		}
 		shape.combine(new nanofl.engine.elements.ShapeElement(this.edges));
-		var _g7 = 0;
+		var _g8 = 0;
 		var _g16 = this.edges;
-		while(_g7 < _g16.length) {
-			var e5 = _g16[_g7];
-			++_g7;
+		while(_g8 < _g16.length) {
+			var e5 = _g16[_g8];
+			++_g8;
 			null;
 		}
 		svgimport.SvgPathExporter.log("shape.combine stroke ^^^^^^^^^^^^^^");

@@ -6658,17 +6658,20 @@ declare module nanofl.engine.geom
 		isNestedTo(outer:nanofl.engine.geom.Contour) : boolean;
 		clone() : nanofl.engine.geom.Contour;
 		isClockwise() : boolean;
+		isCounterClockwise() : boolean;
 		reverse() : nanofl.engine.geom.Contour;
 		getCommonEdges(contour:nanofl.engine.geom.Contour) : nanofl.engine.geom.Edge[];
 		indexIn(contours:nanofl.engine.geom.Contour[]) : number;
 		equ(c:nanofl.engine.geom.Contour) : boolean;
 		toString() : string;
+		assertCorrect() : void;
 	}
 	
 	export class Contours
 	{
 		static find(edges:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Contour[];
 		static removeTailEdges(edges:nanofl.engine.geom.Edge[]) : void;
+		static getEdges(contours:nanofl.engine.geom.Contour[]) : nanofl.engine.geom.Edge[];
 	}
 	
 	export class Edge
@@ -6686,6 +6689,7 @@ declare module nanofl.engine.geom
 		getIntersectionPointsX_rightRay(x:number, y:number) : number[];
 		drawTo(g:createjs.Graphics) : void;
 		equ(e:nanofl.engine.geom.Edge) : boolean;
+		equDirected(e:nanofl.engine.geom.Edge) : boolean;
 		getNearestPoint(x:number, y:number) : { point : nanofl.engine.geom.Point; t : number; };
 		translate(dx:number, dy:number) : void;
 		translateVertex(point:nanofl.engine.geom.Point, dx:number, dy:number) : void;
@@ -6693,6 +6697,7 @@ declare module nanofl.engine.geom
 		translateEnd(dx:number, dy:number) : void;
 		reverse() : nanofl.engine.geom.Edge;
 		getBounds(bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
+		getBoundsRO() : nanofl.engine.geom.Bounds;
 		toString() : string;
 		getMiddlePoint() : nanofl.engine.geom.Point;
 		hasCommonVertices(edge:nanofl.engine.geom.Edge) : boolean;
@@ -6870,6 +6875,7 @@ declare module nanofl.engine.geom
 		equ(p:nanofl.engine.geom.Polygon) : boolean;
 		normalize() : void;
 		isInRectangle(x:number, y:number, width:number, height:number) : boolean;
+		assertCorrect() : void;
 		toString() : string;
 		static showSelection : boolean;
 		static load(node:htmlparser.HtmlNodeElement, fills:nanofl.engine.fills.IFill[]) : nanofl.engine.geom.Polygon;
@@ -6885,6 +6891,7 @@ declare module nanofl.engine.geom
 		static normalize(polygons:nanofl.engine.geom.Polygon[]) : void;
 		static getReconstructed(polygons:nanofl.engine.geom.Polygon[], additionalEdges:nanofl.engine.geom.Edge[], force?:boolean) : nanofl.engine.geom.Polygon[];
 		static fromContours(originalContours:nanofl.engine.geom.Contour[], fill:nanofl.engine.fills.IFill, fillEvenOdd:boolean) : nanofl.engine.geom.Polygon[];
+		static assertCorrect(polygons:nanofl.engine.geom.Polygon[]) : void;
 	}
 	
 	export class StraightLine
