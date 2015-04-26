@@ -2183,22 +2183,20 @@ svgimport.gradients.LinearGradient = function(node,baseType,svgWidth) {
 	this.y1 = svgimport.XmlTools.getFloatValue(node,"y1",base != null?base.y1:null);
 	this.x2 = svgimport.XmlTools.getFloatValue(node,"x2",base != null?base.x2:null);
 	this.y2 = svgimport.XmlTools.getFloatValue(node,"y2",base != null?base.y2:null);
-	if(this.gradientUnits != "userSpaceOnUse") {
-		if(this.x1 == null && this.y1 == null && this.x2 == null && this.y2 == null) {
-			this.x1 = 0;
-			this.y1 = 0;
-			this.x2 = 0.5;
-			this.y2 = 0;
-		} else {
-			if(this.x1 == null) this.x1 = 0;
-			if(this.y1 == null) this.y1 = 0;
-			if(this.x2 == null) this.x2 = 0;
-			if(this.y2 == null) this.y2 = 0;
-		}
-	} else {
+	if(this.gradientUnits == "userSpaceOnUse") {
 		if(this.x1 == null) this.x1 = 0;
 		if(this.y1 == null) this.y1 = 0;
 		if(this.x2 == null) this.x2 = svgWidth;
+		if(this.y2 == null) this.y2 = 0;
+	} else if(this.x1 == null && this.y1 == null && this.x2 == null && this.y2 == null) {
+		this.x1 = 0;
+		this.y1 = 0;
+		this.x2 = 1;
+		this.y2 = 0;
+	} else {
+		if(this.x1 == null) this.x1 = 0;
+		if(this.y1 == null) this.y1 = 0;
+		if(this.x2 == null) this.x2 = 0;
 		if(this.y2 == null) this.y2 = 0;
 	}
 };
@@ -2206,15 +2204,30 @@ svgimport.gradients.LinearGradient.__name__ = ["svgimport","gradients","LinearGr
 svgimport.gradients.LinearGradient.__super__ = svgimport.gradients.Gradient;
 svgimport.gradients.LinearGradient.prototype = $extend(svgimport.gradients.Gradient.prototype,{
 	getAbsoluteParams: function(bounds) {
-		var m = new nanofl.engine.geom.Matrix();
-		if(this.gradientUnits == "userSpaceOnUse") m = this.matrix; else {
-			m.scale(bounds.maxX - bounds.minX,bounds.maxY - bounds.minY);
-			m.translate(bounds.minX,bounds.minY);
-			m.appendMatrix(this.matrix);
+		if(this.gradientUnits == "userSpaceOnUse") {
+			var p1 = this.matrix.transformPoint(this.x1,this.y1);
+			var p2 = this.matrix.transformPoint(this.x2,this.y2);
+			return { x1 : p1.x, y1 : p1.y, x2 : p2.x, y2 : p2.y};
+		} else {
+			var w = bounds.maxX - bounds.minX;
+			var h = bounds.maxY - bounds.minY;
+			var p11 = this.matrix.transformPoint(this.x1 * w,this.y1 * w);
+			var p21 = this.matrix.transformPoint(this.x2 * w,this.y2 * w);
+			if(w > 0) {
+				var k = h / w;
+				var line = new nanofl.engine.geom.StraightLine(p11.x,p11.y,p21.x,p21.y);
+				var v = line.getOrthogonalVector();
+				var ortho = new nanofl.engine.geom.StraightLine(p21.x,p21.y,p21.x + v.x,p21.y + v.y);
+				ortho.y1 *= k;
+				ortho.y2 *= k;
+				p21 = ortho.getOrthogonalRayIntersection(p11.x,p11.y).point;
+				var ortho1 = new nanofl.engine.geom.StraightLine(p11.x,p11.y,p11.x + v.x,p11.y + v.y);
+				ortho1.y1 *= k;
+				ortho1.y2 *= k;
+				p11 = ortho1.getOrthogonalRayIntersection(p21.x,p21.y).point;
+			}
+			return { x1 : p11.x + bounds.minX, y1 : p11.y + bounds.minY, x2 : p21.x + bounds.minX, y2 : p21.y + bounds.minY};
 		}
-		var p1 = m.transformPoint(this.x1,this.y1);
-		var p2 = m.transformPoint(this.x2,this.y2);
-		return { x1 : p1.x, y1 : p1.y, x2 : p2.x, y2 : p2.y};
 	}
 	,__class__: svgimport.gradients.LinearGradient
 });

@@ -12,6 +12,7 @@ extern class PointTools
 	static function getSqrDist(x1:Float, y1:Float, x2:Float, y2:Float) : Float;
 	@:noUsing
 	static function rotate(x:Float, y:Float, da:Float) : nanofl.engine.geom.Point;
+	static function getRotated(pt:nanofl.engine.geom.Point, da:Float) : nanofl.engine.geom.Point;
 	static function moveInDirection(start:nanofl.engine.geom.Point, endX:Float, endY:Float, len:Float) : nanofl.engine.geom.Point;
 	static function equ(pt1:nanofl.engine.geom.Point, pt2:nanofl.engine.geom.Point) : Bool;
 	static function clone(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;

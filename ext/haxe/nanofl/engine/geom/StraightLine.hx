@@ -10,6 +10,8 @@ extern class StraightLine
 	function clone() : nanofl.engine.geom.StraightLine;
 	function getBounds() : nanofl.engine.geom.Bounds;
 	function getNearestPoint(x:Float, y:Float) : { var point : nanofl.engine.geom.Point; var t : Float; };
+	function getOrthogonalRayIntersection(x:Float, y:Float) : { var point : nanofl.engine.geom.Point; var t : Float; };
+	function getOrthogonalVector() : nanofl.engine.geom.Point;
 	function getLength() : Float;
 	function getIntersectionPointX_rightRay(mx:Float, my:Float) : Float;
 	function isIntersect_rightRay(mx:Float, my:Float) : Bool;

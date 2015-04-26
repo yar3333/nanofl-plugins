@@ -6818,6 +6818,7 @@ declare module nanofl.engine.geom
 		 *                 <code>height</code> parameter.
 		 */
 		createGradientBox(width:number, height:number, rotation?:number, tx?:number, ty?:number) : nanofl.engine.geom.Matrix;
+		getAverageScale() : number;
 		toMatrix2D() : createjs.Matrix2D;
 		toString() : string;
 		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.geom.Matrix;
@@ -6839,6 +6840,7 @@ declare module nanofl.engine.geom
 		static getDist(x1:number, y1:number, x2:number, y2:number) : number;
 		static getSqrDist(x1:number, y1:number, x2:number, y2:number) : number;
 		static rotate(x:number, y:number, da:number) : nanofl.engine.geom.Point;
+		static getRotated(pt:nanofl.engine.geom.Point, da:number) : nanofl.engine.geom.Point;
 		static moveInDirection(start:nanofl.engine.geom.Point, endX:number, endY:number, len:number) : nanofl.engine.geom.Point;
 		static equ(pt1:nanofl.engine.geom.Point, pt2:nanofl.engine.geom.Point) : boolean;
 		static clone(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
@@ -6905,6 +6907,8 @@ declare module nanofl.engine.geom
 		clone() : nanofl.engine.geom.StraightLine;
 		getBounds() : nanofl.engine.geom.Bounds;
 		getNearestPoint(x:number, y:number) : { point : nanofl.engine.geom.Point; t : number; };
+		getOrthogonalRayIntersection(x:number, y:number) : { point : nanofl.engine.geom.Point; t : number; };
+		getOrthogonalVector() : nanofl.engine.geom.Point;
 		getLength() : number;
 		getIntersectionPointX_rightRay(mx:number, my:number) : number;
 		isIntersect_rightRay(mx:number, my:number) : boolean;
