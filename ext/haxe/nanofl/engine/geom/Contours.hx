@@ -4,6 +4,8 @@ extern class Contours
 {
 	@:profile
 	static function find(edges:Array<nanofl.engine.geom.Edge>) : Array<nanofl.engine.geom.Contour>;
+	static function mergeByCommonEdges(contours:Array<nanofl.engine.geom.Contour>, counterClockwise:Bool) : Void;
+	static function removeNested(contours:Array<nanofl.engine.geom.Contour>) : Void;
 	@:profile
 	static function removeTailEdges(edges:Array<nanofl.engine.geom.Edge>) : Void;
 	static function getEdges(contours:Array<nanofl.engine.geom.Contour>) : Array<nanofl.engine.geom.Edge>;

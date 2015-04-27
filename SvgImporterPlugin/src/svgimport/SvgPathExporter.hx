@@ -198,7 +198,7 @@ class SvgPathExporter
 		for (pf in polygonAndFillRules)
 		{
 			log("Polygons.fromEdges vvvvvvvvvvvvvvv contours.edges = " + Contours.getEdges(pf.polygon.contours).length  + "; fill = " + pf.polygon.fill + "; fillRuleEvenOdd = " + pf.fillRuleEvenOdd);
-			if (Contours.getEdges(pf.polygon.contours).length >= 500)
+			if (Contours.getEdges(pf.polygon.contours).length >= 0)
 			{
 				log("------------------- CONTOURS FOR Polygons.fromContours:\n" + pf.polygon.contours.join(",\n"));
 			}
@@ -259,8 +259,8 @@ class SvgPathExporter
 		return grad.colors.mapi(function(i, c) return ColorTools.colorToString(c, grad.alphas[i])).array();
 	}
 	
-	static function log(s:String) : Void
+	static function log(v:Dynamic, ?infos:haxe.PosInfos) : Void
 	{
-		//trace(s);
+		//haxe.Log.trace(v, infos);
 	}
 }

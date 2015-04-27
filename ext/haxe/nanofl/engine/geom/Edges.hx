@@ -7,6 +7,7 @@ extern class Edges
 	static function removeDublicates<T>(edges:Array<T>) : Void;
 	static function concatUnique<T, Z>(edgesA:Array<T>, edgesB:Array<Z>) : Array<T>;
 	static function appendUnique<T, Z>(edgesA:Array<T>, edgesB:Array<Z>) : Array<T>;
+	static function exclude(edges:Array<nanofl.engine.geom.Edge>, exclude:Array<nanofl.engine.geom.Edge>) : Array<nanofl.engine.geom.Edge>;
 	static function draw<T>(edges:Array<T>, g:createjs.Graphics, fixLineJoinsInClosedContours:Bool) : Void;
 	static function getBounds<T>(edges:Array<T>, ?bounds:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 	static function export<T>(edges:Array<T>, out:nanofl.engine.XmlWriter) : Void;
@@ -29,4 +30,5 @@ extern class Edges
 	static function hasDegenerated<T>(edges:Array<T>) : Bool;
 	static function getPointUseCount<T>(edges:Array<T>, x:Float, y:Float) : Int;
 	static function equIgnoreOrder(edgesA:Array<nanofl.engine.geom.Edge>, edgesB:Array<nanofl.engine.geom.Edge>) : Bool;
+	static function getCommon(edgesA:Array<nanofl.engine.geom.Edge>, edgesB:Array<nanofl.engine.geom.Edge>) : Array<nanofl.engine.geom.Edge>;
 }

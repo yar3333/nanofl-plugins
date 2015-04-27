@@ -1717,7 +1717,7 @@ svgimport.SvgPathExporter = function() {
 	this.edges = new Array();
 };
 svgimport.SvgPathExporter.__name__ = ["svgimport","SvgPathExporter"];
-svgimport.SvgPathExporter.log = function(s) {
+svgimport.SvgPathExporter.log = function(v,infos) {
 };
 svgimport.SvgPathExporter.prototype = {
 	beginFill: function(path) {
@@ -1813,15 +1813,15 @@ svgimport.SvgPathExporter.prototype = {
 		this.y = anchorY;
 	}
 	,'export': function() {
-		svgimport.SvgPathExporter.log("SvgPathExporter.export vvvvvvvvvvvvvvvvvvvvvvvvvvvv edges = " + (this.polygonAndFillRules.length > 0?this.polygonAndFillRules[0].polygon.getEdges().length:0));
+		svgimport.SvgPathExporter.log("SvgPathExporter.export vvvvvvvvvvvvvvvvvvvvvvvvvvvv edges = " + (this.polygonAndFillRules.length > 0?this.polygonAndFillRules[0].polygon.getEdges().length:0),{ fileName : "SvgPathExporter.hx", lineNumber : 195, className : "svgimport.SvgPathExporter", methodName : "export"});
 		var shape = new nanofl.engine.elements.ShapeElement();
 		var _g = 0;
 		var _g1 = this.polygonAndFillRules;
 		while(_g < _g1.length) {
 			var pf = _g1[_g];
 			++_g;
-			svgimport.SvgPathExporter.log("Polygons.fromEdges vvvvvvvvvvvvvvv contours.edges = " + nanofl.engine.geom.Contours.getEdges(pf.polygon.contours).length + "; fill = " + Std.string(pf.polygon.fill) + "; fillRuleEvenOdd = " + (pf.fillRuleEvenOdd == null?"null":"" + pf.fillRuleEvenOdd));
-			if(nanofl.engine.geom.Contours.getEdges(pf.polygon.contours).length >= 500) svgimport.SvgPathExporter.log("------------------- CONTOURS FOR Polygons.fromContours:\n" + pf.polygon.contours.join(",\n"));
+			svgimport.SvgPathExporter.log("Polygons.fromEdges vvvvvvvvvvvvvvv contours.edges = " + nanofl.engine.geom.Contours.getEdges(pf.polygon.contours).length + "; fill = " + Std.string(pf.polygon.fill) + "; fillRuleEvenOdd = " + (pf.fillRuleEvenOdd == null?"null":"" + pf.fillRuleEvenOdd),{ fileName : "SvgPathExporter.hx", lineNumber : 200, className : "svgimport.SvgPathExporter", methodName : "export"});
+			if(nanofl.engine.geom.Contours.getEdges(pf.polygon.contours).length >= 0) svgimport.SvgPathExporter.log("------------------- CONTOURS FOR Polygons.fromContours:\n" + pf.polygon.contours.join(",\n"),{ fileName : "SvgPathExporter.hx", lineNumber : 203, className : "svgimport.SvgPathExporter", methodName : "export"});
 			var polygons = nanofl.engine.geom.Polygons.fromContours(pf.polygon.contours,pf.polygon.fill,pf.fillRuleEvenOdd);
 			var _g2 = 0;
 			while(_g2 < polygons.length) {
@@ -1829,13 +1829,13 @@ svgimport.SvgPathExporter.prototype = {
 				++_g2;
 				p.assertCorrect();
 			}
-			svgimport.SvgPathExporter.log("Polygons.fromEdges ^^^^^^^^^^^^^^^ polygons = " + polygons.length);
+			svgimport.SvgPathExporter.log("Polygons.fromEdges ^^^^^^^^^^^^^^^ polygons = " + polygons.length,{ fileName : "SvgPathExporter.hx", lineNumber : 207, className : "svgimport.SvgPathExporter", methodName : "export"});
 			var shape2 = new nanofl.engine.elements.ShapeElement([],polygons);
-			svgimport.SvgPathExporter.log("shape.combine vvvvvvvvvvvvvvvvv " + shape.getEdgeCount() + " + " + shape2.getEdgeCount());
+			svgimport.SvgPathExporter.log("shape.combine vvvvvvvvvvvvvvvvv " + shape.getEdgeCount() + " + " + shape2.getEdgeCount(),{ fileName : "SvgPathExporter.hx", lineNumber : 211, className : "svgimport.SvgPathExporter", methodName : "export"});
 			shape.combine(shape2);
-			svgimport.SvgPathExporter.log("shape.combine ^^^^^^^^^^^^^^^^^");
+			svgimport.SvgPathExporter.log("shape.combine ^^^^^^^^^^^^^^^^^",{ fileName : "SvgPathExporter.hx", lineNumber : 213, className : "svgimport.SvgPathExporter", methodName : "export"});
 		}
-		svgimport.SvgPathExporter.log("normalize vvvvvvvvvvvvvv");
+		svgimport.SvgPathExporter.log("normalize vvvvvvvvvvvvvv",{ fileName : "SvgPathExporter.hx", lineNumber : 216, className : "svgimport.SvgPathExporter", methodName : "export"});
 		var _g3 = 0;
 		var _g11 = this.edges;
 		while(_g3 < _g11.length) {
@@ -1851,8 +1851,8 @@ svgimport.SvgPathExporter.prototype = {
 			++_g4;
 			null;
 		}
-		svgimport.SvgPathExporter.log("normalize ^^^^^^^^^^^^^^");
-		svgimport.SvgPathExporter.log("intersectSelf vvvvvvvvvvvvvv");
+		svgimport.SvgPathExporter.log("normalize ^^^^^^^^^^^^^^",{ fileName : "SvgPathExporter.hx", lineNumber : 220, className : "svgimport.SvgPathExporter", methodName : "export"});
+		svgimport.SvgPathExporter.log("intersectSelf vvvvvvvvvvvvvv",{ fileName : "SvgPathExporter.hx", lineNumber : 222, className : "svgimport.SvgPathExporter", methodName : "export"});
 		var _g5 = 0;
 		var _g13 = this.edges;
 		while(_g5 < _g13.length) {
@@ -1868,8 +1868,8 @@ svgimport.SvgPathExporter.prototype = {
 			++_g6;
 			null;
 		}
-		svgimport.SvgPathExporter.log("intersectSelf ^^^^^^^^^^^^^^");
-		svgimport.SvgPathExporter.log("shape.combine stroke vvvvvvvvvvvvvv");
+		svgimport.SvgPathExporter.log("intersectSelf ^^^^^^^^^^^^^^",{ fileName : "SvgPathExporter.hx", lineNumber : 226, className : "svgimport.SvgPathExporter", methodName : "export"});
+		svgimport.SvgPathExporter.log("shape.combine stroke vvvvvvvvvvvvvv",{ fileName : "SvgPathExporter.hx", lineNumber : 228, className : "svgimport.SvgPathExporter", methodName : "export"});
 		var _g7 = 0;
 		var _g15 = this.edges;
 		while(_g7 < _g15.length) {
@@ -1885,8 +1885,8 @@ svgimport.SvgPathExporter.prototype = {
 			++_g8;
 			null;
 		}
-		svgimport.SvgPathExporter.log("shape.combine stroke ^^^^^^^^^^^^^^");
-		svgimport.SvgPathExporter.log("SvgPathExporter.export ^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+		svgimport.SvgPathExporter.log("shape.combine stroke ^^^^^^^^^^^^^^",{ fileName : "SvgPathExporter.hx", lineNumber : 232, className : "svgimport.SvgPathExporter", methodName : "export"});
+		svgimport.SvgPathExporter.log("SvgPathExporter.export ^^^^^^^^^^^^^^^^^^^^^^^^^^^^",{ fileName : "SvgPathExporter.hx", lineNumber : 234, className : "svgimport.SvgPathExporter", methodName : "export"});
 		return shape;
 	}
 	,closeContour: function() {

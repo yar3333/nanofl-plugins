@@ -6661,7 +6661,6 @@ declare module nanofl.engine.geom
 		isCounterClockwise() : boolean;
 		normalize() : void;
 		reverse() : nanofl.engine.geom.Contour;
-		getCommonEdges(contour:nanofl.engine.geom.Contour) : nanofl.engine.geom.Edge[];
 		indexIn(contours:nanofl.engine.geom.Contour[]) : number;
 		equ(c:nanofl.engine.geom.Contour) : boolean;
 		toString() : string;
@@ -6671,6 +6670,8 @@ declare module nanofl.engine.geom
 	export class Contours
 	{
 		static find(edges:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Contour[];
+		static mergeByCommonEdges(contours:nanofl.engine.geom.Contour[], counterClockwise:boolean) : void;
+		static removeNested(contours:nanofl.engine.geom.Contour[]) : void;
 		static removeTailEdges(edges:nanofl.engine.geom.Edge[]) : void;
 		static getEdges(contours:nanofl.engine.geom.Contour[]) : nanofl.engine.geom.Edge[];
 	}
@@ -6729,6 +6730,7 @@ declare module nanofl.engine.geom
 		static removeDublicates<T>(edges:T[]) : void;
 		static concatUnique<T, Z>(edgesA:T[], edgesB:Z[]) : T[];
 		static appendUnique<T, Z>(edgesA:T[], edgesB:Z[]) : T[];
+		static exclude(edges:nanofl.engine.geom.Edge[], exclude:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Edge[];
 		static draw<T>(edges:T[], g:createjs.Graphics, fixLineJoinsInClosedContours:boolean) : void;
 		static getBounds<T>(edges:T[], bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 		static export<T>(edges:T[], out:nanofl.engine.XmlWriter) : void;
@@ -6749,6 +6751,7 @@ declare module nanofl.engine.geom
 		static hasDegenerated<T>(edges:T[]) : boolean;
 		static getPointUseCount<T>(edges:T[], x:number, y:number) : number;
 		static equIgnoreOrder(edgesA:nanofl.engine.geom.Edge[], edgesB:nanofl.engine.geom.Edge[]) : boolean;
+		static getCommon(edgesA:nanofl.engine.geom.Edge[], edgesB:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Edge[];
 	}
 	
 	export class Equation
