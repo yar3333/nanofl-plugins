@@ -361,7 +361,7 @@ flashimport.ContourParser = function(edge) {
 	var reX1Y1X2Y2 = new EReg("^" + reNumber + "\\s+" + reNumber + "\\s+" + reNumber + "\\s+" + reNumber + "\\s*","i");
 	var lastX = 1.0e10;
 	var lastY = 1.0e10;
-	stdlib.Debug.assert(drawStr.length == 0 || StringTools.ltrim(drawStr).charAt(0) == "!","drawStr = " + drawStr,null,{ fileName : "ContourParser.hx", lineNumber : 39, className : "flashimport.ContourParser", methodName : "new"});
+	stdlib.Debug.assert(drawStr.length == 0 || StringTools.ltrim(drawStr).charAt(0) == "!","drawStr = " + drawStr,{ fileName : "ContourParser.hx", lineNumber : 39, className : "flashimport.ContourParser", methodName : "new"});
 	while(drawStr.length > 0) {
 		var opCode = drawStr.charAt(0);
 		drawStr = HxOverrides.substr(drawStr,1,null);
@@ -1478,7 +1478,7 @@ stdlib.Debug.getObjectDump = function(obj,limit,level,prefix) {
 	}
 	return s;
 };
-stdlib.Debug.assert = function(e,message,getMessage,pos) {
+stdlib.Debug.assert = function(e,message,pos) {
 };
 stdlib.Debug.traceStack = function(v,pos) {
 };

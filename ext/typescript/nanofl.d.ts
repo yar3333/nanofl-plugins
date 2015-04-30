@@ -6752,6 +6752,9 @@ declare module nanofl.engine.geom
 		static getPointUseCount<T>(edges:T[], x:number, y:number) : number;
 		static equIgnoreOrder(edgesA:nanofl.engine.geom.Edge[], edgesB:nanofl.engine.geom.Edge[]) : boolean;
 		static getCommon(edgesA:nanofl.engine.geom.Edge[], edgesB:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Edge[];
+		static getDifferent(edgesA:nanofl.engine.geom.Edge[], edgesB:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Edge[];
+		static getNearestVertex(edges:nanofl.engine.geom.Edge[], x:number, y:number) : nanofl.engine.geom.Point;
+		static getTailPoints(edges:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Point[];
 	}
 	
 	export class Equation
@@ -6882,6 +6885,7 @@ declare module nanofl.engine.geom
 		normalize() : void;
 		isInRectangle(x:number, y:number, width:number, height:number) : boolean;
 		assertCorrect() : void;
+		isContourOutside(c:nanofl.engine.geom.Contour) : boolean;
 		toString() : string;
 		static showSelection : boolean;
 		static load(node:htmlparser.HtmlNodeElement, fills:nanofl.engine.fills.IFill[]) : nanofl.engine.geom.Polygon;
@@ -6893,11 +6897,10 @@ declare module nanofl.engine.geom
 		static isEdgeInside(polygons:nanofl.engine.geom.Polygon[], edge:nanofl.engine.geom.Edge) : boolean;
 		static mergeByCommonEdges(polygons:nanofl.engine.geom.Polygon[], edges:nanofl.engine.geom.StrokeEdge[]) : void;
 		static removeDublicates(polygons:nanofl.engine.geom.Polygon[]) : void;
-		static hasDublicates(polygons:nanofl.engine.geom.Polygon[]) : boolean;
 		static normalize(polygons:nanofl.engine.geom.Polygon[]) : void;
 		static getReconstructed(polygons:nanofl.engine.geom.Polygon[], additionalEdges:nanofl.engine.geom.Edge[], force?:boolean) : nanofl.engine.geom.Polygon[];
 		static fromContours(originalContours:nanofl.engine.geom.Contour[], fill:nanofl.engine.fills.IFill, fillEvenOdd:boolean) : nanofl.engine.geom.Polygon[];
-		static assertCorrect(polygons:nanofl.engine.geom.Polygon[]) : void;
+		static assertCorrect(polygons:nanofl.engine.geom.Polygon[], intergrityChecks:boolean) : void;
 	}
 	
 	export class StraightLine

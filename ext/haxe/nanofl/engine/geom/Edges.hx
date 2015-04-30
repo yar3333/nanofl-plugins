@@ -31,4 +31,7 @@ extern class Edges
 	static function getPointUseCount<T>(edges:Array<T>, x:Float, y:Float) : Int;
 	static function equIgnoreOrder(edgesA:Array<nanofl.engine.geom.Edge>, edgesB:Array<nanofl.engine.geom.Edge>) : Bool;
 	static function getCommon(edgesA:Array<nanofl.engine.geom.Edge>, edgesB:Array<nanofl.engine.geom.Edge>) : Array<nanofl.engine.geom.Edge>;
+	static function getDifferent(edgesA:Array<nanofl.engine.geom.Edge>, edgesB:Array<nanofl.engine.geom.Edge>) : Array<nanofl.engine.geom.Edge>;
+	static function getNearestVertex(edges:Array<nanofl.engine.geom.Edge>, x:Float, y:Float) : nanofl.engine.geom.Point;
+	static function getTailPoints(edges:Array<nanofl.engine.geom.Edge>) : Array<nanofl.engine.geom.Point>;
 }

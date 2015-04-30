@@ -652,7 +652,7 @@ stdlib.Debug.getObjectDump = function(obj,limit,level,prefix) {
 	}
 	return s;
 };
-stdlib.Debug.assert = function(e,message,getMessage,pos) {
+stdlib.Debug.assert = function(e,message,pos) {
 };
 stdlib.Debug.traceStack = function(v,pos) {
 };
