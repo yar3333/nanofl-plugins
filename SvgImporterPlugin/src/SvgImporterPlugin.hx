@@ -66,7 +66,7 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 					SvgGroupExporter.run(group, library);
 					
 				case SvgElement.DisplayPath(path):
-					var libraryItem = path.toLibraryItem();
+					var libraryItem = path.toLibraryItem(library);
 					if (libraryItem != null) library.addItem(libraryItem);
 					
 				case _:

@@ -1,7 +1,9 @@
 package svgimport;
 
+import nanofl.engine.elements.Element;
 import nanofl.engine.KeyFrame;
 import nanofl.engine.Layer;
+import nanofl.engine.Library;
 import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.engine.libraryitems.MovieClipItem;
 import svgimport.SvgElement;
@@ -38,6 +40,8 @@ class SvgPath
 	public var strokeMiterLimit : Float;
 
 	public var segments : Array<Segment>;
+	
+	var libraryItemNamePath : String;
 	
 	public function new(node:HtmlNodeElement, baseStyles:Map<String, String>, elements:Map<String, SvgElement>, gradients:Map<String, GradientType>, ?id:String) : Void
 	{
@@ -128,9 +132,11 @@ class SvgPath
 		}
 	}
 	
-	public function toElement() : ShapeElement
+	public function toElement(library:Library) : Element
 	{
 		if (segments.length == 0) return null;
+		
+		if (libraryItemNamePath != null) return getAsInstance(library);
 		
 		var exporter = new SvgPathExporter();
 		
@@ -150,24 +156,45 @@ class SvgPath
 		
 		var shape = exporter.export();
 		
-		if (!matrix.isIdentity())
-		{
-			shape.transform(matrix);
-		}
-		
 		shape.applyStrokeAlpha(alpha * strokeAlpha);
 		shape.applyFillAlpha(alpha * fillAlpha);
 		
-		return shape;
+		if (matrix.a == 1 && matrix.b == 0 && matrix.c == 0 && matrix.d == 1)
+		{
+			if (!matrix.isIdentity())
+			{
+				shape.transform(matrix);
+			}
+			return shape;
+		}
+		
+		if (libraryItemNamePath == null)
+		{
+			libraryItemNamePath = "auto_" + stdlib.Uuid.newUuid();
+			var mcItem = new MovieClipItem(libraryItemNamePath);
+			var layer = new Layer("auto");
+			mcItem.addLayer(layer);
+			layer.addKeyFrame(new KeyFrame([ shape ]));
+			library.addItem(mcItem);
+		}
+		
+		return getAsInstance(library);
 	}
 	
-	public function toLibraryItem() : LibraryItem
+	public function toLibraryItem(library:Library) : LibraryItem
 	{
-		var element = toElement();
+		var element = toElement(library);
 		if (element == null) return null;
 		var mc = new MovieClipItem(id);
 		mc.addLayer(new Layer("auto"));
 		mc.layers[0].addKeyFrame(new KeyFrame([ element ]));
+		return mc;
+	}
+	
+	function getAsInstance(library:Library) : Element
+	{
+		var mc = cast(library.getItem(libraryItemNamePath), MovieClipItem).newInstance();
+		mc.matrix = matrix;
 		return mc;
 	}
 }

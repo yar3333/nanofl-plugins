@@ -302,7 +302,7 @@ SvgImporterPlugin.prototype = {
 				break;
 			case 0:
 				var path = element[2];
-				var libraryItem = path.toLibraryItem();
+				var libraryItem = path.toLibraryItem(library);
 				if(libraryItem != null) library.addItem(libraryItem);
 				break;
 			default:
@@ -1108,6 +1108,14 @@ stdlib.Utf8.prototype = $extend(haxe.Utf8.prototype,{
 	}
 	,__class__: stdlib.Utf8
 });
+stdlib.Uuid = function() { };
+stdlib.Uuid.__name__ = ["stdlib","Uuid"];
+stdlib.Uuid.newUuid = function() {
+	var timeF = new Date().getTime();
+	var time = timeF - 268435455. * (timeF / 268435455 | 0) | 0;
+	var uuid = stdlib.StringTools.hex(stdlib.Uuid.counter++,8) + "-" + StringTools.hex(timeF / 65536 | 0,8) + "-" + StringTools.hex(time % 65536,8) + "-" + stdlib.StringTools.hex(Std.random(65536),4) + "-" + stdlib.StringTools.hex(Std.random(65536),4);
+	return uuid;
+};
 var svgimport = {};
 svgimport.FillType = { __ename__ : ["svgimport","FillType"], __constructs__ : ["FillNone","FillSolid","FillGrad"] };
 svgimport.FillType.FillNone = ["FillNone",0];
@@ -1506,7 +1514,7 @@ svgimport.SvgGroupExporter.run = function(group,library) {
 			break;
 		case 0:
 			var path = child[2];
-			svgimport.SvgGroupExporter.addElement(layers,path.toElement());
+			svgimport.SvgGroupExporter.addElement(layers,path.toElement(library));
 			break;
 		case 2:
 			var text = child[2];
@@ -1529,7 +1537,7 @@ svgimport.SvgGroupExporter.run = function(group,library) {
 				case 0:
 					var base1 = element[2];
 					var p = new svgimport.SvgPath(base1.node,styles,group.elements,group.gradients,svgimport.SvgGroupExporter.getNextFreeID(group.elements,library,base1.id));
-					var libraryItem = p.toLibraryItem();
+					var libraryItem = p.toLibraryItem(library);
 					if(libraryItem != null) library.addItem(libraryItem);
 					id = p.id;
 					break;
@@ -1667,8 +1675,9 @@ svgimport.SvgPath = function(node,baseStyles,elements,gradients,id) {
 };
 svgimport.SvgPath.__name__ = ["svgimport","SvgPath"];
 svgimport.SvgPath.prototype = {
-	toElement: function() {
+	toElement: function(library) {
 		if(this.segments.length == 0) return null;
+		if(this.libraryItemNamePath != null) return this.getAsInstance(library);
 		var exporter = new svgimport.SvgPathExporter();
 		if(this.fill != null && this.fill != svgimport.FillType.FillNone) {
 			exporter.beginFill(this);
@@ -1693,17 +1702,33 @@ svgimport.SvgPath.prototype = {
 			exporter.endStroke();
 		}
 		var shape = exporter["export"]();
-		if(!this.matrix.isIdentity()) shape.transform(this.matrix);
 		shape.applyStrokeAlpha(this.alpha * this.strokeAlpha);
 		shape.applyFillAlpha(this.alpha * this.fillAlpha);
-		return shape;
+		if(this.matrix.a == 1 && this.matrix.b == 0 && this.matrix.c == 0 && this.matrix.d == 1) {
+			if(!this.matrix.isIdentity()) shape.transform(this.matrix);
+			return shape;
+		}
+		if(this.libraryItemNamePath == null) {
+			this.libraryItemNamePath = "auto_" + stdlib.Uuid.newUuid();
+			var mcItem = new nanofl.engine.libraryitems.MovieClipItem(this.libraryItemNamePath);
+			var layer = new nanofl.engine.Layer("auto");
+			mcItem.addLayer(layer);
+			layer.addKeyFrame(new nanofl.engine.KeyFrame(null,null,null,[shape]));
+			library.addItem(mcItem);
+		}
+		return this.getAsInstance(library);
 	}
-	,toLibraryItem: function() {
-		var element = this.toElement();
+	,toLibraryItem: function(library) {
+		var element = this.toElement(library);
 		if(element == null) return null;
 		var mc = new nanofl.engine.libraryitems.MovieClipItem(this.id);
 		mc.addLayer(new nanofl.engine.Layer("auto"));
 		mc.layers[0].addKeyFrame(new nanofl.engine.KeyFrame(null,null,null,[element]));
+		return mc;
+	}
+	,getAsInstance: function(library) {
+		var mc = (js.Boot.__cast(library.getItem(this.libraryItemNamePath) , nanofl.engine.libraryitems.MovieClipItem)).newInstance();
+		mc.matrix = this.matrix;
 		return mc;
 	}
 	,__class__: svgimport.SvgPath
@@ -2525,6 +2550,8 @@ Math.isNaN = function(i1) {
 String.prototype.__class__ = String;
 String.__name__ = ["String"];
 Array.__name__ = ["Array"];
+Date.prototype.__class__ = Date;
+Date.__name__ = ["Date"];
 var Int = { __name__ : ["Int"]};
 var Dynamic = { __name__ : ["Dynamic"]};
 var Float = Number;
@@ -2544,6 +2571,7 @@ if(Array.prototype.map == null) Array.prototype.map = function(f) {
 	return a;
 };
 SvgImporterPlugin.embeddedIcon = "\r\niVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAC\r\n5ElEQVQozz2LbUxbZQBGn7ctLVDpZQKi4KJjAYTGLBIEYU2gxTlKhAhZ0MQxZupMNoPBBbP5gX/Q\r\naKIGTDSaiM5snciHwB0lHTKENWxZMAxi1LBunSKDNh2jwAps7e199kPnv5Occ0ASqqoKkiIWi2lI\r\noqev356akhJ4cFty8JSz6wWSuO/+a/E/THgmnz7cfLx1QB62PZmf+/tIaxbPt2XTnLvD2z/oqjjy\r\n5tvvjY5NlNyfQRKeyYuFaQ8I5WhlAh/dplVMRr0S6itVNwd3q6lSvJJu0igt9kSmGcGfz43vJgkN\r\nAJwZGrXWW5O0n31ftfXlG3lifSOi9c1viL9ubInltTvaz1/PFZ+csG81ViVDPjNSAeDfsbj4qdne\r\n8XW4v5qLr9mbLj4++DiUGBGJqmjb/xherH5EnPvGa3CeXcUzxQUzAIDu3p+qzE/s9D6UbFABsOPQ\r\nTvK8jVHZwqhsIT02fn0kmwCYJhnU/JwdvpOnfqgVGRmZvvaXdFkFWYkcuxwQkiTBkmeEMcEAIQQ2\r\nNu/g4pVN3AqFUL4rnVeWIuK1724vaQXUD2eurug12ytF7aEP8OPZWQSTrHBOLGPwchSRjGpc+OMm\r\nDhz9AkPTW6Ld6WFg5W68ABC2WCzGru5eDMgu7LFasBlew6h7COHwbdTVvwytzoBL07/heftzeNXx\r\nCtxut6IF8K61vDyupKQYDfvsmByToY1LQEFhISSThLsRBaYkI/bvq8HUr1NY8gcQDAYJvT4uLIRg\r\nT3cXSbLj049oNpu5eOMfeuf+ZMtbx3jpgofvNDtIkgcaGwkgCiFEODMzkznZ2Xw41US/389nK2y8\r\ndtVLv3+J9sq9vO7zEQBH3MNsbX2fACIA4CstLWUoFFI7O7/lwsICkyWJ47+McXZmhvEGPf+en6fz\r\n9Gn6/QHVZrMRwCI0Gs1BAKt1dXUxl8sVLSsrUwAoDodDaWpqUgAoRUVFiizL0YaGhhiAdZ1O57gH\r\nue+ALxPHGYEAAAAASUVORK5CYII=\r\n";
+stdlib.Uuid.counter = 0;
 svgimport.SegmentsParser.MOVE = 77;
 svgimport.SegmentsParser.MOVER = 109;
 svgimport.SegmentsParser.LINE = 76;

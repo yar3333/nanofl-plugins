@@ -31,7 +31,7 @@ class SvgGroupExporter
 					addElement(layers, instance, g.visible);
 					
 				case SvgElement.DisplayPath(path):
-					addElement(layers, path.toElement());
+					addElement(layers, path.toElement(library));
 					
 				case SvgElement.DisplayText(text):
 					addElement(layers, text.toElement());
@@ -51,7 +51,7 @@ class SvgGroupExporter
 									
 								case SvgElement.DisplayPath(base):
 									var p = new SvgPath(base.node, styles, group.elements, group.gradients, getNextFreeID(group.elements, library, base.id));
-									var libraryItem = p.toLibraryItem();
+									var libraryItem = p.toLibraryItem(library);
 									if (libraryItem != null) library.addItem(libraryItem);
 									id = p.id;
 									
