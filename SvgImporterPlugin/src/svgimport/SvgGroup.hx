@@ -9,32 +9,30 @@ using svgimport.XmlTools;
 
 class SvgGroup
 {
-	public var svgWidth : Float;
+	var svg : Svg;
 	
 	public var node : HtmlNodeElement;
-	
-	public var elements : Map<String, SvgElement>;
-	public var gradients : Map<String, GradientType>;
 	
 	public var id : String;
 	public var name : String;
 	public var children = new Array<SvgElement>();
 	public var matrix : Matrix;
 	public var visible : Bool;
+	public var clipPathID : String;
 	
-	public function new(node:HtmlNodeElement, svgWidth:Float, styles:Map<String, String>, elements:Map<String, SvgElement>, gradients:Map<String, GradientType>, ?id:String) : Void
+	public function new(svg:Svg, node:HtmlNodeElement, styles:Map<String, String>, ?id:String) : Void
 	{
-		this.svgWidth = svgWidth;
+		this.svg = svg;
 		
 		this.node = node;
 		
-		this.elements = elements;
-		this.gradients = gradients;
+		this.id = id != null ? id : node.getAttr("id", "");
+		if (this.id != "") svg.elements.set(this.id, SvgElement.DisplayGroup(this));
 		
-		this.id = id != null ? id : node.getAttr("id", ""); if (this.id != "") elements.set(this.id, SvgElement.DisplayGroup(this));
 		name = node.getAttr("inkscape:label", this.id);
 		matrix = Transform.load(node.getAttribute("transform"));
 		visible = node.getAttribute("display") != "none";
+		clipPathID = XmlTools.getIdFromUrl(node, "clip-path");
 		
 		loadChildren(node, XmlTools.getStyles(node, styles));
 	}
@@ -49,16 +47,17 @@ class SvgGroup
 					loadDefs(child);
 					
 				case "g":
-					children.push(SvgElement.DisplayGroup(new SvgGroup(child, svgWidth, styles, elements, gradients)));
+					children.push(SvgElement.DisplayGroup(new SvgGroup(svg, child, styles)));
 					
 				case"use":
-					var e = loadUse(child, styles); if (e != null) children.push(e);
+					var use = new SvgUse(child, styles);
+					if (use.groupID != null) children.push(SvgElement.DisplayUse(use));
 					
 				case "path", "line", "polyline", "rect", "polygon", "ellipse", "circle":
-					children.push(SvgElement.DisplayPath(new SvgPath(child, styles, elements, gradients)));
+					children.push(SvgElement.DisplayPath(new SvgPath(svg, child, styles)));
 					
 				case "text":
-					children.push(SvgElement.DisplayText(new SvgText(child, styles, gradients)));
+					children.push(SvgElement.DisplayText(new SvgText(child, styles, svg.gradients)));
 					
 				case "linearGradient":
 					loadGradient(child);
@@ -83,8 +82,9 @@ class SvgGroup
 			{
 				case "linearGradient":	loadGradient(child);
 				case "radialGradient":	loadGradient(child);
-				case "g":				new SvgGroup(child, svgWidth, null, elements, gradients);
-				case "path", "line", "polyline", "rect", "polygon", "ellipse", "circle": new SvgPath(child, null, elements, gradients);
+				case "g":				new SvgGroup(svg, child, null);
+				case "path", "line", "polyline", "rect", "polygon", "ellipse", "circle": new SvgPath(svg, child, null);
+				case "clipPath":		new SvgGroup(svg, child, [ "stroke"=>"none", "fill"=>"red" ]);
 				case _:					trace("Unknown tag '" + child.name + "'.");
 			}
 		}
@@ -100,38 +100,15 @@ class SvgGroup
 		}
 	}
 	
-	function loadUse(node:HtmlNodeElement, styles:Map<String, String>) : SvgElement
-	{
-		var groupID = XmlTools.getXlink(node);
-		if (groupID != null)
-		{
-			var matrix = Transform.load(node.getAttribute("transform"));
-			
-			var x = node.getFloatValue("x", 0);
-			var y = node.getFloatValue("y", 0);
-			if (x != 0 || y != 0) matrix.prependTransform(x, y);
-			
-			return SvgElement.DisplayUse
-			(
-				groupID,
-				matrix,
-				XmlTools.getStyles(node, styles),
-				node.getAttribute("display") != "none"
-			);
-		}
-		trace("Use: 'xlink:href' attribute must be specified.");
-		return null;
-	}
-	
 	function loadGradient(node:HtmlNodeElement) : Void
 	{
-		var baseGradID = XmlTools.getXlink(node);
-		if (baseGradID == null || gradients.exists(baseGradID))
+		var baseGradID = XmlTools.getIdFromXlink(node, "xlink:href");
+		if (baseGradID == null || svg.gradients.exists(baseGradID))
 		{
 			var gradID = node.getAttribute("id");
-			if (!gradients.exists(gradID))
+			if (!svg.gradients.exists(gradID))
 			{
-				gradients.set(gradID, Gradient.load(node, baseGradID != null ? gradients.get(baseGradID) : null, svgWidth));
+				svg.gradients.set(gradID, Gradient.load(svg, node, baseGradID != null ? svg.gradients.get(baseGradID) : null));
 			}
 		}
 	}

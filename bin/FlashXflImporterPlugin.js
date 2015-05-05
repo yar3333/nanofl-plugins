@@ -1007,7 +1007,7 @@ flashimport.SymbolLoader.prototype = {
 			return _g.loadShapeStroke(stroke);
 		});
 		var fills = element.find(">fills>FillStyle>*").map(function(fill) {
-			return _g.loadShapeFill(fill);
+			return _g.loadShapeFill(fill).fill;
 		});
 		var contours = [];
 		var _g1 = 0;
@@ -1031,33 +1031,39 @@ flashimport.SymbolLoader.prototype = {
 		var _g = fill.name;
 		switch(_g) {
 		case "SolidColor":
-			return new nanofl.engine.fills.SolidFill(nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(fill,"color","#000000"),htmlparser.HtmlParserTools.getAttr(fill,"alpha",1.0)));
+			return { fill : new nanofl.engine.fills.SolidFill(nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(fill,"color","#000000"),htmlparser.HtmlParserTools.getAttr(fill,"alpha",1.0))), matrix : new nanofl.engine.geom.Matrix()};
 		case "LinearGradient":
 			var gradients = fill.find(">GradientEntry");
 			var m = flashimport.MatrixParser.load(htmlparser.HtmlParserTools.findOne(fill,">matrix>Matrix"),0.001220703125);
 			var p0 = m.transformPoint(-1,0);
 			var p1 = m.transformPoint(1,0);
-			return new nanofl.engine.fills.LinearFill(gradients.map(function(g) {
+			return { fill : new nanofl.engine.fills.LinearFill(gradients.map(function(g) {
 				return nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(g,"color","#000000"),htmlparser.HtmlParserTools.getAttr(g,"alpha",1.0));
 			}),gradients.map(function(g1) {
 				return htmlparser.HtmlParserTools.getAttr(g1,"ratio");
-			}),p0.x,p0.y,p1.x,p1.y);
+			}),p0.x,p0.y,p1.x,p1.y), matrix : new nanofl.engine.geom.Matrix()};
 		case "RadialGradient":
 			var focalPointRatio = htmlparser.HtmlParserTools.getAttr(fill,"focalPointRatio",0.0);
 			var gradients1 = fill.find(">GradientEntry");
 			var m1 = flashimport.MatrixParser.load(htmlparser.HtmlParserTools.findOne(fill,">matrix>Matrix"),0.001220703125);
 			var p01 = m1.transformPoint(0,0);
 			var p11 = m1.transformPoint(1,0);
-			return new nanofl.engine.fills.RadialFill(gradients1.map(function(g2) {
+			var p2 = m1.transformPoint(0,1);
+			if(Math.abs(nanofl.engine.geom.PointTools.getDist(p01.x,p01.y,p2.x,p2.y) - nanofl.engine.geom.PointTools.getDist(p01.x,p01.y,p11.x,p11.y)) < flashimport.SymbolLoader.EPS) return { fill : new nanofl.engine.fills.RadialFill(gradients1.map(function(g2) {
 				return nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(g2,"color","#000000"),htmlparser.HtmlParserTools.getAttr(g2,"alpha",1.0));
 			}),gradients1.map(function(g3) {
 				return htmlparser.HtmlParserTools.getAttr(g3,"ratio");
-			}),p01.x,p01.y,nanofl.engine.geom.PointTools.getDist(p01.x,p01.y,p11.x,p11.y),p01.x + (p11.x - p01.x) * focalPointRatio,p01.y + (p11.y - p01.y) * focalPointRatio);
+			}),p01.x,p01.y,nanofl.engine.geom.PointTools.getDist(p01.x,p01.y,p11.x,p11.y),p01.x + (p11.x - p01.x) * focalPointRatio,p01.y + (p11.y - p01.y) * focalPointRatio), matrix : new nanofl.engine.geom.Matrix()}; else return { fill : new nanofl.engine.fills.RadialFill(gradients1.map(function(g4) {
+				return nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(g4,"color","#000000"),htmlparser.HtmlParserTools.getAttr(g4,"alpha",1.0));
+			}),gradients1.map(function(g5) {
+				return htmlparser.HtmlParserTools.getAttr(g5,"ratio");
+			}),0,0,1,focalPointRatio,0), matrix : m1};
+			break;
 		case "BitmapFill":
-			return new nanofl.engine.fills.BitmapFill(htmlparser.HtmlParserTools.getAttr(fill,"bitmapPath"),htmlparser.HtmlParserTools.getAttr(fill,"bitmapIsClipped",true)?"no-repeat":"repeat",flashimport.MatrixParser.load(htmlparser.HtmlParserTools.findOne(fill,">matrix>Matrix"),20));
+			return { fill : new nanofl.engine.fills.BitmapFill(htmlparser.HtmlParserTools.getAttr(fill,"bitmapPath"),htmlparser.HtmlParserTools.getAttr(fill,"bitmapIsClipped",true)?"no-repeat":"repeat",flashimport.MatrixParser.load(htmlparser.HtmlParserTools.findOne(fill,">matrix>Matrix"),20)), matrix : new nanofl.engine.geom.Matrix()};
 		default:
 			this.log("WARNING: unknow fill type '" + fill.name + "'.");
-			return new nanofl.engine.fills.SolidFill("#FFFFFF");
+			return { fill : new nanofl.engine.fills.SolidFill("#FFFFFF"), matrix : new nanofl.engine.geom.Matrix()};
 		}
 	}
 	,loadShapeStroke: function(stroke) {
@@ -1976,5 +1982,6 @@ FlashXflImporterPlugin.embeddedIcon = "\r\niVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAA
 FlashXflImporterPlugin.IMPORT_MEDIA_SCRIPT_TEMPLATE = "(function () { \"use strict\";\nvar FlashMediaImporter = function() { };\nFlashMediaImporter.__name__ = true;\nFlashMediaImporter.main = function() {\n\tvar srcFilePath = \"file:///\" + StringTools.replace(FlashMediaImporter.SRC_FILE,\"\\\\\",\"/\");\n\tvar destLibraryDir = \"file:///\" + haxe.io.Path.addTrailingSlash(StringTools.replace(FlashMediaImporter.DEST_DIR,\"\\\\\",\"/\")) + \"library\";\n\tFlashMediaImporter.log(\"Import media from '\" + srcFilePath + \"' to '\" + destLibraryDir + \"' directory:\");\n\tvar doc = fl.openDocument(srcFilePath);\n\tfl.setActiveWindow(doc);\n\tFLfile.createFolder(destLibraryDir);\n\tvar _g1 = 0;\n\tvar _g = fl.getDocumentDOM().library.items.length;\n\twhile(_g1 < _g) {\n\t\tvar i = _g1++;\n\t\tvar item = fl.getDocumentDOM().library.items[i];\n\t\tif(item != null) {\n\t\t\tvar _g2 = item.itemType;\n\t\t\tswitch(_g2) {\n\t\t\tcase \"bitmap\":\n\t\t\t\tFlashMediaImporter.log(\"  Import: \" + item.name + \" / \" + item.itemType + \" / \" + item.originalCompressionType);\n\t\t\t\tFlashMediaImporter.importBitmap(destLibraryDir,item);\n\t\t\t\tbreak;\n\t\t\tcase \"movie clip\":case \"graphic\":case \"button\":case \"folder\":\n\t\t\t\tbreak;\n\t\t\tcase \"sound\":\n\t\t\t\tFlashMediaImporter.log(\"  Import: \" + item.name + \" / \" + item.itemType + \" / \" + item.originalCompressionType);\n\t\t\t\tFlashMediaImporter.importSound(destLibraryDir,item);\n\t\t\t\tbreak;\n\t\t\tdefault:\n\t\t\t\tFlashMediaImporter.log(\"    Skip: \" + item.name + \" / \" + item.itemType);\n\t\t\t}\n\t\t}\n\t}\n\tdoc.close(false);\n\tFlashMediaImporter.log(\"Done.\");\n\tFLfile.write(\"file:///\" + StringTools.replace(FlashMediaImporter.DEST_DIR,\"\\\\\",\"/\") + \"/.done-import-media\",\"\");\n};\nFlashMediaImporter.importBitmap = function(destLibraryDir,item) {\n\tvar savePath = destLibraryDir + \"/\" + item.name + \".png\";\n\tif(!FLfile.exists(savePath)) {\n\t\tFLfile.createFolder(haxe.io.Path.directory(savePath));\n\t\titem.exportToFile(savePath);\n\t}\n\treturn true;\n};\nFlashMediaImporter.importSound = function(destLibraryDir,item) {\n\tvar savePath;\n\tsavePath = destLibraryDir + \"/\" + haxe.io.Path.withoutExtension(item.name) + (item.originalCompressionType == \"RAW\"?\".wav\":\".mp3\");\n\tif(!FLfile.exists(savePath)) {\n\t\tFLfile.createFolder(haxe.io.Path.directory(savePath));\n\t\titem.exportToFile(savePath);\n\t}\n\treturn true;\n};\nFlashMediaImporter.log = function(s) {\n\tfl.trace(s);\n};\nvar HxOverrides = function() { };\nHxOverrides.__name__ = true;\nHxOverrides.substr = function(s,pos,len) {\n\tif(pos != null && pos != 0 && len != null && len < 0) return \"\";\n\tif(len == null) len = s.length;\n\tif(pos < 0) {\n\t\tpos = s.length + pos;\n\t\tif(pos < 0) pos = 0;\n\t} else if(len < 0) len = s.length + len - pos;\n\treturn s.substr(pos,len);\n};\nvar StringTools = function() { };\nStringTools.__name__ = true;\nStringTools.replace = function(s,sub,by) {\n\treturn s.split(sub).join(by);\n};\nvar haxe = {};\nhaxe.Log = function() { };\nhaxe.Log.__name__ = true;\nhaxe.Log.trace = function(v,infos) {\n\tjs.Boot.__trace(v,infos);\n};\nhaxe.io = {};\nhaxe.io.Path = function(path) {\n\tvar c1 = path.lastIndexOf(\"/\");\n\tvar c2 = path.lastIndexOf(\"\\\\\");\n\tif(c1 < c2) {\n\t\tthis.dir = HxOverrides.substr(path,0,c2);\n\t\tpath = HxOverrides.substr(path,c2 + 1,null);\n\t\tthis.backslash = true;\n\t} else if(c2 < c1) {\n\t\tthis.dir = HxOverrides.substr(path,0,c1);\n\t\tpath = HxOverrides.substr(path,c1 + 1,null);\n\t} else this.dir = null;\n\tvar cp = path.lastIndexOf(\".\");\n\tif(cp != -1) {\n\t\tthis.ext = HxOverrides.substr(path,cp + 1,null);\n\t\tthis.file = HxOverrides.substr(path,0,cp);\n\t} else {\n\t\tthis.ext = null;\n\t\tthis.file = path;\n\t}\n};\nhaxe.io.Path.__name__ = true;\nhaxe.io.Path.withoutExtension = function(path) {\n\tvar s = new haxe.io.Path(path);\n\ts.ext = null;\n\treturn s.toString();\n};\nhaxe.io.Path.directory = function(path) {\n\tvar s = new haxe.io.Path(path);\n\tif(s.dir == null) return \"\";\n\treturn s.dir;\n};\nhaxe.io.Path.addTrailingSlash = function(path) {\n\tif(path.length == 0) return \"/\";\n\tvar c1 = path.lastIndexOf(\"/\");\n\tvar c2 = path.lastIndexOf(\"\\\\\");\n\tif(c1 < c2) {\n\t\tif(c2 != path.length - 1) return path + \"\\\\\"; else return path;\n\t} else if(c1 != path.length - 1) return path + \"/\"; else return path;\n};\nhaxe.io.Path.prototype = {\n\ttoString: function() {\n\t\treturn (this.dir == null?\"\":this.dir + (this.backslash?\"\\\\\":\"/\")) + this.file + (this.ext == null?\"\":\".\" + this.ext);\n\t}\n};\nvar js = {};\njs.Boot = function() { };\njs.Boot.__name__ = true;\njs.Boot.__trace = function(v,i) {\n\tvar msg;\n\tif(i != null) msg = i.fileName + \":\" + i.lineNumber + \": \"; else msg = \"\";\n\tmsg += js.Boot.__string_rec(v,\"\");\n\tfl.trace(msg);\n};\njs.Boot.__string_rec = function(o,s) {\n\tif(o == null) return \"null\";\n\tif(s.length >= 5) return \"<...>\";\n\tvar t = typeof(o);\n\tif(t == \"function\" && (o.__name__ || o.__ename__)) t = \"object\";\n\tswitch(t) {\n\tcase \"object\":\n\t\tif(o instanceof Array) {\n\t\t\tif(o.__enum__) {\n\t\t\t\tif(o.length == 2) return o[0];\n\t\t\t\tvar str = o[0] + \"(\";\n\t\t\t\ts += \"\\t\";\n\t\t\t\tvar _g1 = 2;\n\t\t\t\tvar _g = o.length;\n\t\t\t\twhile(_g1 < _g) {\n\t\t\t\t\tvar i = _g1++;\n\t\t\t\t\tif(i != 2) str += \",\" + js.Boot.__string_rec(o[i],s); else str += js.Boot.__string_rec(o[i],s);\n\t\t\t\t}\n\t\t\t\treturn str + \")\";\n\t\t\t}\n\t\t\tvar l = o.length;\n\t\t\tvar i1;\n\t\t\tvar str1 = \"[\";\n\t\t\ts += \"\\t\";\n\t\t\tvar _g2 = 0;\n\t\t\twhile(_g2 < l) {\n\t\t\t\tvar i2 = _g2++;\n\t\t\t\tstr1 += (i2 > 0?\",\":\"\") + js.Boot.__string_rec(o[i2],s);\n\t\t\t}\n\t\t\tstr1 += \"]\";\n\t\t\treturn str1;\n\t\t}\n\t\tvar tostr;\n\t\ttry {\n\t\t\ttostr = o.toString;\n\t\t} catch( e ) {\n\t\t\treturn \"???\";\n\t\t}\n\t\tif(tostr != null && tostr != Object.toString) {\n\t\t\tvar s2 = o.toString();\n\t\t\tif(s2 != \"[object Object]\") return s2;\n\t\t}\n\t\tvar k = null;\n\t\tvar str2 = \"{\\n\";\n\t\ts += \"\\t\";\n\t\tvar hasp = o.hasOwnProperty != null;\n\t\tfor( var k in o ) {\n\t\tif(hasp && !o.hasOwnProperty(k)) {\n\t\t\tcontinue;\n\t\t}\n\t\tif(k == \"prototype\" || k == \"__class__\" || k == \"__super__\" || k == \"__interfaces__\" || k == \"__properties__\") {\n\t\t\tcontinue;\n\t\t}\n\t\tif(str2.length != 2) str2 += \", \\n\";\n\t\tstr2 += s + k + \" : \" + js.Boot.__string_rec(o[k],s);\n\t\t}\n\t\ts = s.substring(1);\n\t\tstr2 += \"\\n\" + s + \"}\";\n\t\treturn str2;\n\tcase \"function\":\n\t\treturn \"<function>\";\n\tcase \"string\":\n\t\treturn o;\n\tdefault:\n\t\treturn String(o);\n\t}\n};\nString.__name__ = true;\nArray.__name__ = true;\nhaxe.Log.trace = function(v,infos) {\n\tfl.trace(v);\n};\nFlashMediaImporter.SRC_FILE = \"{SRC_FILE}\";\nFlashMediaImporter.DEST_DIR = \"{DEST_DIR}\";\nFlashMediaImporter.TEMP_MC_NAME = \"__temp_fme\";\nFlashMediaImporter.main();\n})();\n";
 flashimport.ContoursParser.INT_MAX_VALUE = 2000000000;
 flashimport.ContoursParser.FLOAT_MAX_VALUE = 1e10;
+flashimport.SymbolLoader.EPS = 1e-10;
 FlashXflImporterPlugin.main();
 })();

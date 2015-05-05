@@ -7,7 +7,7 @@ extern class StrokeEdge extends nanofl.engine.geom.Edge implements nanofl.engine
 	var selected : Bool;
 	function getNearestPointUseStrokeSize(x:Float, y:Float) : { var point : nanofl.engine.geom.Point; var t : Float; };
 	function addTo(edges:Array<nanofl.engine.geom.StrokeEdge>) : Void;
-	override function transform(m:nanofl.engine.geom.Matrix) : Void;
+	override function transform(m:nanofl.engine.geom.Matrix, ?applyToStroke:Bool) : Void;
 	override function translate(dx:Float, dy:Float) : Void;
 	override function clone() : nanofl.engine.geom.Edge;
 	override function duplicate(e:nanofl.engine.geom.Edge) : nanofl.engine.geom.Edge;

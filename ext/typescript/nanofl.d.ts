@@ -6703,7 +6703,7 @@ declare module nanofl.engine.geom
 		toString() : string;
 		getMiddlePoint() : nanofl.engine.geom.Point;
 		hasCommonVertices(edge:nanofl.engine.geom.Edge) : boolean;
-		transform(m:nanofl.engine.geom.Matrix) : void;
+		transform(m:nanofl.engine.geom.Matrix, applyToStroke?:boolean) : void;
 		splitByClosePoint(x:number, y:number) : nanofl.engine.geom.Edge[];
 		asStraightLine() : nanofl.engine.geom.StraightLine;
 		asBezierCurve() : nanofl.engine.geom.BezierCurve;
@@ -6874,7 +6874,7 @@ declare module nanofl.engine.geom
 		translateVertex(point:nanofl.engine.geom.Point, dx:number, dy:number) : void;
 		getBounds(bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 		applyFill(fill:nanofl.engine.fills.IFill, x1?:number, y1?:number, x2?:number, y2?:number) : void;
-		transform(m:nanofl.engine.geom.Matrix) : void;
+		transform(m:nanofl.engine.geom.Matrix, applyToFill?:boolean) : void;
 		getEdges(edges?:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Edge[];
 		getPointInside() : nanofl.engine.geom.Point;
 		clone() : nanofl.engine.geom.Polygon;
@@ -6935,7 +6935,7 @@ declare module nanofl.engine.geom
 		selected : boolean;
 		getNearestPointUseStrokeSize(x:number, y:number) : { point : nanofl.engine.geom.Point; t : number; };
 		addTo(edges:nanofl.engine.geom.StrokeEdge[]) : void;
-		transform(m:nanofl.engine.geom.Matrix) : void;
+		transform(m:nanofl.engine.geom.Matrix, applyToStroke?:boolean) : void;
 		translate(dx:number, dy:number) : void;
 		clone() : nanofl.engine.geom.Edge;
 		duplicate(e:nanofl.engine.geom.Edge) : nanofl.engine.geom.Edge;
@@ -7619,7 +7619,7 @@ declare module nanofl.engine.elements
 		setState(state:nanofl.ide.undo.states.ElementState) : void;
 		getUsedItems() : nanofl.engine.libraryitems.LibraryItem[];
 		getUsedFilters() : string[];
-		transform(m:nanofl.engine.geom.Matrix) : void;
+		transform(m:nanofl.engine.geom.Matrix, applyToStrokeAndFill?:boolean) : void;
 		toString() : string;
 		static parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.elements.Element;
 	}
@@ -7651,7 +7651,7 @@ declare module nanofl.engine.elements
 		getNavigatorIcon() : string;
 		getChildren() : nanofl.engine.elements.Element[];
 		getTimeline() : nanofl.engine.ITimeline;
-		transform(m:nanofl.engine.geom.Matrix) : void;
+		transform(m:nanofl.engine.geom.Matrix, applyToStrokeAndFill?:boolean) : void;
 	}
 	
 	export class Instance extends nanofl.engine.elements.Element implements nanofl.engine.IPathElement
@@ -7720,7 +7720,7 @@ declare module nanofl.engine.elements
 		floodFill(fill:nanofl.engine.fills.IFill, x1:number, y1:number, x2:number, y2:number) : void;
 		getBounds(bounds?:nanofl.engine.geom.Bounds, useStrokeThickness?:boolean) : nanofl.engine.geom.Bounds;
 		getSelectedBounds(bounds?:nanofl.engine.geom.Bounds, useStrokeThickness?:boolean) : nanofl.engine.geom.Bounds;
-		transform(m:nanofl.engine.geom.Matrix) : void;
+		transform(m:nanofl.engine.geom.Matrix, applyToStrokeAndFill?:boolean) : void;
 		transformSelected(m:nanofl.engine.geom.Matrix) : void;
 		combine(shape:nanofl.engine.elements.ShapeElement) : void;
 		combineSelf() : void;
@@ -7754,7 +7754,6 @@ declare module nanofl.engine.elements
 		clone() : nanofl.engine.elements.Element;
 		getState() : nanofl.ide.undo.states.ElementState;
 		setState(_state:nanofl.ide.undo.states.ElementState) : void;
-		transform(m:nanofl.engine.geom.Matrix) : void;
 	}
 }
 

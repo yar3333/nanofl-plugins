@@ -2,7 +2,7 @@ package svgimport.segments;
 
 class MoveSegment extends Segment
 {
-	override public function export(exporter:SvgPathExporter)
+	override public function export(exporter:SvgPathToShapeConvertor)
 	{
 		exporter.moveTo(x, y);
 	}

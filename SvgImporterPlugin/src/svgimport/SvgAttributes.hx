@@ -7,7 +7,7 @@ class SvgAttributes
 		"alignment-baseline",
 		"baseline-shift",
 		"clip",
-		"clip-path",
+		//"clip-path",
 		"clip-rule",
 		"color",
 		"color-interpolation",

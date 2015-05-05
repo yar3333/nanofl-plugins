@@ -33,7 +33,7 @@ extern class Edge
 	function toString() : String;
 	function getMiddlePoint() : nanofl.engine.geom.Point;
 	function hasCommonVertices(edge:nanofl.engine.geom.Edge) : Bool;
-	function transform(m:nanofl.engine.geom.Matrix) : Void;
+	function transform(m:nanofl.engine.geom.Matrix, ?applyToStroke:Bool) : Void;
 	function splitByClosePoint(x:Float, y:Float) : Array<nanofl.engine.geom.Edge>;
 	function asStraightLine() : nanofl.engine.geom.StraightLine;
 	function asBezierCurve() : nanofl.engine.geom.BezierCurve;

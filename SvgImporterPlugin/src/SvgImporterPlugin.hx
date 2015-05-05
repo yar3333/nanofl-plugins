@@ -1,5 +1,7 @@
+import htmlparser.XmlNodeElement;
 import htmlparser.XmlDocument;
 import svgimport.SvgElement;
+import svgimport.SvgPathExporter;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.elements.Instance;
 import nanofl.engine.FileApi;
@@ -63,11 +65,10 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 			switch (element)
 			{
 				case SvgElement.DisplayGroup(group):
-					SvgGroupExporter.run(group, library);
+					new SvgGroupExporter(svg, library, group).exportToLibrary();
 					
 				case SvgElement.DisplayPath(path):
-					var libraryItem = path.toLibraryItem(library);
-					if (libraryItem != null) library.addItem(libraryItem);
+					new SvgPathExporter(svg, library, path).exportToLibrary();
 					
 				case _:
 					trace("ID for item type '" + element.getName() + "' is not supported.");

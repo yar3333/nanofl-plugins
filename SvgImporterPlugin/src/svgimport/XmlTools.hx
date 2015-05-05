@@ -118,9 +118,9 @@ class XmlTools
 		return s.startsWith("svg:") ? s.substring("svg:".length) : s;
 	}
 	
-	public static function getXlink(node:HtmlNodeElement) : String
+	public static function getIdFromXlink(node:HtmlNodeElement, attrName="xlink:href") : String
 	{
-		var xlink = node.getAttr("xlink:href", "");
+		var xlink = StringTools.trim(node.getAttr(attrName, ""));
 		if (xlink == "") return  null;
 		if (!xlink.startsWith("#"))
 		{
@@ -128,5 +128,14 @@ class XmlTools
 			return null;
 		}
 		return xlink.substring(1);
+	}
+	
+	public static function getIdFromUrl(node:HtmlNodeElement, attrName:String) : String
+	{
+		var s = StringTools.trim(node.getAttr(attrName, ""));
+		if (s == "") return null;
+		if (reURLMatch.match(s)) return reURLMatch.matched(1);
+		trace("WARNING: Unkown " + attrName + " syntax ('" + s + "').");
+		return null;
 	}
 }

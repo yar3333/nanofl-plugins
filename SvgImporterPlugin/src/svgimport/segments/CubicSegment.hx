@@ -24,7 +24,7 @@ class CubicSegment extends Segment
 		return a + (b-a)*frac;
 	}
 	
-	override public function export(exporter:SvgPathExporter)
+	override public function export(exporter:SvgPathToShapeConvertor)
 	{
 		var tx0 = exporter.x;
 		var ty0 = exporter.y;

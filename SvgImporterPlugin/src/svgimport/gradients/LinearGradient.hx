@@ -63,7 +63,7 @@ class LinearGradient extends Gradient
 	{
 		if (gradientUnits == "userSpaceOnUse")
 		{
-			var p1 = matrix.transformPoint(x1, y1);
+			/*var p1 = matrix.transformPoint(x1, y1);
 			var p2 = matrix.transformPoint(x2, y2);
 			
 			return
@@ -72,15 +72,20 @@ class LinearGradient extends Gradient
 				y1: p1.y,
 				x2: p2.x,
 				y2: p2.y
-			};
+			};*/
+			
+			return this;
 		}
 		else
 		{
 			var w = bounds.maxX - bounds.minX;
 			var h = bounds.maxY - bounds.minY;
 			
-			var p1 = matrix.transformPoint(x1 * w, y1 * w);
-			var p2 = matrix.transformPoint(x2 * w, y2 * w);
+			//var p1 = matrix.transformPoint(x1 * w, y1 * w);
+			//var p2 = matrix.transformPoint(x2 * w, y2 * w);
+			
+			var p1 = { x:x1 * w, y:y1 * w };
+			var p2 = { x:x2 * w, y:y2 * w };
 			
 			if (w > 0)
 			{

@@ -24,7 +24,7 @@ class ArcSegment extends Segment
 		this.isSweep = isSweep;
 	}
 	
-	override public function export(exporter:SvgPathExporter)
+	override public function export(exporter:SvgPathToShapeConvertor)
 	{
 		if (x0 == x && y0 == y) return;
 		if (rx == 0 || ry == 0) { exporter.lineTo(x, y); return; }

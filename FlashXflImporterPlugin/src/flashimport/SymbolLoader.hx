@@ -41,6 +41,8 @@ using Lambda;
 
 class SymbolLoader
 {
+	static var EPS = 1e-10;
+	
 	var fileApi : FileApi;
 	var doc : XmlDocument;
 	var srcLibDir : String;
@@ -222,7 +224,7 @@ class SymbolLoader
 	function loadShape(element:HtmlNodeElement, parentMatrix:Matrix) : ShapeElement
 	{
 		var strokes = element.find(">strokes>StrokeStyle>*").map(function(stroke) return loadShapeStroke(stroke));
-		var fills = element.find(">fills>FillStyle>*").map(function(fill) return loadShapeFill(fill));
+		var fills = element.find(">fills>FillStyle>*").map(function(fill) return loadShapeFill(fill).fill);
 		var contours = [];
 		for (edge in element.find(">edges>Edge"))
 		{
@@ -244,58 +246,103 @@ class SymbolLoader
 		return shape;
 	}
 	
-	function loadShapeFill(fill:HtmlNodeElement) : IFill
+	function loadShapeFill(fill:HtmlNodeElement) : { fill:IFill, matrix:Matrix }
 	{
 		switch (fill.name)
 		{
 			case "SolidColor":
-				return new SolidFill(ColorTools.colorToString(fill.getAttr("color", "#000000"), fill.getAttr("alpha", 1.0)));
+				return
+				{
+					fill: new SolidFill(ColorTools.colorToString(fill.getAttr("color", "#000000"), fill.getAttr("alpha", 1.0))),
+					matrix: new Matrix()
+				};
 				
 			case "LinearGradient":
 				var gradients = fill.find(">GradientEntry");
 				var m = MatrixParser.load(fill.findOne(">matrix>Matrix"), 1 / 819.2);
 				var p0 = m.transformPoint(-1, 0);
 				var p1 = m.transformPoint( 1, 0);
-				return new LinearFill
-				(
-					gradients.map(function(g) return ColorTools.colorToString(g.getAttr("color", "#000000"), g.getAttr("alpha", 1.0))),
-					gradients.map(function(g) return g.getAttr("ratio")),
-					p0.x,
-					p0.y,
-					p1.x,
-					p1.y
-				);
+				return
+				{
+					fill: new LinearFill
+					(
+						gradients.map(function(g) return ColorTools.colorToString(g.getAttr("color", "#000000"), g.getAttr("alpha", 1.0))),
+						gradients.map(function(g) return g.getAttr("ratio")),
+						p0.x,
+						p0.y,
+						p1.x,
+						p1.y
+					),
+					matrix: new Matrix()
+				};
 				//writeRegPoint(element.findOne(">transformationPoint>Point"));
 				
 			case "RadialGradient":
 				var focalPointRatio = fill.getAttr("focalPointRatio", 0.0);
 				var gradients = fill.find(">GradientEntry");
 				var m = MatrixParser.load(fill.findOne(">matrix>Matrix"), 1 / 819.2);
+				
 				var p0 = m.transformPoint(0, 0);
 				var p1 = m.transformPoint(1, 0);
-				return new RadialFill
-				(
-					gradients.map(function(g) return ColorTools.colorToString(g.getAttr("color", "#000000"), g.getAttr("alpha", 1.0))),
-					gradients.map(function(g) return g.getAttr("ratio")),
-					p0.x,
-					p0.y,
-					PointTools.getDist(p0.x, p0.y, p1.x, p1.y),
-					p0.x + (p1.x - p0.x) * focalPointRatio,
-					p0.y + (p1.y - p0.y) * focalPointRatio
-				);
+				var p2 = m.transformPoint(0, 1);
+				
+				if (Math.abs(PointTools.getDist(p0.x, p0.y, p2.x, p2.y) - PointTools.getDist(p0.x, p0.y, p1.x, p1.y)) < EPS)
+				{
+					return
+					{
+						fill: new RadialFill
+						(
+							gradients.map(function(g) return ColorTools.colorToString(g.getAttr("color", "#000000"), g.getAttr("alpha", 1.0))),
+							gradients.map(function(g) return g.getAttr("ratio")),
+							p0.x,
+							p0.y,
+							PointTools.getDist(p0.x, p0.y, p1.x, p1.y),
+							p0.x + (p1.x - p0.x) * focalPointRatio,
+							p0.y + (p1.y - p0.y) * focalPointRatio
+							
+						),
+						matrix: new Matrix()
+					};
+				}
+				else
+				{
+					return
+					{
+						fill: new RadialFill
+						(
+							gradients.map(function(g) return ColorTools.colorToString(g.getAttr("color", "#000000"), g.getAttr("alpha", 1.0))),
+							gradients.map(function(g) return g.getAttr("ratio")),
+							0,
+							0,
+							1,
+							focalPointRatio,
+							0
+						),
+						matrix: m
+					};
+					
+				}
 				//writeRegPoint(element.findOne(">transformationPoint>Point"));
 				
 			case "BitmapFill":
-				return new BitmapFill
-				(
-					fill.getAttr("bitmapPath"),
-					fill.getAttr("bitmapIsClipped", true) ? "no-repeat" : "repeat",
-					MatrixParser.load(fill.findOne(">matrix>Matrix"), 20)
-				);
+				return
+				{
+					fill: new BitmapFill
+					(
+						fill.getAttr("bitmapPath"),
+						fill.getAttr("bitmapIsClipped", true) ? "no-repeat" : "repeat",
+						MatrixParser.load(fill.findOne(">matrix>Matrix"), 20)
+					),
+					matrix: new Matrix()
+				};
 				
 			case _:
 				log("WARNING: unknow fill type '" + fill.name + "'.");
-				return new SolidFill("#FFFFFF");
+				return
+				{
+					fill: new SolidFill("#FFFFFF"),
+					matrix: new Matrix()
+				};
 		}
 		
 	}

@@ -18,7 +18,7 @@ extern class Polygon implements nanofl.engine.ISelectable
 	function translateVertex(point:nanofl.engine.geom.Point, dx:Float, dy:Float) : Void;
 	function getBounds(?bounds:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 	function applyFill(fill:nanofl.engine.fills.IFill, ?x1:Float, ?y1:Float, ?x2:Float, ?y2:Float) : Void;
-	function transform(m:nanofl.engine.geom.Matrix) : Void;
+	function transform(m:nanofl.engine.geom.Matrix, ?applyToFill:Bool) : Void;
 	function getEdges(?edges:Array<nanofl.engine.geom.Edge>) : Array<nanofl.engine.geom.Edge>;
 	function getPointInside() : nanofl.engine.geom.Point;
 	function clone() : nanofl.engine.geom.Polygon;

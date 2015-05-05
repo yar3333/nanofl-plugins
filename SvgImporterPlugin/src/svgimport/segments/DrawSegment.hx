@@ -2,7 +2,7 @@ package svgimport.segments;
 
 class DrawSegment extends Segment
 {
-	override public function export(exporter:SvgPathExporter)
+	override public function export(exporter:SvgPathToShapeConvertor)
 	{
 		exporter.lineTo(x, y);
 	}

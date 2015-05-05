@@ -1,266 +1,134 @@
 package svgimport;
 
-import nanofl.engine.geom.Contours;
-import nanofl.engine.strokes.RadialStroke;
-import nanofl.engine.geom.StrokeEdges;
+import nanofl.engine.elements.Element;
+import nanofl.engine.elements.Instance;
 import nanofl.engine.elements.ShapeElement;
-import nanofl.engine.geom.Edges;
-import nanofl.engine.geom.Polygons;
-import nanofl.engine.ColorTools;
-import nanofl.engine.fills.LinearFill;
-import nanofl.engine.fills.RadialFill;
-import nanofl.engine.fills.SolidFill;
-import nanofl.engine.geom.Contour;
-import nanofl.engine.geom.Edge;
-import nanofl.engine.geom.Polygon;
-import nanofl.engine.geom.StrokeEdge;
-import nanofl.engine.strokes.IStroke;
-import nanofl.engine.strokes.LinearStroke;
-import nanofl.engine.strokes.SolidStroke;
-import svgimport.gradients.Gradient;
+import nanofl.engine.Library;
+import nanofl.engine.libraryitems.MovieClipItem;
 import svgimport.gradients.GradientType;
-using StringTools;
-using Lambda;
+import svgimport.StrokeType;
 
-class SvgPathExporter
+class SvgPathExporter extends BaseExporter
 {
-	var edges(default, null) = new Array<StrokeEdge>();
-	var polygonAndFillRules(default, null) = new Array<{ polygon:Polygon, fillRuleEvenOdd:Bool }>();
+	var path : SvgPath;
 	
-	var stroke : IStroke = null;
-	var fillPath : SvgPath = null;
-	
-	public var x(default, null) : Float = null;
-	public var y(default, null) : Float = null;
-	
-	public function new() { }
-	
-	public function beginFill(path:SvgPath)
+	public function new(svg:Svg, library:Library, path:SvgPath)
 	{
-		fillPath = path.fill != FillType.FillNone ? path : null;
-		polygonAndFillRules.push({ polygon:new Polygon(null), fillRuleEvenOdd:path.fillRuleEvenOdd });
+		super(svg, library);
+		this.path = path;
 	}
 	
-	public function endFill()
+	public function exportAsElement() : Element
 	{
-		if (fillPath != null)
+		return applyMaskToElement(exportAsElementInner(), path.clipPathID, path.id);
+	}
+	
+	function exportAsElementInner() : Element
+	{
+		var shape = path.toElement();
+		
+		var canIgnoreStroke = shape.edges.length == 0 || path.stroke == StrokeType.StrokeNone || Type.enumIndex(path.stroke) == Type.enumIndex(StrokeType.StrokeSolid(""));
+		var canIgnoreFill = shape.polygons.length == 0 || path.fill == FillType.FillNone || Type.enumIndex(path.fill) == Type.enumIndex(FillType.FillSolid(""));
+		
+		//trace('pathToElement canIgnoreStroke = $canIgnoreStroke, canIgnoreFill = $canIgnoreFill');
+		
+		var strokeMatrix = new Matrix();
+		if (!canIgnoreStroke)
 		{
-			closeContour();
-			
-			var polygon = polygonAndFillRules[polygonAndFillRules.length - 1].polygon;
-			
-			switch (fillPath.fill)
+			switch (path.stroke)
 			{
-				case FillType.FillSolid(color):
-					polygon.fill = new SolidFill(color);
-					
-				case FillType.FillGrad(gradType):
-					var bounds = polygon.getBounds();
-					polygon.fill = switch (gradType)
+				case StrokeType.StrokeGrad(gradType):
+					switch (gradType)
 					{
-						case GradientType.LINEAR(grad):
-							var params = grad.getAbsoluteParams(bounds);
-							new LinearFill(getGradientRgbaColors(grad), grad.ratios, params.x1, params.y1, params.x2, params.y2);
-						case GradientType.RADIAL(grad):
-							if (grad.spreadMethod != "" && grad.spreadMethod != "pad")
-							{
-								trace("Radial spread method 'pad' is only supported ('" + grad.spreadMethod + "').");
-							}
-							var params = grad.getAbsoluteParams(bounds);
-							new RadialFill
-							(
-								getGradientRgbaColors(grad),
-								grad.ratios,
-								params.cx,
-								params.cy,
-								params.r,
-								params.fx,
-								params.fy
-							);
-					};
-					
-				case FillType.FillNone:
-					// nothing to do
-			}
-			
-			fillPath = null;
+						case GradientType.LINEAR(grad) : strokeMatrix = grad.matrix;
+						case GradientType.RADIAL(grad) : strokeMatrix = grad.matrix;
+					}
+				case _:
+			};
 		}
-	}
-
-	public function beginStroke(path:SvgPath)
-	{
-		switch (path.stroke)
+		
+		var fillMatrix = new Matrix();
+		if (!canIgnoreFill)
 		{
-			case StrokeType.StrokeNone:
-				stroke = null;
-				
-			case StrokeType.StrokeSolid(color):
-				stroke = new SolidStroke
+			switch (path.fill)
+			{
+				case FillType.FillGrad(gradType):
+					switch (gradType)
+					{
+						case GradientType.LINEAR(grad) : fillMatrix = grad.matrix;
+						case GradientType.RADIAL(grad) : fillMatrix = grad.matrix;
+					}
+				case _:
+			};
+		}
+		
+		if ((canIgnoreStroke || strokeMatrix.isIdentity()) && (canIgnoreFill || fillMatrix.isIdentity()))
+		{
+			//trace("(1) fillMatrix = " + fillMatrix);
+			if (path.matrix.isIdentity()) return shape;
+			var item = elementsToLibraryItem([shape], getNextFreeID(path.id));
+			var instance = item.newInstance();
+			instance.matrix = path.matrix;
+			return instance;
+		}
+		else
+		{
+			if (canIgnoreStroke)
+			{
+				//trace("(2)");
+				stdlib.Debug.assert(!fillMatrix.isIdentity());
+				var instance = shapeToInstance(shape, fillMatrix, getNextFreeID(path.id));
+				instance.matrix.prependMatrix(path.matrix);
+				return instance;
+			}
+			else
+			if (canIgnoreFill)
+			{
+				//trace("(3)");
+				stdlib.Debug.assert(!strokeMatrix.isIdentity());
+				var instance = shapeToInstance(shape, strokeMatrix, getNextFreeID(path.id));
+				instance.matrix.prependMatrix(path.matrix);
+				return instance;
+			}
+			else
+			{
+				//trace("(4)");
+				var item = elementsToLibraryItem
 				(
-					color,
-					path.strokeWidth,
-					path.strokeCaps,
-					path.strokeJoints,
-					path.strokeMiterLimit,
-					false
+					[
+						shapeToInstance(new ShapeElement(shape.polygons), fillMatrix, getNextFreeID(path.id)),
+						shapeToInstance(new ShapeElement(shape.edges), strokeMatrix, getNextFreeID(path.id))
+					],
+					getNextFreeID(path.id)
 				);
-				
-			case StrokeType.StrokeGrad(gradType):
-				switch (gradType)
-				{
-					case GradientType.LINEAR(grad):
-						stroke = new LinearStroke
-						(
-							getGradientRgbaColors(grad),
-							grad.ratios,
-							grad.x1,
-							grad.y1,
-							grad.x2,
-							grad.y2,
-							path.strokeWidth,
-							path.strokeCaps,
-							path.strokeJoints,
-							path.strokeMiterLimit,
-							false
-						);
-						
-					case GradientType.RADIAL(grad):
-						stroke = new RadialStroke
-						(
-							getGradientRgbaColors(grad),
-							grad.ratios,
-							grad.cx,
-							grad.cy,
-							grad.r,
-							grad.fx,
-							grad.fy,
-							path.strokeWidth,
-							path.strokeCaps,
-							path.strokeJoints,
-							path.strokeMiterLimit,
-							false
-						);
-				};
-		}
-	}
-	
-	public function endStroke() { }
-	
-	public function moveTo(x:Float, y:Float) : Void
-	{
-		if (fillPath != null)
-		{
-			closeContour();
-			polygonAndFillRules[polygonAndFillRules.length - 1].polygon.contours.push(new Contour([]));
-		}
-		
-		this.x = x;
-		this.y = y;
-	}
-	
-	public function lineTo(x:Float, y:Float) : Void
-	{
-		if (fillPath != null)
-		{
-			var contours = polygonAndFillRules[polygonAndFillRules.length - 1].polygon.contours;
-			contours[contours.length - 1].edges.push(new Edge(this.x, this.y, x, y));
-		}
-		else
-		{
-			if (stroke != null) edges.push(new StrokeEdge(this.x, this.y, x, y, stroke));
-		}
-		
-		this.x = x;
-		this.y = y;
-	}
-	
-	public function curveTo(controlX:Float, controlY:Float, anchorX:Float, anchorY:Float) : Void
-	{
-		if (fillPath != null)
-		{
-			var contours = polygonAndFillRules[polygonAndFillRules.length - 1].polygon.contours;
-			contours[contours.length - 1].edges.push(new Edge(this.x, this.y, controlX, controlY, anchorX, anchorY));
-		}
-		else
-		{
-			if (stroke != null) edges.push(new StrokeEdge(this.x, this.y, controlX, controlY, anchorX, anchorY, stroke));
-		}
-		
-		this.x = anchorX;
-		this.y = anchorY;
-	}
-	
-	public function export() : ShapeElement
-	{
-		log("SvgPathExporter.export vvvvvvvvvvvvvvvvvvvvvvvvvvvv edges = " + (polygonAndFillRules.length > 0 ? polygonAndFillRules[0].polygon.getEdges().length : 0));
-		
-		var shape = new ShapeElement();
-		for (pf in polygonAndFillRules)
-		{
-			log("Polygons.fromEdges vvvvvvvvvvvvvvv contours.edges = " + Contours.getEdges(pf.polygon.contours).length  + "; fill = " + pf.polygon.fill + "; fillRuleEvenOdd = " + pf.fillRuleEvenOdd);
-			if (Contours.getEdges(pf.polygon.contours).length >= 0)
-			{
-				log("------------------- CONTOURS FOR Polygons.fromContours:\n" + pf.polygon.contours.join(",\n"));
-			}
-			var polygons = Polygons.fromContours(pf.polygon.contours, pf.polygon.fill, pf.fillRuleEvenOdd);
-			for (p in polygons) p.assertCorrect();
-			log("Polygons.fromEdges ^^^^^^^^^^^^^^^ polygons = " + polygons.length);
-			
-			var shape2 = new ShapeElement([], polygons);
-			
-			log("shape.combine vvvvvvvvvvvvvvvvv " + shape.getEdgeCount() + " + " + shape2.getEdgeCount());
-			shape.combine(shape2);
-			log("shape.combine ^^^^^^^^^^^^^^^^^");
-		}
-		
-		log("normalize vvvvvvvvvvvvvv");
-		for (e in edges) stdlib.Debug.assert(e.stroke != null, "(1)");
-		Edges.normalize(edges);
-		for (e in edges) stdlib.Debug.assert(e.stroke != null, "(2)");
-		log("normalize ^^^^^^^^^^^^^^");
-		
-		log("intersectSelf vvvvvvvvvvvvvv");
-		for (e in edges) stdlib.Debug.assert(e.stroke != null, "(3)");
-		Edges.intersectSelf(edges);
-		for (e in edges) stdlib.Debug.assert(e.stroke != null, "(4)");
-		log("intersectSelf ^^^^^^^^^^^^^^");
-		
-		log("shape.combine stroke vvvvvvvvvvvvvv");
-		for (e in edges) stdlib.Debug.assert(e.stroke != null, "(5)");
-		shape.combine(new ShapeElement(edges));
-		for (e in edges) stdlib.Debug.assert(e.stroke != null, "(6)");
-		log("shape.combine stroke ^^^^^^^^^^^^^^");
-		
-		log("SvgPathExporter.export ^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-		
-		return shape;
-	}
-	
-	function closeContour()
-	{
-		var contours = polygonAndFillRules[polygonAndFillRules.length - 1].polygon.contours;
-		if (contours.length > 0)
-		{
-			var edges = contours[contours.length - 1].edges;
-			if (edges.length > 0)
-			{
-				var edge1 = edges[0];
-				var edge2 = edges[edges.length - 1];
-				if (edge1.x1 != edge2.x3 || edge1.y1 != edge2.y3)
-				{
-					edges.push(new Edge(edge2.x3, edge2.y3, edge1.x1, edge1.y1));
-				}
+				var instance = item.newInstance();
+				instance.matrix = path.matrix;
+				return instance;
 			}
 		}
+		
+		stdlib.Debug.assert(false);
+		return null;
 	}
 	
-	function getGradientRgbaColors(grad:Gradient) : Array<String>
+	public function exportToLibrary() : MovieClipItem
 	{
-		return grad.colors.mapi(function(i, c) return ColorTools.colorToString(c, grad.alphas[i])).array();
+		stdlib.Debug.assert(path.id != null && path.id != "");
+		stdlib.Debug.assert(!library.hasItem(path.id));
+		
+		var element = exportAsElement();
+		
+		return Std.is(element, ShapeElement)
+			? elementsToLibraryItem([element], path.id)
+			: cast(library.getItem(cast(element, Instance).namePath), MovieClipItem);
 	}
 	
-	static function log(v:Dynamic, ?infos:haxe.PosInfos) : Void
+	function shapeToInstance(shape:ShapeElement, matrix:Matrix, id:String) : Instance
 	{
-		//haxe.Log.trace(v, infos);
+		shape.transform(matrix.clone().invert(), false);
+		var item = elementsToLibraryItem([shape], id);
+		var instance = item.newInstance();
+		instance.matrix = matrix;
+		return instance;
 	}
 }

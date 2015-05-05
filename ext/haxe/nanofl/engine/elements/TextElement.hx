@@ -18,5 +18,4 @@ extern class TextElement extends nanofl.engine.elements.Element
 	override function clone() : nanofl.engine.elements.Element;
 	override function getState() : nanofl.ide.undo.states.ElementState;
 	override function setState(_state:nanofl.ide.undo.states.ElementState) : Void;
-	override function transform(m:nanofl.engine.geom.Matrix) : Void;
 }

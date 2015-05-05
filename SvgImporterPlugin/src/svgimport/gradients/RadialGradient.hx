@@ -45,7 +45,7 @@ class RadialGradient extends Gradient
 		
 		if (gradientUnits == "userSpaceOnUse")
 		{
-			m = matrix;
+			//m = matrix;
 		}
 		else
 		{

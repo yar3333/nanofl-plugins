@@ -1,19 +1,12 @@
 package svgimport;
 
-import nanofl.engine.elements.Element;
-import nanofl.engine.KeyFrame;
-import nanofl.engine.Layer;
-import nanofl.engine.Library;
-import nanofl.engine.libraryitems.LibraryItem;
-import nanofl.engine.libraryitems.MovieClipItem;
-import svgimport.SvgElement;
 import htmlparser.HtmlNodeElement;
 import nanofl.engine.elements.ShapeElement;
-import svgimport.gradients.GradientType;
 import svgimport.segments.DrawSegment;
 import svgimport.segments.MoveSegment;
 import svgimport.segments.QuadraticSegment;
 import svgimport.segments.Segment;
+import svgimport.SvgElement;
 using htmlparser.HtmlParserTools;
 using svgimport.XmlTools;
 
@@ -21,6 +14,8 @@ class SvgPath
 {
 	private static var SIN45 = 0.70710678118654752440084436210485;
 	private static var TAN22 = 0.4142135623730950488016887242097;
+	
+	var svg : Svg;
 	
 	public var node : HtmlNodeElement;
 	
@@ -41,28 +36,31 @@ class SvgPath
 
 	public var segments : Array<Segment>;
 	
-	var libraryItemNamePath : String;
+	public var clipPathID : String;
 	
-	public function new(node:HtmlNodeElement, baseStyles:Map<String, String>, elements:Map<String, SvgElement>, gradients:Map<String, GradientType>, ?id:String) : Void
+	public function new(svg:Svg, node:HtmlNodeElement, baseStyles:Map<String, String>, ?id:String) : Void
 	{
+		this.svg = svg;
 		this.node = node;
 		
 		var styles = XmlTools.getStyles(node, baseStyles);
 		
-		this.id = id != null ? id : node.getAttr("id", ""); if (this.id != "") elements.set(this.id, SvgElement.DisplayPath(this));
+		this.id = id != null ? id : node.getAttr("id", ""); if (this.id != "") svg.elements.set(this.id, SvgElement.DisplayPath(this));
 		matrix = Transform.load(node.getAttribute("transform"));
 		alpha = XmlTools.getFloatStyle(node, "opacity", styles, 1.0);
 		
-		fill = XmlTools.getFillStyle(node, "fill", styles,gradients);
+		fill = XmlTools.getFillStyle(node, "fill", styles, svg.gradients);
 		fillAlpha = XmlTools.getFloatStyle(node, "fill-opacity", styles, 1.0);
 		fillRuleEvenOdd = XmlTools.getStyle(node, "fill-rule", styles, "nonzero") == "evenodd";
 		
-		stroke = XmlTools.getStrokeStyle(node, "stroke", styles, gradients);
+		stroke = XmlTools.getStrokeStyle(node, "stroke", styles, svg.gradients);
 		strokeAlpha = XmlTools.getFloatStyle(node, "stroke-opacity", styles, 1.0);
 		strokeWidth = XmlTools.getFloatStyle(node, "stroke-width", styles, 1.0);
 		strokeCaps = XmlTools.getStyle(node, "stroke-linecap", styles, "butt");
 		strokeJoints = XmlTools.getStyle(node, "stroke-linejoin", styles, "miter");
 		strokeMiterLimit = XmlTools.getFloatStyle(node, "stroke-miterlimit", styles, 4.0);
+		
+		clipPathID = XmlTools.getIdFromUrl(node, "clip-path");
 		
 		segments = [];
 		
@@ -132,69 +130,32 @@ class SvgPath
 		}
 	}
 	
-	public function toElement(library:Library) : Element
+	public function toElement() : ShapeElement
 	{
 		if (segments.length == 0) return null;
 		
-		if (libraryItemNamePath != null) return getAsInstance(library);
-		
-		var exporter = new SvgPathExporter();
+		var convertor = new SvgPathToShapeConvertor();
 		
 		if (fill != null && fill != FillType.FillNone)
 		{
-			exporter.beginFill(this);
-			for (segment in segments) segment.export(exporter);
-			exporter.endFill();
+			convertor.beginFill(this);
+			for (segment in segments) segment.export(convertor);
+			convertor.endFill();
 		}
 		
 		if (stroke != null && stroke != StrokeType.StrokeNone)
 		{
-			exporter.beginStroke(this);
-			for (segment in segments) segment.export(exporter);
-			exporter.endStroke();
+			convertor.beginStroke(this);
+			for (segment in segments) segment.export(convertor);
+			convertor.endStroke();
 		}
 		
-		var shape = exporter.export();
+		var shape = convertor.convert();
 		
 		shape.applyStrokeAlpha(alpha * strokeAlpha);
 		shape.applyFillAlpha(alpha * fillAlpha);
 		
-		if (matrix.a == 1 && matrix.b == 0 && matrix.c == 0 && matrix.d == 1)
-		{
-			if (!matrix.isIdentity())
-			{
-				shape.transform(matrix);
-			}
-			return shape;
-		}
-		
-		if (libraryItemNamePath == null)
-		{
-			libraryItemNamePath = "auto_" + stdlib.Uuid.newUuid();
-			var mcItem = new MovieClipItem(libraryItemNamePath);
-			var layer = new Layer("auto");
-			mcItem.addLayer(layer);
-			layer.addKeyFrame(new KeyFrame([ shape ]));
-			library.addItem(mcItem);
-		}
-		
-		return getAsInstance(library);
+		return shape;
 	}
 	
-	public function toLibraryItem(library:Library) : LibraryItem
-	{
-		var element = toElement(library);
-		if (element == null) return null;
-		var mc = new MovieClipItem(id);
-		mc.addLayer(new Layer("auto"));
-		mc.layers[0].addKeyFrame(new KeyFrame([ element ]));
-		return mc;
-	}
-	
-	function getAsInstance(library:Library) : Element
-	{
-		var mc = cast(library.getItem(libraryItemNamePath), MovieClipItem).newInstance();
-		mc.matrix = matrix;
-		return mc;
-	}
 }

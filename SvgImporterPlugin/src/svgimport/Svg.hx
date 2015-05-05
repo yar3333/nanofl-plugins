@@ -2,6 +2,7 @@ package svgimport;
 
 import htmlparser.HtmlNodeElement;
 import svgimport.gradients.GradientType;
+import nanofl.engine.Library;
 using StringTools;
 
 class Svg extends SvgGroup
@@ -10,6 +11,12 @@ class Svg extends SvgGroup
 	public var width(default, null) : Float;
 	
 	public var viewBox : Rectangle;
+	
+	//public var nodes = new Map<String, HtmlNodeElement>();
+	public var elements = new Map<String, SvgElement>();
+	public var gradients = new Map<String, GradientType>();
+	
+	public var usedIDs = new Array<String>();
 	
 	public function new(xml:HtmlNodeElement)
 	{
@@ -20,9 +27,16 @@ class Svg extends SvgGroup
 			throw "Not an SVG file (" + (svg == null ? "null" : svg.name) + ")";
 		}
 		
+		detectSize(svg);
+		//fillNodes(svg);
+		
+		super(this, svg, new Map<String, String>());
+	}
+	
+	function detectSize(svg:HtmlNodeElement)
+	{
 		width = 400.0;
 		height = 400.0;
-		
 		
 		if (svg.hasAttribute("viewBox"))
 		{
@@ -39,7 +53,6 @@ class Svg extends SvgGroup
 			}
 		}
 		
-		
 		if (svg.hasAttribute("width") && !svg.getAttribute("width").endsWith("%")
 		 && svg.hasAttribute("height") && !svg.getAttribute("height").endsWith("%"))
 		{
@@ -47,22 +60,26 @@ class Svg extends SvgGroup
 			height = XmlTools.getFloatStyle(svg, "height", null, 400.0);
 		}
 		else
-		if (viewBox!=null)
+		if (viewBox != null)
 		{
 			width = viewBox.width;
 			height = viewBox.height;
 		}
-		
-		svgWidth = viewBox != null ? viewBox.width : width;
-		
-		super
-		(
-			svg,
-			svgWidth,
-			null,
-			new Map<String, SvgElement>(),
-			new Map<String, GradientType>()
-		);
 	}
 	
+	//function fillNodes(xml:HtmlNodeElement)
+	//{
+		//for (node in xml.find("*"))
+		//{
+			//var id = node.getAttribute("id");
+			//if (id != null)
+			//{
+				//id = id.trim();
+				//if (id != "")
+				//{
+					//nodes.set(id, node);
+				//}
+			//}
+		//}
+	//}
 }

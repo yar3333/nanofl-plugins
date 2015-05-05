@@ -15,7 +15,7 @@ class QuadraticSegment extends Segment
 	override public function prevCX() return cx;
 	override public function prevCY() return cy;
 
-	override public function export(exporter:SvgPathExporter)
+	override public function export(exporter:SvgPathToShapeConvertor)
 	{
 		exporter.curveTo(cx, cy, x, y);
 	}
