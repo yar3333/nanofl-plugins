@@ -2,6 +2,7 @@ package svgimport;
 
 import htmlparser.HtmlNodeElement;
 import nanofl.engine.elements.ShapeElement;
+import nanofl.engine.geom.Bounds;
 import svgimport.segments.DrawSegment;
 import svgimport.segments.MoveSegment;
 import svgimport.segments.QuadraticSegment;
@@ -130,7 +131,7 @@ class SvgPath
 		}
 	}
 	
-	public function toElement() : ShapeElement
+	public function toElement() : { shape:ShapeElement, bounds:Bounds }
 	{
 		if (segments.length == 0) return null;
 		
@@ -155,7 +156,8 @@ class SvgPath
 		shape.applyStrokeAlpha(alpha * strokeAlpha);
 		shape.applyFillAlpha(alpha * fillAlpha);
 		
-		return shape;
+		if (shape.isEmpty()) return null;
+		
+		return { shape:shape, bounds:convertor.getBounds() };
 	}
-	
 }

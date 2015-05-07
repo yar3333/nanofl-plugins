@@ -35,7 +35,9 @@ class SvgUseExporter extends BaseExporter
 						
 					case SvgElement.DisplayPath(base):
 						var p = new SvgPath(svg, base.node, use.styles, getNextFreeID(base.id));
-						namePath = new SvgPathExporter(svg, library, p).exportToLibrary().namePath;
+						var item = new SvgPathExporter(svg, library, p).exportToLibrary();
+						if (item == null) return null;
+						namePath = item.namePath;
 						
 					case _:
 				}

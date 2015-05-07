@@ -63,53 +63,18 @@ class LinearGradient extends Gradient
 	{
 		if (gradientUnits == "userSpaceOnUse")
 		{
-			/*var p1 = matrix.transformPoint(x1, y1);
-			var p2 = matrix.transformPoint(x2, y2);
-			
-			return
-			{
-				x1: p1.x,
-				y1: p1.y,
-				x2: p2.x,
-				y2: p2.y
-			};*/
-			
 			return this;
 		}
 		else
 		{
 			var w = bounds.maxX - bounds.minX;
-			var h = bounds.maxY - bounds.minY;
-			
-			//var p1 = matrix.transformPoint(x1 * w, y1 * w);
-			//var p2 = matrix.transformPoint(x2 * w, y2 * w);
-			
-			var p1 = { x:x1 * w, y:y1 * w };
-			var p2 = { x:x2 * w, y:y2 * w };
-			
-			if (w > 0)
-			{
-				var k = h/w;
-				
-				var line = new StraightLine(p1.x, p1.y, p2.x, p2.y);
-				var v = line.getOrthogonalVector();
-				var ortho = new StraightLine(p2.x, p2.y, p2.x + v.x, p2.y + v.y);
-				ortho.y1 *= k;
-				ortho.y2 *= k;
-				p2 = ortho.getOrthogonalRayIntersection(p1.x, p1.y).point;
-				
-				var ortho = new StraightLine(p1.x, p1.y, p1.x + v.x, p1.y + v.y);
-				ortho.y1 *= k;
-				ortho.y2 *= k;
-				p1 = ortho.getOrthogonalRayIntersection(p2.x, p2.y).point;
-			}
 			
 			return
 			{
-				x1: p1.x + bounds.minX,
-				y1: p1.y + bounds.minY,
-				x2: p2.x + bounds.minX,
-				y2: p2.y + bounds.minY
+				x1: x1 * w + bounds.minX,
+				y1: y1 * w + bounds.minY,
+				x2: x2 * w + bounds.minX,
+				y2: y2 * w + bounds.minY
 			};
 		}
 	}

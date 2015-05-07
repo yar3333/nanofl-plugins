@@ -31,6 +31,8 @@ class SvgPathToShapeConvertor
 	public var x(default, null) : Float = null;
 	public var y(default, null) : Float = null;
 	
+	var boundsCache : { minX:Float, minY:Float, maxX:Float, maxY:Float };
+	
 	public function new() { }
 	
 	public function beginFill(path:SvgPath)
@@ -58,7 +60,16 @@ class SvgPathToShapeConvertor
 					{
 						case GradientType.LINEAR(grad):
 							var params = grad.getAbsoluteParams(bounds);
-							new LinearFill(getGradientRgbaColors(grad), grad.ratios, params.x1, params.y1, params.x2, params.y2);
+							new LinearFill
+							(
+								getGradientRgbaColors(grad),
+								grad.ratios,
+								params.x1,
+								params.y1,
+								params.x2,
+								params.y2
+							);
+							
 						case GradientType.RADIAL(grad):
 							if (grad.spreadMethod != "" && grad.spreadMethod != "pad")
 							{
@@ -232,6 +243,22 @@ class SvgPathToShapeConvertor
 		log("SvgPathExporter.export ^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 		
 		return shape;
+	}
+	
+	public function getBounds() : { minX:Float, minY:Float, maxX:Float, maxY:Float }
+	{
+		if (boundsCache != null) return boundsCache;
+		
+		boundsCache = { minX:1e100, minY:1e100, maxX:-1e100, maxY:-1e100 };
+		
+		Edges.getBounds(edges, boundsCache);
+		
+		for (p in polygonAndFillRules)
+		{
+			p.polygon.getBounds(boundsCache);
+		}
+		
+		return boundsCache;
 	}
 	
 	function closeContour()

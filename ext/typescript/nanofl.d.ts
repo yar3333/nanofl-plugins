@@ -8007,11 +8007,13 @@ declare module nanofl
 	export class Bitmap extends createjs.Bitmap
 	{
 		constructor(symbol:nanofl.engine.libraryitems.InstancableItem);
+		clone(recursive?:boolean) : createjs.DisplayObject;
 		toString() : string;
 	}
 	
 	export class DisplayObjectTools
 	{
+		static smartCache(obj:createjs.DisplayObject) : void;
 		static smartUncache(obj:createjs.DisplayObject) : void;
 		static callMethod(parent:createjs.DisplayObject, name:string) : void;
 	}
@@ -8028,6 +8030,7 @@ declare module nanofl
 		getTotalFrames() : number;
 		maskChild(child:createjs.DisplayObject) : boolean;
 		uncacheChild(child:createjs.DisplayObject) : void;
+		clone(recursive?:boolean) : createjs.DisplayObject;
 		toString() : string;
 		static applyMask(mask:createjs.DisplayObject, obj:createjs.DisplayObject) : boolean;
 	}

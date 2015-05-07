@@ -34,9 +34,13 @@ class SvgGroupExporter extends BaseExporter
 					var item = !library.hasItem(g.id)
 						? new SvgGroupExporter(svg, library, g).exportToLibrary()
 						: library.getItem(g.id);
-					var instance = new Instance(item.namePath);
-					instance.matrix = g.matrix;
-					addElement(instance, g.visible);
+					
+					if (item != null)
+					{
+						var instance = new Instance(item.namePath);
+						instance.matrix = g.matrix;
+						addElement(instance, g.visible);
+					}
 					
 				case SvgElement.DisplayPath(path):
 					addElement(new SvgPathExporter(svg, library, path).exportAsElement());
@@ -49,12 +53,16 @@ class SvgGroupExporter extends BaseExporter
 			}
 		}
 		
-		var mc = new MovieClipItem(group.id != "" ? group.id : getNextFreeID());
+		var namePath = group.clipPathID == null
+			? (group.id != "" ? group.id : getNextFreeID())
+			: getNextFreeID(group.id);
+		
+		var mc = new MovieClipItem(namePath);
 		layers.reverse();
 		for (layer in layers) mc.addLayer(layer);
 		library.addItem(mc);
 		
-		mc = wrapMovieClipItemWithMask(mc, group.clipPathID);
+		mc = wrapMovieClipItemWithMask(mc, group.clipPathID, group.id != "" ? group.id : getNextFreeID());
 		
 		return mc;
 	}

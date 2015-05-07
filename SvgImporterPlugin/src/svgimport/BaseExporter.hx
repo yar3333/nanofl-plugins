@@ -32,6 +32,8 @@ class BaseExporter
 	
 	function applyMaskToElement<T:Element>(element:T, maskID:String, prefixID:String) : T
 	{
+		if (element == null) return null;
+		
 		if (maskID != null)
 		{
 			if (!Std.is(element, Instance) || cast(library.getItem(cast(element, Instance).namePath), MovieClipItem).layers.length > 1)
@@ -51,11 +53,11 @@ class BaseExporter
 		return element;
 	}
 	
-	function wrapMovieClipItemWithMask(item:MovieClipItem, maskID:String) : MovieClipItem
+	function wrapMovieClipItemWithMask(item:MovieClipItem, maskID:String, id:String) : MovieClipItem
 	{
 		if (maskID == null) return item;
 		
-		var r = elementsToLibraryItem([item.newInstance()], getNextFreeID(item.namePath));
+		var r = elementsToLibraryItem([item.newInstance()], id);
 		
 		addMaskLayerToMovieClipItem(r, maskID);
 		library.addItem(r);
@@ -96,6 +98,7 @@ class BaseExporter
 	
 	function getNextFreeID(prefix="auto_") : String
 	{
+		if (prefix == "") prefix = "auto_";
 		var i = 0;
 		while (svg.elements.exists(prefix + i) || library.hasItem(prefix + i) || svg.usedIDs.indexOf(prefix + i) >= 0)
 		{

@@ -43,11 +43,7 @@ class RadialGradient extends Gradient
 	{
 		var m = new Matrix();
 		
-		if (gradientUnits == "userSpaceOnUse")
-		{
-			//m = matrix;
-		}
-		else
+		if (gradientUnits != "userSpaceOnUse")
 		{
 			var w = bounds.maxX - bounds.minX;
 			var h = bounds.maxY - bounds.minY;

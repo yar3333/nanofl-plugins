@@ -1,5 +1,6 @@
 import haxe.crypto.Base64;
 import js.html.CanvasElement;
+import nanofl.DisplayObjectTools;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
@@ -10,6 +11,7 @@ class ImageExporter
 	{
 		var instance = library.getSceneInstance();
 		var scene : createjs.DisplayObject = instance.createDisplayObject(null);
+		DisplayObjectTools.smartCache(scene);
 		
 		var canvas : CanvasElement = cast js.Browser.document.createElement("canvas");
 		canvas.width = documentProperties.width;

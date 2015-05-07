@@ -1134,19 +1134,20 @@ svgimport.BaseExporter.prototype = {
 		return mc;
 	}
 	,applyMaskToElement: function(element,maskID,prefixID) {
+		if(element == null) return null;
 		if(maskID != null) {
 			if(!js.Boot.__instanceof(element,nanofl.engine.elements.Instance) || (js.Boot.__cast(this.library.getItem((js.Boot.__cast(element , nanofl.engine.elements.Instance)).namePath) , nanofl.engine.libraryitems.MovieClipItem)).layers.length > 1) element = this.elementsToLibraryItem([element],this.getNextFreeID(prefixID)).newInstance();
-			stdlib.Debug.assert(js.Boot.__instanceof(element,nanofl.engine.elements.Instance),null,{ fileName : "BaseExporter.hx", lineNumber : 42, className : "svgimport.BaseExporter", methodName : "applyMaskToElement"});
-			stdlib.Debug.assert(this.library.getItem((js.Boot.__cast(element , nanofl.engine.elements.Instance)).namePath) != null,null,{ fileName : "BaseExporter.hx", lineNumber : 43, className : "svgimport.BaseExporter", methodName : "applyMaskToElement"});
+			stdlib.Debug.assert(js.Boot.__instanceof(element,nanofl.engine.elements.Instance),null,{ fileName : "BaseExporter.hx", lineNumber : 44, className : "svgimport.BaseExporter", methodName : "applyMaskToElement"});
+			stdlib.Debug.assert(this.library.getItem((js.Boot.__cast(element , nanofl.engine.elements.Instance)).namePath) != null,null,{ fileName : "BaseExporter.hx", lineNumber : 45, className : "svgimport.BaseExporter", methodName : "applyMaskToElement"});
 			var item;
 			item = js.Boot.__cast(this.library.getItem((js.Boot.__cast(element , nanofl.engine.elements.Instance)).namePath) , nanofl.engine.libraryitems.MovieClipItem);
 			this.addMaskLayerToMovieClipItem(item,maskID);
 		}
 		return element;
 	}
-	,wrapMovieClipItemWithMask: function(item,maskID) {
+	,wrapMovieClipItemWithMask: function(item,maskID,id) {
 		if(maskID == null) return item;
-		var r = this.elementsToLibraryItem([item.newInstance()],this.getNextFreeID(item.namePath));
+		var r = this.elementsToLibraryItem([item.newInstance()],id);
 		this.addMaskLayerToMovieClipItem(r,maskID);
 		this.library.addItem(r);
 		return r;
@@ -1176,6 +1177,7 @@ svgimport.BaseExporter.prototype = {
 	}
 	,getNextFreeID: function(prefix) {
 		if(prefix == null) prefix = "auto_";
+		if(prefix == "") prefix = "auto_";
 		var i = 0;
 		while(this.svg.elements.exists(prefix + i) || this.library.hasItem(prefix + i) || HxOverrides.indexOf(this.svg.usedIDs,prefix + i,0) >= 0) i++;
 		this.svg.usedIDs.push(prefix + i);
@@ -1581,9 +1583,11 @@ svgimport.SvgGroupExporter.prototype = $extend(svgimport.BaseExporter.prototype,
 				var g = child[2];
 				var item;
 				if(!this.library.hasItem(g.id)) item = new svgimport.SvgGroupExporter(this.svg,this.library,g).exportToLibrary(); else item = this.library.getItem(g.id);
-				var instance = new nanofl.engine.elements.Instance(item.namePath);
-				instance.matrix = g.matrix;
-				this.addElement(instance,g.visible);
+				if(item != null) {
+					var instance = new nanofl.engine.elements.Instance(item.namePath);
+					instance.matrix = g.matrix;
+					this.addElement(instance,g.visible);
+				}
 				break;
 			case 0:
 				var path = child[2];
@@ -1599,7 +1603,11 @@ svgimport.SvgGroupExporter.prototype = $extend(svgimport.BaseExporter.prototype,
 				break;
 			}
 		}
-		var mc = new nanofl.engine.libraryitems.MovieClipItem(this.group.id != ""?this.group.id:this.getNextFreeID());
+		var namePath;
+		if(this.group.clipPathID == null) {
+			if(this.group.id != "") namePath = this.group.id; else namePath = this.getNextFreeID();
+		} else namePath = this.getNextFreeID(this.group.id);
+		var mc = new nanofl.engine.libraryitems.MovieClipItem(namePath);
 		this.layers.reverse();
 		var _g2 = 0;
 		var _g11 = this.layers;
@@ -1609,7 +1617,7 @@ svgimport.SvgGroupExporter.prototype = $extend(svgimport.BaseExporter.prototype,
 			mc.addLayer(layer);
 		}
 		this.library.addItem(mc);
-		mc = this.wrapMovieClipItemWithMask(mc,this.group.clipPathID);
+		mc = this.wrapMovieClipItemWithMask(mc,this.group.clipPathID,this.group.id != ""?this.group.id:this.getNextFreeID());
 		return mc;
 	}
 	,addElement: function(element,visible) {
@@ -1742,7 +1750,8 @@ svgimport.SvgPath.prototype = {
 		var shape = convertor.convert();
 		shape.applyStrokeAlpha(this.alpha * this.strokeAlpha);
 		shape.applyFillAlpha(this.alpha * this.fillAlpha);
-		return shape;
+		if(shape.isEmpty()) return null;
+		return { shape : shape, bounds : convertor.getBounds()};
 	}
 	,__class__: svgimport.SvgPath
 };
@@ -1757,9 +1766,13 @@ svgimport.SvgPathExporter.prototype = $extend(svgimport.BaseExporter.prototype,{
 		return this.applyMaskToElement(this.exportAsElementInner(),this.path.clipPathID,this.path.id);
 	}
 	,exportAsElementInner: function() {
-		var shape = this.path.toElement();
+		var shapeAndBounds = this.path.toElement();
+		if(shapeAndBounds == null) return null;
+		var shape = shapeAndBounds.shape;
+		var bounds = shapeAndBounds.bounds;
 		var canIgnoreStroke = shape.edges.length == 0 || this.path.stroke == svgimport.StrokeType.StrokeNone || this.path.stroke[1] == 1;
 		var canIgnoreFill = shape.polygons.length == 0 || this.path.fill == svgimport.FillType.FillNone || this.path.fill[1] == 1;
+		var aspectRatio = 1.0;
 		var strokeMatrix = new nanofl.engine.geom.Matrix();
 		if(!canIgnoreStroke) {
 			var _g = this.path.stroke;
@@ -1770,10 +1783,12 @@ svgimport.SvgPathExporter.prototype = $extend(svgimport.BaseExporter.prototype,{
 				case 0:
 					var grad = gradType[2];
 					strokeMatrix = grad.matrix;
+					aspectRatio = this.getApsectRatio(bounds,grad);
 					break;
 				case 1:
 					var grad1 = gradType[2];
 					strokeMatrix = grad1.matrix;
+					aspectRatio = this.getApsectRatio(bounds,grad1);
 					break;
 				}
 				break;
@@ -1790,10 +1805,12 @@ svgimport.SvgPathExporter.prototype = $extend(svgimport.BaseExporter.prototype,{
 				case 0:
 					var grad2 = gradType1[2];
 					fillMatrix = grad2.matrix;
+					aspectRatio = this.getApsectRatio(bounds,grad2);
 					break;
 				case 1:
 					var grad3 = gradType1[2];
 					fillMatrix = grad3.matrix;
+					aspectRatio = this.getApsectRatio(bounds,grad3);
 					break;
 				}
 				break;
@@ -1807,17 +1824,17 @@ svgimport.SvgPathExporter.prototype = $extend(svgimport.BaseExporter.prototype,{
 			instance.matrix = this.path.matrix;
 			return instance;
 		} else if(canIgnoreStroke) {
-			stdlib.Debug.assert(!fillMatrix.isIdentity(),null,{ fileName : "SvgPathExporter.hx", lineNumber : 79, className : "svgimport.SvgPathExporter", methodName : "exportAsElementInner"});
-			var instance1 = this.shapeToInstance(shape,fillMatrix,this.getNextFreeID(this.path.id));
+			stdlib.Debug.assert(!fillMatrix.isIdentity(),null,{ fileName : "SvgPathExporter.hx", lineNumber : 100, className : "svgimport.SvgPathExporter", methodName : "exportAsElementInner"});
+			var instance1 = this.shapeToInstance(shape,bounds,fillMatrix,aspectRatio,this.getNextFreeID(this.path.id));
 			instance1.matrix.prependMatrix(this.path.matrix);
 			return instance1;
 		} else if(canIgnoreFill) {
-			stdlib.Debug.assert(!strokeMatrix.isIdentity(),null,{ fileName : "SvgPathExporter.hx", lineNumber : 88, className : "svgimport.SvgPathExporter", methodName : "exportAsElementInner"});
-			var instance2 = this.shapeToInstance(shape,strokeMatrix,this.getNextFreeID(this.path.id));
+			stdlib.Debug.assert(!strokeMatrix.isIdentity(),null,{ fileName : "SvgPathExporter.hx", lineNumber : 109, className : "svgimport.SvgPathExporter", methodName : "exportAsElementInner"});
+			var instance2 = this.shapeToInstance(shape,bounds,strokeMatrix,aspectRatio,this.getNextFreeID(this.path.id));
 			instance2.matrix.prependMatrix(this.path.matrix);
 			return instance2;
 		} else {
-			var item1 = this.elementsToLibraryItem([this.shapeToInstance(new nanofl.engine.elements.ShapeElement(null,shape.polygons),fillMatrix,this.getNextFreeID(this.path.id)),this.shapeToInstance(new nanofl.engine.elements.ShapeElement(shape.edges),strokeMatrix,this.getNextFreeID(this.path.id))],this.getNextFreeID(this.path.id));
+			var item1 = this.elementsToLibraryItem([this.shapeToInstance(new nanofl.engine.elements.ShapeElement(null,shape.polygons),bounds,fillMatrix,aspectRatio,this.getNextFreeID(this.path.id)),this.shapeToInstance(new nanofl.engine.elements.ShapeElement(shape.edges),bounds,strokeMatrix,aspectRatio,this.getNextFreeID(this.path.id))],this.getNextFreeID(this.path.id));
 			var instance3 = item1.newInstance();
 			instance3.matrix = this.path.matrix;
 			return instance3;
@@ -1825,16 +1842,27 @@ svgimport.SvgPathExporter.prototype = $extend(svgimport.BaseExporter.prototype,{
 		return null;
 	}
 	,exportToLibrary: function() {
-		stdlib.Debug.assert(!this.library.hasItem(this.path.id),null,{ fileName : "SvgPathExporter.hx", lineNumber : 117, className : "svgimport.SvgPathExporter", methodName : "exportToLibrary"});
+		stdlib.Debug.assert(!this.library.hasItem(this.path.id),null,{ fileName : "SvgPathExporter.hx", lineNumber : 138, className : "svgimport.SvgPathExporter", methodName : "exportToLibrary"});
 		var element = this.exportAsElement();
+		if(element == null) return null;
 		if(js.Boot.__instanceof(element,nanofl.engine.elements.ShapeElement)) return this.elementsToLibraryItem([element],this.path.id); else return js.Boot.__cast(this.library.getItem((js.Boot.__cast(element , nanofl.engine.elements.Instance)).namePath) , nanofl.engine.libraryitems.MovieClipItem);
 	}
-	,shapeToInstance: function(shape,matrix,id) {
+	,shapeToInstance: function(shape,bounds,matrix,aspectRatio,id) {
+		matrix = matrix.clone();
+		if(aspectRatio != 1.0) {
+			matrix.translate(-(bounds.minX + bounds.maxX) / 2,-(bounds.minY + bounds.maxY) / 2);
+			matrix.scale(1,1 / aspectRatio);
+			matrix.translate((bounds.minX + bounds.maxX) / 2,(bounds.minY + bounds.maxY) / 2);
+		}
 		shape.transform(matrix.clone().invert(),false);
 		var item = this.elementsToLibraryItem([shape],id);
 		var instance = item.newInstance();
-		instance.matrix = matrix;
+		instance.matrix = matrix.clone();
 		return instance;
+	}
+	,getApsectRatio: function(bounds,grad) {
+		if(grad.gradientUnits != "userSpaceOnUse" && bounds.maxY - bounds.minY > svgimport.SvgPathExporter.EPS) return (bounds.maxX - bounds.minX) / (bounds.maxY - bounds.minY);
+		return 1.0;
 	}
 	,__class__: svgimport.SvgPathExporter
 });
@@ -1943,15 +1971,15 @@ svgimport.SvgPathToShapeConvertor.prototype = {
 		this.y = anchorY;
 	}
 	,convert: function() {
-		svgimport.SvgPathToShapeConvertor.log("SvgPathExporter.export vvvvvvvvvvvvvvvvvvvvvvvvvvvv edges = " + (this.polygonAndFillRules.length > 0?this.polygonAndFillRules[0].polygon.getEdges().length:0),{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 193, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
+		svgimport.SvgPathToShapeConvertor.log("SvgPathExporter.export vvvvvvvvvvvvvvvvvvvvvvvvvvvv edges = " + (this.polygonAndFillRules.length > 0?this.polygonAndFillRules[0].polygon.getEdges().length:0),{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 204, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
 		var shape = new nanofl.engine.elements.ShapeElement();
 		var _g = 0;
 		var _g1 = this.polygonAndFillRules;
 		while(_g < _g1.length) {
 			var pf = _g1[_g];
 			++_g;
-			svgimport.SvgPathToShapeConvertor.log("Polygons.fromEdges vvvvvvvvvvvvvvv contours.edges = " + nanofl.engine.geom.Contours.getEdges(pf.polygon.contours).length + "; fill = " + Std.string(pf.polygon.fill) + "; fillRuleEvenOdd = " + (pf.fillRuleEvenOdd == null?"null":"" + pf.fillRuleEvenOdd),{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 198, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
-			if(nanofl.engine.geom.Contours.getEdges(pf.polygon.contours).length >= 0) svgimport.SvgPathToShapeConvertor.log("------------------- CONTOURS FOR Polygons.fromContours:\n" + pf.polygon.contours.join(",\n"),{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 201, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
+			svgimport.SvgPathToShapeConvertor.log("Polygons.fromEdges vvvvvvvvvvvvvvv contours.edges = " + nanofl.engine.geom.Contours.getEdges(pf.polygon.contours).length + "; fill = " + Std.string(pf.polygon.fill) + "; fillRuleEvenOdd = " + (pf.fillRuleEvenOdd == null?"null":"" + pf.fillRuleEvenOdd),{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 209, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
+			if(nanofl.engine.geom.Contours.getEdges(pf.polygon.contours).length >= 0) svgimport.SvgPathToShapeConvertor.log("------------------- CONTOURS FOR Polygons.fromContours:\n" + pf.polygon.contours.join(",\n"),{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 212, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
 			var polygons = nanofl.engine.geom.Polygons.fromContours(pf.polygon.contours,pf.polygon.fill,pf.fillRuleEvenOdd);
 			var _g2 = 0;
 			while(_g2 < polygons.length) {
@@ -1959,13 +1987,13 @@ svgimport.SvgPathToShapeConvertor.prototype = {
 				++_g2;
 				p.assertCorrect();
 			}
-			svgimport.SvgPathToShapeConvertor.log("Polygons.fromEdges ^^^^^^^^^^^^^^^ polygons = " + polygons.length,{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 205, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
+			svgimport.SvgPathToShapeConvertor.log("Polygons.fromEdges ^^^^^^^^^^^^^^^ polygons = " + polygons.length,{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 216, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
 			var shape2 = new nanofl.engine.elements.ShapeElement([],polygons);
-			svgimport.SvgPathToShapeConvertor.log("shape.combine vvvvvvvvvvvvvvvvv " + shape.getEdgeCount() + " + " + shape2.getEdgeCount(),{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 209, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
+			svgimport.SvgPathToShapeConvertor.log("shape.combine vvvvvvvvvvvvvvvvv " + shape.getEdgeCount() + " + " + shape2.getEdgeCount(),{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 220, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
 			shape.combine(shape2);
-			svgimport.SvgPathToShapeConvertor.log("shape.combine ^^^^^^^^^^^^^^^^^",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 211, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
+			svgimport.SvgPathToShapeConvertor.log("shape.combine ^^^^^^^^^^^^^^^^^",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 222, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
 		}
-		svgimport.SvgPathToShapeConvertor.log("normalize vvvvvvvvvvvvvv",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 214, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
+		svgimport.SvgPathToShapeConvertor.log("normalize vvvvvvvvvvvvvv",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 225, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
 		var _g3 = 0;
 		var _g11 = this.edges;
 		while(_g3 < _g11.length) {
@@ -1981,8 +2009,8 @@ svgimport.SvgPathToShapeConvertor.prototype = {
 			++_g4;
 			null;
 		}
-		svgimport.SvgPathToShapeConvertor.log("normalize ^^^^^^^^^^^^^^",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 218, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
-		svgimport.SvgPathToShapeConvertor.log("intersectSelf vvvvvvvvvvvvvv",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 220, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
+		svgimport.SvgPathToShapeConvertor.log("normalize ^^^^^^^^^^^^^^",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 229, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
+		svgimport.SvgPathToShapeConvertor.log("intersectSelf vvvvvvvvvvvvvv",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 231, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
 		var _g5 = 0;
 		var _g13 = this.edges;
 		while(_g5 < _g13.length) {
@@ -1998,8 +2026,8 @@ svgimport.SvgPathToShapeConvertor.prototype = {
 			++_g6;
 			null;
 		}
-		svgimport.SvgPathToShapeConvertor.log("intersectSelf ^^^^^^^^^^^^^^",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 224, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
-		svgimport.SvgPathToShapeConvertor.log("shape.combine stroke vvvvvvvvvvvvvv",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 226, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
+		svgimport.SvgPathToShapeConvertor.log("intersectSelf ^^^^^^^^^^^^^^",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 235, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
+		svgimport.SvgPathToShapeConvertor.log("shape.combine stroke vvvvvvvvvvvvvv",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 237, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
 		var _g7 = 0;
 		var _g15 = this.edges;
 		while(_g7 < _g15.length) {
@@ -2015,9 +2043,22 @@ svgimport.SvgPathToShapeConvertor.prototype = {
 			++_g8;
 			null;
 		}
-		svgimport.SvgPathToShapeConvertor.log("shape.combine stroke ^^^^^^^^^^^^^^",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 230, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
-		svgimport.SvgPathToShapeConvertor.log("SvgPathExporter.export ^^^^^^^^^^^^^^^^^^^^^^^^^^^^",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 232, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
+		svgimport.SvgPathToShapeConvertor.log("shape.combine stroke ^^^^^^^^^^^^^^",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 241, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
+		svgimport.SvgPathToShapeConvertor.log("SvgPathExporter.export ^^^^^^^^^^^^^^^^^^^^^^^^^^^^",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 243, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
 		return shape;
+	}
+	,getBounds: function() {
+		if(this.boundsCache != null) return this.boundsCache;
+		this.boundsCache = { minX : 1e100, minY : 1e100, maxX : -1e100, maxY : -1e100};
+		nanofl.engine.geom.Edges.getBounds(this.edges,this.boundsCache);
+		var _g = 0;
+		var _g1 = this.polygonAndFillRules;
+		while(_g < _g1.length) {
+			var p = _g1[_g];
+			++_g;
+			p.polygon.getBounds(this.boundsCache);
+		}
+		return this.boundsCache;
 	}
 	,closeContour: function() {
 		var contours = this.polygonAndFillRules[this.polygonAndFillRules.length - 1].polygon.contours;
@@ -2154,7 +2195,9 @@ svgimport.SvgUseExporter.prototype = $extend(svgimport.BaseExporter.prototype,{
 			case 0:
 				var base1 = element[2];
 				var p = new svgimport.SvgPath(this.svg,base1.node,this["use"].styles,this.getNextFreeID(base1.id));
-				namePath = new svgimport.SvgPathExporter(this.svg,this.library,p).exportToLibrary().namePath;
+				var item = new svgimport.SvgPathExporter(this.svg,this.library,p).exportToLibrary();
+				if(item == null) return null;
+				namePath = item.namePath;
 				break;
 			default:
 			} else console.log("WARNING: Element '" + this["use"].groupID + "' is not found.");
@@ -2407,23 +2450,7 @@ svgimport.gradients.LinearGradient.prototype = $extend(svgimport.gradients.Gradi
 	getAbsoluteParams: function(bounds) {
 		if(this.gradientUnits == "userSpaceOnUse") return this; else {
 			var w = bounds.maxX - bounds.minX;
-			var h = bounds.maxY - bounds.minY;
-			var p1 = { x : this.x1 * w, y : this.y1 * w};
-			var p2 = { x : this.x2 * w, y : this.y2 * w};
-			if(w > 0) {
-				var k = h / w;
-				var line = new nanofl.engine.geom.StraightLine(p1.x,p1.y,p2.x,p2.y);
-				var v = line.getOrthogonalVector();
-				var ortho = new nanofl.engine.geom.StraightLine(p2.x,p2.y,p2.x + v.x,p2.y + v.y);
-				ortho.y1 *= k;
-				ortho.y2 *= k;
-				p2 = ortho.getOrthogonalRayIntersection(p1.x,p1.y).point;
-				var ortho1 = new nanofl.engine.geom.StraightLine(p1.x,p1.y,p1.x + v.x,p1.y + v.y);
-				ortho1.y1 *= k;
-				ortho1.y2 *= k;
-				p1 = ortho1.getOrthogonalRayIntersection(p2.x,p2.y).point;
-			}
-			return { x1 : p1.x + bounds.minX, y1 : p1.y + bounds.minY, x2 : p2.x + bounds.minX, y2 : p2.y + bounds.minY};
+			return { x1 : this.x1 * w + bounds.minX, y1 : this.y1 * w + bounds.minY, x2 : this.x2 * w + bounds.minX, y2 : this.y2 * w + bounds.minY};
 		}
 	}
 	,__class__: svgimport.gradients.LinearGradient
@@ -2450,8 +2477,7 @@ svgimport.gradients.RadialGradient.__super__ = svgimport.gradients.Gradient;
 svgimport.gradients.RadialGradient.prototype = $extend(svgimport.gradients.Gradient.prototype,{
 	getAbsoluteParams: function(bounds) {
 		var m = new nanofl.engine.geom.Matrix();
-		if(this.gradientUnits == "userSpaceOnUse") {
-		} else {
+		if(this.gradientUnits != "userSpaceOnUse") {
 			var w = bounds.maxX - bounds.minX;
 			var h = bounds.maxY - bounds.minY;
 			m.scale(w * this.r,h * this.r);
@@ -2774,6 +2800,7 @@ svgimport.SegmentsParser.FLOAT_EXP = -6;
 svgimport.SvgAttributes.presentation = ["alignment-baseline","baseline-shift","clip","clip-rule","color","color-interpolation","color-interpolation-filters","color-profile","color-rendering","cursor","direction","display","dominant-baseline","enable-background","fill","fill-opacity","fill-rule","filter","flood-color","flood-opacity","font-family","font-size","font-size-adjust","font-stretch","font-style","font-variant","font-weight","glyph-orientation-horizontal","glyph-orientation-vertical","image-rendering","kerning","letter-spacing","lighting-color","marker-end","marker-mid","marker-start","mask","opacity","overflow","pointer-events","shape-rendering","stop-color","stop-opacity","stroke","stroke-dasharray","stroke-dashoffset","stroke-linecap","stroke-linejoin","stroke-miterlimit","stroke-opacity","stroke-width","text-anchor","text-decoration","text-rendering","unicode-bidi","visibility","word-spacing","writing-mode"];
 svgimport.SvgPath.SIN45 = 0.70710678118654752440084436210485;
 svgimport.SvgPath.TAN22 = 0.4142135623730950488016887242097;
+svgimport.SvgPathExporter.EPS = 1e-10;
 svgimport.XmlTools.reStyleValue = new EReg("^\\s*(.+)\\s*:\\s*(.+)\\s*$","");
 svgimport.XmlTools.reURLMatch = new EReg("^\\s*url\\(#([^)]*)\\)\\s*","");
 svgimport.segments.ArcSegment.RAD_120 = Math.PI * 2 / 3;
