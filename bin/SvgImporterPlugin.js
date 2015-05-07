@@ -1834,13 +1834,13 @@ svgimport.SvgPathExporter.prototype = $extend(svgimport.BaseExporter.prototype,{
 			instance.matrix = this.path.matrix;
 			return instance;
 		} else if(canIgnoreStroke) {
-			stdlib.Debug.assert(!fillMatrix.isIdentity(),null,{ fileName : "SvgPathExporter.hx", lineNumber : 101, className : "svgimport.SvgPathExporter", methodName : "exportAsElementInner"});
+			stdlib.Debug.assert(!fillMatrix.isIdentity(),null,{ fileName : "SvgPathExporter.hx", lineNumber : 102, className : "svgimport.SvgPathExporter", methodName : "exportAsElementInner"});
 			var instance1 = this.shapeToInstance(shape,bounds,fillMatrix,aspectRatio,this.getNextFreeID(this.path.id));
 			if(!instance1.matrix.isIdentity()) instance1 = this.elementsToLibraryItem([instance1],this.getNextFreeID(this.path.id)).newInstance();
 			instance1.matrix.prependMatrix(this.path.matrix);
 			return instance1;
 		} else if(canIgnoreFill) {
-			stdlib.Debug.assert(!strokeMatrix.isIdentity(),null,{ fileName : "SvgPathExporter.hx", lineNumber : 111, className : "svgimport.SvgPathExporter", methodName : "exportAsElementInner"});
+			stdlib.Debug.assert(!strokeMatrix.isIdentity(),null,{ fileName : "SvgPathExporter.hx", lineNumber : 112, className : "svgimport.SvgPathExporter", methodName : "exportAsElementInner"});
 			var instance2 = this.shapeToInstance(shape,bounds,strokeMatrix,aspectRatio,this.getNextFreeID(this.path.id));
 			if(!instance2.matrix.isIdentity()) instance2 = this.elementsToLibraryItem([instance2],this.getNextFreeID(this.path.id)).newInstance();
 			instance2.matrix.prependMatrix(this.path.matrix);
@@ -1854,26 +1854,32 @@ svgimport.SvgPathExporter.prototype = $extend(svgimport.BaseExporter.prototype,{
 		return null;
 	}
 	,exportToLibrary: function() {
-		stdlib.Debug.assert(!this.library.hasItem(this.path.id),null,{ fileName : "SvgPathExporter.hx", lineNumber : 141, className : "svgimport.SvgPathExporter", methodName : "exportToLibrary"});
+		stdlib.Debug.assert(!this.library.hasItem(this.path.id),null,{ fileName : "SvgPathExporter.hx", lineNumber : 142, className : "svgimport.SvgPathExporter", methodName : "exportToLibrary"});
 		var element = this.exportAsElement();
 		if(element == null) return null;
 		if(js.Boot.__instanceof(element,nanofl.engine.elements.ShapeElement)) return this.elementsToLibraryItem([element],this.path.id); else return js.Boot.__cast(this.library.getItem((js.Boot.__cast(element , nanofl.engine.elements.Instance)).namePath) , nanofl.engine.libraryitems.MovieClipItem);
 	}
 	,shapeToInstance: function(shape,bounds,matrix,aspectRatio,id) {
+		shape = shape.clone();
 		matrix = matrix.clone();
 		if(aspectRatio != 1.0) {
 			matrix.translate(-(bounds.minX + bounds.maxX) / 2,-(bounds.minY + bounds.maxY) / 2);
-			matrix.scale(1,1 / aspectRatio);
+			matrix.scale(1,aspectRatio);
 			matrix.translate((bounds.minX + bounds.maxX) / 2,(bounds.minY + bounds.maxY) / 2);
 		}
-		shape.transform(matrix.clone().invert(),false);
+		var invertMatrix = matrix.clone().invert();
+		shape.transform(invertMatrix,false);
+		var k = invertMatrix.getAverageScale();
+		nanofl.engine.geom.StrokeEdges.processStrokes(shape.edges,function(stroke) {
+			stroke.thickness *= k;
+		});
 		var item = this.elementsToLibraryItem([shape],id);
 		var instance = item.newInstance();
 		instance.matrix = matrix.clone();
 		return instance;
 	}
 	,getApsectRatio: function(bounds,grad) {
-		if(grad.gradientUnits != "userSpaceOnUse" && bounds.maxY - bounds.minY > svgimport.SvgPathExporter.EPS) return (bounds.maxX - bounds.minX) / (bounds.maxY - bounds.minY);
+		if(grad.gradientUnits != "userSpaceOnUse" && bounds.maxX - bounds.minX > svgimport.SvgPathExporter.EPS) return (bounds.maxY - bounds.minY) / (bounds.maxX - bounds.minX);
 		return 1.0;
 	}
 	,__class__: svgimport.SvgPathExporter

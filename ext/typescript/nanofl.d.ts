@@ -6948,6 +6948,7 @@ declare module nanofl.engine.geom
 		static load(node:htmlparser.HtmlNodeElement, strokes:nanofl.engine.strokes.IStroke[]) : nanofl.engine.geom.StrokeEdge[];
 		static save(edges:nanofl.engine.geom.StrokeEdge[], strokes:nanofl.engine.strokes.IStroke[], out:nanofl.engine.XmlWriter) : void;
 		static getBounds(edges:nanofl.engine.geom.StrokeEdge[], bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
+		static processStrokes(edges:nanofl.engine.geom.StrokeEdge[], callb:(arg:nanofl.engine.strokes.IStroke) => void) : void;
 		static drawSorted(edges:nanofl.engine.geom.StrokeEdge[], g:createjs.Graphics, scaleSelection:number) : void;
 	}
 }

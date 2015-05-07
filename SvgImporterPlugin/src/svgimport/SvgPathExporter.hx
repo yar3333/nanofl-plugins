@@ -5,6 +5,7 @@ import nanofl.engine.elements.Element;
 import nanofl.engine.elements.Instance;
 import nanofl.engine.elements.ShapeElement;
 import nanofl.engine.geom.BoundsTools;
+import nanofl.engine.geom.StrokeEdges;
 import nanofl.engine.Library;
 import nanofl.engine.libraryitems.MovieClipItem;
 import svgimport.gradients.GradientType;
@@ -149,15 +150,22 @@ class SvgPathExporter extends BaseExporter
 	
 	function shapeToInstance(shape:ShapeElement, bounds:Bounds, matrix:Matrix, aspectRatio:Float, id:String) : Instance
 	{
+		shape = cast shape.clone();
+		
 		matrix = matrix.clone();
 		if (aspectRatio != 1.0)
 		{
 			matrix.translate(-(bounds.minX+bounds.maxX)/2, -(bounds.minY+bounds.maxY)/2);
-			matrix.scale(1,1/aspectRatio);
-			matrix.translate((bounds.minX+bounds.maxX)/2, (bounds.minY+bounds.maxY)/2);
+			matrix.scale(1, aspectRatio);
+			matrix.translate( (bounds.minX+bounds.maxX)/2,  (bounds.minY+bounds.maxY)/2);
 		}
 		
-		shape.transform(matrix.clone().invert(), false);
+		var invertMatrix = matrix.clone().invert();
+		shape.transform(invertMatrix, false);
+		
+		var k = invertMatrix.getAverageScale();
+		StrokeEdges.processStrokes(shape.edges, function(stroke) stroke.thickness *= k);
+		
 		var item = elementsToLibraryItem([shape], id);
 		var instance = item.newInstance();
 		instance.matrix = matrix.clone();
@@ -166,9 +174,9 @@ class SvgPathExporter extends BaseExporter
 	
 	function getApsectRatio(bounds:Bounds, grad:{ gradientUnits:String }) : Float
 	{
-		if (grad.gradientUnits != "userSpaceOnUse" && bounds.maxY - bounds.minY > EPS)
+		if (grad.gradientUnits != "userSpaceOnUse" && bounds.maxX - bounds.minX > EPS)
 		{
-			return (bounds.maxX - bounds.minX) / (bounds.maxY - bounds.minY);
+			return (bounds.maxY - bounds.minY) / (bounds.maxX - bounds.minX);
 		}
 		return 1.0;
 	}

@@ -45,7 +45,7 @@
   <postBuildCommand alwaysRun="False">cmd /C "IF EXIST support IF NOT EXIST ..\bin\$(ProjectName) mkdir  ..\bin\$(ProjectName)"
 cmd /C "IF EXIST support xcopy /E /Q /Y support ..\bin\$(ProjectName) &gt; nul"
 
-cmd /C "cd ..\..\site &amp;&amp; ..\ide\standalone\nanoflc.exe content/docs/svg/images/scimitar.svg -resize-fit 400x400 -export content/docs/svg/images/scimitar.png"</postBuildCommand>
+cmd /C "cd ..\..\site &amp;&amp; ..\ide\standalone\nanoflc.exe content/docs/svg/images/rg1024_Ufo_in_metalic_style.svg -resize-fit 400x400 -export content/docs/svg/images/rg1024_Ufo_in_metalic_style.png"</postBuildCommand>
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
