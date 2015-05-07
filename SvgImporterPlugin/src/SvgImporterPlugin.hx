@@ -48,7 +48,12 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 	
 	public function importDocument(fileApi:FileApi, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, fonts:Array<String>, callb:Bool->Void)
 	{
+		trace("Load");
+		
 		var xml = new XmlDocument(fileApi.getContent(srcFilePath));
+		
+		trace("Parse");
+		
 		var svg = new Svg(xml);
 		
 		documentProperties.width = Math.round(svg.width);
@@ -60,18 +65,25 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 			svg.elements.set(Library.SCENE_NAME_PATH, SvgElement.DisplayGroup(svg));
 		}
 		
-		for (element in svg.elements)
+		trace("Convert");
+		
+		for (elementID in svg.elements.keys())
 		{
-			switch (element)
+			if (!library.hasItem(elementID))
 			{
-				case SvgElement.DisplayGroup(group):
-					new SvgGroupExporter(svg, library, group).exportToLibrary();
-					
-				case SvgElement.DisplayPath(path):
-					new SvgPathExporter(svg, library, path).exportToLibrary();
-					
-				case _:
-					trace("ID for item type '" + element.getName() + "' is not supported.");
+				trace("Process " + elementID);
+				
+				switch (svg.elements.get(elementID))
+				{
+					case SvgElement.DisplayGroup(group):
+						new SvgGroupExporter(svg, library, group).exportToLibrary();
+						
+					case SvgElement.DisplayPath(path):
+						new SvgPathExporter(svg, library, path).exportToLibrary();
+						
+					case _:
+						trace("ID for item type '" + svg.elements.get(elementID).getName() + "' is not supported.");
+				}
 			}
 		}
 		

@@ -295,7 +295,9 @@ SvgImporterPlugin.main = function() {
 };
 SvgImporterPlugin.prototype = {
 	importDocument: function(fileApi,srcFilePath,destFilePath,documentProperties,library,fonts,callb) {
+		console.log("Load");
 		var xml = new htmlparser.XmlDocument(fileApi.getContent(srcFilePath));
+		console.log("Parse");
 		var svg = new svgimport.Svg(xml);
 		documentProperties.width = Math.round(svg.width);
 		documentProperties.height = Math.round(svg.height);
@@ -304,20 +306,32 @@ SvgImporterPlugin.prototype = {
 			var value = svgimport.SvgElement.DisplayGroup(svg);
 			svg.elements.set(nanofl.engine.Library.SCENE_NAME_PATH,value);
 		}
-		var $it0 = svg.elements.iterator();
+		console.log("Convert");
+		var $it0 = svg.elements.keys();
 		while( $it0.hasNext() ) {
-			var element = $it0.next();
-			switch(element[1]) {
-			case 1:
-				var group = element[2];
-				new svgimport.SvgGroupExporter(svg,library,group).exportToLibrary();
-				break;
-			case 0:
-				var path = element[2];
-				new svgimport.SvgPathExporter(svg,library,path).exportToLibrary();
-				break;
-			default:
-				console.log("ID for item type '" + element[0] + "' is not supported.");
+			var elementID = $it0.next();
+			if(!library.hasItem(elementID)) {
+				console.log("Process " + elementID);
+				{
+					var _g = svg.elements.get(elementID);
+					switch(_g[1]) {
+					case 1:
+						var group = _g[2];
+						new svgimport.SvgGroupExporter(svg,library,group).exportToLibrary();
+						break;
+					case 0:
+						var path = _g[2];
+						new svgimport.SvgPathExporter(svg,library,path).exportToLibrary();
+						break;
+					default:
+						console.log("ID for item type '" + (function($this) {
+							var $r;
+							var e = svg.elements.get(elementID);
+							$r = e[0];
+							return $r;
+						}(this)) + "' is not supported.");
+					}
+				}
 			}
 		}
 		if(!svg.elements.exists(nanofl.engine.Library.SCENE_NAME_PATH)) {
@@ -454,14 +468,6 @@ haxe.ds.StringMap.prototype = {
 		if(this.h.hasOwnProperty(key)) a.push(key.substr(1));
 		}
 		return HxOverrides.iter(a);
-	}
-	,iterator: function() {
-		return { ref : this.h, it : this.keys(), hasNext : function() {
-			return this.it.hasNext();
-		}, next : function() {
-			var i = this.it.next();
-			return this.ref["$" + i];
-		}};
 	}
 	,__class__: haxe.ds.StringMap
 };
@@ -1176,12 +1182,14 @@ svgimport.BaseExporter.prototype = {
 		}
 	}
 	,getNextFreeID: function(prefix) {
-		if(prefix == null) prefix = "auto_";
-		if(prefix == "") prefix = "auto_";
-		var i = 0;
-		while(this.svg.elements.exists(prefix + i) || this.library.hasItem(prefix + i) || HxOverrides.indexOf(this.svg.usedIDs,prefix + i,0) >= 0) i++;
-		this.svg.usedIDs.push(prefix + i);
-		return prefix + i;
+		if(prefix == null) prefix = "";
+		if(prefix == "") prefix = "auto";
+		prefix += "_";
+		var i = -1;
+		var s;
+		do s = prefix + ++i; while(this.svg.elements.exists(s) || this.library.hasItem(s) || HxOverrides.indexOf(this.svg.usedIDs,s,0) >= 0);
+		this.svg.usedIDs.push(s);
+		return s;
 	}
 	,__class__: svgimport.BaseExporter
 };
@@ -1572,6 +1580,7 @@ svgimport.SvgGroupExporter.__name__ = ["svgimport","SvgGroupExporter"];
 svgimport.SvgGroupExporter.__super__ = svgimport.BaseExporter;
 svgimport.SvgGroupExporter.prototype = $extend(svgimport.BaseExporter.prototype,{
 	exportToLibrary: function() {
+		console.log("SvgGroupExporter.exportToLibrary " + this.group.id);
 		this.layers = [];
 		var _g = 0;
 		var _g1 = this.group.children;
@@ -1763,6 +1772,7 @@ svgimport.SvgPathExporter.__name__ = ["svgimport","SvgPathExporter"];
 svgimport.SvgPathExporter.__super__ = svgimport.BaseExporter;
 svgimport.SvgPathExporter.prototype = $extend(svgimport.BaseExporter.prototype,{
 	exportAsElement: function() {
+		console.log("SvgPathexporter.exportAsElement " + this.path.id);
 		return this.applyMaskToElement(this.exportAsElementInner(),this.path.clipPathID,this.path.id);
 	}
 	,exportAsElementInner: function() {
@@ -1824,13 +1834,15 @@ svgimport.SvgPathExporter.prototype = $extend(svgimport.BaseExporter.prototype,{
 			instance.matrix = this.path.matrix;
 			return instance;
 		} else if(canIgnoreStroke) {
-			stdlib.Debug.assert(!fillMatrix.isIdentity(),null,{ fileName : "SvgPathExporter.hx", lineNumber : 100, className : "svgimport.SvgPathExporter", methodName : "exportAsElementInner"});
+			stdlib.Debug.assert(!fillMatrix.isIdentity(),null,{ fileName : "SvgPathExporter.hx", lineNumber : 101, className : "svgimport.SvgPathExporter", methodName : "exportAsElementInner"});
 			var instance1 = this.shapeToInstance(shape,bounds,fillMatrix,aspectRatio,this.getNextFreeID(this.path.id));
+			if(!instance1.matrix.isIdentity()) instance1 = this.elementsToLibraryItem([instance1],this.getNextFreeID(this.path.id)).newInstance();
 			instance1.matrix.prependMatrix(this.path.matrix);
 			return instance1;
 		} else if(canIgnoreFill) {
-			stdlib.Debug.assert(!strokeMatrix.isIdentity(),null,{ fileName : "SvgPathExporter.hx", lineNumber : 109, className : "svgimport.SvgPathExporter", methodName : "exportAsElementInner"});
+			stdlib.Debug.assert(!strokeMatrix.isIdentity(),null,{ fileName : "SvgPathExporter.hx", lineNumber : 111, className : "svgimport.SvgPathExporter", methodName : "exportAsElementInner"});
 			var instance2 = this.shapeToInstance(shape,bounds,strokeMatrix,aspectRatio,this.getNextFreeID(this.path.id));
+			if(!instance2.matrix.isIdentity()) instance2 = this.elementsToLibraryItem([instance2],this.getNextFreeID(this.path.id)).newInstance();
 			instance2.matrix.prependMatrix(this.path.matrix);
 			return instance2;
 		} else {
@@ -1842,7 +1854,7 @@ svgimport.SvgPathExporter.prototype = $extend(svgimport.BaseExporter.prototype,{
 		return null;
 	}
 	,exportToLibrary: function() {
-		stdlib.Debug.assert(!this.library.hasItem(this.path.id),null,{ fileName : "SvgPathExporter.hx", lineNumber : 138, className : "svgimport.SvgPathExporter", methodName : "exportToLibrary"});
+		stdlib.Debug.assert(!this.library.hasItem(this.path.id),null,{ fileName : "SvgPathExporter.hx", lineNumber : 141, className : "svgimport.SvgPathExporter", methodName : "exportToLibrary"});
 		var element = this.exportAsElement();
 		if(element == null) return null;
 		if(js.Boot.__instanceof(element,nanofl.engine.elements.ShapeElement)) return this.elementsToLibraryItem([element],this.path.id); else return js.Boot.__cast(this.library.getItem((js.Boot.__cast(element , nanofl.engine.elements.Instance)).namePath) , nanofl.engine.libraryitems.MovieClipItem);

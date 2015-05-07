@@ -24,6 +24,7 @@ class SvgPathExporter extends BaseExporter
 	
 	public function exportAsElement() : Element
 	{
+		trace("SvgPathexporter.exportAsElement " + path.id);
 		return applyMaskToElement(exportAsElementInner(), path.clipPathID, path.id);
 	}
 	
@@ -99,6 +100,7 @@ class SvgPathExporter extends BaseExporter
 				//trace("(2)");
 				stdlib.Debug.assert(!fillMatrix.isIdentity());
 				var instance = shapeToInstance(shape, bounds, fillMatrix, aspectRatio, getNextFreeID(path.id));
+				if (!instance.matrix.isIdentity()) instance = elementsToLibraryItem([instance], getNextFreeID(path.id)).newInstance();
 				instance.matrix.prependMatrix(path.matrix);
 				return instance;
 			}
@@ -108,6 +110,7 @@ class SvgPathExporter extends BaseExporter
 				//trace("(3)");
 				stdlib.Debug.assert(!strokeMatrix.isIdentity());
 				var instance = shapeToInstance(shape, bounds, strokeMatrix, aspectRatio, getNextFreeID(path.id));
+				if (!instance.matrix.isIdentity()) instance = elementsToLibraryItem([instance], getNextFreeID(path.id)).newInstance();
 				instance.matrix.prependMatrix(path.matrix);
 				return instance;
 			}

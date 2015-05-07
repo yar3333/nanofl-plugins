@@ -96,15 +96,20 @@ class BaseExporter
 		};
 	}
 	
-	function getNextFreeID(prefix="auto_") : String
+	function getNextFreeID(prefix="") : String
 	{
-		if (prefix == "") prefix = "auto_";
-		var i = 0;
-		while (svg.elements.exists(prefix + i) || library.hasItem(prefix + i) || svg.usedIDs.indexOf(prefix + i) >= 0)
-		{
-			i++;
-		}
-		svg.usedIDs.push(prefix + i);
-		return prefix + i;
+		if (prefix == "") prefix = "auto";
+		
+		prefix += "_";
+		
+		var i = -1;
+		var s : String;
+		
+		do s = prefix + (++i)
+		while (svg.elements.exists(s) || library.hasItem(s) || svg.usedIDs.indexOf(s) >= 0);
+		
+		svg.usedIDs.push(s);
+		
+		return s;
 	}
 }

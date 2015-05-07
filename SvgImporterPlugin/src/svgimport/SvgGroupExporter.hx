@@ -24,6 +24,8 @@ class SvgGroupExporter extends BaseExporter
 	
 	public function exportToLibrary() : MovieClipItem
 	{
+		trace("SvgGroupExporter.exportToLibrary " + group.id);
+		
 		layers = [];
 		
 		for (child in group.children)
