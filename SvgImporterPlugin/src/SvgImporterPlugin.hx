@@ -71,8 +71,6 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 		{
 			if (!library.hasItem(elementID))
 			{
-				trace("Process " + elementID);
-				
 				switch (svg.elements.get(elementID))
 				{
 					case SvgElement.DisplayGroup(group):

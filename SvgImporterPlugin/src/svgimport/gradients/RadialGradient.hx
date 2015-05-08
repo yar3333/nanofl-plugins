@@ -2,7 +2,6 @@ package svgimport.gradients;
 
 import htmlparser.HtmlNodeElement;
 import nanofl.engine.geom.Bounds;
-import nanofl.engine.geom.Matrix;
 using htmlparser.HtmlParserTools;
 using svgimport.XmlTools;
 
@@ -41,26 +40,22 @@ class RadialGradient extends Gradient
 	
 	public function getAbsoluteParams(bounds:Bounds) : { cx:Float, cy:Float, fx:Float, fy:Float, r:Float }
 	{
-		var m = new Matrix();
-		
-		if (gradientUnits != "userSpaceOnUse")
+		if (gradientUnits == "userSpaceOnUse")
+		{
+			return this;
+		}
+		else
 		{
 			var w = bounds.maxX - bounds.minX;
-			var h = bounds.maxY - bounds.minY;
-			m.scale(w * r, h * r);
-			m.translate(bounds.minX + w * cx, bounds.minY + h * cy);
+			
+			return
+			{
+				cx: cx * w + bounds.minX,
+				cy: cy * w + bounds.minY,
+				fx: fx * w + bounds.minX,
+				fy: fy * w + bounds.minY,
+				r: r * w
+			};
 		}
-		
-		var pc = m.transformPoint(cx, cy);
-		var pf = m.transformPoint(fx, fy);
-		
-		return
-		{
-			cx: pc.x,
-			cy: pc.y,
-			fx: pf.x,
-			fy: pf.y,
-			r: r // TODO: calculate r
-		};
 	}	
 }

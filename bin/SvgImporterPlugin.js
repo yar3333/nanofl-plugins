@@ -311,26 +311,23 @@ SvgImporterPlugin.prototype = {
 		while( $it0.hasNext() ) {
 			var elementID = $it0.next();
 			if(!library.hasItem(elementID)) {
-				console.log("Process " + elementID);
-				{
-					var _g = svg.elements.get(elementID);
-					switch(_g[1]) {
-					case 1:
-						var group = _g[2];
-						new svgimport.SvgGroupExporter(svg,library,group).exportToLibrary();
-						break;
-					case 0:
-						var path = _g[2];
-						new svgimport.SvgPathExporter(svg,library,path).exportToLibrary();
-						break;
-					default:
-						console.log("ID for item type '" + (function($this) {
-							var $r;
-							var e = svg.elements.get(elementID);
-							$r = e[0];
-							return $r;
-						}(this)) + "' is not supported.");
-					}
+				var _g = svg.elements.get(elementID);
+				switch(_g[1]) {
+				case 1:
+					var group = _g[2];
+					new svgimport.SvgGroupExporter(svg,library,group).exportToLibrary();
+					break;
+				case 0:
+					var path = _g[2];
+					new svgimport.SvgPathExporter(svg,library,path).exportToLibrary();
+					break;
+				default:
+					console.log("ID for item type '" + (function($this) {
+						var $r;
+						var e = svg.elements.get(elementID);
+						$r = e[0];
+						return $r;
+					}(this)) + "' is not supported.");
 				}
 			}
 		}
@@ -1827,20 +1824,20 @@ svgimport.SvgPathExporter.prototype = $extend(svgimport.BaseExporter.prototype,{
 			default:
 			}
 		}
-		if((canIgnoreStroke || strokeMatrix.isIdentity()) && (canIgnoreFill || fillMatrix.isIdentity())) {
+		if((canIgnoreStroke || strokeMatrix.isIdentity() && aspectRatio == 1.0) && (canIgnoreFill || fillMatrix.isIdentity() && aspectRatio == 1.0)) {
 			if(this.path.matrix.isIdentity()) return shape;
 			var item = this.elementsToLibraryItem([shape],this.getNextFreeID(this.path.id));
 			var instance = item.newInstance();
 			instance.matrix = this.path.matrix;
 			return instance;
 		} else if(canIgnoreStroke) {
-			stdlib.Debug.assert(!fillMatrix.isIdentity(),null,{ fileName : "SvgPathExporter.hx", lineNumber : 102, className : "svgimport.SvgPathExporter", methodName : "exportAsElementInner"});
+			stdlib.Debug.assert(!fillMatrix.isIdentity() || aspectRatio != 1.0,null,{ fileName : "SvgPathExporter.hx", lineNumber : 103, className : "svgimport.SvgPathExporter", methodName : "exportAsElementInner"});
 			var instance1 = this.shapeToInstance(shape,bounds,fillMatrix,aspectRatio,this.getNextFreeID(this.path.id));
 			if(!instance1.matrix.isIdentity()) instance1 = this.elementsToLibraryItem([instance1],this.getNextFreeID(this.path.id)).newInstance();
 			instance1.matrix.prependMatrix(this.path.matrix);
 			return instance1;
 		} else if(canIgnoreFill) {
-			stdlib.Debug.assert(!strokeMatrix.isIdentity(),null,{ fileName : "SvgPathExporter.hx", lineNumber : 112, className : "svgimport.SvgPathExporter", methodName : "exportAsElementInner"});
+			stdlib.Debug.assert(!strokeMatrix.isIdentity() || aspectRatio != 1.0,null,{ fileName : "SvgPathExporter.hx", lineNumber : 113, className : "svgimport.SvgPathExporter", methodName : "exportAsElementInner"});
 			var instance2 = this.shapeToInstance(shape,bounds,strokeMatrix,aspectRatio,this.getNextFreeID(this.path.id));
 			if(!instance2.matrix.isIdentity()) instance2 = this.elementsToLibraryItem([instance2],this.getNextFreeID(this.path.id)).newInstance();
 			instance2.matrix.prependMatrix(this.path.matrix);
@@ -1854,7 +1851,7 @@ svgimport.SvgPathExporter.prototype = $extend(svgimport.BaseExporter.prototype,{
 		return null;
 	}
 	,exportToLibrary: function() {
-		stdlib.Debug.assert(!this.library.hasItem(this.path.id),null,{ fileName : "SvgPathExporter.hx", lineNumber : 142, className : "svgimport.SvgPathExporter", methodName : "exportToLibrary"});
+		stdlib.Debug.assert(!this.library.hasItem(this.path.id),null,{ fileName : "SvgPathExporter.hx", lineNumber : 143, className : "svgimport.SvgPathExporter", methodName : "exportToLibrary"});
 		var element = this.exportAsElement();
 		if(element == null) return null;
 		if(js.Boot.__instanceof(element,nanofl.engine.elements.ShapeElement)) return this.elementsToLibraryItem([element],this.path.id); else return js.Boot.__cast(this.library.getItem((js.Boot.__cast(element , nanofl.engine.elements.Instance)).namePath) , nanofl.engine.libraryitems.MovieClipItem);
@@ -1863,9 +1860,9 @@ svgimport.SvgPathExporter.prototype = $extend(svgimport.BaseExporter.prototype,{
 		shape = shape.clone();
 		matrix = matrix.clone();
 		if(aspectRatio != 1.0) {
-			matrix.translate(-(bounds.minX + bounds.maxX) / 2,-(bounds.minY + bounds.maxY) / 2);
+			matrix.translate(-bounds.minX,-bounds.minY);
 			matrix.scale(1,aspectRatio);
-			matrix.translate((bounds.minX + bounds.maxX) / 2,(bounds.minY + bounds.maxY) / 2);
+			matrix.translate(bounds.minX,bounds.minY);
 		}
 		var invertMatrix = matrix.clone().invert();
 		shape.transform(invertMatrix,false);
@@ -2461,6 +2458,7 @@ svgimport.gradients.LinearGradient = function(node,baseType,svgWidth) {
 		if(this.x2 == null) this.x2 = 0;
 		if(this.y2 == null) this.y2 = 0;
 	}
+	this.spreadMethod = htmlparser.HtmlParserTools.getAttr(node,"spreadMethod",base != null?base.spreadMethod:"pad");
 };
 svgimport.gradients.LinearGradient.__name__ = ["svgimport","gradients","LinearGradient"];
 svgimport.gradients.LinearGradient.__super__ = svgimport.gradients.Gradient;
@@ -2494,16 +2492,10 @@ svgimport.gradients.RadialGradient.__name__ = ["svgimport","gradients","RadialGr
 svgimport.gradients.RadialGradient.__super__ = svgimport.gradients.Gradient;
 svgimport.gradients.RadialGradient.prototype = $extend(svgimport.gradients.Gradient.prototype,{
 	getAbsoluteParams: function(bounds) {
-		var m = new nanofl.engine.geom.Matrix();
-		if(this.gradientUnits != "userSpaceOnUse") {
+		if(this.gradientUnits == "userSpaceOnUse") return this; else {
 			var w = bounds.maxX - bounds.minX;
-			var h = bounds.maxY - bounds.minY;
-			m.scale(w * this.r,h * this.r);
-			m.translate(bounds.minX + w * this.cx,bounds.minY + h * this.cy);
+			return { cx : this.cx * w + bounds.minX, cy : this.cy * w + bounds.minY, fx : this.fx * w + bounds.minX, fy : this.fy * w + bounds.minY, r : this.r * w};
 		}
-		var pc = m.transformPoint(this.cx,this.cy);
-		var pf = m.transformPoint(this.fx,this.fy);
-		return { cx : pc.x, cy : pc.y, fx : pf.x, fy : pf.y, r : this.r};
 	}
 	,__class__: svgimport.gradients.RadialGradient
 });

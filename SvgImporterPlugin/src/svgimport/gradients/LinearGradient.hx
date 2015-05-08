@@ -14,6 +14,8 @@ class LinearGradient extends Gradient
 	public var x2 : Float;
 	public var y2 : Float;
 	
+	public var spreadMethod : String;
+	
 	function new(node:HtmlNodeElement, baseType:GradientType, svgWidth:Float) 
 	{
 		super(node, baseType);
@@ -57,6 +59,8 @@ class LinearGradient extends Gradient
 				if (y2 == null) y2 = 0;
 			}
 		}
+		
+		spreadMethod = node.getAttr("spreadMethod", base != null ? base.spreadMethod : "pad");
 	}
 	
 	public function getAbsoluteParams(bounds:Bounds) : { x1:Float, y1:Float, x2:Float, y2:Float }

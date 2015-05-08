@@ -85,7 +85,8 @@ class SvgPathExporter extends BaseExporter
 			};
 		}
 		
-		if ((canIgnoreStroke || strokeMatrix.isIdentity()) && (canIgnoreFill || fillMatrix.isIdentity()))
+		if ((canIgnoreStroke || (strokeMatrix.isIdentity() && aspectRatio == 1.0)) 
+		 && (canIgnoreFill   || (fillMatrix.isIdentity()   && aspectRatio == 1.0)))
 		{
 			//trace("(1) fillMatrix = " + fillMatrix);
 			if (path.matrix.isIdentity()) return shape;
@@ -99,7 +100,7 @@ class SvgPathExporter extends BaseExporter
 			if (canIgnoreStroke)
 			{
 				//trace("(2)");
-				stdlib.Debug.assert(!fillMatrix.isIdentity());
+				stdlib.Debug.assert(!fillMatrix.isIdentity() || aspectRatio != 1.0);
 				var instance = shapeToInstance(shape, bounds, fillMatrix, aspectRatio, getNextFreeID(path.id));
 				if (!instance.matrix.isIdentity()) instance = elementsToLibraryItem([instance], getNextFreeID(path.id)).newInstance();
 				instance.matrix.prependMatrix(path.matrix);
@@ -109,7 +110,7 @@ class SvgPathExporter extends BaseExporter
 			if (canIgnoreFill)
 			{
 				//trace("(3)");
-				stdlib.Debug.assert(!strokeMatrix.isIdentity());
+				stdlib.Debug.assert(!strokeMatrix.isIdentity() || aspectRatio != 1.0);
 				var instance = shapeToInstance(shape, bounds, strokeMatrix, aspectRatio, getNextFreeID(path.id));
 				if (!instance.matrix.isIdentity()) instance = elementsToLibraryItem([instance], getNextFreeID(path.id)).newInstance();
 				instance.matrix.prependMatrix(path.matrix);
@@ -155,9 +156,9 @@ class SvgPathExporter extends BaseExporter
 		matrix = matrix.clone();
 		if (aspectRatio != 1.0)
 		{
-			matrix.translate(-(bounds.minX+bounds.maxX)/2, -(bounds.minY+bounds.maxY)/2);
+			matrix.translate(-bounds.minX, -bounds.minY);
 			matrix.scale(1, aspectRatio);
-			matrix.translate( (bounds.minX+bounds.maxX)/2,  (bounds.minY+bounds.maxY)/2);
+			matrix.translate( bounds.minX,  bounds.minY);
 		}
 		
 		var invertMatrix = matrix.clone().invert();
