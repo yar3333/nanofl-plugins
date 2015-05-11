@@ -11,17 +11,11 @@ import svgimport.SvgElement;
 using htmlparser.HtmlParserTools;
 using svgimport.XmlTools;
 
-class SvgPath
+class SvgPath extends SvgDisplayObject
 {
 	private static var SIN45 = 0.70710678118654752440084436210485;
 	private static var TAN22 = 0.4142135623730950488016887242097;
 	
-	var svg : Svg;
-	
-	public var node : HtmlNodeElement;
-	
-	public var id : String;
-	public var matrix : Matrix;
 	public var alpha : Float;
 	
 	public var fill : FillType;
@@ -37,17 +31,14 @@ class SvgPath
 
 	public var segments : Array<Segment>;
 	
-	public var clipPathID : String;
-	
 	public function new(svg:Svg, node:HtmlNodeElement, baseStyles:Map<String, String>, ?id:String) : Void
 	{
-		this.svg = svg;
-		this.node = node;
+		super(svg, node, baseStyles, id);
+		
+		if (this.id != "") svg.elements.set(this.id, SvgElement.DisplayPath(this));
 		
 		var styles = XmlTools.getStyles(node, baseStyles);
 		
-		this.id = id != null ? id : node.getAttr("id", ""); if (this.id != "") svg.elements.set(this.id, SvgElement.DisplayPath(this));
-		matrix = Transform.load(node.getAttribute("transform"));
 		alpha = XmlTools.getFloatStyle(node, "opacity", styles, 1.0);
 		
 		fill = XmlTools.getFillStyle(node, "fill", styles, svg.gradients);
@@ -60,8 +51,6 @@ class SvgPath
 		strokeCaps = XmlTools.getStyle(node, "stroke-linecap", styles, "butt");
 		strokeJoints = XmlTools.getStyle(node, "stroke-linejoin", styles, "miter");
 		strokeMiterLimit = XmlTools.getFloatStyle(node, "stroke-miterlimit", styles, 4.0);
-		
-		clipPathID = XmlTools.getIdFromUrl(node, "clip-path");
 		
 		segments = [];
 		

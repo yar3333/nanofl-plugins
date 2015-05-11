@@ -2,39 +2,24 @@ package svgimport;
 
 import htmlparser.HtmlNodeElement;
 import svgimport.gradients.Gradient;
-import svgimport.gradients.GradientType;
 using htmlparser.HtmlParserTools;
 using StringTools;
 using svgimport.XmlTools;
 
-class SvgGroup
+class SvgGroup extends SvgDisplayObject
 {
-	var svg : Svg;
-	
-	public var node : HtmlNodeElement;
-	
-	public var id : String;
 	public var name : String;
 	public var children = new Array<SvgElement>();
-	public var matrix : Matrix;
-	public var visible : Bool;
-	public var clipPathID : String;
 	
-	public function new(svg:Svg, node:HtmlNodeElement, styles:Map<String, String>, ?id:String) : Void
+	public function new(svg:Svg, node:HtmlNodeElement, baseStyles:Map<String, String>, ?id:String) : Void
 	{
-		this.svg = svg;
+		super(svg, node, baseStyles, id);
 		
-		this.node = node;
-		
-		this.id = id != null ? id : node.getAttr("id", "");
 		if (this.id != "") svg.elements.set(this.id, SvgElement.DisplayGroup(this));
 		
 		name = node.getAttr("inkscape:label", this.id);
-		matrix = Transform.load(node.getAttribute("transform"));
-		visible = node.getAttribute("display") != "none";
-		clipPathID = XmlTools.getIdFromUrl(node, "clip-path");
 		
-		loadChildren(node, XmlTools.getStyles(node, styles));
+		loadChildren(node, XmlTools.getStyles(node, baseStyles));
 	}
 	
 	function loadChildren(xml:HtmlNodeElement, styles:Map<String, String>)
@@ -50,7 +35,7 @@ class SvgGroup
 					children.push(SvgElement.DisplayGroup(new SvgGroup(svg, child, styles)));
 					
 				case"use":
-					var use = new SvgUse(child, styles);
+					var use = new SvgUse(svg, child, styles);
 					if (use.groupID != null) children.push(SvgElement.DisplayUse(use));
 					
 				case "path", "line", "polyline", "rect", "polygon", "ellipse", "circle":
@@ -85,6 +70,7 @@ class SvgGroup
 				case "g":				new SvgGroup(svg, child, null);
 				case "path", "line", "polyline", "rect", "polygon", "ellipse", "circle": new SvgPath(svg, child, null);
 				case "clipPath":		new SvgGroup(svg, child, [ "stroke"=>"none", "fill"=>"red" ]);
+				case "filter":			loadFilter(child);
 				case _:					trace("Unknown tag '" + child.name + "'.");
 			}
 		}
@@ -102,14 +88,31 @@ class SvgGroup
 	
 	function loadGradient(node:HtmlNodeElement) : Void
 	{
-		var baseGradID = XmlTools.getIdFromXlink(node, "xlink:href");
-		if (baseGradID == null || svg.gradients.exists(baseGradID))
+		var baseID = XmlTools.getIdFromXlink(node, "xlink:href");
+		if (baseID == null || svg.gradients.exists(baseID))
 		{
-			var gradID = node.getAttribute("id");
-			if (!svg.gradients.exists(gradID))
+			var id = node.getAttribute("id");
+			if (!svg.gradients.exists(id))
 			{
-				svg.gradients.set(gradID, Gradient.load(svg, node, baseGradID != null ? svg.gradients.get(baseGradID) : null));
+				svg.gradients.set(id, Gradient.load(svg, node, baseID != null ? svg.gradients.get(baseID) : null));
 			}
+		}
+	}
+	
+	function loadFilter(node:HtmlNodeElement) : Void
+	{
+		var id = node.getAttribute("id");
+		
+		if (id != null && id != "" && !svg.filters.exists(id))
+		{
+			var filters = [];
+			
+			for (child in node.children)
+			{
+				filters.push(new SvgFilter(child));
+			}
+			
+			svg.filters.set(id, filters);
 		}
 	}
 }

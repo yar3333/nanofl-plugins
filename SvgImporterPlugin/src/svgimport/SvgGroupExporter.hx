@@ -64,7 +64,8 @@ class SvgGroupExporter extends BaseExporter
 		for (layer in layers) mc.addLayer(layer);
 		library.addItem(mc);
 		
-		mc = wrapMovieClipItemWithMask(mc, group.clipPathID, group.id != "" ? group.id : getNextFreeID());
+		mc = wrapMovieClipItemWithFilter(mc, group.filterID, getNextFreeID(group.id));
+		mc = wrapMovieClipItemWithMask(mc, group.clipPathID, getNextFreeID(group.id));
 		
 		return mc;
 	}

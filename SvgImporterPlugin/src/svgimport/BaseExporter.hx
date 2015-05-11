@@ -36,7 +36,7 @@ class BaseExporter
 		
 		if (maskID != null)
 		{
-			if (!Std.is(element, Instance) || cast(library.getItem(cast(element, Instance).namePath), MovieClipItem).layers.length > 1)
+			//if (!Std.is(element, Instance) || cast(library.getItem(cast(element, Instance).namePath), MovieClipItem).layers.length > 1)
 			{
 				element = cast elementsToLibraryItem([element], getNextFreeID(prefixID)).newInstance();
 			}
@@ -53,16 +53,60 @@ class BaseExporter
 		return element;
 	}
 	
+	function applyFilterToElement<T:Element>(element:T, filterID:String, prefixID:String) : T
+	{
+		if (element == null) return null;
+		
+		if (filterID != null)
+		{
+			if (svg.filters.exists(filterID))
+			{
+				var filterDefs = [];
+				for (f in svg.filters.get(filterID))
+				{
+					filterDefs.push(f.export());
+				}
+				
+				if (filterDefs.length > 0 && filterDefs.indexOf(null) < 0)
+				{
+					//if (!Std.is(element, Instance) || cast(library.getItem(cast(element, Instance).namePath), MovieClipItem).layers.length > 1)
+					{
+						element = cast elementsToLibraryItem([element], getNextFreeID(prefixID)).newInstance();
+					}
+					
+					stdlib.Debug.assert(Std.is(element, Instance));
+					stdlib.Debug.assert(library.getItem(cast(element, Instance).namePath) != null);
+					
+					cast(element, Instance).filters = filterDefs;
+				}
+			}
+			else
+			{
+				trace("Filter reference '" + filterID + "' is not found.");
+			}
+		}
+		
+		return element;
+	}
+	
 	function wrapMovieClipItemWithMask(item:MovieClipItem, maskID:String, id:String) : MovieClipItem
 	{
 		if (maskID == null) return item;
 		
 		var r = elementsToLibraryItem([item.newInstance()], id);
-		
 		addMaskLayerToMovieClipItem(r, maskID);
-		library.addItem(r);
 		
 		return r;
+	}
+	
+	function wrapMovieClipItemWithFilter(item:MovieClipItem, filterID:String, id:String) : MovieClipItem
+	{
+		if (filterID == null) return item;
+		
+		var instance = item.newInstance();
+		instance = applyFilterToElement(instance, filterID, id);
+		
+		return elementsToLibraryItem([instance], id);
 	}
 	
 	function addMaskLayerToMovieClipItem(item:MovieClipItem, maskID:String) : Void

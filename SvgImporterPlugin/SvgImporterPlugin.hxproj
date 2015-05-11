@@ -45,12 +45,12 @@
   <postBuildCommand alwaysRun="False">cmd /C "IF EXIST support IF NOT EXIST ..\bin\$(ProjectName) mkdir  ..\bin\$(ProjectName)"
 cmd /C "IF EXIST support xcopy /E /Q /Y support ..\bin\$(ProjectName) &gt; nul"
 
-cmd /C "cd ..\..\site &amp;&amp; ..\ide\standalone\nanoflc.exe content/docs/svg/images/_radial.svg -resize-fit 400x400 -export content/docs/svg/images/_radial.png"</postBuildCommand>
+cmd /C "cd ..\..\site &amp;&amp; ..\ide\standalone\nanoflc.exe content/docs/svg/images/gaussian1.svg -resize-fit 400x400 -export content/docs/svg/images/gaussian1.png"</postBuildCommand>
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
     <option testMovie="Custom" />
-    <option testMovieCommand="..\..\ide\standalone.cmd ..\..\site\content\docs\svg\images\_radial.svg -resize-fit 300x200" />
+    <option testMovieCommand="..\..\ide\standalone.cmd ..\..\site\content\docs\svg\images\gaussian1.svg -resize-fit 300x200" />
   </options>
   <!-- Plugin storage -->
   <storage />

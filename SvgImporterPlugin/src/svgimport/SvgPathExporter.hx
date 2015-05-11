@@ -25,8 +25,11 @@ class SvgPathExporter extends BaseExporter
 	
 	public function exportAsElement() : Element
 	{
-		trace("SvgPathexporter.exportAsElement " + path.id);
-		return applyMaskToElement(exportAsElementInner(), path.clipPathID, path.id);
+		trace("SvgPathexporter.exportAsElement " + path.id + "; clipPathID = " + path.clipPathID + "; filterID" + path.filterID);
+		var r = exportAsElementInner();
+		r = applyFilterToElement(r, path.filterID, path.id);
+		r = applyMaskToElement(r, path.clipPathID, path.id);
+		return r;
 	}
 	
 	function exportAsElementInner() : Element

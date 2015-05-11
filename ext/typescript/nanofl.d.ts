@@ -8016,6 +8016,7 @@ declare module nanofl
 	{
 		static smartCache(obj:createjs.DisplayObject) : void;
 		static smartUncache(obj:createjs.DisplayObject) : void;
+		static smartGetBounds(obj:createjs.DisplayObject, ignoreSelf?:boolean) : createjs.Rectangle;
 		static callMethod(parent:createjs.DisplayObject, name:string) : void;
 	}
 	

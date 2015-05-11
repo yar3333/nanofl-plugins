@@ -18,7 +18,10 @@ class XmlTools
 		{
 			for (s in baseStyles.keys())
 			{
-				styles.set(s, baseStyles.get(s));
+				if (SvgAttributes.presentationNoInherit.indexOf(s) < 0)
+				{
+					styles.set(s, baseStyles.get(s));
+				}
 			}
 		}
 		
@@ -27,18 +30,25 @@ class XmlTools
 			if (node.hasAttribute(key)) styles.set(key, node.getAttribute(key));
 		}
 		
+		parseStyleAttr(node);
+		
+		return styles;
+	}
+	
+	static function parseStyleAttr(node:HtmlNodeElement, ?r:Map<String, String>) : Map<String, String>
+	{
+		if (r == null) r = new Map<String, String>();
 		if (node.hasAttribute("style")) 
 		{
 			for (s in node.getAttribute("style").split(";"))
 			{
 				if (reStyleValue.match(s))
 				{
-					styles.set(reStyleValue.matched(1), reStyleValue.matched(2));
+					r.set(reStyleValue.matched(1), reStyleValue.matched(2));
 				}
 			}
 		}
-		
-		return styles;
+		return r;
 	}
 	
 	public static function getFloatStyle(node:HtmlNodeElement, key:String, styles:Map<String, String>, defaultValue:Float)
@@ -68,7 +78,9 @@ class XmlTools
 	public static function getStyle(node:HtmlNodeElement, key:String, styles:Map<String, String>, defaultValue:String) : String
 	{
 		if (node != null && node.hasAttribute(key)) return node.getAttribute(key);
-		if (styles != null && styles.exists(key)) return styles.get(key);
+		var t = parseStyleAttr(node);
+		if (t.exists(key)) return t.get(key);
+		if (styles != null && styles.exists(key) && SvgAttributes.presentationNoInherit.indexOf(key) < 0) return styles.get(key);
 		return defaultValue;
 	}
 	
@@ -130,12 +142,13 @@ class XmlTools
 		return xlink.substring(1);
 	}
 	
-	public static function getIdFromUrl(node:HtmlNodeElement, attrName:String) : String
+	public static function getIdFromUrl(s:String) : String
 	{
-		var s = StringTools.trim(node.getAttr(attrName, ""));
+		if (s == null) return null;
+		var s = StringTools.trim(s);
 		if (s == "") return null;
 		if (reURLMatch.match(s)) return reURLMatch.matched(1);
-		trace("WARNING: Unkown " + attrName + " syntax ('" + s + "').");
+		trace("WARNING: Unkown url syntax ('" + s + "').");
 		return null;
 	}
 }
