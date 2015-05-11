@@ -61,13 +61,9 @@ class BaseExporter
 		{
 			if (svg.filters.exists(filterID))
 			{
-				var filterDefs = [];
-				for (f in svg.filters.get(filterID))
-				{
-					filterDefs.push(f.export());
-				}
+				var filterDefs = svg.filters.get(filterID).export();
 				
-				if (filterDefs.length > 0 && filterDefs.indexOf(null) < 0)
+				if (filterDefs.length > 0)
 				{
 					//if (!Std.is(element, Instance) || cast(library.getItem(cast(element, Instance).namePath), MovieClipItem).layers.length > 1)
 					{

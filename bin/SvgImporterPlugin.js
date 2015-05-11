@@ -1336,21 +1336,14 @@ svgimport.BaseExporter.prototype = {
 		if(element == null) return null;
 		if(filterID != null) {
 			if(this.svg.filters.exists(filterID)) {
-				var filterDefs = [];
-				var _g = 0;
-				var _g1 = this.svg.filters.get(filterID);
-				while(_g < _g1.length) {
-					var f = _g1[_g];
-					++_g;
-					filterDefs.push(f["export"]());
-				}
-				if(filterDefs.length > 0 && HxOverrides.indexOf(filterDefs,null,0) < 0) {
+				var filterDefs = this.svg.filters.get(filterID)["export"]();
+				if(filterDefs.length > 0) {
 					element = this.elementsToLibraryItem([element],this.getNextFreeID(prefixID)).newInstance();
-					stdlib.Debug.assert(js.Boot.__instanceof(element,nanofl.engine.elements.Instance),null,{ fileName : "BaseExporter.hx", lineNumber : 77, className : "svgimport.BaseExporter", methodName : "applyFilterToElement"});
-					stdlib.Debug.assert(this.library.getItem((js.Boot.__cast(element , nanofl.engine.elements.Instance)).namePath) != null,null,{ fileName : "BaseExporter.hx", lineNumber : 78, className : "svgimport.BaseExporter", methodName : "applyFilterToElement"});
+					stdlib.Debug.assert(js.Boot.__instanceof(element,nanofl.engine.elements.Instance),null,{ fileName : "BaseExporter.hx", lineNumber : 73, className : "svgimport.BaseExporter", methodName : "applyFilterToElement"});
+					stdlib.Debug.assert(this.library.getItem((js.Boot.__cast(element , nanofl.engine.elements.Instance)).namePath) != null,null,{ fileName : "BaseExporter.hx", lineNumber : 74, className : "svgimport.BaseExporter", methodName : "applyFilterToElement"});
 					(js.Boot.__cast(element , nanofl.engine.elements.Instance)).filters = filterDefs;
 				}
-			} else haxe.Log.trace("Filter reference '" + filterID + "' is not found.",{ fileName : "BaseExporter.hx", lineNumber : 85, className : "svgimport.BaseExporter", methodName : "applyFilterToElement"});
+			} else haxe.Log.trace("Filter reference '" + filterID + "' is not found.",{ fileName : "BaseExporter.hx", lineNumber : 81, className : "svgimport.BaseExporter", methodName : "applyFilterToElement"});
 		}
 		return element;
 	}
@@ -1372,7 +1365,7 @@ svgimport.BaseExporter.prototype = {
 			var maskItem;
 			if(this.library.hasItem(maskID)) maskItem = this.library.getItem(maskID); else maskItem = this.exportSvgElementToLibrary(this.svg.elements.get(maskID));
 			maskLayer.addKeyFrame(new nanofl.engine.KeyFrame(null,null,null,[(js.Boot.__cast(maskItem , nanofl.engine.libraryitems.MovieClipItem)).newInstance()]));
-			stdlib.Debug.assert(item.layers.length == 1,null,{ fileName : "BaseExporter.hx", lineNumber : 125, className : "svgimport.BaseExporter", methodName : "addMaskLayerToMovieClipItem"});
+			stdlib.Debug.assert(item.layers.length == 1,null,{ fileName : "BaseExporter.hx", lineNumber : 121, className : "svgimport.BaseExporter", methodName : "addMaskLayerToMovieClipItem"});
 			item.addLayersBlock([maskLayer],0);
 			item.layers[1].parentIndex = 0;
 			item.layers[1].locked = true;
@@ -1721,7 +1714,7 @@ svgimport.SvgGroup.prototype = $extend(svgimport.SvgDisplayObject.prototype,{
 				}(this)));
 				break;
 			case "filter":
-				this.loadFilter(child);
+				new svgimport.SvgFilter(this.svg,child);
 				break;
 			default:
 				haxe.Log.trace("Unknown tag '" + child.name + "'.",{ fileName : "SvgGroup.hx", lineNumber : 74, className : "svgimport.SvgGroup", methodName : "loadDefs"});
@@ -1752,20 +1745,6 @@ svgimport.SvgGroup.prototype = $extend(svgimport.SvgDisplayObject.prototype,{
 				var value = svgimport.gradients.Gradient.load(this.svg,node,baseID != null?this.svg.gradients.get(baseID):null);
 				this.svg.gradients.set(id,value);
 			}
-		}
-	}
-	,loadFilter: function(node) {
-		var id = node.getAttribute("id");
-		if(id != null && id != "" && !this.svg.filters.exists(id)) {
-			var filters = [];
-			var _g = 0;
-			var _g1 = node.children;
-			while(_g < _g1.length) {
-				var child = _g1[_g];
-				++_g;
-				filters.push(new svgimport.SvgFilter(child));
-			}
-			this.svg.filters.set(id,filters);
 		}
 	}
 	,__class__: svgimport.SvgGroup
@@ -1808,39 +1787,59 @@ svgimport.SvgElement.DisplayPath = function(path) { var $x = ["DisplayPath",0,pa
 svgimport.SvgElement.DisplayGroup = function(group) { var $x = ["DisplayGroup",1,group]; $x.__enum__ = svgimport.SvgElement; return $x; };
 svgimport.SvgElement.DisplayText = function(text) { var $x = ["DisplayText",2,text]; $x.__enum__ = svgimport.SvgElement; return $x; };
 svgimport.SvgElement.DisplayUse = function($use) { var $x = ["DisplayUse",3,$use]; $x.__enum__ = svgimport.SvgElement; return $x; };
-svgimport.SvgFilter = function(node) {
+svgimport.SvgFilter = function(svg,node) {
 	this.node = node;
+	var id = node.getAttribute("id");
+	if(id != null && id != "" && !svg.filters.exists(id)) svg.filters.set(id,this);
+	this.gradientUnits = node.getAttribute("gradientUnits");
+	this.x = htmlparser.HtmlParserTools.getAttrFloat(node,"x",null);
+	this.y = htmlparser.HtmlParserTools.getAttrFloat(node,"y",null);
+	this.width = htmlparser.HtmlParserTools.getAttrFloat(node,"width",null);
+	this.height = htmlparser.HtmlParserTools.getAttrFloat(node,"height",null);
 };
 svgimport.SvgFilter.__name__ = ["svgimport","SvgFilter"];
 svgimport.SvgFilter.prototype = {
 	'export': function() {
-		var name = svgimport.XmlTools.normalizeTag(this.node.name);
+		var r = [];
+		var _g = 0;
+		var _g1 = this.node.children;
+		while(_g < _g1.length) {
+			var child = _g1[_g];
+			++_g;
+			var f = this.exportChild(child);
+			if(f == null) return [];
+			r.push(f);
+		}
+		return r;
+	}
+	,exportChild: function(node) {
+		var name = svgimport.XmlTools.normalizeTag(node.name);
 		switch(name) {
 		case "feGaussianBlur":
-			var input = htmlparser.HtmlParserTools.getAttr(this.node,"in","SourceGraphic");
+			var input = htmlparser.HtmlParserTools.getAttr(node,"in","SourceGraphic");
 			if(input != "SourceGraphic") {
-				haxe.Log.trace("Filter '" + name + "': 'in' attribute value different to 'SourceGraphic' is not supported.",{ fileName : "SvgFilter.hx", lineNumber : 35, className : "svgimport.SvgFilter", methodName : "export"});
+				haxe.Log.trace("Filter '" + name + "': 'in' attribute value different to 'SourceGraphic' is not supported.",{ fileName : "SvgFilter.hx", lineNumber : 67, className : "svgimport.SvgFilter", methodName : "exportChild"});
 				return null;
 			}
-			var stdDeviation = this.getFloatParams(htmlparser.HtmlParserTools.getAttr(this.node,"stdDeviation"),[0]);
+			var stdDeviation = this.getFloatParams(htmlparser.HtmlParserTools.getAttr(node,"stdDeviation"),[0]);
 			return new nanofl.engine.FilterDef("BlurFilter",{ blurX : stdDeviation[0], blurY : stdDeviation[stdDeviation.length > 1?1:0]});
 		case "feColorMatrix":
-			haxe.Log.trace("Filter '" + name + "' is unsupported.",{ fileName : "SvgFilter.hx", lineNumber : 52, className : "svgimport.SvgFilter", methodName : "export"});
+			haxe.Log.trace("Filter '" + name + "' is unsupported.",{ fileName : "SvgFilter.hx", lineNumber : 84, className : "svgimport.SvgFilter", methodName : "exportChild"});
 			break;
 		case "feOffset":
-			haxe.Log.trace("Filter '" + name + "' is unsupported.",{ fileName : "SvgFilter.hx", lineNumber : 55, className : "svgimport.SvgFilter", methodName : "export"});
+			haxe.Log.trace("Filter '" + name + "' is unsupported.",{ fileName : "SvgFilter.hx", lineNumber : 87, className : "svgimport.SvgFilter", methodName : "exportChild"});
 			break;
 		case "feMerge":
-			haxe.Log.trace("Filter '" + name + "' is unsupported.",{ fileName : "SvgFilter.hx", lineNumber : 58, className : "svgimport.SvgFilter", methodName : "export"});
+			haxe.Log.trace("Filter '" + name + "' is unsupported.",{ fileName : "SvgFilter.hx", lineNumber : 90, className : "svgimport.SvgFilter", methodName : "exportChild"});
 			break;
 		case "feBlend":
-			haxe.Log.trace("Filter '" + name + "' is unsupported.",{ fileName : "SvgFilter.hx", lineNumber : 61, className : "svgimport.SvgFilter", methodName : "export"});
+			haxe.Log.trace("Filter '" + name + "' is unsupported.",{ fileName : "SvgFilter.hx", lineNumber : 93, className : "svgimport.SvgFilter", methodName : "exportChild"});
 			break;
 		case "feComponentTransfer":case "feComposite":case "feConvolveMatrix":case "feDiffuseLighting":case "feDisplacementMap":case "feFlood":case "feImage":case "feMorphology":case "feSpecularLighting":case "feTile":case "feTurbulence":case "feDistantLight":case "fePointLight":case "feSpotLight":
-			haxe.Log.trace("Filter '" + name + "' is not supported.",{ fileName : "SvgFilter.hx", lineNumber : 77, className : "svgimport.SvgFilter", methodName : "export"});
+			haxe.Log.trace("Filter '" + name + "' is not supported.",{ fileName : "SvgFilter.hx", lineNumber : 109, className : "svgimport.SvgFilter", methodName : "exportChild"});
 			break;
 		default:
-			haxe.Log.trace("Unknow filter '" + name + "'.",{ fileName : "SvgFilter.hx", lineNumber : 80, className : "svgimport.SvgFilter", methodName : "export"});
+			haxe.Log.trace("Unknow filter '" + name + "'.",{ fileName : "SvgFilter.hx", lineNumber : 112, className : "svgimport.SvgFilter", methodName : "exportChild"});
 		}
 		return null;
 	}

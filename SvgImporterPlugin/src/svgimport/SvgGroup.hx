@@ -70,7 +70,7 @@ class SvgGroup extends SvgDisplayObject
 				case "g":				new SvgGroup(svg, child, null);
 				case "path", "line", "polyline", "rect", "polygon", "ellipse", "circle": new SvgPath(svg, child, null);
 				case "clipPath":		new SvgGroup(svg, child, [ "stroke"=>"none", "fill"=>"red" ]);
-				case "filter":			loadFilter(child);
+				case "filter":			new SvgFilter(svg, child);
 				case _:					trace("Unknown tag '" + child.name + "'.");
 			}
 		}
@@ -96,23 +96,6 @@ class SvgGroup extends SvgDisplayObject
 			{
 				svg.gradients.set(id, Gradient.load(svg, node, baseID != null ? svg.gradients.get(baseID) : null));
 			}
-		}
-	}
-	
-	function loadFilter(node:HtmlNodeElement) : Void
-	{
-		var id = node.getAttribute("id");
-		
-		if (id != null && id != "" && !svg.filters.exists(id))
-		{
-			var filters = [];
-			
-			for (child in node.children)
-			{
-				filters.push(new SvgFilter(child));
-			}
-			
-			svg.filters.set(id, filters);
 		}
 	}
 }

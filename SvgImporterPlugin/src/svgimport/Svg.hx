@@ -15,7 +15,7 @@ class Svg extends SvgGroup
 	//public var nodes = new Map<String, HtmlNodeElement>();
 	public var elements = new Map<String, SvgElement>();
 	public var gradients = new Map<String, GradientType>();
-	public var filters = new Map<String, Array<SvgFilter>>();
+	public var filters = new Map<String, SvgFilter>();
 	
 	public var usedIDs = new Array<String>();
 	

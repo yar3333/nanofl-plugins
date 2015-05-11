@@ -17,12 +17,44 @@ class SvgFilter
 {
 	var node : HtmlNodeElement;
 	
-	public function new(node:HtmlNodeElement)
+	var gradientUnits : String;
+	
+	var x : Float;
+	var y : Float;
+	var width : Float;
+	var height : Float;
+	
+	public function new(svg:Svg, node:HtmlNodeElement)
 	{
 		this.node = node;
+		
+		var id = node.getAttribute("id");
+		if (id != null && id != "" && !svg.filters.exists(id))
+		{
+			svg.filters.set(id, this);
+		}
+		
+		gradientUnits = node.getAttribute("gradientUnits");
+		
+		x = node.getAttrFloat("x", null);
+		y = node.getAttrFloat("y", null);
+		width = node.getAttrFloat("width", null);
+		height = node.getAttrFloat("height", null);
 	}
 	
-	public function export() : FilterDef
+	public function export() : Array<FilterDef>
+	{
+		var r = [];
+		for (child in node.children)
+		{
+			var f = exportChild(child);
+			if (f == null) return [];
+			r.push(f);
+		}
+		return r;
+	}
+	
+	function exportChild(node:HtmlNodeElement) : FilterDef
 	{
 		var name = XmlTools.normalizeTag(node.name);
 		
