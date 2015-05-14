@@ -8,5 +8,6 @@ class StdFiltersPlugin
 		Plugins.registerFilter(new BlurFilterPlugin());
 		Plugins.registerFilter(new GlowFilterPlugin());
 		Plugins.registerFilter(new AdjustColorFilterPlugin());
+		Plugins.registerFilter(new GaussianBlurFilterPlugin());
 	}
 }
