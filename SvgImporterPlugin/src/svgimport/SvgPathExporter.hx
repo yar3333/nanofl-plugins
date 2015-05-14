@@ -1,10 +1,9 @@
 package svgimport;
 
-import nanofl.engine.geom.Bounds;
 import nanofl.engine.elements.Element;
 import nanofl.engine.elements.Instance;
 import nanofl.engine.elements.ShapeElement;
-import nanofl.engine.geom.BoundsTools;
+import nanofl.engine.geom.Bounds;
 import nanofl.engine.geom.StrokeEdges;
 import nanofl.engine.Library;
 import nanofl.engine.libraryitems.MovieClipItem;
@@ -25,7 +24,7 @@ class SvgPathExporter extends BaseExporter
 	
 	public function exportAsElement() : Element
 	{
-		trace("SvgPathexporter.exportAsElement " + path.id + "; clipPathID = " + path.clipPathID + "; filterID" + path.filterID);
+		trace("SvgPathexporter.exportAsElement " + path.id);
 		var r = exportAsElementInner();
 		r = applyFilterToElement(r, path.filterID, path.id);
 		r = applyMaskToElement(r, path.clipPathID, path.id);

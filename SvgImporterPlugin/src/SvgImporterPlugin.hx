@@ -1,7 +1,4 @@
-import htmlparser.XmlNodeElement;
 import htmlparser.XmlDocument;
-import svgimport.SvgElement;
-import svgimport.SvgPathExporter;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.elements.Instance;
 import nanofl.engine.FileApi;
@@ -12,7 +9,9 @@ import nanofl.engine.libraryitems.MovieClipItem;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IImporterPlugin;
 import svgimport.Svg;
+import svgimport.SvgElement;
 import svgimport.SvgGroupExporter;
+import svgimport.SvgPathExporter;
 using StringTools;
 
 class SvgImporterPlugin implements IImporterPlugin
