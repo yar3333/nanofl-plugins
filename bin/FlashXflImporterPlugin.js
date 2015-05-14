@@ -1124,7 +1124,15 @@ flashimport.SymbolLoader.prototype = {
 	,loadFilter: function(filter) {
 		if(filter == null) return null;
 		var params = filter.getAttributesObject();
-		if(Object.prototype.hasOwnProperty.call(params,"strength")) Reflect.setField(params,"strength",Math.round(stdlib.Std.parseFloat(Reflect.field(params,"strength")) * 100));
+		this.fixFilterParamFloat(params,"strength",100,function(k) {
+			return Math.round(k * 100);
+		});
+		this.fixFilterParamFloat(params,"blurX",10,function(k1) {
+			return k1 * 2;
+		});
+		this.fixFilterParamFloat(params,"blurY",10,function(k2) {
+			return k2 * 2;
+		});
 		return new nanofl.engine.FilterDef(filter.name,params);
 	}
 	,parseMotionTweenRotate: function(motionTweenRotate,motionTweenRotateTimes) {
@@ -1146,6 +1154,9 @@ flashimport.SymbolLoader.prototype = {
 				if(item.linkedClass == "") item.linkedClass = linkageIdentifier;
 			}
 		}
+	}
+	,fixFilterParamFloat: function(params,name,defValue,f) {
+		Reflect.setField(params,name,Object.prototype.hasOwnProperty.call(params,name)?f(stdlib.Std.parseFloat(Reflect.field(params,name))):defValue);
 	}
 	,__class__: flashimport.SymbolLoader
 };

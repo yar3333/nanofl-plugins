@@ -473,10 +473,11 @@ class SymbolLoader
 		if (filter == null) return null;
 		
 		var params = filter.getAttributesObject();
-		if (Reflect.hasField(params, "strength"))
-		{
-			Reflect.setField(params, "strength", Math.round(Std.parseFloat(Reflect.field(params, "strength")) * 100));
-		}
+		
+		fixFilterParamFloat(params, "strength", 100, function(k) return Math.round(k * 100));
+		fixFilterParamFloat(params, "blurX",    10,  function(k) return k * 2);
+		fixFilterParamFloat(params, "blurY",    10,  function(k) return k * 2);
+		
 		return new FilterDef(filter.name, params);
 	}
 	
@@ -503,5 +504,15 @@ class SymbolLoader
 				if (item.linkedClass == "") item.linkedClass = linkageIdentifier;
 			}
 		}
+	}
+	
+	function fixFilterParamFloat(params:Dynamic, name:String, defValue:Float, f:Float->Float) : Void
+	{
+		Reflect.setField
+		(
+			params,
+			name,
+			Reflect.hasField(params, name) ? f(Std.parseFloat(Reflect.field(params, name))) : defValue
+		);
 	}
 }
