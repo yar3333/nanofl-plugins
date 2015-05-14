@@ -36,10 +36,10 @@ class SvgFilter
 		
 		filterUnits = node.getAttribute("filterUnits");
 		
-		x = node.getAttrFloat("x", null);
-		y = node.getAttrFloat("y", null);
-		width = node.getAttrFloat("width", null);
-		height = node.getAttrFloat("height", null);
+		x = XmlTools.getFloatValue(node, "x", null);
+		y = XmlTools.getFloatValue(node, "y", null);
+		width = XmlTools.getFloatValue(node, "width", null);
+		height = XmlTools.getFloatValue(node, "height", null);
 	}
 	
 	public function export() : Array<FilterDef>
@@ -118,6 +118,6 @@ class SvgFilter
 		if (s == null) return defValue;
 		s = s.trim();
 		if (s == "") return defValue;
-		return ~/[ \t\r\n,]+/g.split(s).map(Std.parseFloat);
+		return ~/[ \t\r\n,]+/g.split(s).map(XmlTools.toFloat.bind(_, null)).filter(function(f) return f != null);
 	}
 }

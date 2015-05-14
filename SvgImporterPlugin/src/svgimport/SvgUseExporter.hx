@@ -1,6 +1,7 @@
 package svgimport;
 
 import nanofl.engine.elements.Instance;
+import nanofl.engine.geom.Matrix;
 import nanofl.engine.Library;
 
 class SvgUseExporter extends BaseExporter
@@ -15,7 +16,7 @@ class SvgUseExporter extends BaseExporter
 	
 	public function exportAsElement() : Instance
 	{
-		return applyMaskToElement(exportAsElementInner(), use.clipPathID, getNextFreeID(use.groupID));
+		return applyMaskToElement(exportAsElementInner(), use.matrix, use.clipPathID, getNextFreeID(use.groupID));
 	}
 	
 	function exportAsElementInner() : Instance

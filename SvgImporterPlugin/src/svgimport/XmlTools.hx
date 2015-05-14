@@ -61,7 +61,7 @@ class XmlTools
 		return toFloat(node.getAttribute(key), defaultValue);
 	}
 	
-	static function toFloat(s:String, defaultValue:Float)
+	public static function toFloat(s:String, defaultValue:Float)
 	{
 		if (s == null || s == "") return defaultValue;
 		if (s.startsWith(".")) s = "0" + s;

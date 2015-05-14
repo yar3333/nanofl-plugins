@@ -1,5 +1,7 @@
 package svgimport;
 
+import nanofl.engine.geom.Matrix;
+
 class Transform
 {
 	public static function load(trans:String) : Matrix

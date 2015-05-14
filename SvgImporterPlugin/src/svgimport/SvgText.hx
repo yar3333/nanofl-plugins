@@ -2,6 +2,7 @@ package svgimport;
 
 import htmlparser.HtmlNodeElement;
 import nanofl.engine.elements.TextElement;
+import nanofl.engine.geom.Matrix;
 import nanofl.TextRun;
 import svgimport.gradients.GradientType;
 using htmlparser.HtmlParserTools;

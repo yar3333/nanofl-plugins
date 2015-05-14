@@ -1,6 +1,7 @@
 package svgimport;
 
 import htmlparser.HtmlNodeElement;
+import nanofl.engine.geom.Matrix;
 using htmlparser.HtmlParserTools;
 using svgimport.XmlTools;
 

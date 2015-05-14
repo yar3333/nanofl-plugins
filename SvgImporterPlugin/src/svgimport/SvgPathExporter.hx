@@ -4,6 +4,7 @@ import nanofl.engine.elements.Element;
 import nanofl.engine.elements.Instance;
 import nanofl.engine.elements.ShapeElement;
 import nanofl.engine.geom.Bounds;
+import nanofl.engine.geom.Matrix;
 import nanofl.engine.geom.StrokeEdges;
 import nanofl.engine.Library;
 import nanofl.engine.libraryitems.MovieClipItem;
@@ -27,7 +28,7 @@ class SvgPathExporter extends BaseExporter
 		trace("SvgPathexporter.exportAsElement " + path.id);
 		var r = exportAsElementInner();
 		r = applyFilterToElement(r, path.filterID, path.id);
-		r = applyMaskToElement(r, path.clipPathID, path.id);
+		r = applyMaskToElement(r, path.matrix, path.clipPathID, path.id);
 		return r;
 	}
 	

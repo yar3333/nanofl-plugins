@@ -1,6 +1,7 @@
 package svgimport.gradients;
 
 import htmlparser.HtmlNodeElement;
+import nanofl.engine.geom.Matrix;
 using htmlparser.HtmlParserTools;
 
 class Gradient

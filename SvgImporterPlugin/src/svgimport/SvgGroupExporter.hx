@@ -3,6 +3,7 @@ package svgimport;
 import nanofl.engine.elements.Element;
 import nanofl.engine.elements.Instance;
 import nanofl.engine.elements.ShapeElement;
+import nanofl.engine.geom.Matrix;
 import nanofl.engine.KeyFrame;
 import nanofl.engine.Layer;
 import nanofl.engine.Library;
@@ -65,7 +66,7 @@ class SvgGroupExporter extends BaseExporter
 		library.addItem(mc);
 		
 		mc = wrapMovieClipItemWithFilter(mc, group.filterID, getNextFreeID(group.id));
-		mc = wrapMovieClipItemWithMask(mc, group.clipPathID, getNextFreeID(group.id));
+		mc = wrapMovieClipItemWithMask(mc, new Matrix(), group.clipPathID, getNextFreeID(group.id));
 		
 		return mc;
 	}

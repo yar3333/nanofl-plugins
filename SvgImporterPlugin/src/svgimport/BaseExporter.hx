@@ -12,6 +12,7 @@ import nanofl.engine.Layer;
 import nanofl.engine.Library;
 import nanofl.engine.libraryitems.MovieClipItem;
 import svgimport.SvgElement;
+import nanofl.engine.geom.Matrix;
 
 class BaseExporter
 {
@@ -34,7 +35,7 @@ class BaseExporter
 		return mc;
 	}
 	
-	function applyMaskToElement<T:Element>(element:T, maskID:String, prefixID:String) : T
+	function applyMaskToElement<T:Element>(element:T, matrix:Matrix, maskID:String, prefixID:String) : T
 	{
 		if (element == null) return null;
 		
@@ -51,7 +52,7 @@ class BaseExporter
 			var item = cast(library.getItem(cast(element, Instance).namePath), MovieClipItem);
 			stdlib.Debug.assert(item != null);
 			
-			addMaskItemLayerToMovieClipItem(item, maskID);
+			addMaskItemLayerToMovieClipItem(item, matrix, maskID);
 		}
 		
 		return element;
@@ -73,7 +74,9 @@ class BaseExporter
 					cast(element, Instance).filters = filterDefs;
 					
 					#if !server
-					var elemBounds =  element.createDisplayObject(null).getBounds();
+					var displayObject = element.createDisplayObject(null);
+					var elemBounds =  displayObject.getBounds();
+					//trace("elemBounds = " + elemBounds);
 					if (elemBounds != null)
 					{
 						var maskBounds : Rectangle;
@@ -98,11 +101,10 @@ class BaseExporter
 							);
 						}
 						
-						if (!isRectangleNested(elemBounds, maskBounds))
+						//trace("maskBounds = " + maskBounds);
+						if (!isRectangleNested(nanofl.DisplayObjectTools.smartGetBounds(displayObject), maskBounds))
 						{
-							//trace("maskBounds = " + maskBounds);
 							var mask = new ShapeElement([ new Polygon(new SolidFill("red"), [ Contour.fromRectangle(maskBounds) ]) ]);
-							//mask.transform(element.matrix, false);
 							var item = elementsToLibraryItem([element], getNextFreeID(prefixID));
 							addMaskElementLayerToMovieClipItem(item, mask);
 							element = cast item.newInstance();
@@ -120,12 +122,12 @@ class BaseExporter
 		return element;
 	}
 	
-	function wrapMovieClipItemWithMask(item:MovieClipItem, maskID:String, id:String) : MovieClipItem
+	function wrapMovieClipItemWithMask(item:MovieClipItem, matrix:Matrix, maskID:String, id:String) : MovieClipItem
 	{
 		if (maskID == null) return item;
 		
 		var r = elementsToLibraryItem([item.newInstance()], id);
-		addMaskItemLayerToMovieClipItem(r, maskID);
+		addMaskItemLayerToMovieClipItem(r, matrix, maskID);
 		
 		return r;
 	}
@@ -140,7 +142,7 @@ class BaseExporter
 		return elementsToLibraryItem([instance], id);
 	}
 	
-	function addMaskItemLayerToMovieClipItem(item:MovieClipItem, maskID:String) : Void
+	function addMaskItemLayerToMovieClipItem(item:MovieClipItem, matrix:Matrix, maskID:String) : Void
 	{
 		if (maskID != null)
 		{
@@ -149,8 +151,9 @@ class BaseExporter
 			var maskItem = library.hasItem(maskID)
 				? library.getItem(maskID)
 				: exportSvgElementToLibrary(svg.elements.get(maskID));
-			
-			addMaskElementLayerToMovieClipItem(item, cast(maskItem, MovieClipItem).newInstance());
+			var mask = cast(maskItem, MovieClipItem).newInstance();
+			mask.matrix = matrix.clone();
+			addMaskElementLayerToMovieClipItem(item, mask);
 		}
 	}
 	
