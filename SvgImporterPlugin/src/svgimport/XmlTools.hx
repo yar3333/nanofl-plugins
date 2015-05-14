@@ -30,7 +30,7 @@ class XmlTools
 			if (node.hasAttribute(key)) styles.set(key, node.getAttribute(key));
 		}
 		
-		parseStyleAttr(node);
+		parseStyleAttr(node, styles);
 		
 		return styles;
 	}
