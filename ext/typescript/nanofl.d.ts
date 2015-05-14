@@ -6665,6 +6665,7 @@ declare module nanofl.engine.geom
 		equ(c:nanofl.engine.geom.Contour) : boolean;
 		toString() : string;
 		assertCorrect() : void;
+		static fromRectangle(rect:{ height : number; width : number; x : number; y : number; }) : nanofl.engine.geom.Contour;
 	}
 	
 	export class Contours

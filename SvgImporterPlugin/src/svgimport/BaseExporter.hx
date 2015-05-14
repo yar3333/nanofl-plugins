@@ -1,11 +1,15 @@
 package svgimport;
 
+import createjs.Rectangle;
 import nanofl.engine.elements.Element;
 import nanofl.engine.elements.Instance;
+import nanofl.engine.elements.ShapeElement;
+import nanofl.engine.fills.SolidFill;
+import nanofl.engine.geom.Contour;
+import nanofl.engine.geom.Polygon;
 import nanofl.engine.KeyFrame;
 import nanofl.engine.Layer;
 import nanofl.engine.Library;
-import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.engine.libraryitems.MovieClipItem;
 import svgimport.SvgElement;
 
@@ -47,7 +51,7 @@ class BaseExporter
 			var item = cast(library.getItem(cast(element, Instance).namePath), MovieClipItem);
 			stdlib.Debug.assert(item != null);
 			
-			addMaskLayerToMovieClipItem(item, maskID);
+			addMaskItemLayerToMovieClipItem(item, maskID);
 		}
 		
 		return element;
@@ -59,21 +63,52 @@ class BaseExporter
 		
 		if (filterID != null)
 		{
-			if (svg.filters.exists(filterID))
+			var filter = svg.filters.get(filterID);
+			if (filter != null)
 			{
-				var filterDefs = svg.filters.get(filterID).export();
-				
+				var filterDefs = filter.export();
 				if (filterDefs.length > 0)
 				{
-					//if (!Std.is(element, Instance) || cast(library.getItem(cast(element, Instance).namePath), MovieClipItem).layers.length > 1)
-					{
-						element = cast elementsToLibraryItem([element], getNextFreeID(prefixID)).newInstance();
-					}
-					
-					stdlib.Debug.assert(Std.is(element, Instance));
-					stdlib.Debug.assert(library.getItem(cast(element, Instance).namePath) != null);
-					
+					element = cast elementsToLibraryItem([element], getNextFreeID(prefixID)).newInstance();
 					cast(element, Instance).filters = filterDefs;
+					
+					#if !server
+					var elemBounds =  element.createDisplayObject(null).getBounds();
+					if (elemBounds != null)
+					{
+						var maskBounds : Rectangle;
+						if (filter.filterUnits == "userSpaceOnUse")
+						{
+							maskBounds = new Rectangle
+							(
+								elemBounds.x + (filter.x != null ? filter.x : -elemBounds.width  * 0.1),
+								elemBounds.y + (filter.y != null ? filter.y : -elemBounds.height * 0.1),
+								filter.width  != null ? filter.width  : elemBounds.width  * 1.2,
+								filter.height != null ? filter.height : elemBounds.height * 1.2
+							);
+						}
+						else
+						{
+							maskBounds = new Rectangle
+							(
+								elemBounds.x + (filter.x != null ? filter.x * elemBounds.width  : -elemBounds.width  * 0.1),
+								elemBounds.y + (filter.y != null ? filter.y * elemBounds.height : -elemBounds.height * 0.1),
+								(filter.width  != null ? filter.width  : 1.2) * elemBounds.width,
+								(filter.height != null ? filter.height : 1.2) * elemBounds.height
+							);
+						}
+						
+						if (!isRectangleNested(elemBounds, maskBounds))
+						{
+							//trace("maskBounds = " + maskBounds);
+							var mask = new ShapeElement([ new Polygon(new SolidFill("red"), [ Contour.fromRectangle(maskBounds) ]) ]);
+							//mask.transform(element.matrix, false);
+							var item = elementsToLibraryItem([element], getNextFreeID(prefixID));
+							addMaskElementLayerToMovieClipItem(item, mask);
+							element = cast item.newInstance();
+						}
+					}
+					#end
 				}
 			}
 			else
@@ -90,7 +125,7 @@ class BaseExporter
 		if (maskID == null) return item;
 		
 		var r = elementsToLibraryItem([item.newInstance()], id);
-		addMaskLayerToMovieClipItem(r, maskID);
+		addMaskItemLayerToMovieClipItem(r, maskID);
 		
 		return r;
 	}
@@ -105,25 +140,32 @@ class BaseExporter
 		return elementsToLibraryItem([instance], id);
 	}
 	
-	function addMaskLayerToMovieClipItem(item:MovieClipItem, maskID:String) : Void
+	function addMaskItemLayerToMovieClipItem(item:MovieClipItem, maskID:String) : Void
 	{
 		if (maskID != null)
 		{
 			//trace("addMaskLayerToMovieClipItem maskID = " + maskID);
 			
-			var maskLayer = new Layer("auto_clip-path", "mask", true, true);
 			var maskItem = library.hasItem(maskID)
 				? library.getItem(maskID)
 				: exportSvgElementToLibrary(svg.elements.get(maskID));
 			
-			maskLayer.addKeyFrame(new KeyFrame([ cast(maskItem, MovieClipItem).newInstance() ]));
-			
-			stdlib.Debug.assert(item.layers.length == 1);
-			
-			item.addLayersBlock([maskLayer], 0);
-			item.layers[1].parentIndex = 0;
-			item.layers[1].locked = true;
+			addMaskElementLayerToMovieClipItem(item, cast(maskItem, MovieClipItem).newInstance());
 		}
+	}
+	
+	function addMaskElementLayerToMovieClipItem(item:MovieClipItem, mask:Element) : Void
+	{
+		stdlib.Debug.assert(mask != null);
+		
+		var maskLayer = new Layer("auto_clip-path", "mask", true, true);
+		maskLayer.addKeyFrame(new KeyFrame([ mask ]));
+		
+		stdlib.Debug.assert(item.layers.length == 1);
+		
+		item.addLayersBlock([maskLayer], 0);
+		item.layers[1].parentIndex = 0;
+		item.layers[1].locked = true;
 	}
 	
 	function exportSvgElementToLibrary(element:SvgElement) : MovieClipItem
@@ -151,5 +193,11 @@ class BaseExporter
 		svg.usedIDs.push(s);
 		
 		return s;
+	}
+	
+	function isRectangleNested(inner:Rectangle, outer:Rectangle) : Bool
+	{
+		return inner.x >= outer.x && inner.x + inner.width  <= outer.x + outer.width
+		    && inner.y >= outer.y && inner.y + inner.height <= outer.y + outer.height;
 	}
 }

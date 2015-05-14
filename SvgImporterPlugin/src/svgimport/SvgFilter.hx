@@ -17,12 +17,12 @@ class SvgFilter
 {
 	var node : HtmlNodeElement;
 	
-	var gradientUnits : String;
+	public var filterUnits : String;
 	
-	var x : Float;
-	var y : Float;
-	var width : Float;
-	var height : Float;
+	public var x : Float;
+	public var y : Float;
+	public var width : Float;
+	public var height : Float;
 	
 	public function new(svg:Svg, node:HtmlNodeElement)
 	{
@@ -34,7 +34,7 @@ class SvgFilter
 			svg.filters.set(id, this);
 		}
 		
-		gradientUnits = node.getAttribute("gradientUnits");
+		filterUnits = node.getAttribute("filterUnits");
 		
 		x = node.getAttrFloat("x", null);
 		y = node.getAttrFloat("y", null);
@@ -72,13 +72,11 @@ class SvgFilter
 				
 				return new FilterDef
 				(
-					"BlurFilter",
+					"GaussianBlurFilterPlugin",
 					{
-						blurX: stdDeviation[0],
-						blurY: stdDeviation[stdDeviation.length > 1 ? 1 : 0]
+						radius: Std.int((stdDeviation[0] + stdDeviation[stdDeviation.length > 1 ? 1 : 0]) / 2)
 					}
 				);
-				
 				
 			case "feColorMatrix":
 				trace("Filter '" + name + "' is unsupported.");

@@ -22,4 +22,5 @@ extern class Contour
 	function equ(c:nanofl.engine.geom.Contour) : Bool;
 	function toString() : String;
 	function assertCorrect() : Void;
+	static function fromRectangle(rect:{ var height : Float; var width : Float; var x : Float; var y : Float; }) : nanofl.engine.geom.Contour;
 }
