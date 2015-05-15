@@ -17,15 +17,15 @@ AdjustColorFilterPlugin.prototype = {
 		return new createjs.ColorMatrixFilter(new createjs.ColorMatrix(Math.round(params.brightness / 100 * 255 * 0.4),params.contrast,params.saturation,params.hue).toArray());
 	}
 };
-var BlurFilterPlugin = function() {
+var BoxBlurFilterPlugin = function() {
 	this.properties = [{ type : "float", name : "blurX", label : "Blur X", defaultValue : 10, neutralValue : 0, units : "px", minValue : 0},{ type : "float", name : "blurY", label : "Blur Y", defaultValue : 10, neutralValue : 0, units : "px", minValue : 0},{ type : "int", name : "quality", label : "Quality", defaultValue : 1, minValue : 1, maxValue : 3}];
-	this.label = "Blur";
-	this.name = "BlurFilter";
+	this.label = "Box Blur";
+	this.name = "BoxBlurFilter";
 };
-BlurFilterPlugin.__interfaces__ = [nanofl.engine.plugins.IFilterPlugin];
-BlurFilterPlugin.prototype = {
+BoxBlurFilterPlugin.__interfaces__ = [nanofl.engine.plugins.IFilterPlugin];
+BoxBlurFilterPlugin.prototype = {
 	getFilter: function(params) {
-		return new createjs.BlurFilter(params.blurX,params.blurY,params.quality);
+		return new createjs.BoxBlurFilter(params.blurX,params.blurY,params.quality);
 	}
 };
 var DropShadowFilterPlugin = function() {
@@ -68,7 +68,7 @@ GlowFilterPlugin.prototype = {
 var StdFiltersPlugin = function() { };
 StdFiltersPlugin.main = function() {
 	nanofl.engine.Plugins.registerFilter(new DropShadowFilterPlugin());
-	nanofl.engine.Plugins.registerFilter(new BlurFilterPlugin());
+	nanofl.engine.Plugins.registerFilter(new BoxBlurFilterPlugin());
 	nanofl.engine.Plugins.registerFilter(new GlowFilterPlugin());
 	nanofl.engine.Plugins.registerFilter(new AdjustColorFilterPlugin());
 	nanofl.engine.Plugins.registerFilter(new GaussianBlurFilterPlugin());
@@ -190,31 +190,37 @@ var shg_table = [
 		24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24,
 		24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24 ];
 
-function stackBlurImage( imageID, canvasID, radius, blurAlphaChannel )
+function premultiplyAlpha(imageData)
 {
- 	var img = document.getElementById( imageID );
-	var w = img.naturalWidth;
-    var h = img.naturalHeight;
-       
-	var canvas = document.getElementById( canvasID );
-      
-    canvas.style.width  = w + "px";
-    canvas.style.height = h + "px";
-    canvas.width = w;
-    canvas.height = h;
-    
-    var context = canvas.getContext("2d");
-    context.clearRect( 0, 0, w, h );
-    context.drawImage( img, 0, 0 );
-
-	if ( isNaN(radius) || radius < 1 ) return;
+	var pixels = imageData.data;
+	var size = imageData.width * imageData.height * 4;
 	
-	if ( blurAlphaChannel )
-		stackBlurCanvasRGBA( document.getElementById(canvasID), 0, 0, w, h, radius );
-	else 
-		stackBlurCanvasRGB( document.getElementById(canvasID), 0, 0, w, h, radius );
+	for (var i=0; i<size; i+=4)
+	{
+		var a = pixels[i+3] / 255;
+		pixels[i  ] *= a;
+		pixels[i+1] *= a;
+		pixels[i+2] *= a;
+	}
 }
 
+function unpremultiplyAlpha(imageData)
+{
+	var pixels = imageData.data;
+	var size = imageData.width * imageData.height * 4;
+	
+	for (var i=0; i<size; i+=4)
+	{
+		var a = pixels[i+3];
+		if (a != 0)
+		{
+			a = 255 / a;
+			pixels[i  ] *= a;
+			pixels[i+1] *= a;
+			pixels[i+2] *= a;
+		}
+	}
+}
 
 function stackBlurCanvasRGBA( canvas, top_x, top_y, width, height, radius )
 {
@@ -224,30 +230,40 @@ function stackBlurCanvasRGBA( canvas, top_x, top_y, width, height, radius )
 	var context = canvas.getContext("2d");
 	var imageData;
 	
-	try {
-	  try {
+	try
+	{
+	  try
+	  {
 		imageData = context.getImageData( top_x, top_y, width, height );
-	  } catch(e) {
-	  
+	  }
+	  catch(e)
+	  {
 		// NOTE: this part is supposedly only needed if you want to work with local files
 		// so it might be okay to remove the whole try/catch block and just use
 		// imageData = context.getImageData( top_x, top_y, width, height );
-		try {
+		try
+		{
 			netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
 			imageData = context.getImageData( top_x, top_y, width, height );
-		} catch(e) {
+		}
+		catch(e)
+		{
 			alert("Cannot access local image");
 			throw new Error("unable to access local image data: " + e);
 			return;
 		}
 	  }
-	} catch(e) {
+	}
+	catch(e)
+	{
 	  alert("Cannot access image");
 	  throw new Error("unable to access image data: " + e);
 	}
-			
+	
+	premultiplyAlpha(imageData);
+	
 	var pixels = imageData.data;
-			
+	
 	var x, y, i, p, yp, yi, yw, r_sum, g_sum, b_sum, a_sum, 
 	r_out_sum, g_out_sum, b_out_sum, a_out_sum,
 	r_in_sum, g_in_sum, b_in_sum, a_in_sum, 
@@ -304,7 +320,8 @@ function stackBlurCanvasRGBA( canvas, top_x, top_y, width, height, radius )
 		for( i = 1; i < radiusPlus1; i++ )
 		{
 			p = yi + (( widthMinus1 < i ? widthMinus1 : i ) << 2 );
-			r_sum += ( stack.r = ( pr = pixels[p])) * ( rbs = radiusPlus1 - i );
+			rbs = radiusPlus1 - i;
+			r_sum += ( stack.r = ( pr = pixels[p  ])) * rbs;
 			g_sum += ( stack.g = ( pg = pixels[p+1])) * rbs;
 			b_sum += ( stack.b = ( pb = pixels[p+2])) * rbs;
 			a_sum += ( stack.a = ( pa = pixels[p+3])) * rbs;
@@ -322,16 +339,10 @@ function stackBlurCanvasRGBA( canvas, top_x, top_y, width, height, radius )
 		stackOut = stackEnd;
 		for ( x = 0; x < width; x++ )
 		{
-			pixels[yi+3] = pa = (a_sum * mul_sum) >> shg_sum;
-			if ( pa != 0 )
-			{
-				pa = 255 / pa;
-				pixels[yi]   = ((r_sum * mul_sum) >> shg_sum) * pa;
-				pixels[yi+1] = ((g_sum * mul_sum) >> shg_sum) * pa;
-				pixels[yi+2] = ((b_sum * mul_sum) >> shg_sum) * pa;
-			} else {
-				pixels[yi] = pixels[yi+1] = pixels[yi+2] = 0;
-			}
+			pixels[yi]   = (r_sum * mul_sum) >> shg_sum;
+			pixels[yi+1] = (g_sum * mul_sum) >> shg_sum;
+			pixels[yi+2] = (b_sum * mul_sum) >> shg_sum;
+			pixels[yi+3] = (a_sum * mul_sum) >> shg_sum;
 			
 			r_sum -= r_out_sum;
 			g_sum -= g_out_sum;
@@ -368,12 +379,11 @@ function stackBlurCanvasRGBA( canvas, top_x, top_y, width, height, radius )
 			a_in_sum -= pa;
 			
 			stackOut = stackOut.next;
-
+			
 			yi += 4;
 		}
 		yw += width;
 	}
-
 	
 	for ( x = 0; x < width; x++ )
 	{
@@ -406,8 +416,9 @@ function stackBlurCanvasRGBA( canvas, top_x, top_y, width, height, radius )
 		for( i = 1; i <= radius; i++ )
 		{
 			yi = ( yp + x ) << 2;
+			rbs = radiusPlus1 - i;
 			
-			r_sum += ( stack.r = ( pr = pixels[yi])) * ( rbs = radiusPlus1 - i );
+			r_sum += ( stack.r = ( pr = pixels[yi  ])) * rbs;
 			g_sum += ( stack.g = ( pg = pixels[yi+1])) * rbs;
 			b_sum += ( stack.b = ( pb = pixels[yi+2])) * rbs;
 			a_sum += ( stack.a = ( pa = pixels[yi+3])) * rbs;
@@ -431,16 +442,10 @@ function stackBlurCanvasRGBA( canvas, top_x, top_y, width, height, radius )
 		for ( y = 0; y < height; y++ )
 		{
 			p = yi << 2;
-			pixels[p+3] = pa = (a_sum * mul_sum) >> shg_sum;
-			if ( pa > 0 )
-			{
-				pa = 255 / pa;
-				pixels[p]   = ((r_sum * mul_sum) >> shg_sum ) * pa;
-				pixels[p+1] = ((g_sum * mul_sum) >> shg_sum ) * pa;
-				pixels[p+2] = ((b_sum * mul_sum) >> shg_sum ) * pa;
-			} else {
-				pixels[p] = pixels[p+1] = pixels[p+2] = 0;
-			}
+			pixels[p]   = (r_sum * mul_sum) >> shg_sum;
+			pixels[p+1] = (g_sum * mul_sum) >> shg_sum;
+			pixels[p+2] = (b_sum * mul_sum) >> shg_sum;
+			pixels[p+3] = (a_sum * mul_sum) >> shg_sum;
 			
 			r_sum -= r_out_sum;
 			g_sum -= g_out_sum;
@@ -477,236 +482,7 @@ function stackBlurCanvasRGBA( canvas, top_x, top_y, width, height, radius )
 		}
 	}
 	
-	context.putImageData( imageData, top_x, top_y );
-	
-}
-
-
-function stackBlurCanvasRGB( canvas, top_x, top_y, width, height, radius )
-{
-	if ( isNaN(radius) || radius < 1 ) return;
-	radius |= 0;
-	
-	var context = canvas.getContext("2d");
-	var imageData;
-	
-	try {
-	  try {
-		imageData = context.getImageData( top_x, top_y, width, height );
-	  } catch(e) {
-	  
-		// NOTE: this part is supposedly only needed if you want to work with local files
-		// so it might be okay to remove the whole try/catch block and just use
-		// imageData = context.getImageData( top_x, top_y, width, height );
-		try {
-			netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
-			imageData = context.getImageData( top_x, top_y, width, height );
-		} catch(e) {
-			alert("Cannot access local image");
-			throw new Error("unable to access local image data: " + e);
-			return;
-		}
-	  }
-	} catch(e) {
-	  alert("Cannot access image");
-	  throw new Error("unable to access image data: " + e);
-	}
-			
-	var pixels = imageData.data;
-			
-	var x, y, i, p, yp, yi, yw, r_sum, g_sum, b_sum,
-	r_out_sum, g_out_sum, b_out_sum,
-	r_in_sum, g_in_sum, b_in_sum,
-	pr, pg, pb, rbs;
-			
-	var div = radius + radius + 1;
-	var w4 = width << 2;
-	var widthMinus1  = width - 1;
-	var heightMinus1 = height - 1;
-	var radiusPlus1  = radius + 1;
-	var sumFactor = radiusPlus1 * ( radiusPlus1 + 1 ) / 2;
-	
-	var stackStart = new BlurStack();
-	var stack = stackStart;
-	for ( i = 1; i < div; i++ )
-	{
-		stack = stack.next = new BlurStack();
-		if ( i == radiusPlus1 ) var stackEnd = stack;
-	}
-	stack.next = stackStart;
-	var stackIn = null;
-	var stackOut = null;
-	
-	yw = yi = 0;
-	
-	var mul_sum = mul_table[radius];
-	var shg_sum = shg_table[radius];
-	
-	for ( y = 0; y < height; y++ )
-	{
-		r_in_sum = g_in_sum = b_in_sum = r_sum = g_sum = b_sum = 0;
-		
-		r_out_sum = radiusPlus1 * ( pr = pixels[yi] );
-		g_out_sum = radiusPlus1 * ( pg = pixels[yi+1] );
-		b_out_sum = radiusPlus1 * ( pb = pixels[yi+2] );
-		
-		r_sum += sumFactor * pr;
-		g_sum += sumFactor * pg;
-		b_sum += sumFactor * pb;
-		
-		stack = stackStart;
-		
-		for( i = 0; i < radiusPlus1; i++ )
-		{
-			stack.r = pr;
-			stack.g = pg;
-			stack.b = pb;
-			stack = stack.next;
-		}
-		
-		for( i = 1; i < radiusPlus1; i++ )
-		{
-			p = yi + (( widthMinus1 < i ? widthMinus1 : i ) << 2 );
-			r_sum += ( stack.r = ( pr = pixels[p])) * ( rbs = radiusPlus1 - i );
-			g_sum += ( stack.g = ( pg = pixels[p+1])) * rbs;
-			b_sum += ( stack.b = ( pb = pixels[p+2])) * rbs;
-			
-			r_in_sum += pr;
-			g_in_sum += pg;
-			b_in_sum += pb;
-			
-			stack = stack.next;
-		}
-		
-		
-		stackIn = stackStart;
-		stackOut = stackEnd;
-		for ( x = 0; x < width; x++ )
-		{
-			pixels[yi]   = (r_sum * mul_sum) >> shg_sum;
-			pixels[yi+1] = (g_sum * mul_sum) >> shg_sum;
-			pixels[yi+2] = (b_sum * mul_sum) >> shg_sum;
-			
-			r_sum -= r_out_sum;
-			g_sum -= g_out_sum;
-			b_sum -= b_out_sum;
-			
-			r_out_sum -= stackIn.r;
-			g_out_sum -= stackIn.g;
-			b_out_sum -= stackIn.b;
-			
-			p =  ( yw + ( ( p = x + radius + 1 ) < widthMinus1 ? p : widthMinus1 ) ) << 2;
-			
-			r_in_sum += ( stackIn.r = pixels[p]);
-			g_in_sum += ( stackIn.g = pixels[p+1]);
-			b_in_sum += ( stackIn.b = pixels[p+2]);
-			
-			r_sum += r_in_sum;
-			g_sum += g_in_sum;
-			b_sum += b_in_sum;
-			
-			stackIn = stackIn.next;
-			
-			r_out_sum += ( pr = stackOut.r );
-			g_out_sum += ( pg = stackOut.g );
-			b_out_sum += ( pb = stackOut.b );
-			
-			r_in_sum -= pr;
-			g_in_sum -= pg;
-			b_in_sum -= pb;
-			
-			stackOut = stackOut.next;
-
-			yi += 4;
-		}
-		yw += width;
-	}
-
-	
-	for ( x = 0; x < width; x++ )
-	{
-		g_in_sum = b_in_sum = r_in_sum = g_sum = b_sum = r_sum = 0;
-		
-		yi = x << 2;
-		r_out_sum = radiusPlus1 * ( pr = pixels[yi]);
-		g_out_sum = radiusPlus1 * ( pg = pixels[yi+1]);
-		b_out_sum = radiusPlus1 * ( pb = pixels[yi+2]);
-		
-		r_sum += sumFactor * pr;
-		g_sum += sumFactor * pg;
-		b_sum += sumFactor * pb;
-		
-		stack = stackStart;
-		
-		for( i = 0; i < radiusPlus1; i++ )
-		{
-			stack.r = pr;
-			stack.g = pg;
-			stack.b = pb;
-			stack = stack.next;
-		}
-		
-		yp = width;
-		
-		for( i = 1; i <= radius; i++ )
-		{
-			yi = ( yp + x ) << 2;
-			
-			r_sum += ( stack.r = ( pr = pixels[yi])) * ( rbs = radiusPlus1 - i );
-			g_sum += ( stack.g = ( pg = pixels[yi+1])) * rbs;
-			b_sum += ( stack.b = ( pb = pixels[yi+2])) * rbs;
-			
-			r_in_sum += pr;
-			g_in_sum += pg;
-			b_in_sum += pb;
-			
-			stack = stack.next;
-		
-			if( i < heightMinus1 )
-			{
-				yp += width;
-			}
-		}
-		
-		yi = x;
-		stackIn = stackStart;
-		stackOut = stackEnd;
-		for ( y = 0; y < height; y++ )
-		{
-			p = yi << 2;
-			pixels[p]   = (r_sum * mul_sum) >> shg_sum;
-			pixels[p+1] = (g_sum * mul_sum) >> shg_sum;
-			pixels[p+2] = (b_sum * mul_sum) >> shg_sum;
-			
-			r_sum -= r_out_sum;
-			g_sum -= g_out_sum;
-			b_sum -= b_out_sum;
-			
-			r_out_sum -= stackIn.r;
-			g_out_sum -= stackIn.g;
-			b_out_sum -= stackIn.b;
-			
-			p = ( x + (( ( p = y + radiusPlus1) < heightMinus1 ? p : heightMinus1 ) * width )) << 2;
-			
-			r_sum += ( r_in_sum += ( stackIn.r = pixels[p]));
-			g_sum += ( g_in_sum += ( stackIn.g = pixels[p+1]));
-			b_sum += ( b_in_sum += ( stackIn.b = pixels[p+2]));
-			
-			stackIn = stackIn.next;
-			
-			r_out_sum += ( pr = stackOut.r );
-			g_out_sum += ( pg = stackOut.g );
-			b_out_sum += ( pb = stackOut.b );
-			
-			r_in_sum -= pr;
-			g_in_sum -= pg;
-			b_in_sum -= pb;
-			
-			stackOut = stackOut.next;
-			
-			yi += width;
-		}
-	}
+	unpremultiplyAlpha(imageData);
 	
 	context.putImageData( imageData, top_x, top_y );
 }
@@ -721,12 +497,389 @@ function BlurStack()
 }
 
 window.StackBlur = {
-	stackBlurImage: stackBlurImage,
-	stackBlurCanvasRGBA: stackBlurCanvasRGBA,
-	stackBlurCanvasRGB: stackBlurCanvasRGB
+	stackBlurCanvasRGBA: stackBlurCanvasRGBA
 };
 
 })(window);;
+/*
+ * BoxBlurFilter
+ * Visit http://createjs.com/ for documentation, updates and examples.
+ *
+ * Copyright (c) 2010 gskinner.com, inc.
+ * 
+ * BoxBlur Algorithm by Mario Klingemann, quasimondo.com
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+/**
+ * @module EaselJS
+ */
+
+// namespace:
+createjs = createjs || {};
+
+(function() {
+	"use strict";
+
+
+// constructor:
+	/**
+	 * Applies a box blur to DisplayObjects. Note that this filter is fairly CPU intensive, particularly if the quality is
+	 * set higher than 1.
+	 *
+	 * <h4>Example</h4>
+	 * This example creates a red circle, and then applies a 5 pixel blur to it. It uses the {{#crossLink "Filter/getBounds"}}{{/crossLink}}
+	 * method to account for the spread that the blur causes.
+	 *
+	 *      var shape = new createjs.Shape().set({x:100,y:100});
+	 *      shape.graphics.beginFill("#ff0000").drawCircle(0,0,50);
+	 *
+	 *      var blurFilter = new createjs.BoxBlurFilter(5, 5, 1);
+	 *      shape.filters = [blurFilter];
+	 *      var bounds = blurFilter.getBounds();
+	 *
+	 *      shape.cache(-50+bounds.x, -50+bounds.y, 100+bounds.width, 100+bounds.height);
+	 *
+	 * See {{#crossLink "Filter"}}{{/crossLink}} for an more information on applying filters.
+	 * @class BoxBlurFilter
+	 * @extends Filter
+	 * @constructor
+	 * @param {Number} [blurX=0] The horizontal blur radius in pixels.
+	 * @param {Number} [blurY=0] The vertical blur radius in pixels.
+	 * @param {Number} [quality=1] The number of blur iterations.
+	 **/
+	function BoxBlurFilter( blurX, blurY, quality) {
+		if ( isNaN(blurX) || blurX < 0 ) blurX = 0;
+		if ( isNaN(blurY) || blurY < 0 ) blurY = 0;
+		if ( isNaN(quality) || quality < 1  ) quality = 1;
+
+
+		// public properties:
+		/**
+		 * Horizontal blur radius in pixels
+		 * @property blurX
+		 * @default 0
+		 * @type Number
+		 **/
+		this.blurX = blurX | 0;
+
+		/**
+		 * Vertical blur radius in pixels
+		 * @property blurY
+		 * @default 0
+		 * @type Number
+		 **/
+		this.blurY = blurY | 0;
+
+		/**
+		 * Number of blur iterations. For example, a value of 1 will produce a rough blur. A value of 2 will produce a
+		 * smoother blur, but take twice as long to run.
+		 * @property quality
+		 * @default 1
+		 * @type Number
+		 **/
+		this.quality = quality | 0;
+	}
+	var p = createjs.extend(BoxBlurFilter, createjs.Filter);
+
+
+
+// constants:
+	/**
+	 * Array of multiply values for blur calculations.
+	 * @property MUL_TABLE
+	 * @type Array
+	 * @protected
+	 * @static
+	 **/
+	BoxBlurFilter.MUL_TABLE = [1, 171, 205, 293, 57, 373, 79, 137, 241, 27, 391, 357, 41, 19, 283, 265, 497, 469, 443, 421, 25, 191, 365, 349, 335, 161, 155, 149, 9, 278, 269, 261, 505, 245, 475, 231, 449, 437, 213, 415, 405, 395, 193, 377, 369, 361, 353, 345, 169, 331, 325, 319, 313, 307, 301, 37, 145, 285, 281, 69, 271, 267, 263, 259, 509, 501, 493, 243, 479, 118, 465, 459, 113, 446, 55, 435, 429, 423, 209, 413, 51, 403, 199, 393, 97, 3, 379, 375, 371, 367, 363, 359, 355, 351, 347, 43, 85, 337, 333, 165, 327, 323, 5, 317, 157, 311, 77, 305, 303, 75, 297, 294, 73, 289, 287, 71, 141, 279, 277, 275, 68, 135, 67, 133, 33, 262, 260, 129, 511, 507, 503, 499, 495, 491, 61, 121, 481, 477, 237, 235, 467, 232, 115, 457, 227, 451, 7, 445, 221, 439, 218, 433, 215, 427, 425, 211, 419, 417, 207, 411, 409, 203, 202, 401, 399, 396, 197, 49, 389, 387, 385, 383, 95, 189, 47, 187, 93, 185, 23, 183, 91, 181, 45, 179, 89, 177, 11, 175, 87, 173, 345, 343, 341, 339, 337, 21, 167, 83, 331, 329, 327, 163, 81, 323, 321, 319, 159, 79, 315, 313, 39, 155, 309, 307, 153, 305, 303, 151, 75, 299, 149, 37, 295, 147, 73, 291, 145, 289, 287, 143, 285, 71, 141, 281, 35, 279, 139, 69, 275, 137, 273, 17, 271, 135, 269, 267, 133, 265, 33, 263, 131, 261, 130, 259, 129, 257, 1];
+
+	/**
+	 * Array of shift values for blur calculations.
+	 * @property SHG_TABLE
+	 * @type Array
+	 * @protected
+	 * @static
+	 **/
+	BoxBlurFilter.SHG_TABLE = [0, 9, 10, 11, 9, 12, 10, 11, 12, 9, 13, 13, 10, 9, 13, 13, 14, 14, 14, 14, 10, 13, 14, 14, 14, 13, 13, 13, 9, 14, 14, 14, 15, 14, 15, 14, 15, 15, 14, 15, 15, 15, 14, 15, 15, 15, 15, 15, 14, 15, 15, 15, 15, 15, 15, 12, 14, 15, 15, 13, 15, 15, 15, 15, 16, 16, 16, 15, 16, 14, 16, 16, 14, 16, 13, 16, 16, 16, 15, 16, 13, 16, 15, 16, 14, 9, 16, 16, 16, 16, 16, 16, 16, 16, 16, 13, 14, 16, 16, 15, 16, 16, 10, 16, 15, 16, 14, 16, 16, 14, 16, 16, 14, 16, 16, 14, 15, 16, 16, 16, 14, 15, 14, 15, 13, 16, 16, 15, 17, 17, 17, 17, 17, 17, 14, 15, 17, 17, 16, 16, 17, 16, 15, 17, 16, 17, 11, 17, 16, 17, 16, 17, 16, 17, 17, 16, 17, 17, 16, 17, 17, 16, 16, 17, 17, 17, 16, 14, 17, 17, 17, 17, 15, 16, 14, 16, 15, 16, 13, 16, 15, 16, 14, 16, 15, 16, 12, 16, 15, 16, 17, 17, 17, 17, 17, 13, 16, 15, 17, 17, 17, 16, 15, 17, 17, 17, 16, 15, 17, 17, 14, 16, 17, 17, 16, 17, 17, 16, 15, 17, 16, 14, 17, 16, 15, 17, 16, 17, 17, 16, 17, 15, 16, 17, 14, 17, 16, 15, 17, 16, 17, 13, 17, 16, 17, 17, 16, 17, 14, 17, 16, 17, 16, 17, 16, 17, 9];
+
+// public methods:
+	/** docced in super class **/
+	p.getBounds = function (rect) {
+		var x = this.blurX|0, y = this.blurY| 0;
+		if (x <= 0 && y <= 0) { return rect; }
+		var q = Math.pow(this.quality, 0.2);
+		return (rect || new createjs.Rectangle()).pad(x*q+1,y*q+1,x*q+1,y*q+1);
+	};
+
+	/** docced in super class **/
+	p.clone = function() {
+		return new BoxBlurFilter(this.blurX, this.blurY, this.quality);
+	};
+
+	/** docced in super class **/
+	p.toString = function() {
+		return "[BoxBlurFilter]";
+	};
+
+
+// private methods:
+
+	/** docced in super class **/
+	p._applyFilter = function (imageData) {
+
+		premultiplyAlpha(imageData);
+		
+		var radiusX = this.blurX >> 1;
+		if (isNaN(radiusX) || radiusX < 0) return false;
+		var radiusY = this.blurY >> 1;
+		if (isNaN(radiusY) || radiusY < 0) return false;
+		if (radiusX == 0 && radiusY == 0) return false;
+
+		var iterations = this.quality;
+		if (isNaN(iterations) || iterations < 1) iterations = 1;
+		iterations |= 0;
+		if (iterations > 3) iterations = 3;
+		if (iterations < 1) iterations = 1;
+
+		var px = imageData.data;
+		var x=0, y=0, i=0, p=0, yp=0, yi=0, yw=0, r=0, g=0, b=0, a=0, pr=0, pg=0, pb=0, pa=0;
+
+		var divx = (radiusX + radiusX + 1) | 0;
+		var divy = (radiusY + radiusY + 1) | 0;
+		var w = imageData.width | 0;
+		var h = imageData.height | 0;
+
+		var w1 = (w - 1) | 0;
+		var h1 = (h - 1) | 0;
+		var rxp1 = (radiusX + 1) | 0;
+		var ryp1 = (radiusY + 1) | 0;
+
+		var ssx = {r:0,b:0,g:0,a:0};
+		var sx = ssx;
+		for ( i = 1; i < divx; i++ )
+		{
+			sx = sx.n = {r:0,b:0,g:0,a:0};
+		}
+		sx.n = ssx;
+
+		var ssy = {r:0,b:0,g:0,a:0};
+		var sy = ssy;
+		for ( i = 1; i < divy; i++ )
+		{
+			sy = sy.n = {r:0,b:0,g:0,a:0};
+		}
+		sy.n = ssy;
+
+		var si = null;
+
+
+		var mtx = BoxBlurFilter.MUL_TABLE[radiusX] | 0;
+		var stx = BoxBlurFilter.SHG_TABLE[radiusX] | 0;
+		var mty = BoxBlurFilter.MUL_TABLE[radiusY] | 0;
+		var sty = BoxBlurFilter.SHG_TABLE[radiusY] | 0;
+
+		while (iterations-- > 0) {
+
+			yw = yi = 0;
+			var ms = mtx;
+			var ss = stx;
+			for (y = h; --y > -1;) {
+				r = rxp1 * (pr = px[(yi) | 0]);
+				g = rxp1 * (pg = px[(yi + 1) | 0]);
+				b = rxp1 * (pb = px[(yi + 2) | 0]);
+				a = rxp1 * (pa = px[(yi + 3) | 0]);
+
+				sx = ssx;
+
+				for( i = rxp1; --i > -1; )
+				{
+					sx.r = pr;
+					sx.g = pg;
+					sx.b = pb;
+					sx.a = pa;
+					sx = sx.n;
+				}
+
+				for( i = 1; i < rxp1; i++ )
+				{
+					p = (yi + ((w1 < i ? w1 : i) << 2)) | 0;
+					r += ( sx.r = px[p]);
+					g += ( sx.g = px[p+1]);
+					b += ( sx.b = px[p+2]);
+					a += ( sx.a = px[p+3]);
+
+					sx = sx.n;
+				}
+
+				si = ssx;
+				for ( x = 0; x < w; x++ )
+				{
+					px[yi++] = (r * ms) >>> ss;
+					px[yi++] = (g * ms) >>> ss;
+					px[yi++] = (b * ms) >>> ss;
+					px[yi++] = (a * ms) >>> ss;
+
+					p = ((yw + ((p = x + radiusX + 1) < w1 ? p : w1)) << 2);
+
+					r -= si.r - ( si.r = px[p]);
+					g -= si.g - ( si.g = px[p+1]);
+					b -= si.b - ( si.b = px[p+2]);
+					a -= si.a - ( si.a = px[p+3]);
+
+					si = si.n;
+
+				}
+				yw += w;
+			}
+
+			ms = mty;
+			ss = sty;
+			for (x = 0; x < w; x++) {
+				yi = (x << 2) | 0;
+
+				r = (ryp1 * (pr = px[yi])) | 0;
+				g = (ryp1 * (pg = px[(yi + 1) | 0])) | 0;
+				b = (ryp1 * (pb = px[(yi + 2) | 0])) | 0;
+				a = (ryp1 * (pa = px[(yi + 3) | 0])) | 0;
+
+				sy = ssy;
+				for( i = 0; i < ryp1; i++ )
+				{
+					sy.r = pr;
+					sy.g = pg;
+					sy.b = pb;
+					sy.a = pa;
+					sy = sy.n;
+				}
+
+				yp = w;
+
+				for( i = 1; i <= radiusY; i++ )
+				{
+					yi = ( yp + x ) << 2;
+
+					r += ( sy.r = px[yi]);
+					g += ( sy.g = px[yi+1]);
+					b += ( sy.b = px[yi+2]);
+					a += ( sy.a = px[yi+3]);
+
+					sy = sy.n;
+
+					if( i < h1 )
+					{
+						yp += w;
+					}
+				}
+
+				yi = x;
+				si = ssy;
+				if ( iterations > 0 )
+				{
+					for ( y = 0; y < h; y++ )
+					{
+						p = yi << 2;
+						px[p]   = (r * ms) >>> ss;
+						px[p+1] = (g * ms) >>> ss;
+						px[p+2] = (b * ms) >>> ss;
+						px[p+3] = (a * ms) >>> ss;
+
+						p = ( x + (( ( p = y + ryp1) < h1 ? p : h1 ) * w )) << 2;
+
+						r -= si.r - ( si.r = px[p]);
+						g -= si.g - ( si.g = px[p+1]);
+						b -= si.b - ( si.b = px[p+2]);
+						a -= si.a - ( si.a = px[p+3]);
+
+						si = si.n;
+
+						yi += w;
+					}
+				} else {
+					for ( y = 0; y < h; y++ )
+					{
+						p = yi << 2;
+						px[p]   = (r * ms) >>> ss;
+						px[p+1] = (g * ms) >>> ss;
+						px[p+2] = (b * ms) >>> ss;
+						px[p+3] = (a * ms) >>> ss;
+
+						p = ( x + (( ( p = y + ryp1) < h1 ? p : h1 ) * w )) << 2;
+
+						r -= si.r - ( si.r = px[p]);
+						g -= si.g - ( si.g = px[p+1]);
+						b -= si.b - ( si.b = px[p+2]);
+						a -= si.a - ( si.a = px[p+3]);
+
+						si = si.n;
+
+						yi += w;
+					}
+				}
+			}
+
+		}
+		
+		unpremultiplyAlpha(imageData);
+		
+		return true;
+	};
+	
+	function premultiplyAlpha(imageData)
+	{
+		var pixels = imageData.data;
+		var size = imageData.width * imageData.height * 4;
+		
+		for (var i=0; i<size; i+=4)
+		{
+			var a = pixels[i+3] / 255;
+			pixels[i  ] *= a;
+			pixels[i+1] *= a;
+			pixels[i+2] *= a;
+		}
+	}
+
+	function unpremultiplyAlpha(imageData)
+	{
+		var pixels = imageData.data;
+		var size = imageData.width * imageData.height * 4;
+		
+		for (var i=0; i<size; i+=4)
+		{
+			var a = pixels[i+3];
+			if (a != 0)
+			{
+				a = 255 / a;
+				pixels[i  ] *= a;
+				pixels[i+1] *= a;
+				pixels[i+2] *= a;
+			}
+		}
+	}
+	
+	createjs.BoxBlurFilter = createjs.promote(BoxBlurFilter, "Filter");
+}());
+;
 /*
 DropShadowFilter for EaselJS
 GitHub : https://github.com/u-kudox/Filters_for_EaselJS

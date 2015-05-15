@@ -1,13 +1,13 @@
-import createjs.BlurFilter;
+import createjs.BoxBlurFilter;
 import nanofl.engine.plugins.FilterProperty;
 import nanofl.engine.plugins.IFilterPlugin;
 
-class BlurFilterPlugin implements IFilterPlugin
+class BoxBlurFilterPlugin implements IFilterPlugin
 {
 	public function new() { }
 	
-	public var name = "BlurFilter";
-	public var label = "Blur";
+	public var name = "BoxBlurFilter";
+	public var label = "Box Blur";
 	
 	public var properties : Array<FilterProperty> =
 	[
@@ -18,6 +18,6 @@ class BlurFilterPlugin implements IFilterPlugin
 	
 	public function getFilter(params:Dynamic)
 	{
-		return new BlurFilter(params.blurX, params.blurY, params.quality);
+		return new BoxBlurFilter(params.blurX, params.blurY, params.quality);
 	}
 }

@@ -48,8 +48,8 @@ cmd /C "IF EXIST support xcopy /E /Q /Y support ..\bin\$(ProjectName) &gt; nul"<
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
-    <option testMovie="OpenDocument" />
-    <option testMovieCommand="" />
+    <option testMovie="Custom" />
+    <option testMovieCommand="..\..\ide\standalone.cmd d:\MyProg\NanoFL\examples\nanofl\blur\blur.nfl" />
   </options>
   <!-- Plugin storage -->
   <storage />

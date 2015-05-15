@@ -1133,6 +1133,14 @@ flashimport.SymbolLoader.prototype = {
 		this.fixFilterParamFloat(params,"blurY",10,function(k2) {
 			return k2 * 2;
 		});
+		var _g = filter.name;
+		switch(_g) {
+		case "BlurFilter":
+			filter.name = "BoxBlurFilter";
+			break;
+		default:
+			filter.name = filter.name;
+		}
 		return new nanofl.engine.FilterDef(filter.name,params);
 	}
 	,parseMotionTweenRotate: function(motionTweenRotate,motionTweenRotateTimes) {

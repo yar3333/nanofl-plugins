@@ -78,31 +78,37 @@ var shg_table = [
 		24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24,
 		24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24 ];
 
-function stackBlurImage( imageID, canvasID, radius, blurAlphaChannel )
+function premultiplyAlpha(imageData)
 {
- 	var img = document.getElementById( imageID );
-	var w = img.naturalWidth;
-    var h = img.naturalHeight;
-       
-	var canvas = document.getElementById( canvasID );
-      
-    canvas.style.width  = w + "px";
-    canvas.style.height = h + "px";
-    canvas.width = w;
-    canvas.height = h;
-    
-    var context = canvas.getContext("2d");
-    context.clearRect( 0, 0, w, h );
-    context.drawImage( img, 0, 0 );
-
-	if ( isNaN(radius) || radius < 1 ) return;
+	var pixels = imageData.data;
+	var size = imageData.width * imageData.height * 4;
 	
-	if ( blurAlphaChannel )
-		stackBlurCanvasRGBA( document.getElementById(canvasID), 0, 0, w, h, radius );
-	else 
-		stackBlurCanvasRGB( document.getElementById(canvasID), 0, 0, w, h, radius );
+	for (var i=0; i<size; i+=4)
+	{
+		var a = pixels[i+3] / 255;
+		pixels[i  ] *= a;
+		pixels[i+1] *= a;
+		pixels[i+2] *= a;
+	}
 }
 
+function unpremultiplyAlpha(imageData)
+{
+	var pixels = imageData.data;
+	var size = imageData.width * imageData.height * 4;
+	
+	for (var i=0; i<size; i+=4)
+	{
+		var a = pixels[i+3];
+		if (a != 0)
+		{
+			a = 255 / a;
+			pixels[i  ] *= a;
+			pixels[i+1] *= a;
+			pixels[i+2] *= a;
+		}
+	}
+}
 
 function stackBlurCanvasRGBA( canvas, top_x, top_y, width, height, radius )
 {
@@ -112,30 +118,40 @@ function stackBlurCanvasRGBA( canvas, top_x, top_y, width, height, radius )
 	var context = canvas.getContext("2d");
 	var imageData;
 	
-	try {
-	  try {
+	try
+	{
+	  try
+	  {
 		imageData = context.getImageData( top_x, top_y, width, height );
-	  } catch(e) {
-	  
+	  }
+	  catch(e)
+	  {
 		// NOTE: this part is supposedly only needed if you want to work with local files
 		// so it might be okay to remove the whole try/catch block and just use
 		// imageData = context.getImageData( top_x, top_y, width, height );
-		try {
+		try
+		{
 			netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
 			imageData = context.getImageData( top_x, top_y, width, height );
-		} catch(e) {
+		}
+		catch(e)
+		{
 			alert("Cannot access local image");
 			throw new Error("unable to access local image data: " + e);
 			return;
 		}
 	  }
-	} catch(e) {
+	}
+	catch(e)
+	{
 	  alert("Cannot access image");
 	  throw new Error("unable to access image data: " + e);
 	}
-			
+	
+	premultiplyAlpha(imageData);
+	
 	var pixels = imageData.data;
-			
+	
 	var x, y, i, p, yp, yi, yw, r_sum, g_sum, b_sum, a_sum, 
 	r_out_sum, g_out_sum, b_out_sum, a_out_sum,
 	r_in_sum, g_in_sum, b_in_sum, a_in_sum, 
@@ -192,7 +208,8 @@ function stackBlurCanvasRGBA( canvas, top_x, top_y, width, height, radius )
 		for( i = 1; i < radiusPlus1; i++ )
 		{
 			p = yi + (( widthMinus1 < i ? widthMinus1 : i ) << 2 );
-			r_sum += ( stack.r = ( pr = pixels[p])) * ( rbs = radiusPlus1 - i );
+			rbs = radiusPlus1 - i;
+			r_sum += ( stack.r = ( pr = pixels[p  ])) * rbs;
 			g_sum += ( stack.g = ( pg = pixels[p+1])) * rbs;
 			b_sum += ( stack.b = ( pb = pixels[p+2])) * rbs;
 			a_sum += ( stack.a = ( pa = pixels[p+3])) * rbs;
@@ -210,16 +227,10 @@ function stackBlurCanvasRGBA( canvas, top_x, top_y, width, height, radius )
 		stackOut = stackEnd;
 		for ( x = 0; x < width; x++ )
 		{
-			pixels[yi+3] = pa = (a_sum * mul_sum) >> shg_sum;
-			if ( pa != 0 )
-			{
-				pa = 255 / pa;
-				pixels[yi]   = ((r_sum * mul_sum) >> shg_sum) * pa;
-				pixels[yi+1] = ((g_sum * mul_sum) >> shg_sum) * pa;
-				pixels[yi+2] = ((b_sum * mul_sum) >> shg_sum) * pa;
-			} else {
-				pixels[yi] = pixels[yi+1] = pixels[yi+2] = 0;
-			}
+			pixels[yi]   = (r_sum * mul_sum) >> shg_sum;
+			pixels[yi+1] = (g_sum * mul_sum) >> shg_sum;
+			pixels[yi+2] = (b_sum * mul_sum) >> shg_sum;
+			pixels[yi+3] = (a_sum * mul_sum) >> shg_sum;
 			
 			r_sum -= r_out_sum;
 			g_sum -= g_out_sum;
@@ -256,12 +267,11 @@ function stackBlurCanvasRGBA( canvas, top_x, top_y, width, height, radius )
 			a_in_sum -= pa;
 			
 			stackOut = stackOut.next;
-
+			
 			yi += 4;
 		}
 		yw += width;
 	}
-
 	
 	for ( x = 0; x < width; x++ )
 	{
@@ -294,8 +304,9 @@ function stackBlurCanvasRGBA( canvas, top_x, top_y, width, height, radius )
 		for( i = 1; i <= radius; i++ )
 		{
 			yi = ( yp + x ) << 2;
+			rbs = radiusPlus1 - i;
 			
-			r_sum += ( stack.r = ( pr = pixels[yi])) * ( rbs = radiusPlus1 - i );
+			r_sum += ( stack.r = ( pr = pixels[yi  ])) * rbs;
 			g_sum += ( stack.g = ( pg = pixels[yi+1])) * rbs;
 			b_sum += ( stack.b = ( pb = pixels[yi+2])) * rbs;
 			a_sum += ( stack.a = ( pa = pixels[yi+3])) * rbs;
@@ -319,16 +330,10 @@ function stackBlurCanvasRGBA( canvas, top_x, top_y, width, height, radius )
 		for ( y = 0; y < height; y++ )
 		{
 			p = yi << 2;
-			pixels[p+3] = pa = (a_sum * mul_sum) >> shg_sum;
-			if ( pa > 0 )
-			{
-				pa = 255 / pa;
-				pixels[p]   = ((r_sum * mul_sum) >> shg_sum ) * pa;
-				pixels[p+1] = ((g_sum * mul_sum) >> shg_sum ) * pa;
-				pixels[p+2] = ((b_sum * mul_sum) >> shg_sum ) * pa;
-			} else {
-				pixels[p] = pixels[p+1] = pixels[p+2] = 0;
-			}
+			pixels[p]   = (r_sum * mul_sum) >> shg_sum;
+			pixels[p+1] = (g_sum * mul_sum) >> shg_sum;
+			pixels[p+2] = (b_sum * mul_sum) >> shg_sum;
+			pixels[p+3] = (a_sum * mul_sum) >> shg_sum;
 			
 			r_sum -= r_out_sum;
 			g_sum -= g_out_sum;
@@ -365,236 +370,7 @@ function stackBlurCanvasRGBA( canvas, top_x, top_y, width, height, radius )
 		}
 	}
 	
-	context.putImageData( imageData, top_x, top_y );
-	
-}
-
-
-function stackBlurCanvasRGB( canvas, top_x, top_y, width, height, radius )
-{
-	if ( isNaN(radius) || radius < 1 ) return;
-	radius |= 0;
-	
-	var context = canvas.getContext("2d");
-	var imageData;
-	
-	try {
-	  try {
-		imageData = context.getImageData( top_x, top_y, width, height );
-	  } catch(e) {
-	  
-		// NOTE: this part is supposedly only needed if you want to work with local files
-		// so it might be okay to remove the whole try/catch block and just use
-		// imageData = context.getImageData( top_x, top_y, width, height );
-		try {
-			netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
-			imageData = context.getImageData( top_x, top_y, width, height );
-		} catch(e) {
-			alert("Cannot access local image");
-			throw new Error("unable to access local image data: " + e);
-			return;
-		}
-	  }
-	} catch(e) {
-	  alert("Cannot access image");
-	  throw new Error("unable to access image data: " + e);
-	}
-			
-	var pixels = imageData.data;
-			
-	var x, y, i, p, yp, yi, yw, r_sum, g_sum, b_sum,
-	r_out_sum, g_out_sum, b_out_sum,
-	r_in_sum, g_in_sum, b_in_sum,
-	pr, pg, pb, rbs;
-			
-	var div = radius + radius + 1;
-	var w4 = width << 2;
-	var widthMinus1  = width - 1;
-	var heightMinus1 = height - 1;
-	var radiusPlus1  = radius + 1;
-	var sumFactor = radiusPlus1 * ( radiusPlus1 + 1 ) / 2;
-	
-	var stackStart = new BlurStack();
-	var stack = stackStart;
-	for ( i = 1; i < div; i++ )
-	{
-		stack = stack.next = new BlurStack();
-		if ( i == radiusPlus1 ) var stackEnd = stack;
-	}
-	stack.next = stackStart;
-	var stackIn = null;
-	var stackOut = null;
-	
-	yw = yi = 0;
-	
-	var mul_sum = mul_table[radius];
-	var shg_sum = shg_table[radius];
-	
-	for ( y = 0; y < height; y++ )
-	{
-		r_in_sum = g_in_sum = b_in_sum = r_sum = g_sum = b_sum = 0;
-		
-		r_out_sum = radiusPlus1 * ( pr = pixels[yi] );
-		g_out_sum = radiusPlus1 * ( pg = pixels[yi+1] );
-		b_out_sum = radiusPlus1 * ( pb = pixels[yi+2] );
-		
-		r_sum += sumFactor * pr;
-		g_sum += sumFactor * pg;
-		b_sum += sumFactor * pb;
-		
-		stack = stackStart;
-		
-		for( i = 0; i < radiusPlus1; i++ )
-		{
-			stack.r = pr;
-			stack.g = pg;
-			stack.b = pb;
-			stack = stack.next;
-		}
-		
-		for( i = 1; i < radiusPlus1; i++ )
-		{
-			p = yi + (( widthMinus1 < i ? widthMinus1 : i ) << 2 );
-			r_sum += ( stack.r = ( pr = pixels[p])) * ( rbs = radiusPlus1 - i );
-			g_sum += ( stack.g = ( pg = pixels[p+1])) * rbs;
-			b_sum += ( stack.b = ( pb = pixels[p+2])) * rbs;
-			
-			r_in_sum += pr;
-			g_in_sum += pg;
-			b_in_sum += pb;
-			
-			stack = stack.next;
-		}
-		
-		
-		stackIn = stackStart;
-		stackOut = stackEnd;
-		for ( x = 0; x < width; x++ )
-		{
-			pixels[yi]   = (r_sum * mul_sum) >> shg_sum;
-			pixels[yi+1] = (g_sum * mul_sum) >> shg_sum;
-			pixels[yi+2] = (b_sum * mul_sum) >> shg_sum;
-			
-			r_sum -= r_out_sum;
-			g_sum -= g_out_sum;
-			b_sum -= b_out_sum;
-			
-			r_out_sum -= stackIn.r;
-			g_out_sum -= stackIn.g;
-			b_out_sum -= stackIn.b;
-			
-			p =  ( yw + ( ( p = x + radius + 1 ) < widthMinus1 ? p : widthMinus1 ) ) << 2;
-			
-			r_in_sum += ( stackIn.r = pixels[p]);
-			g_in_sum += ( stackIn.g = pixels[p+1]);
-			b_in_sum += ( stackIn.b = pixels[p+2]);
-			
-			r_sum += r_in_sum;
-			g_sum += g_in_sum;
-			b_sum += b_in_sum;
-			
-			stackIn = stackIn.next;
-			
-			r_out_sum += ( pr = stackOut.r );
-			g_out_sum += ( pg = stackOut.g );
-			b_out_sum += ( pb = stackOut.b );
-			
-			r_in_sum -= pr;
-			g_in_sum -= pg;
-			b_in_sum -= pb;
-			
-			stackOut = stackOut.next;
-
-			yi += 4;
-		}
-		yw += width;
-	}
-
-	
-	for ( x = 0; x < width; x++ )
-	{
-		g_in_sum = b_in_sum = r_in_sum = g_sum = b_sum = r_sum = 0;
-		
-		yi = x << 2;
-		r_out_sum = radiusPlus1 * ( pr = pixels[yi]);
-		g_out_sum = radiusPlus1 * ( pg = pixels[yi+1]);
-		b_out_sum = radiusPlus1 * ( pb = pixels[yi+2]);
-		
-		r_sum += sumFactor * pr;
-		g_sum += sumFactor * pg;
-		b_sum += sumFactor * pb;
-		
-		stack = stackStart;
-		
-		for( i = 0; i < radiusPlus1; i++ )
-		{
-			stack.r = pr;
-			stack.g = pg;
-			stack.b = pb;
-			stack = stack.next;
-		}
-		
-		yp = width;
-		
-		for( i = 1; i <= radius; i++ )
-		{
-			yi = ( yp + x ) << 2;
-			
-			r_sum += ( stack.r = ( pr = pixels[yi])) * ( rbs = radiusPlus1 - i );
-			g_sum += ( stack.g = ( pg = pixels[yi+1])) * rbs;
-			b_sum += ( stack.b = ( pb = pixels[yi+2])) * rbs;
-			
-			r_in_sum += pr;
-			g_in_sum += pg;
-			b_in_sum += pb;
-			
-			stack = stack.next;
-		
-			if( i < heightMinus1 )
-			{
-				yp += width;
-			}
-		}
-		
-		yi = x;
-		stackIn = stackStart;
-		stackOut = stackEnd;
-		for ( y = 0; y < height; y++ )
-		{
-			p = yi << 2;
-			pixels[p]   = (r_sum * mul_sum) >> shg_sum;
-			pixels[p+1] = (g_sum * mul_sum) >> shg_sum;
-			pixels[p+2] = (b_sum * mul_sum) >> shg_sum;
-			
-			r_sum -= r_out_sum;
-			g_sum -= g_out_sum;
-			b_sum -= b_out_sum;
-			
-			r_out_sum -= stackIn.r;
-			g_out_sum -= stackIn.g;
-			b_out_sum -= stackIn.b;
-			
-			p = ( x + (( ( p = y + radiusPlus1) < heightMinus1 ? p : heightMinus1 ) * width )) << 2;
-			
-			r_sum += ( r_in_sum += ( stackIn.r = pixels[p]));
-			g_sum += ( g_in_sum += ( stackIn.g = pixels[p+1]));
-			b_sum += ( b_in_sum += ( stackIn.b = pixels[p+2]));
-			
-			stackIn = stackIn.next;
-			
-			r_out_sum += ( pr = stackOut.r );
-			g_out_sum += ( pg = stackOut.g );
-			b_out_sum += ( pb = stackOut.b );
-			
-			r_in_sum -= pr;
-			g_in_sum -= pg;
-			b_in_sum -= pb;
-			
-			stackOut = stackOut.next;
-			
-			yi += width;
-		}
-	}
+	unpremultiplyAlpha(imageData);
 	
 	context.putImageData( imageData, top_x, top_y );
 }
@@ -609,9 +385,7 @@ function BlurStack()
 }
 
 window.StackBlur = {
-	stackBlurImage: stackBlurImage,
-	stackBlurCanvasRGBA: stackBlurCanvasRGBA,
-	stackBlurCanvasRGB: stackBlurCanvasRGB
+	stackBlurCanvasRGBA: stackBlurCanvasRGBA
 };
 
 })(window);

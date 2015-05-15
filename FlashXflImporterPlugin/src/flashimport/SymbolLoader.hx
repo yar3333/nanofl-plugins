@@ -478,6 +478,13 @@ class SymbolLoader
 		fixFilterParamFloat(params, "blurX",    10,  function(k) return k * 2);
 		fixFilterParamFloat(params, "blurY",    10,  function(k) return k * 2);
 		
+		filter.name = switch (filter.name)
+		{
+			case "BlurFilter": "BoxBlurFilter";
+			case _: filter.name;
+		};
+		
+		
 		return new FilterDef(filter.name, params);
 	}
 	
