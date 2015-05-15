@@ -1723,7 +1723,7 @@ svgimport.SvgGroupExporter.prototype = $extend(svgimport.BaseExporter.prototype,
 				break;
 			case 2:
 				var text = child[2];
-				this.addElement(text.toElement());
+				this.addElement(new svgimport.SvgTextExporter(this.svg,this.library,text).exportAsElement());
 				break;
 			case 3:
 				var $use = child[2];
@@ -1889,7 +1889,7 @@ svgimport.SvgPathExporter.__name__ = ["svgimport","SvgPathExporter"];
 svgimport.SvgPathExporter.__super__ = svgimport.BaseExporter;
 svgimport.SvgPathExporter.prototype = $extend(svgimport.BaseExporter.prototype,{
 	exportAsElement: function() {
-		console.log("SvgPathexporter.exportAsElement " + this.path.id);
+		console.log("SvgPathExporter.exportAsElement " + this.path.id);
 		var r = this.exportAsElementInner();
 		r = this.applyFilterToElement(r,this.path.filterID,this.path.id);
 		r = this.applyMaskToElement(r,this.path.matrix,this.path.clipPathID,this.path.id);
@@ -2216,32 +2216,42 @@ svgimport.SvgPathToShapeConvertor.prototype = {
 	}
 	,__class__: svgimport.SvgPathToShapeConvertor
 };
-svgimport.SvgText = function(textNode,baseStyles,gradients) {
-	this.matrix = svgimport.Transform.load(textNode.getAttribute("transform"));
-	var styles = svgimport.XmlTools.getStyles(textNode,baseStyles);
-	this.name = htmlparser.HtmlParserTools.getAttr(textNode,"id","");
-	this.x = svgimport.XmlTools.getFloatValue(textNode,"x",0);
-	this.y = svgimport.XmlTools.getFloatValue(textNode,"y",0);
-	this.fill = svgimport.XmlTools.getFillStyle(textNode,"fill",styles,gradients);
-	this.fillAlpha = svgimport.XmlTools.getFloatStyle(textNode,"fill-opacity",styles,1);
-	this.stroke = svgimport.XmlTools.getStrokeStyle(textNode,"stroke",styles,gradients);
-	this.strokeAlpha = svgimport.XmlTools.getFloatStyle(textNode,"stroke-opacity",styles,1);
-	this.strokeWidth = svgimport.XmlTools.getFloatStyle(textNode,"stroke-width",styles,1);
-	this.fontFamily = svgimport.XmlTools.getStyle(textNode,"font-family",styles,"");
-	this.fontSize = svgimport.XmlTools.getFloatStyle(textNode,"font-size",styles,12);
-	this.fontStyle = svgimport.XmlTools.getStyle(textNode,"font-style",styles,"");
-	this.fontWeight = svgimport.XmlTools.getStyle(textNode,"font-weight",styles,"");
-	this.kerning = svgimport.XmlTools.getFloatStyle(textNode,"kerning",styles,0);
-	this.letterSpacing = svgimport.XmlTools.getFloatStyle(textNode,"letter-spacing",styles,0);
-	this.textAnchor = svgimport.XmlTools.getStyle(textNode,"text-anchor",styles,"left");
-	this.text = textNode.innerText;
+svgimport.SvgText = function(node,baseStyles,gradients) {
+	this.matrix = svgimport.Transform.load(node.getAttribute("transform"));
+	var styles = svgimport.XmlTools.getStyles(node,baseStyles);
+	this.name = htmlparser.HtmlParserTools.getAttr(node,"id","");
+	var x = svgimport.XmlTools.getFloatValue(node,"x",0);
+	var y = svgimport.XmlTools.getFloatValue(node,"y",0);
+	if(x != 0 || y != 0) this.matrix.appendTransform(x,y);
+	this.fill = svgimport.XmlTools.getFillStyle(node,"fill",styles,gradients);
+	this.fillAlpha = svgimport.XmlTools.getFloatStyle(node,"fill-opacity",styles,1);
+	this.stroke = svgimport.XmlTools.getStrokeStyle(node,"stroke",styles,gradients);
+	this.strokeAlpha = svgimport.XmlTools.getFloatStyle(node,"stroke-opacity",styles,1);
+	this.strokeWidth = svgimport.XmlTools.getFloatStyle(node,"stroke-width",styles,1);
+	this.fontFamily = svgimport.XmlTools.getStyle(node,"font-family",styles,"");
+	this.fontSize = svgimport.XmlTools.getFloatStyle(node,"font-size",styles,12);
+	this.fontStyle = svgimport.XmlTools.getStyle(node,"font-style",styles,"");
+	this.fontWeight = svgimport.XmlTools.getStyle(node,"font-weight",styles,"");
+	this.kerning = svgimport.XmlTools.getFloatStyle(node,"kerning",styles,0);
+	this.letterSpacing = svgimport.XmlTools.getFloatStyle(node,"letter-spacing",styles,0);
+	this.textAnchor = svgimport.XmlTools.getStyle(node,"text-anchor",styles,"left");
+	this.text = node.innerText;
 };
 svgimport.SvgText.__name__ = ["svgimport","SvgText"];
 svgimport.SvgText.prototype = {
-	toElement: function() {
+	__class__: svgimport.SvgText
+};
+svgimport.SvgTextExporter = function(svg,library,text) {
+	svgimport.BaseExporter.call(this,svg,library);
+	this.text = text;
+};
+svgimport.SvgTextExporter.__name__ = ["svgimport","SvgTextExporter"];
+svgimport.SvgTextExporter.__super__ = svgimport.BaseExporter;
+svgimport.SvgTextExporter.prototype = $extend(svgimport.BaseExporter.prototype,{
+	exportAsElement: function() {
 		var fillColor;
 		{
-			var _g = this.fill;
+			var _g = this.text.fill;
 			switch(_g[1]) {
 			case 0:
 				fillColor = null;
@@ -2259,7 +2269,7 @@ svgimport.SvgText.prototype = {
 		}
 		var color1;
 		{
-			var _g1 = this.stroke;
+			var _g1 = this.text.stroke;
 			switch(_g1[1]) {
 			case 1:
 				var c = _g1[2];
@@ -2272,28 +2282,27 @@ svgimport.SvgText.prototype = {
 				color1 = "#000000";
 			}
 		}
-		var r = new nanofl.engine.elements.TextElement(this.name,0,0,false,false,[nanofl.TextRun.create(this.text,fillColor,this.fontFamily,"",this.fontSize,"left",this.strokeWidth,color1,true,this.letterSpacing,0)]);
-		r.matrix = this.matrix.clone();
-		r.matrix.translate(this.x,this.y);
+		var r = new nanofl.engine.elements.TextElement(this.text.name,0,0,false,false,[nanofl.TextRun.create(this.text.text,fillColor,this.text.fontFamily,"",this.text.fontSize,"left",this.text.strokeWidth,color1,true,this.text.letterSpacing,0)]);
+		r.matrix = this.text.matrix.clone();
 		var t = r.createDisplayObject(null);
-		var fontHeight = nanofl.TextField.measureFontHeight(this.fontFamily,this.fontStyle,this.fontSize);
-		var fontBaselineCoef = nanofl.TextField.measureFontBaselineCoef(this.fontFamily,this.fontStyle);
-		r.matrix.translate(0,-fontHeight * fontBaselineCoef - nanofl.TextField.PADDING);
-		var _g2 = this.textAnchor;
+		var fontHeight = nanofl.TextField.measureFontHeight(this.text.fontFamily,this.text.fontStyle,this.text.fontSize);
+		var fontBaselineCoef = nanofl.TextField.measureFontBaselineCoef(this.text.fontFamily,this.text.fontStyle);
+		r.matrix.appendTransform(0,-fontHeight * fontBaselineCoef - nanofl.TextField.PADDING);
+		var _g2 = this.text.textAnchor;
 		switch(_g2) {
 		case "middle":
-			r.matrix.translate(-t.minWidth / 2,0);
+			r.matrix.appendTransform(-t.minWidth / 2,0);
 			break;
 		case "end":
-			r.matrix.translate(-t.minWidth + nanofl.TextField.PADDING,0);
+			r.matrix.appendTransform(-t.minWidth + nanofl.TextField.PADDING,0);
 			break;
 		default:
-			r.matrix.translate(-nanofl.TextField.PADDING,0);
+			r.matrix.appendTransform(-nanofl.TextField.PADDING,0);
 		}
 		return r;
 	}
-	,__class__: svgimport.SvgText
-};
+	,__class__: svgimport.SvgTextExporter
+});
 svgimport.SvgUse = function(svg,node,baseStyles) {
 	svgimport.SvgDisplayObject.call(this,svg,node,baseStyles,this.id);
 	this.groupID = svgimport.XmlTools.getIdFromXlink(node,"xlink:href");

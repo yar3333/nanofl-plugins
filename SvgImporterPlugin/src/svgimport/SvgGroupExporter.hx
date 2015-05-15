@@ -49,7 +49,7 @@ class SvgGroupExporter extends BaseExporter
 					addElement(new SvgPathExporter(svg, library, path).exportAsElement());
 					
 				case SvgElement.DisplayText(text):
-					addElement(text.toElement());
+					addElement(new SvgTextExporter(svg, library, text).exportAsElement());
 					
 				case SvgElement.DisplayUse(use):
 					addElement(new SvgUseExporter(svg, library, use).exportAsElement());
