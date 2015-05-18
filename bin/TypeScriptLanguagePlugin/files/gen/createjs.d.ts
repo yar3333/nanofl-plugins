@@ -5272,7 +5272,7 @@ declare module createjs
 		 * sheet if the animation param is omitted. Returns 0 if the spritesheet relies on calculated frame counts, and
 		 * the images have not been fully loaded.
 		 */
-		getNumFrames(animation:string) : number;
+		getNumFrames(animation?:string) : number;
 		/**
 		 * Returns an object defining the specified animation. The returned object contains:<UL>
 		 * 	<LI>frames: an array of the frame ids in the animation</LI>
