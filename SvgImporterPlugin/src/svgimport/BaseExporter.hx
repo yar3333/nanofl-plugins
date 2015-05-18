@@ -102,7 +102,7 @@ class BaseExporter
 						}
 						
 						//trace("maskBounds = " + maskBounds);
-						if (!isRectangleNested(nanofl.DisplayObjectTools.smartGetBounds(displayObject), maskBounds))
+						if (!isRectangleNested(nanofl.DisplayObjectTools.getBounds(displayObject), maskBounds))
 						{
 							var mask = new ShapeElement([ new Polygon(new SolidFill("red"), [ Contour.fromRectangle(maskBounds) ]) ]);
 							var item = elementsToLibraryItem([element], getNextFreeID(prefixID));

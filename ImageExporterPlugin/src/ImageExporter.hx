@@ -11,7 +11,7 @@ class ImageExporter
 	{
 		var instance = library.getSceneInstance();
 		var scene : createjs.DisplayObject = instance.createDisplayObject(null);
-		DisplayObjectTools.smartCache(scene);
+		DisplayObjectTools.cache(scene);
 		
 		var canvas : CanvasElement = cast js.Browser.document.createElement("canvas");
 		canvas.width = documentProperties.width;

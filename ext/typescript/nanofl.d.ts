@@ -8015,9 +8015,9 @@ declare module nanofl
 	
 	export class DisplayObjectTools
 	{
-		static smartCache(obj:createjs.DisplayObject) : void;
-		static smartUncache(obj:createjs.DisplayObject) : void;
-		static smartGetBounds(obj:createjs.DisplayObject, ignoreSelf?:boolean) : createjs.Rectangle;
+		static cache(obj:createjs.DisplayObject) : void;
+		static uncache(obj:createjs.DisplayObject) : void;
+		static getBounds(obj:createjs.DisplayObject, ignoreSelf?:boolean) : createjs.Rectangle;
 		static callMethod(parent:createjs.DisplayObject, name:string) : void;
 	}
 	

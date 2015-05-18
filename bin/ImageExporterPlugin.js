@@ -18,7 +18,7 @@ var ImageExporter = function() { };
 ImageExporter.run = function(type,fileApi,destFilePath,documentProperties,library) {
 	var instance = library.getSceneInstance();
 	var scene = instance.createDisplayObject(null);
-	nanofl.DisplayObjectTools.smartCache(scene);
+	nanofl.DisplayObjectTools.cache(scene);
 	var canvas = window.document.createElement("canvas");
 	canvas.width = documentProperties.width;
 	canvas.height = documentProperties.height;

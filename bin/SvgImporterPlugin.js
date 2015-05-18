@@ -1162,7 +1162,7 @@ svgimport.BaseExporter.prototype = {
 					if(elemBounds != null) {
 						var maskBounds;
 						if(filter.filterUnits == "userSpaceOnUse") maskBounds = new createjs.Rectangle(elemBounds.x + (filter.x != null?filter.x:-elemBounds.width * 0.1),elemBounds.y + (filter.y != null?filter.y:-elemBounds.height * 0.1),filter.width != null?filter.width:elemBounds.width * 1.2,filter.height != null?filter.height:elemBounds.height * 1.2); else maskBounds = new createjs.Rectangle(elemBounds.x + (filter.x != null?filter.x * elemBounds.width:-elemBounds.width * 0.1),elemBounds.y + (filter.y != null?filter.y * elemBounds.height:-elemBounds.height * 0.1),(filter.width != null?filter.width:1.2) * elemBounds.width,(filter.height != null?filter.height:1.2) * elemBounds.height);
-						if(!this.isRectangleNested(nanofl.DisplayObjectTools.smartGetBounds(displayObject),maskBounds)) {
+						if(!this.isRectangleNested(nanofl.DisplayObjectTools.getBounds(displayObject),maskBounds)) {
 							var mask = new nanofl.engine.elements.ShapeElement(null,[new nanofl.engine.geom.Polygon(new nanofl.engine.fills.SolidFill("red"),[nanofl.engine.geom.Contour.fromRectangle(maskBounds)])]);
 							var item = this.elementsToLibraryItem([element],this.getNextFreeID(prefixID));
 							this.addMaskElementLayerToMovieClipItem(item,mask);
