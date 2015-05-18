@@ -5,6 +5,7 @@ extern class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem im
 	function new(namePath:String) : Void;
 	var layers(default, never) : nanofl.engine.ArrayRO<nanofl.engine.Layer>;
 	var likeButton : Bool;
+	var exportAsSpriteSheet : Bool;
 	var autoPlay : Bool;
 	var loop : Bool;
 	override function getType() : String;
