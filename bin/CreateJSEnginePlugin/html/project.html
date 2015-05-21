@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<!--ALLOW_REGENERATION-->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>{title}</title>
+    </head>
+    <body style="margin:0; padding:0; font-size:0">
+		<canvas id="mainCanvas" width="{width}" height="{height}" style="background-color:{backgroundColor}"></canvas>
+		<script src="{createjsUrl}"></script>
+		<script src="{playerUrl}"></script>
+		<script>
+			{library}
+		</script>
+		<script>
+			nanofl.Player.init(document.getElementById("mainCanvas"), {framerate});
+		</script>
+    </body>
+</html>

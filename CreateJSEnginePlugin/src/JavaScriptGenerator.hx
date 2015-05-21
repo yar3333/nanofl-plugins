@@ -1,39 +1,13 @@
-import nanofl.engine.DocumentProperties;
-import nanofl.engine.FileApi;
-import nanofl.engine.Library;
-import nanofl.engine.Plugins;
-import nanofl.ide.plugins.ILanguagePlugin;
 import nanofl.engine.VersionInfo;
 
-class JavaScriptLanguagePlugin implements ILanguagePlugin
+class JavaScriptGenerator extends BaseGenerator
 {
-	var fileApi : FileApi;
-	var library : Library;
-	var supportDir : String;
-	
-	static function main() Plugins.registerLanguage(new JavaScriptLanguagePlugin());
-	
-	public function new() { }
-	
-	public var name = "JavaScript";
-	
-	public function generateFiles(fileApi:FileApi, filePath:String, documentProperties:DocumentProperties, library:Library) : Void
+	override public function generate(dir:String, name:String)
 	{
-		this.fileApi = fileApi;
-		this.library = library;
-		this.supportDir = fileApi.getPluginsDirectory() + "/JavaScriptLanguagePlugin";
-		
-		var pathParts = filePath.split("/");
-		var dir = pathParts.slice(0, pathParts.length - 1).join("/");
-		var nameExt = pathParts[pathParts.length - 1];
-		var name = nameExt.lastIndexOf(".") > 0 ? nameExt.substring(0, nameExt.lastIndexOf(".")) : nameExt;
-		
-		trace("JavaScriptLanguagePlugin.generateFiles filePath = " + filePath + "; supportDir = " + supportDir+"; dir= " + dir + "; name = " + name);
-		
 		generateLibrary(dir, name);
 		generateClasses(dir, name);
 		generateSoundsClass(dir, name);
-		generateHtml(dir, name, documentProperties);
+		generateHtml(dir, name);
 	}
 	
 	function generateLibrary(dir:String, name:String)
@@ -41,7 +15,7 @@ class JavaScriptLanguagePlugin implements ILanguagePlugin
 		fileApi.saveContent(dir + "/bin/library.js", library.compile("library"));
 	}
 	
-	function generateHtml(dir:String, name:String, documentProperties:DocumentProperties)
+	function generateHtml(dir:String, name:String)
 	{
 		var file = dir + "/" + name + ".html";
 		
@@ -134,19 +108,6 @@ class JavaScriptLanguagePlugin implements ILanguagePlugin
 			text.push("}");
 			fileApi.saveContent(dir + "/gen/Sounds.js", text.join("\n"));
 		}
-	}
-	
-	function capitalizeClassName(fullClassName:String) : String
-	{
-		var n = fullClassName.lastIndexOf(".");
-		return n < 0
-			? capitalize(fullClassName)
-			: fullClassName.substring(0, n + 1) + capitalize(fullClassName.substring(n + 1));
-	}
-	
-	function capitalize(s:String) : String
-	{
-		return s.substring(0, 1).toUpperCase() + s.substring(1);
 	}
 	
 	function getFiles(dir:String, ext:String) : Array<String>

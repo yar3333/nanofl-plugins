@@ -1,29 +1,9 @@
-import nanofl.engine.DocumentProperties;
-import nanofl.engine.FileApi;
-import nanofl.engine.Library;
-import nanofl.engine.Plugins;
-import nanofl.ide.plugins.ILanguagePlugin;
 import nanofl.engine.VersionInfo;
 
-class NoneLanguagePlugin implements ILanguagePlugin
+class HtmlGenerator extends BaseGenerator
 {
-	static function main() Plugins.registerLanguage(new NoneLanguagePlugin());
-	
-	public function new() { }
-	
-	public var name = "";
-	
-	public function generateFiles(fileApi:FileApi, filePath:String, documentProperties:DocumentProperties, library:Library) : Void
+	override public function generate(dir:String, name:String)
 	{
-		var supportDir = fileApi.getPluginsDirectory() + "/NoneLanguagePlugin";
-		
-		var parts = filePath.split("/");
-		var nameExt = parts.pop();
-		var name = nameExt.substring(0, nameExt.lastIndexOf("."));
-		var dir = parts.join("/");
-		
-		trace("NoneLanguagePlugin.generateFiles filePath = " + filePath + "; supportDir = " + supportDir + "; dir = " + dir + "; name = " + name);
-		
 		var destHtmlFile = dir + "/" + name + ".html";
 		if (!fileApi.exists(destHtmlFile) || fileApi.getContent(destHtmlFile).indexOf("<!--ALLOW_REGENERATION-->") >= 0)
 		{
