@@ -1,50 +1,23 @@
-import nanofl.engine.VersionInfo;
-
-class JavaScriptGenerator extends BaseGenerator
+class JavaScriptGenerator extends CodeGenerator
 {
 	override public function generate(dir:String, name:String)
 	{
 		generateLibrary(dir, name);
 		generateClasses(dir, name);
 		generateSoundsClass(dir, name);
-		generateHtml(dir, name);
+		super.generate(dir, name);
+	}
+	
+	override function getScriptUrls(dir:String, name:String) : Array<String> 
+	{
+		return [ "bin/library.js" ]
+				.concat(findFiles(dir + "/gen", ".js"))
+				.concat(findFiles(dir + "/src", ".js"));
 	}
 	
 	function generateLibrary(dir:String, name:String)
 	{
 		fileApi.saveContent(dir + "/bin/library.js", library.compile("library"));
-	}
-	
-	function generateHtml(dir:String, name:String)
-	{
-		var file = dir + "/" + name + ".html";
-		
-		var defines = [];
-		if (fileApi.exists(file))
-		{
-			var text = fileApi.getContent(file);
-			if (text.indexOf("<!--ALLOW_REGENERATION-->") >= 0) defines.push("ALLOW_REGENERATION");
-		}
-		else
-		{
-			defines.push("ALLOW_REGENERATION");
-		}
-		
-		if (!fileApi.exists(file) || defines.indexOf("ALLOW_REGENERATION") >= 0)
-		{
-			var template = fileApi.getContent(supportDir + "/project.html");
-			template = template.split("{title}").join(documentProperties.title != "" ? documentProperties.title : name);
-			template = template.split("{width}").join(untyped documentProperties.width);
-			template = template.split("{height}").join(untyped documentProperties.height);
-			template = template.split("{backgroundColor}").join(documentProperties.backgroundColor);
-			template = template.split("{createjsUrl}").join(VersionInfo.createjsUrl);
-			template = template.split("{playerUrl}").join(VersionInfo.playerUrl);
-			template = template.split("{libraryUrl}").join("bin/library.js");
-			template = template.split("{scripts}").join(getFiles(dir + "/gen", ".js").concat(getFiles(dir + "/src", ".js")).map(function(s) return "<script src='" + s.substring(dir.length + 1) + "'></script>").join("\n\t\t"));
-			template = template.split("{framerate}").join(untyped documentProperties.framerate);
-			template = template.split("{defines}").join(defines.map(function(s) return "<!--" + s + "-->\n").join(""));
-			fileApi.saveContent(file, template);
-		}
 	}
 	
 	function generateClasses(dir:String, name:String)
@@ -110,11 +83,11 @@ class JavaScriptGenerator extends BaseGenerator
 		}
 	}
 	
-	function getFiles(dir:String, ext:String) : Array<String>
+	function findFiles(dir:String, ext:String) : Array<String>
 	{
 		var r = [];
 		fileApi.findFiles(dir, function(s) if (s.length > ext.length && s.substring(s.length - ext.length) == ext) r.push(s));
-		return r;
+		return r.map(function(s) return s.substring(dir.length + 1));
 	}
 	
 	function generatePack(fullClassName:String, lines:Array<String>)

@@ -1,11 +1,20 @@
-﻿class TypeScriptGenerator extends BaseGenerator
+﻿class TypeScriptGenerator extends CodeGenerator
 {
 	override public function generate(dir:String, name:String)
 	{
         generateLibrary(dir, name);
-        generateHtml(dir, name);
+        super.generate(dir, name);
         generateClasses(dir, name);
         generateSoundsClass(dir, name);
+	}
+	
+	override function getScriptUrls(dir:String, name:String) : Array<String> 
+	{
+		return
+		[
+			"bin/library.js",
+			"bin/" + name + ".js"
+		];
 	}
 	
 	function generateLibrary(dir:String, name:String)
@@ -13,46 +22,18 @@
         fileApi.saveContent(dir + "/bin/library.js", library.compile("library"));
 	}
 	
-	function generateHtml(dir:String, name:String)
-	{
-		var file = dir + "/" + name + ".html";
-		
-		var defines = [];
-		if (fileApi.exists(file))
-		{
-			var text = fileApi.getContent(file);
-			if (text.indexOf("<!--ALLOW_REGENERATION-->") >= 0) defines.push("ALLOW_REGENERATION");
-		}
-
-		if (!fileApi.exists(file) || defines.indexOf("ALLOW_REGENERATION") >= 0)
-		{
-			var template = fileApi.getContent(supportDir + "/project.html");
-			template = template.split("{title}").join(documentProperties.title != "" ? documentProperties.title : name);
-			template = template.split("{width}").join(Std.string(documentProperties.width));
-			template = template.split("{height}").join(Std.string(documentProperties.height));
-			template = template.split("{backgroundColor}").join(documentProperties.backgroundColor);
-			template = template.split("{createjsUrl}").join(nanofl.engine.VersionInfo.createjsUrl);
-			template = template.split("{playerUrl}").join(nanofl.engine.VersionInfo.playerUrl);
-			template = template.split("{libraryUrl}").join("bin/library.js");
-			template = template.split("{codeUrl}").join("bin/" + name + ".js");
-			template = template.split("{framerate}").join(Std.string(documentProperties.framerate));
-			template = template.split("{defines}").join(defines.map(function(s) return "<!--" + s + "-->\n").join(""));
-			fileApi.saveContent(file, template);
-		}
-	}
-	
 	function generateClasses(dir:String, name:String)
 	{
-        var linkedItems = library.getInstancableItems().filter(function(item) return item.linkedClass != "");
+		var linkedItems = library.getInstancableItems().filter(function(item) return item.linkedClass != "");
 		
         fileApi.remove(dir + "/gen/*");
 
 		if (linkedItems.length > 0)
 		{
-            fileApi.copy(supportDir + "/files", dir);
+            fileApi.copy(supportDir + "/typescript/files", dir);
 
-			var baseMovieClipTemplate = fileApi.getContent(supportDir + "/BaseMovieClip.ts");
-			var movieClipTemplate = fileApi.getContent(supportDir + "/MovieClip.ts");
+			var baseMovieClipTemplate = fileApi.getContent(supportDir + "/typescript/BaseMovieClip.ts");
+			var movieClipTemplate = fileApi.getContent(supportDir + "/typescript/MovieClip.ts");
 			
 			for (item in linkedItems)
 			{

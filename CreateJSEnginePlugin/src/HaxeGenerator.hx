@@ -1,46 +1,21 @@
-import nanofl.engine.VersionInfo;
-
-class HaxeGenerator extends BaseGenerator
+class HaxeGenerator extends CodeGenerator
 {
 	override public function generate(dir:String, name:String)
 	{
 		generateLibrary(dir, name);
-		generateHtml(dir, name);
+		super.generate(dir, name);
 		generateClasses(dir, name);
 		generateSoundsClass(dir, name);
+	}
+	
+	override function getScriptUrls(dir:String, name:String) : Array<String> 
+	{
+		return [ "bin/" + name + ".js" ];
 	}
 	
 	function generateLibrary(dir:String, name:String)
 	{
 		fileApi.saveContent(dir + "/bin/library.js", library.compile("library"));
-	}
-	
-	function generateHtml(dir:String, name:String)
-	{
-		var file = dir + "/" + name + ".html";
-		
-		var defines = [];
-		if (fileApi.exists(file))
-		{
-			var text = fileApi.getContent(file);
-			if (text.indexOf("<!--ALLOW_REGENERATION-->") >= 0) defines.push("ALLOW_REGENERATION");
-		}
-		
-		if (!fileApi.exists(file) || defines.indexOf("ALLOW_REGENERATION") >= 0)
-		{
-			var template = fileApi.getContent(supportDir + "/project.html");
-			template = template.split("{title}").join(documentProperties.title != "" ? documentProperties.title : name);
-			template = template.split("{width}").join(untyped documentProperties.width);
-			template = template.split("{height}").join(untyped documentProperties.height);
-			template = template.split("{backgroundColor}").join(documentProperties.backgroundColor);
-			template = template.split("{createjsUrl}").join(VersionInfo.createjsUrl);
-			template = template.split("{playerUrl}").join(VersionInfo.playerUrl);
-			template = template.split("{libraryUrl}").join("bin/library.js");
-			template = template.split("{codeUrl}").join("bin/" + name + ".js");
-			template = template.split("{framerate}").join(untyped documentProperties.framerate);
-			template = template.split("{defines}").join(defines.map(function(s) return "<!--" + s + "-->\n").join(""));
-			fileApi.saveContent(file, template);
-		}
 	}
 	
 	function generateClasses(dir:String, name:String)
@@ -51,10 +26,10 @@ class HaxeGenerator extends BaseGenerator
 		
 		if (linkedItems.length > 0)
 		{
-			fileApi.copy(supportDir + "/files", dir);
+			fileApi.copy(supportDir + "/haxe/files", dir);
 			
-			var baseMovieClipTemplate = fileApi.getContent(supportDir + "/BaseMovieClip.hx");
-			var movieClipTemplate = fileApi.getContent(supportDir + "/MovieClip.hx");
+			var baseMovieClipTemplate = fileApi.getContent(supportDir + "/haxe/BaseMovieClip.hx");
+			var movieClipTemplate = fileApi.getContent(supportDir + "/haxe/MovieClip.hx");
 			
 			for (item in linkedItems)
 			{
@@ -109,7 +84,7 @@ class HaxeGenerator extends BaseGenerator
 			{
 				if (sound.linkage != "" && sound.linkage != null)
 				{
-					text.push("\tpublic static function " + sound.linkage + "(?options:SoundOptions) : AbstractSoundInstance return Sound.play(\"" + sound.linkage+"\", options);");
+					text.push("\tpublic static function " + sound.linkage + "(?options:SoundOptions) : AbstractSoundInstance return Sound.play(\"" + sound.linkage + "\", options);");
 				}
 			}
 			

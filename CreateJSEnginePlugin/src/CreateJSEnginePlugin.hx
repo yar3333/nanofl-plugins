@@ -15,9 +15,9 @@ class CreateJSEnginePlugin implements IEnginePlugin
 	
 	public function generateFiles(language:String, fileApi:FileApi, filePath:String, documentProperties:DocumentProperties, library:Library) : Void
 	{
-		var supportDir = fileApi.getPluginsDirectory() + "/CreateJSEnginePlugin/" + language.toLowerCase();
+		var supportDir = fileApi.getPluginsDirectory() + "/CreateJSEnginePlugin";
 		
-		var generator = switch(language)
+		var generator : HtmlGenerator = switch(language)
 		{
 			case "HTML":		new HtmlGenerator(fileApi, documentProperties, library, supportDir);
 			case "JavaScript":	new JavaScriptGenerator(fileApi, documentProperties, library, supportDir);
