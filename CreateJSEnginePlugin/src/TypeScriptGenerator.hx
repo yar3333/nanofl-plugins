@@ -3,7 +3,7 @@
 	override public function generate(dir:String, name:String)
 	{
         generateLibrary(dir, name);
-        super.generate(dir, name);
+        generateHtml(dir, name);
         generateClasses(dir, name);
         generateSoundsClass(dir, name);
 	}

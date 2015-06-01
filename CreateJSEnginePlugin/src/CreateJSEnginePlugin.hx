@@ -3,6 +3,7 @@ import nanofl.engine.FileApi;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IEnginePlugin;
+import nanofl.ide.textureatlas.TextureAtlas;
 
 class CreateJSEnginePlugin implements IEnginePlugin
 {
@@ -13,16 +14,16 @@ class CreateJSEnginePlugin implements IEnginePlugin
 	public var name = "CreateJS";
 	public var languages = [ "HTML", "JavaScript", "TypeScript", "Haxe" ];
 	
-	public function generateFiles(language:String, fileApi:FileApi, filePath:String, documentProperties:DocumentProperties, library:Library) : Void
+	public function generateFiles(language:String, fileApi:FileApi, filePath:String, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>) : Void
 	{
 		var supportDir = fileApi.getPluginsDirectory() + "/CreateJSEnginePlugin";
 		
 		var generator : HtmlGenerator = switch(language)
 		{
-			case "HTML":		new HtmlGenerator(fileApi, documentProperties, library, supportDir);
-			case "JavaScript":	new JavaScriptGenerator(fileApi, documentProperties, library, supportDir);
-			case "TypeScript":	new TypeScriptGenerator(fileApi, documentProperties, library, supportDir);
-			case "Haxe":		new HaxeGenerator(fileApi, documentProperties, library, supportDir);
+			case "HTML":		new HtmlGenerator(fileApi, documentProperties, library, textureAtlases, supportDir);
+			case "JavaScript":	new JavaScriptGenerator(fileApi, documentProperties, library, textureAtlases, supportDir);
+			case "TypeScript":	new TypeScriptGenerator(fileApi, documentProperties, library, textureAtlases, supportDir);
+			case "Haxe":		new HaxeGenerator(fileApi, documentProperties, library, textureAtlases, supportDir);
 			case _: throw "Unsupported language '" + language + "'."; null;
 		}
 		

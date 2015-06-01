@@ -2,8 +2,10 @@ class HaxeGenerator extends CodeGenerator
 {
 	override public function generate(dir:String, name:String)
 	{
+		fileApi.remove(dir + "/gen/*");
+		
 		generateLibrary(dir, name);
-		super.generate(dir, name);
+		generateHtml(dir, name);
 		generateClasses(dir, name);
 		generateSoundsClass(dir, name);
 	}
@@ -20,7 +22,6 @@ class HaxeGenerator extends CodeGenerator
 	
 	function generateClasses(dir:String, name:String)
 	{
-		fileApi.remove(dir + "/gen/*");
 		
 		var linkedItems = library.getInstancableItems().filter(function(item) return item.linkedClass != "");
 		

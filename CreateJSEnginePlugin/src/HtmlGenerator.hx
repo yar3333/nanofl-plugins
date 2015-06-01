@@ -4,6 +4,12 @@ class HtmlGenerator extends BaseGenerator
 {
 	public function generate(dir:String, name:String)
 	{
+		generateHtml(dir, name);
+		generateTextureAtlases(dir, name);
+	}
+	
+	function generateHtml(dir:String, name:String)
+	{
 		var file = dir + "/" + name + ".html";
 		
 		var defines = [];
@@ -26,6 +32,14 @@ class HtmlGenerator extends BaseGenerator
 			template = template.split("{framerate}").join(untyped documentProperties.framerate);
 			template = template.split("{scripts}").join(getScripts(dir, name));
 			fileApi.saveContent(file, template);
+		}
+	}
+	
+	function generateTextureAtlases(dir:String, name:String)
+	{
+		for (textureAtlasName in textureAtlases.keys())
+		{
+			fileApi.saveBinary(dir + "/" + textureAtlasName + ".png", textureAtlases.get(textureAtlasName).imagePng);
 		}
 	}
 	
