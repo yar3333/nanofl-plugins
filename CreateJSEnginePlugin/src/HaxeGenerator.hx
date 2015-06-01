@@ -8,6 +8,7 @@ class HaxeGenerator extends CodeGenerator
 		generateHtml(dir, name);
 		generateClasses(dir, name);
 		generateSoundsClass(dir, name);
+		generateTextureAtlases(dir);
 	}
 	
 	override function getScriptUrls(dir:String, name:String) : Array<String> 

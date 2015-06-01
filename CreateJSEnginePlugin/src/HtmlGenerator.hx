@@ -5,7 +5,7 @@ class HtmlGenerator extends BaseGenerator
 	public function generate(dir:String, name:String)
 	{
 		generateHtml(dir, name);
-		generateTextureAtlases(dir, name);
+		generateTextureAtlases(dir);
 	}
 	
 	function generateHtml(dir:String, name:String)
@@ -35,11 +35,11 @@ class HtmlGenerator extends BaseGenerator
 		}
 	}
 	
-	function generateTextureAtlases(dir:String, name:String)
+	function generateTextureAtlases(dir:String)
 	{
 		for (textureAtlasName in textureAtlases.keys())
 		{
-			fileApi.saveBinary(dir + "/" + textureAtlasName + ".png", textureAtlases.get(textureAtlasName).imagePng);
+			fileApi.saveBinary(dir + "/gen/" + textureAtlasName + ".png", textureAtlases.get(textureAtlasName).imagePng);
 		}
 	}
 	
