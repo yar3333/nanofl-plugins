@@ -10,9 +10,9 @@ class JavaScriptGenerator extends CodeGenerator
 	
 	override function getScriptUrls(dir:String, name:String) : Array<String> 
 	{
-		return [ "bin/library.js" ]
-				.concat(findFiles(dir + "/gen", ".js"))
-				.concat(findFiles(dir + "/src", ".js"));
+		return super.getScriptUrls(dir, name)
+			.concat(findFiles(dir + "/gen", ".js"))
+			.concat(findFiles(dir + "/src", ".js"));
 	}
 	
 	function generateLibrary(dir:String, name:String)

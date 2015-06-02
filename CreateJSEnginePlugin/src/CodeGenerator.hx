@@ -13,10 +13,11 @@ class CodeGenerator extends HtmlGenerator
 		return s.substring(0, 1).toUpperCase() + s.substring(1);
 	}
 	
-	override function getScripts(dir:String, name:String) : String
-	{
-		return getScriptUrls(dir, name).map(function(s) return "\t\t<script src='" + s + "'></script>").join("\n");
-	}
+	override function getScriptInlineBlocks() return [];
 	
-	function getScriptUrls(dir:String, name:String) : Array<String> return [];
+	override function getScriptUrls(dir:String, name:String) : Array<String> 
+	{
+		return super.getScriptUrls(dir, name)
+			.concat([ "bin/library.js" ]);
+	}
 }

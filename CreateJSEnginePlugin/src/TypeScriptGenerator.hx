@@ -10,11 +10,8 @@
 	
 	override function getScriptUrls(dir:String, name:String) : Array<String> 
 	{
-		return
-		[
-			"bin/library.js",
-			"bin/" + name + ".js"
-		];
+		return super.getScriptUrls(dir, name)
+			.concat([ "bin/" + name + ".js" ]);
 	}
 	
 	function generateLibrary(dir:String, name:String)

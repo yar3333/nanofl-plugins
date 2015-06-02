@@ -1,4 +1,5 @@
 import nanofl.engine.VersionInfo;
+import nanofl.ide.textureatlas.TextureAtlas;
 
 class HtmlGenerator extends BaseGenerator
 {
@@ -18,8 +19,12 @@ class HtmlGenerator extends BaseGenerator
 			var text = fileApi.getContent(file);
 			if (text.indexOf("<!--ALLOW_REGENERATION-->") >= 0) defines.push("ALLOW_REGENERATION");
 		}
+		else
+		{
+			defines.push("ALLOW_REGENERATION");
+		}
 		
-		if (!fileApi.exists(file) || defines.indexOf("ALLOW_REGENERATION") >= 0)
+		if (defines.indexOf("ALLOW_REGENERATION") >= 0)
 		{
 			var template = fileApi.getContent(supportDir + "/project.html");
 			template = template.split("{defines}").join(defines.map(function(s) return "<!--" + s + "-->\n").join(""));
@@ -30,21 +35,65 @@ class HtmlGenerator extends BaseGenerator
 			template = template.split("{createjsUrl}").join(VersionInfo.createjsUrl);
 			template = template.split("{playerUrl}").join(VersionInfo.playerUrl);
 			template = template.split("{framerate}").join(untyped documentProperties.framerate);
-			template = template.split("{scripts}").join(getScripts(dir, name));
+			template = template.split("{scripts}").join(getScriptInlineBlocks()
+				.filter(function(s) return s != null && s != "")
+				.map(function(s) return "\t\t<script>\n" + s.split("\n").join("\n\t\t") + "\n</script>")
+				.concat(getScriptUrls(dir, name).map(function(s) return "\t\t<script src=\"" + s + "\"></script>")).join("\n"));
 			fileApi.saveContent(file, template);
 		}
 	}
 	
 	function generateTextureAtlases(dir:String)
 	{
+		var textureAtlasesJson = "";
+		
 		for (textureAtlasName in textureAtlases.keys())
 		{
-			fileApi.saveBinary(dir + "/gen/" + textureAtlasName + ".png", textureAtlases.get(textureAtlasName).imagePng);
+			var textureAtlas = textureAtlases.get(textureAtlasName);
+			
+			var imageUrl = "bin/" + textureAtlasName + ".png";
+			fileApi.saveBinary(dir + "/" + imageUrl, textureAtlas.imagePng);
+			
+			textureAtlasesJson += "(function() {\n";
+			textureAtlasesJson += "\tvar images = [ '" + imageUrl + "' ];\n";
+			var namePaths = Reflect.fields(textureAtlas.itemFrames);
+			namePaths.sort(Reflect.compare);
+			for (namePath in namePaths)
+			{
+				textureAtlasesJson += "\tnanofl.Player.spriteSheets['" + namePath + "'] = new createjs.SpriteSheet({ images:images, frames:[ " + getSpriteSheetFrames(textureAtlas, namePath).join(", ") + " ] });\n";
+			}
+			textureAtlasesJson += "})();\n\n";
 		}
+		
+		fileApi.saveContent(dir + "/bin/textureatlases.js", textureAtlasesJson);
 	}
 	
-	function getScripts(dir:String, name:String) : String
+	function getScriptInlineBlocks() : Array<String>
 	{
-		return "\t\t<script>\n\t\t\t" + library.compile("library") + "\n\t\t</script>";
+		return [ library.compile("library") ];
+	}
+	
+	function getScriptUrls(dir:String, name:String) : Array<String> 
+	{
+		return documentProperties.useTextureAtlases ? [ "bin/textureatlases.js" ] : [];
+	}
+	
+	function getSpriteSheetFrames(textureAtlas:TextureAtlas, namePath:String) : Array<Array<Float>>
+	{
+		var r = new Array<Array<Float>>();
+		var frameIndexes : Array<Int> = Reflect.field(textureAtlas.itemFrames, namePath);
+		for (frameIndex in frameIndexes)
+		{
+			if (frameIndex != null)
+			{
+				var frame = textureAtlas.frames[frameIndex];
+				r.push([ frame.x, frame.y, frame.width, frame.height, 0, frame.regX, frame.regY ]);
+			}
+			else
+			{
+				r.push([]);
+			}
+		}
+		return r;
 	}
 }
