@@ -1,4 +1,4 @@
-package nanofl.engine;
+package nanofl.ide;
 
 extern interface ServerApi
 {

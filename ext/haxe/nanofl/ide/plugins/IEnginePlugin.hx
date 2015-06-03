@@ -16,5 +16,5 @@ extern interface IEnginePlugin
 	 * and sealized library to load in application.
 	 * "filePath" argument is a path to *.nfl file.
 	 */
-	function generateFiles(language:String, fileApi:nanofl.engine.FileApi, filePath:String, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library) : Void;
+	function generateFiles(language:String, fileApi:nanofl.engine.FileApi, filePath:String, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<String, nanofl.ide.textureatlas.TextureAtlas>) : Void;
 }

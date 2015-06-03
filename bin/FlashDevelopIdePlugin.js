@@ -36,5 +36,10 @@ FlashDevelopIdePlugin.prototype = {
 		}
 	}
 };
+var IMap = function() { };
+var haxe = {};
+haxe.ds = {};
+haxe.ds.StringMap = function() { };
+haxe.ds.StringMap.__interfaces__ = [IMap];
 FlashDevelopIdePlugin.main();
 })();

@@ -50,6 +50,7 @@ Main.main = function() {
 	nanofl.engine.Plugins.registerExporter(new PngImageExporterPlugin());
 	nanofl.engine.Plugins.registerExporter(new JpegImageExporterPlugin());
 };
+var IMap = function() { };
 var PngImageExporterPlugin = function() {
 	this.fileDefaultExtension = "png";
 	this.fileFilterExtensions = ["png"];
@@ -173,6 +174,9 @@ haxe.crypto.BaseCode.prototype = {
 		return out;
 	}
 };
+haxe.ds = {};
+haxe.ds.StringMap = function() { };
+haxe.ds.StringMap.__interfaces__ = [IMap];
 haxe.io.Eof = function() { };
 haxe.io.Eof.prototype = {
 	toString: function() {

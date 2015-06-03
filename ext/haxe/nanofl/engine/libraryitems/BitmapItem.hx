@@ -1,8 +1,9 @@
 package nanofl.engine.libraryitems;
 
-extern class BitmapItem extends nanofl.engine.libraryitems.InstancableItem
+extern class BitmapItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem
 {
 	function new(namePath:String, ext:String) : Void;
+	var textureAtlas : String;
 	var image(default, null) : js.html.Image;
 	override function getType() : String;
 	override function clone() : nanofl.engine.libraryitems.LibraryItem;

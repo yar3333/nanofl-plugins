@@ -12,6 +12,10 @@ extern class MovieClip extends createjs.Container
 	function getTotalFrames() : Int;
 	function maskChild(child:createjs.DisplayObject) : Bool;
 	function uncacheChild(child:createjs.DisplayObject) : Void;
+	/**
+	 * Return keeped children MovieClips. Return null if all children are keeped.
+	 */
+	function gotoFrame(labelOrIndex:Dynamic) : Array<nanofl.AdvancableDisplayObject>;
 	override function clone(?recursive:Bool) : createjs.DisplayObject;
 	override function toString() : String;
 	static function applyMask(mask:createjs.DisplayObject, obj:createjs.DisplayObject) : Bool;

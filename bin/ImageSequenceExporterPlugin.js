@@ -60,6 +60,8 @@ Main.main = function() {
 	nanofl.engine.Plugins.registerExporter(new PngImageSequenceExporterPlugin());
 	nanofl.engine.Plugins.registerExporter(new JpegImageSequenceExporterPlugin());
 };
+var IMap = function() { };
+IMap.__name__ = true;
 var PngImageSequenceExporterPlugin = function() {
 	this.fileDefaultExtension = "png";
 	this.fileFilterExtensions = ["png"];
@@ -198,6 +200,10 @@ haxe.crypto.BaseCode.prototype = {
 		return out;
 	}
 };
+haxe.ds = {};
+haxe.ds.StringMap = function() { };
+haxe.ds.StringMap.__name__ = true;
+haxe.ds.StringMap.__interfaces__ = [IMap];
 haxe.io.Eof = function() { };
 haxe.io.Eof.__name__ = true;
 haxe.io.Eof.prototype = {

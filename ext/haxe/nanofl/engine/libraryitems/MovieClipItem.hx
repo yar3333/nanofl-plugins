@@ -1,6 +1,6 @@
 package nanofl.engine.libraryitems;
 
-extern class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITimeline implements nanofl.engine.ILayersContainer
+extern class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem implements nanofl.engine.ITimeline implements nanofl.engine.ILayersContainer
 {
 	function new(namePath:String) : Void;
 	var layers(default, never) : nanofl.engine.ArrayRO<nanofl.engine.Layer>;
@@ -8,6 +8,7 @@ extern class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem im
 	var exportAsSpriteSheet : Bool;
 	var autoPlay : Bool;
 	var loop : Bool;
+	var textureAtlas : String;
 	override function getType() : String;
 	override function clone() : nanofl.engine.libraryitems.LibraryItem;
 	function addLayer(layer:nanofl.engine.Layer) : Void;

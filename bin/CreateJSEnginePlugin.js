@@ -5,25 +5,30 @@ function $extend(from, fields) {
 	if( fields.toString !== Object.prototype.toString ) proto.toString = fields.toString;
 	return proto;
 }
-var BaseGenerator = function(fileApi,documentProperties,library,supportDir) {
+var BaseGenerator = function(fileApi,documentProperties,library,textureAtlases,supportDir) {
 	this.fileApi = fileApi;
 	this.documentProperties = documentProperties;
 	this.library = library;
+	this.textureAtlases = textureAtlases;
 	this.supportDir = supportDir;
 };
-var HtmlGenerator = function(fileApi,documentProperties,library,supportDir) {
-	BaseGenerator.call(this,fileApi,documentProperties,library,supportDir);
+var HtmlGenerator = function(fileApi,documentProperties,library,textureAtlases,supportDir) {
+	BaseGenerator.call(this,fileApi,documentProperties,library,textureAtlases,supportDir);
 };
 HtmlGenerator.__super__ = BaseGenerator;
 HtmlGenerator.prototype = $extend(BaseGenerator.prototype,{
 	generate: function(dir,name) {
+		this.generateHtml(dir,name);
+		this.generateTextureAtlases(dir);
+	}
+	,generateHtml: function(dir,name) {
 		var file = dir + "/" + name + ".html";
 		var defines = [];
 		if(this.fileApi.exists(file)) {
 			var text = this.fileApi.getContent(file);
 			if(text.indexOf("<!--ALLOW_REGENERATION-->") >= 0) defines.push("ALLOW_REGENERATION");
-		}
-		if(!this.fileApi.exists(file) || HxOverrides.indexOf(defines,"ALLOW_REGENERATION",0) >= 0) {
+		} else defines.push("ALLOW_REGENERATION");
+		if(HxOverrides.indexOf(defines,"ALLOW_REGENERATION",0) >= 0) {
 			var template = this.fileApi.getContent(this.supportDir + "/project.html");
 			template = template.split("{defines}").join(defines.map(function(s) {
 				return "<!--" + s + "-->\n";
@@ -35,16 +40,64 @@ HtmlGenerator.prototype = $extend(BaseGenerator.prototype,{
 			template = template.split("{createjsUrl}").join(nanofl.engine.VersionInfo.createjsUrl);
 			template = template.split("{playerUrl}").join(nanofl.engine.VersionInfo.playerUrl);
 			template = template.split("{framerate}").join(this.documentProperties.framerate);
-			template = template.split("{scripts}").join(this.getScripts(dir,name));
+			template = template.split("{scripts}").join(this.getScriptInlineBlocks().filter(function(s1) {
+				return s1 != null && s1 != "";
+			}).map(function(s2) {
+				return "\t\t<script>\n" + s2.split("\n").join("\n\t\t") + "\n</script>";
+			}).concat(this.getScriptUrls(dir,name).map(function(s3) {
+				return "\t\t<script src=\"" + s3 + "\"></script>";
+			})).join("\n"));
 			this.fileApi.saveContent(file,template);
 		}
 	}
-	,getScripts: function(dir,name) {
-		return "\t\t<script>\n\t\t\t" + this.library.compile("library") + "\n\t\t</script>";
+	,generateTextureAtlases: function(dir) {
+		var jsonFilePath = dir + "/bin/textureatlases.js";
+		if(this.textureAtlases.iterator().hasNext()) {
+			var textureAtlasesJson = "";
+			var $it0 = this.textureAtlases.keys();
+			while( $it0.hasNext() ) {
+				var textureAtlasName = $it0.next();
+				var textureAtlas = this.textureAtlases.get(textureAtlasName);
+				var imageUrl = "bin/" + textureAtlasName + ".png";
+				this.fileApi.saveBinary(dir + "/" + imageUrl,textureAtlas.imagePng);
+				textureAtlasesJson += "(function() {\n";
+				textureAtlasesJson += "\tvar images = [ '" + imageUrl + "' ];\n";
+				var namePaths = Reflect.fields(textureAtlas.itemFrames);
+				namePaths.sort(Reflect.compare);
+				var _g = 0;
+				while(_g < namePaths.length) {
+					var namePath = namePaths[_g];
+					++_g;
+					textureAtlasesJson += "\tnanofl.Player.spriteSheets['" + namePath + "'] = new createjs.SpriteSheet({ images:images, frames:[ " + this.getSpriteSheetFrames(textureAtlas,namePath).join(", ") + " ] });\n";
+				}
+				textureAtlasesJson += "})();\n\n";
+			}
+			this.fileApi.saveContent(jsonFilePath,textureAtlasesJson);
+		} else this.fileApi.remove(jsonFilePath);
+	}
+	,getScriptInlineBlocks: function() {
+		return [this.library.compile("library")];
+	}
+	,getScriptUrls: function(dir,name) {
+		if(this.documentProperties.useTextureAtlases) return ["bin/textureatlases.js"]; else return [];
+	}
+	,getSpriteSheetFrames: function(textureAtlas,namePath) {
+		var r = new Array();
+		var frameIndexes = Reflect.field(textureAtlas.itemFrames,namePath);
+		var _g = 0;
+		while(_g < frameIndexes.length) {
+			var frameIndex = frameIndexes[_g];
+			++_g;
+			if(frameIndex != null) {
+				var frame = textureAtlas.frames[frameIndex];
+				r.push([frame.x,frame.y,frame.width,frame.height,0,frame.regX,frame.regY]);
+			} else r.push([]);
+		}
+		return r;
 	}
 });
-var CodeGenerator = function(fileApi,documentProperties,library,supportDir) {
-	HtmlGenerator.call(this,fileApi,documentProperties,library,supportDir);
+var CodeGenerator = function(fileApi,documentProperties,library,textureAtlases,supportDir) {
+	HtmlGenerator.call(this,fileApi,documentProperties,library,textureAtlases,supportDir);
 };
 CodeGenerator.__super__ = HtmlGenerator;
 CodeGenerator.prototype = $extend(HtmlGenerator.prototype,{
@@ -55,13 +108,11 @@ CodeGenerator.prototype = $extend(HtmlGenerator.prototype,{
 	,capitalize: function(s) {
 		return s.substring(0,1).toUpperCase() + s.substring(1);
 	}
-	,getScripts: function(dir,name) {
-		return this.getScriptUrls(dir,name).map(function(s) {
-			return "\t\t<script src='" + s + "'></script>";
-		}).join("\n");
+	,getScriptInlineBlocks: function() {
+		return [];
 	}
 	,getScriptUrls: function(dir,name) {
-		return [];
+		return HtmlGenerator.prototype.getScriptUrls.call(this,dir,name).concat(["bin/library.js"]);
 	}
 });
 var CreateJSEnginePlugin = function() {
@@ -73,21 +124,21 @@ CreateJSEnginePlugin.main = function() {
 	nanofl.engine.Plugins.registerEngine(new CreateJSEnginePlugin());
 };
 CreateJSEnginePlugin.prototype = {
-	generateFiles: function(language,fileApi,filePath,documentProperties,library) {
+	generateFiles: function(language,fileApi,filePath,documentProperties,library,textureAtlases) {
 		var supportDir = fileApi.getPluginsDirectory() + "/CreateJSEnginePlugin";
 		var generator;
 		switch(language) {
 		case "HTML":
-			generator = new HtmlGenerator(fileApi,documentProperties,library,supportDir);
+			generator = new HtmlGenerator(fileApi,documentProperties,library,textureAtlases,supportDir);
 			break;
 		case "JavaScript":
-			generator = new JavaScriptGenerator(fileApi,documentProperties,library,supportDir);
+			generator = new JavaScriptGenerator(fileApi,documentProperties,library,textureAtlases,supportDir);
 			break;
 		case "TypeScript":
-			generator = new TypeScriptGenerator(fileApi,documentProperties,library,supportDir);
+			generator = new TypeScriptGenerator(fileApi,documentProperties,library,textureAtlases,supportDir);
 			break;
 		case "Haxe":
-			generator = new HaxeGenerator(fileApi,documentProperties,library,supportDir);
+			generator = new HaxeGenerator(fileApi,documentProperties,library,textureAtlases,supportDir);
 			break;
 		default:
 			throw "Unsupported language '" + language + "'.";
@@ -102,25 +153,26 @@ CreateJSEnginePlugin.prototype = {
 		generator.generate(dir,name);
 	}
 };
-var HaxeGenerator = function(fileApi,documentProperties,library,supportDir) {
-	CodeGenerator.call(this,fileApi,documentProperties,library,supportDir);
+var HaxeGenerator = function(fileApi,documentProperties,library,textureAtlases,supportDir) {
+	CodeGenerator.call(this,fileApi,documentProperties,library,textureAtlases,supportDir);
 };
 HaxeGenerator.__super__ = CodeGenerator;
 HaxeGenerator.prototype = $extend(CodeGenerator.prototype,{
 	generate: function(dir,name) {
+		this.fileApi.remove(dir + "/gen/*");
 		this.generateLibrary(dir,name);
-		CodeGenerator.prototype.generate.call(this,dir,name);
+		this.generateHtml(dir,name);
 		this.generateClasses(dir,name);
 		this.generateSoundsClass(dir,name);
+		this.generateTextureAtlases(dir);
 	}
 	,getScriptUrls: function(dir,name) {
-		return ["bin/" + name + ".js"];
+		return CodeGenerator.prototype.getScriptUrls.call(this,dir,name).concat(["bin/" + name + ".js"]);
 	}
 	,generateLibrary: function(dir,name) {
 		this.fileApi.saveContent(dir + "/bin/library.js",this.library.compile("library"));
 	}
 	,generateClasses: function(dir,name) {
-		this.fileApi.remove(dir + "/gen/*");
 		var linkedItems = this.library.getInstancableItems().filter(function(item) {
 			return item.linkedClass != "";
 		});
@@ -179,8 +231,15 @@ HxOverrides.indexOf = function(a,obj,i) {
 	}
 	return -1;
 };
-var JavaScriptGenerator = function(fileApi,documentProperties,library,supportDir) {
-	CodeGenerator.call(this,fileApi,documentProperties,library,supportDir);
+HxOverrides.iter = function(a) {
+	return { cur : 0, arr : a, hasNext : function() {
+		return this.cur < this.arr.length;
+	}, next : function() {
+		return this.arr[this.cur++];
+	}};
+};
+var JavaScriptGenerator = function(fileApi,documentProperties,library,textureAtlases,supportDir) {
+	CodeGenerator.call(this,fileApi,documentProperties,library,textureAtlases,supportDir);
 };
 JavaScriptGenerator.__super__ = CodeGenerator;
 JavaScriptGenerator.prototype = $extend(CodeGenerator.prototype,{
@@ -188,10 +247,10 @@ JavaScriptGenerator.prototype = $extend(CodeGenerator.prototype,{
 		this.generateLibrary(dir,name);
 		this.generateClasses(dir,name);
 		this.generateSoundsClass(dir,name);
-		CodeGenerator.prototype.generate.call(this,dir,name);
+		this.generateHtml(dir,name);
 	}
 	,getScriptUrls: function(dir,name) {
-		return ["bin/library.js"].concat(this.findFiles(dir + "/gen",".js")).concat(this.findFiles(dir + "/src",".js"));
+		return CodeGenerator.prototype.getScriptUrls.call(this,dir,name).concat(this.findFiles(dir + "/gen",".js")).concat(this.findFiles(dir + "/src",".js"));
 	}
 	,generateLibrary: function(dir,name) {
 		this.fileApi.saveContent(dir + "/bin/library.js",this.library.compile("library"));
@@ -269,19 +328,41 @@ JavaScriptGenerator.prototype = $extend(CodeGenerator.prototype,{
 		}
 	}
 });
-var TypeScriptGenerator = function(fileApi,documentProperties,library,supportDir) {
-	CodeGenerator.call(this,fileApi,documentProperties,library,supportDir);
+var IMap = function() { };
+var Reflect = function() { };
+Reflect.field = function(o,field) {
+	try {
+		return o[field];
+	} catch( e ) {
+		return null;
+	}
+};
+Reflect.fields = function(o) {
+	var a = [];
+	if(o != null) {
+		var hasOwnProperty = Object.prototype.hasOwnProperty;
+		for( var f in o ) {
+		if(f != "__id__" && f != "hx__closures__" && hasOwnProperty.call(o,f)) a.push(f);
+		}
+	}
+	return a;
+};
+Reflect.compare = function(a,b) {
+	if(a == b) return 0; else if(a > b) return 1; else return -1;
+};
+var TypeScriptGenerator = function(fileApi,documentProperties,library,textureAtlases,supportDir) {
+	CodeGenerator.call(this,fileApi,documentProperties,library,textureAtlases,supportDir);
 };
 TypeScriptGenerator.__super__ = CodeGenerator;
 TypeScriptGenerator.prototype = $extend(CodeGenerator.prototype,{
 	generate: function(dir,name) {
 		this.generateLibrary(dir,name);
-		CodeGenerator.prototype.generate.call(this,dir,name);
+		this.generateHtml(dir,name);
 		this.generateClasses(dir,name);
 		this.generateSoundsClass(dir,name);
 	}
 	,getScriptUrls: function(dir,name) {
-		return ["bin/library.js","bin/" + name + ".js"];
+		return CodeGenerator.prototype.getScriptUrls.call(this,dir,name).concat(["bin/" + name + ".js"]);
 	}
 	,generateLibrary: function(dir,name) {
 		this.fileApi.saveContent(dir + "/bin/library.js",this.library.compile("library"));
@@ -339,6 +420,30 @@ TypeScriptGenerator.prototype = $extend(CodeGenerator.prototype,{
 		} else this.fileApi.remove(classFilePath);
 	}
 });
+var haxe = {};
+haxe.ds = {};
+haxe.ds.StringMap = function() { };
+haxe.ds.StringMap.__interfaces__ = [IMap];
+haxe.ds.StringMap.prototype = {
+	get: function(key) {
+		return this.h["$" + key];
+	}
+	,keys: function() {
+		var a = [];
+		for( var key in this.h ) {
+		if(this.h.hasOwnProperty(key)) a.push(key.substr(1));
+		}
+		return HxOverrides.iter(a);
+	}
+	,iterator: function() {
+		return { ref : this.h, it : this.keys(), hasNext : function() {
+			return this.it.hasNext();
+		}, next : function() {
+			var i = this.it.next();
+			return this.ref["$" + i];
+		}};
+	}
+};
 if(Array.prototype.indexOf) HxOverrides.indexOf = function(a,o,i) {
 	return Array.prototype.indexOf.call(a,o,i);
 };

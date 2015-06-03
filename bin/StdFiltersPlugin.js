@@ -65,6 +65,7 @@ GlowFilterPlugin.prototype = {
 		return new createjs.GlowFilter(color,params.alpha / 100 * (params.strength / 100),params.blurX * 2,params.blurY * 2,1,params.quality,params.inner,params.knockout);
 	}
 };
+var IMap = function() { };
 var StdFiltersPlugin = function() { };
 StdFiltersPlugin.main = function() {
 	nanofl.engine.Plugins.registerFilter(new DropShadowFilterPlugin());
@@ -101,6 +102,10 @@ createjs.GaussianBlurFilter.prototype = $extend(createjs.Filter.prototype,{
 		return "[GaussianBlurFilter]";
 	}
 });
+var haxe = {};
+haxe.ds = {};
+haxe.ds.StringMap = function() { };
+haxe.ds.StringMap.__interfaces__ = [IMap];
 Math.NaN = Number.NaN;
 Math.NEGATIVE_INFINITY = Number.NEGATIVE_INFINITY;
 Math.POSITIVE_INFINITY = Number.POSITIVE_INFINITY;

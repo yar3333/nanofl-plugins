@@ -7167,7 +7167,7 @@ declare module nanofl.ide.plugins
 		 * and sealized library to load in application.
 		 * "filePath" argument is a path to *.nfl file.
 		 */
-		generateFiles(language:string, fileApi:nanofl.engine.FileApi, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library) : void;
+		generateFiles(language:string, fileApi:nanofl.engine.FileApi, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : void;
 	}
 	
 	export interface IExporterPlugin
@@ -7263,6 +7263,26 @@ declare module createjs.Sound
 	}
 }
 
+declare module nanofl.ide.textureatlas
+{
+	type TextureAtlas =
+	{
+		frames : nanofl.ide.textureatlas.TextureAtlasFrame[];
+		imagePng : number[];
+		itemFrames : any;
+	}
+	
+	type TextureAtlasFrame =
+	{
+		height : number;
+		regX : number;
+		regY : number;
+		width : number;
+		x : number;
+		y : number;
+	}
+}
+
 declare module createjs.DisplayObject
 {
 	type DisplayObjectTickEvent =
@@ -7309,7 +7329,7 @@ declare module nanofl.ide
 		plugins : nanofl.ide.IPlugins;
 		quit(force?:boolean, exitCode?:number) : void;
 		saveDocumentIfNeed(callb:() => void) : void;
-		serverApi : nanofl.engine.ServerApi;
+		serverApi : nanofl.ide.ServerApi;
 	}
 	
 	export class Clipboard
@@ -7475,6 +7495,7 @@ declare module nanofl.ide
 		createFolder() : void;
 		importImagesFromPaths(paths:string[], folderPath:string, ready?:() => void) : void;
 		importLibraryItemsFromFiles(files:File[], folderPath:string, callb?:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
+		generateTextureAtlases() : Map<string, nanofl.ide.textureatlas.TextureAtlas>;
 	}
 	
 	export class Figure
@@ -7563,6 +7584,16 @@ declare module nanofl.ide
 		frame : nanofl.engine.Frame;
 		equ(p:nanofl.ide.PathItem) : boolean;
 		clone() : nanofl.ide.PathItem;
+	}
+	
+	export interface ServerApi
+	{
+		getTempDirectory() : string;
+		copyDir(src:string, dest:string, overwrite?:boolean, callb?:() => void) : void;
+		requestUrl(url:string, callb:(arg:string) => void) : void;
+		openInBrowser(url:string) : void;
+		uploadFileAsLibraryItem(library:nanofl.engine.Library, folderPath:string, file:File, callb:(arg:nanofl.engine.libraryitems.LibraryItem) => void) : void;
+		getFonts() : string[];
 	}
 	
 	export class ShapePropertiesOptions
@@ -8010,6 +8041,11 @@ declare module htmlparser
 
 declare module nanofl
 {
+	type AdvancableDisplayObject =
+	{
+		advance() : void;
+	}
+	
 	export class Bitmap extends createjs.Bitmap
 	{
 		constructor(symbol:nanofl.engine.libraryitems.InstancableItem);
@@ -8037,6 +8073,10 @@ declare module nanofl
 		getTotalFrames() : number;
 		maskChild(child:createjs.DisplayObject) : boolean;
 		uncacheChild(child:createjs.DisplayObject) : void;
+		/**
+		 * Return keeped children MovieClips. Return null if all children are keeped.
+		 */
+		gotoFrame(labelOrIndex:any) : nanofl.AdvancableDisplayObject[];
 		clone(recursive?:boolean) : createjs.DisplayObject;
 		toString() : string;
 		static applyMask(mask:createjs.DisplayObject, obj:createjs.DisplayObject) : boolean;
@@ -8227,7 +8267,7 @@ declare module nanofl.engine
 	
 	export class DocumentProperties
 	{
-		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, engine?:string, language?:string, ide?:string);
+		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, engine?:string, language?:string, ide?:string, useTextureAtlases?:boolean, graphicsAcceleration?:boolean);
 		title : string;
 		width : number;
 		height : number;
@@ -8236,6 +8276,8 @@ declare module nanofl.engine
 		engine : string;
 		language : string;
 		ide : string;
+		useTextureAtlases : boolean;
+		graphicsAcceleration : boolean;
 		save(fileApi:nanofl.engine.FileApi, filePath:string) : void;
 		static load(filePath:string, fileApi:nanofl.engine.FileApi) : nanofl.engine.DocumentProperties;
 	}
@@ -8341,6 +8383,12 @@ declare module nanofl.engine
 	export interface ISelectable
 	{
 		selected : boolean;
+	}
+	
+	export interface ITextureItem
+	{
+		namePath : string;
+		textureAtlas : string;
 	}
 	
 	export interface ITimeline
@@ -8454,16 +8502,6 @@ declare module nanofl.engine
 		static registerExporter(plugin:nanofl.ide.plugins.IExporterPlugin) : void;
 		static registerEngine(plugin:nanofl.ide.plugins.IEnginePlugin) : void;
 		static registerIde(plugin:nanofl.ide.plugins.IIdePlugin) : void;
-	}
-	
-	export interface ServerApi
-	{
-		getTempDirectory() : string;
-		copyDir(src:string, dest:string, overwrite?:boolean, callb?:() => void) : void;
-		requestUrl(url:string, callb:(arg:string) => void) : void;
-		openInBrowser(url:string) : void;
-		uploadFileAsLibraryItem(library:nanofl.engine.Library, folderPath:string, file:File, callb:(arg:nanofl.engine.libraryitems.LibraryItem) => void) : void;
-		getFonts() : string[];
 	}
 	
 	type TweenedElement =
@@ -8743,9 +8781,10 @@ declare module nanofl.engine.libraryitems
 		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
 	}
 	
-	export class BitmapItem extends nanofl.engine.libraryitems.InstancableItem
+	export class BitmapItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem
 	{
 		constructor(namePath:string, ext:string);
+		textureAtlas : string;
 		image : HTMLImageElement;
 		getType() : string;
 		clone() : nanofl.engine.libraryitems.LibraryItem;
@@ -8793,7 +8832,7 @@ declare module nanofl.engine.libraryitems
 		static loadFromXml(xml:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.LibraryItem[];
 	}
 	
-	export class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITimeline, nanofl.engine.ILayersContainer
+	export class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem, nanofl.engine.ITimeline, nanofl.engine.ILayersContainer
 	{
 		constructor(namePath:string);
 		layers : nanofl.engine.ArrayRO<nanofl.engine.Layer>;
@@ -8801,6 +8840,7 @@ declare module nanofl.engine.libraryitems
 		exportAsSpriteSheet : boolean;
 		autoPlay : boolean;
 		loop : boolean;
+		textureAtlas : string;
 		getType() : string;
 		clone() : nanofl.engine.libraryitems.LibraryItem;
 		addLayer(layer:nanofl.engine.Layer) : void;

@@ -14,5 +14,5 @@ typedef Application =
 	var plugins : nanofl.ide.IPlugins;
 	function quit(?force:Bool, ?exitCode:Int) : Void;
 	function saveDocumentIfNeed(callb:Void -> Void) : Void;
-	var serverApi : nanofl.engine.ServerApi;
+	var serverApi : nanofl.ide.ServerApi;
 };
