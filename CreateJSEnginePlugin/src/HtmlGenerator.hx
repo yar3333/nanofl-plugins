@@ -45,27 +45,36 @@ class HtmlGenerator extends BaseGenerator
 	
 	function generateTextureAtlases(dir:String)
 	{
-		var textureAtlasesJson = "";
+		var jsonFilePath = dir + "/bin/textureatlases.js";
 		
-		for (textureAtlasName in textureAtlases.keys())
+		if (textureAtlases.iterator().hasNext())
 		{
-			var textureAtlas = textureAtlases.get(textureAtlasName);
+			var textureAtlasesJson = "";
 			
-			var imageUrl = "bin/" + textureAtlasName + ".png";
-			fileApi.saveBinary(dir + "/" + imageUrl, textureAtlas.imagePng);
-			
-			textureAtlasesJson += "(function() {\n";
-			textureAtlasesJson += "\tvar images = [ '" + imageUrl + "' ];\n";
-			var namePaths = Reflect.fields(textureAtlas.itemFrames);
-			namePaths.sort(Reflect.compare);
-			for (namePath in namePaths)
+			for (textureAtlasName in textureAtlases.keys())
 			{
-				textureAtlasesJson += "\tnanofl.Player.spriteSheets['" + namePath + "'] = new createjs.SpriteSheet({ images:images, frames:[ " + getSpriteSheetFrames(textureAtlas, namePath).join(", ") + " ] });\n";
+				var textureAtlas = textureAtlases.get(textureAtlasName);
+				
+				var imageUrl = "bin/" + textureAtlasName + ".png";
+				fileApi.saveBinary(dir + "/" + imageUrl, textureAtlas.imagePng);
+				
+				textureAtlasesJson += "(function() {\n";
+				textureAtlasesJson += "\tvar images = [ '" + imageUrl + "' ];\n";
+				var namePaths = Reflect.fields(textureAtlas.itemFrames);
+				namePaths.sort(Reflect.compare);
+				for (namePath in namePaths)
+				{
+					textureAtlasesJson += "\tnanofl.Player.spriteSheets['" + namePath + "'] = new createjs.SpriteSheet({ images:images, frames:[ " + getSpriteSheetFrames(textureAtlas, namePath).join(", ") + " ] });\n";
+				}
+				textureAtlasesJson += "})();\n\n";
 			}
-			textureAtlasesJson += "})();\n\n";
+			
+			fileApi.saveContent(jsonFilePath, textureAtlasesJson);
 		}
-		
-		fileApi.saveContent(dir + "/bin/textureatlases.js", textureAtlasesJson);
+		else
+		{
+			fileApi.remove(jsonFilePath);
+		}
 	}
 	
 	function getScriptInlineBlocks() : Array<String>
