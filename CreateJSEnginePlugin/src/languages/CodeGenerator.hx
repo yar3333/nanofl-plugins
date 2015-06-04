@@ -1,3 +1,5 @@
+package languages;
+
 class CodeGenerator extends HtmlGenerator
 {
 	function capitalizeClassName(fullClassName:String) : String

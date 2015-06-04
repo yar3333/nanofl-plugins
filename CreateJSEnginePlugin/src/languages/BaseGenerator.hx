@@ -1,3 +1,5 @@
+package languages;
+
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
@@ -19,4 +21,6 @@ class BaseGenerator
 		this.textureAtlases = textureAtlases;
 		this.supportDir = supportDir;
 	}
+	
+	public function generate(dir:String, name:String) {}
 }

@@ -1,3 +1,5 @@
+package languages;
+
 class HaxeGenerator extends CodeGenerator
 {
 	override public function generate(dir:String, name:String)

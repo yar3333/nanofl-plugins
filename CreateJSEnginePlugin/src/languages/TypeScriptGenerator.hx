@@ -1,4 +1,6 @@
-﻿class TypeScriptGenerator extends CodeGenerator
+﻿package languages;
+
+class TypeScriptGenerator extends CodeGenerator
 {
 	override public function generate(dir:String, name:String)
 	{

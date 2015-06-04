@@ -1,25 +1,16 @@
+package ides;
+
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
-import nanofl.ide.plugins.IIdePlugin;
 
-class FlashDevelopIdePlugin implements IIdePlugin
+class FlashDevelopGenerator
 {
-	static function main() Plugins.registerIde(new FlashDevelopIdePlugin());
+	public function new() {}
 	
-	public function new() { }
-	
-	public var name = "FlashDevelop";
-	
-	public var languages = [ "JavaScript", "Haxe" ];
-	
-	public function generateFiles(language:String, fileApi:FileApi, filePath:String, documentProperties:DocumentProperties, library:Library) : Void
+	public function generate(language:String, fileApi:FileApi, dir:String, name:String) : Void
 	{
-		var pathParts = filePath.split("/");
-		var dir = pathParts.slice(0, pathParts.length - 1).join("/");
-		var nameExt = pathParts[pathParts.length - 1];
-		var name = nameExt.lastIndexOf(".") > 0 ? nameExt.substring(0, nameExt.lastIndexOf(".")) : nameExt;
 		var ext = switch (language)
 		{
 			case "JavaScript": ".fdproj";

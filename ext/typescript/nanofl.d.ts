@@ -7151,25 +7151,6 @@ declare module nanofl.engine.strokes
 
 declare module nanofl.ide.plugins
 {
-	export interface IEnginePlugin
-	{
-		/**
-		 * Game engine name (for example: "CreateJS", "Phaser3").
-		 * This value displayed to users & used as internal ID.
-		 */
-		name : string;
-		/**
-		 * Supported languages ("HTML", "JavaScript", "TypeScript", "Haxe", "C#", "C++").
-		 */
-		languages : string[];
-		/**
-		 * Called to generate source code files (usually, base classes for symbols used in code)
-		 * and sealized library to load in application.
-		 * "filePath" argument is a path to *.nfl file.
-		 */
-		generateFiles(language:string, fileApi:nanofl.engine.FileApi, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : void;
-	}
-	
 	export interface IExporterPlugin
 	{
 		/**
@@ -7199,21 +7180,24 @@ declare module nanofl.ide.plugins
 		exportDocument(fileApi:nanofl.engine.FileApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library) : boolean;
 	}
 	
-	export interface IIdePlugin
+	export interface IGeneratorPlugin
 	{
 		/**
-		 * IDE name (for example: "FlashDevelop", "MS Visual Studio 2013").
+		 * In regular case this is a game engine name ("CreateJS", "Phaser3").
+		 * This value displayed to users & used as internal ID.
 		 */
 		name : string;
 		/**
-		 * Supported languages (for example: [ "JavaScript", "TypeScript", "Haxe" ]).
+		 * In regular case this is a language name ("HTML", "JavaScript", "TypeScript", "Haxe", "C#", "C++").
+		 * Must be null or empty array if no modes supported.
 		 */
-		languages : string[];
+		modes : string[];
 		/**
-		 * Called to generate IDE-related files (solution/project).
-		 * "fileApi" argument is a path to *.nfl file.
+		 * Called to generate source code files (usually, base classes for symbols used in code)
+		 * and sealized library to load in application.
+		 * "filePath" argument is a path to *.nfl file.
 		 */
-		generateFiles(language:string, fileApi:nanofl.engine.FileApi, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library) : void;
+		generateFiles(mode:string, fileApi:nanofl.engine.FileApi, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : void;
 	}
 	
 	export interface IImporterPlugin
@@ -8267,15 +8251,14 @@ declare module nanofl.engine
 	
 	export class DocumentProperties
 	{
-		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, engine?:string, language?:string, ide?:string, useTextureAtlases?:boolean, textureAtlasWidth?:number, textureAtlasHeight?:number, textureAtlasPadding?:number, graphicsAcceleration?:boolean);
+		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, generator?:string, generatorMode?:string, useTextureAtlases?:boolean, textureAtlasWidth?:number, textureAtlasHeight?:number, textureAtlasPadding?:number, graphicsAcceleration?:boolean);
 		title : string;
 		width : number;
 		height : number;
 		backgroundColor : string;
 		framerate : number;
-		engine : string;
-		language : string;
-		ide : string;
+		generator : string;
+		generatorMode : string;
 		useTextureAtlases : boolean;
 		textureAtlasWidth : number;
 		textureAtlasHeight : number;
@@ -8498,13 +8481,11 @@ declare module nanofl.engine
 		static filters : Map<string, nanofl.engine.plugins.IFilterPlugin>;
 		static importers : Map<string, nanofl.ide.plugins.IImporterPlugin>;
 		static exporters : Map<string, nanofl.ide.plugins.IExporterPlugin>;
-		static engines : Map<string, nanofl.ide.plugins.IEnginePlugin>;
-		static ides : Map<string, nanofl.ide.plugins.IIdePlugin>;
+		static generators : Map<string, nanofl.ide.plugins.IGeneratorPlugin>;
 		static registerFilter(plugin:nanofl.engine.plugins.IFilterPlugin) : void;
 		static registerImporter(plugin:nanofl.ide.plugins.IImporterPlugin) : void;
 		static registerExporter(plugin:nanofl.ide.plugins.IExporterPlugin) : void;
-		static registerEngine(plugin:nanofl.ide.plugins.IEnginePlugin) : void;
-		static registerIde(plugin:nanofl.ide.plugins.IIdePlugin) : void;
+		static registerGenerator(plugin:nanofl.ide.plugins.IGeneratorPlugin) : void;
 	}
 	
 	type TweenedElement =

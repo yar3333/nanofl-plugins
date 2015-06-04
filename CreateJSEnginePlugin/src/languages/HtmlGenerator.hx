@@ -1,9 +1,11 @@
+package languages;
+
 import nanofl.engine.VersionInfo;
 import nanofl.ide.textureatlas.TextureAtlas;
 
 class HtmlGenerator extends BaseGenerator
 {
-	public function generate(dir:String, name:String)
+	override public function generate(dir:String, name:String)
 	{
 		generateHtml(dir, name);
 		generateTextureAtlases(dir);

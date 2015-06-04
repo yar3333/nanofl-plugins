@@ -1,3 +1,5 @@
+package languages;
+
 class JavaScriptGenerator extends CodeGenerator
 {
 	override public function generate(dir:String, name:String)
