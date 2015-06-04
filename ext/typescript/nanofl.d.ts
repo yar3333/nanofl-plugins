@@ -7495,7 +7495,7 @@ declare module nanofl.ide
 		createFolder() : void;
 		importImagesFromPaths(paths:string[], folderPath:string, ready?:() => void) : void;
 		importLibraryItemsFromFiles(files:File[], folderPath:string, callb?:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
-		generateTextureAtlases() : Map<string, nanofl.ide.textureatlas.TextureAtlas>;
+		generateTextureAtlases(width:number, height:number, padding:number) : Map<string, nanofl.ide.textureatlas.TextureAtlas>;
 	}
 	
 	export class Figure
@@ -8267,7 +8267,7 @@ declare module nanofl.engine
 	
 	export class DocumentProperties
 	{
-		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, engine?:string, language?:string, ide?:string, useTextureAtlases?:boolean, graphicsAcceleration?:boolean);
+		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, engine?:string, language?:string, ide?:string, useTextureAtlases?:boolean, textureAtlasWidth?:number, textureAtlasHeight?:number, textureAtlasPadding?:number, graphicsAcceleration?:boolean);
 		title : string;
 		width : number;
 		height : number;
@@ -8277,6 +8277,9 @@ declare module nanofl.engine
 		language : string;
 		ide : string;
 		useTextureAtlases : boolean;
+		textureAtlasWidth : number;
+		textureAtlasHeight : number;
+		textureAtlasPadding : number;
 		graphicsAcceleration : boolean;
 		save(fileApi:nanofl.engine.FileApi, filePath:string) : void;
 		static load(filePath:string, fileApi:nanofl.engine.FileApi) : nanofl.engine.DocumentProperties;

@@ -32,5 +32,5 @@ extern class EditorLibrary
 	function createFolder() : Void;
 	function importImagesFromPaths(paths:Array<String>, folderPath:String, ?ready:Void -> Void) : Void;
 	function importLibraryItemsFromFiles(files:Array<js.html.File>, folderPath:String, ?callb:Array<nanofl.engine.libraryitems.LibraryItem> -> Void) : Void;
-	function generateTextureAtlases() : Map<String, nanofl.ide.textureatlas.TextureAtlas>;
+	function generateTextureAtlases(width:Int, height:Int, padding:Int) : Map<String, nanofl.ide.textureatlas.TextureAtlas>;
 }
