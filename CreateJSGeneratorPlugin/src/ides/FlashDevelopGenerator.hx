@@ -17,13 +17,11 @@ class FlashDevelopGenerator extends BaseIdeGenerator
 		
 		if (!fileApi.exists(destProjectFile))
 		{
-			var sourceDir = supportDir + "/" + language;
-			
-			var template = fileApi.getContent(sourceDir + "/project" + ext);
+			var template = fileApi.getContent(supportDir + "/ides/FlashDevelop/" + language + "/project" + ext);
 			template = template.split("{name}").join(name);
 			fileApi.saveContent(destProjectFile, template);
 			
-			fileApi.copy(sourceDir + "/files", dir);
+			fileApi.copy(supportDir + "/ides/FlashDevelop/" + language + "/files", dir);
 		}
 	}
 }

@@ -12,7 +12,9 @@ declare module nanofl
 	
 	export class DisplayObjectTools
 	{
-		static smartUncache(obj:createjs.DisplayObject) : void;
+		static cache(obj:createjs.DisplayObject) : void;
+		static uncache(obj:createjs.DisplayObject) : void;
+		static getBounds(obj:createjs.DisplayObject, ignoreSelf?:boolean) : createjs.Rectangle;
 	}
 	
 	export class MovieClip extends createjs.Container

@@ -258,11 +258,10 @@ ides.FlashDevelopGenerator.prototype = $extend(ides.BaseIdeGenerator.prototype,{
 		}
 		var destProjectFile = dir + "/" + name + ext;
 		if(!this.fileApi.exists(destProjectFile)) {
-			var sourceDir = this.supportDir + "/" + language;
-			var template = this.fileApi.getContent(sourceDir + "/project" + ext);
+			var template = this.fileApi.getContent(this.supportDir + "/ides/FlashDevelop/" + language + "/project" + ext);
 			template = template.split("{name}").join(name);
 			this.fileApi.saveContent(destProjectFile,template);
-			this.fileApi.copy(sourceDir + "/files",dir);
+			this.fileApi.copy(this.supportDir + "/ides/FlashDevelop/" + language + "/files",dir);
 		}
 	}
 });
@@ -275,7 +274,6 @@ ides.MsVisualStudio2013Generator.prototype = $extend(ides.BaseIdeGenerator.proto
 	generate: function(language,dir,name) {
 		console.log("MsVisualStudio2013Generator language = " + language + "; dir = " + dir + "; name = " + name);
 		var guid = this.newGuid();
-		var self = this;
 		var _g = 0;
 		var _g1 = [".sln",".csproj"];
 		while(_g < _g1.length) {
@@ -283,8 +281,7 @@ ides.MsVisualStudio2013Generator.prototype = $extend(ides.BaseIdeGenerator.proto
 			++_g;
 			var destFile = dir + "/" + name + ext;
 			if(!this.fileApi.exists(destFile)) {
-				var srcFile = this.supportDir + "/" + language + "/project" + ext;
-				var template = this.fileApi.getContent(srcFile);
+				var template = this.fileApi.getContent(this.supportDir + "/ides/MsVisualStudio2013/" + language + "/project" + ext);
 				template = template.split("{name}").join(name);
 				template = template.split("{guid}").join(guid);
 				this.fileApi.saveContent(destFile,template);
@@ -402,7 +399,7 @@ languages.HtmlGenerator.prototype = $extend(languages.BaseGenerator.prototype,{
 			if(text.indexOf("<!--ALLOW_REGENERATION-->") >= 0) defines.push("ALLOW_REGENERATION");
 		} else defines.push("ALLOW_REGENERATION");
 		if(HxOverrides.indexOf(defines,"ALLOW_REGENERATION",0) >= 0) {
-			var template = this.fileApi.getContent(this.supportDir + "/project.html");
+			var template = this.fileApi.getContent(this.supportDir + "/languages/project.html");
 			template = template.split("{defines}").join(defines.map(function(s) {
 				return "<!--" + s + "-->\n";
 			}).join(""));
@@ -416,7 +413,7 @@ languages.HtmlGenerator.prototype = $extend(languages.BaseGenerator.prototype,{
 			template = template.split("{scripts}").join(this.getScriptInlineBlocks().filter(function(s1) {
 				return s1 != null && s1 != "";
 			}).map(function(s2) {
-				return "\t\t<script>\n" + s2.split("\n").join("\n\t\t") + "\n</script>";
+				return "\t\t<script>\n" + s2.split("\n").join("\n\t\t") + "\n\t\t</script>";
 			}).concat(this.getScriptUrls(dir,name).map(function(s3) {
 				return "\t\t<script src=\"" + s3 + "\"></script>";
 			})).join("\n"));
@@ -514,9 +511,9 @@ languages.HaxeGenerator.prototype = $extend(languages.CodeGenerator.prototype,{
 			return item.linkedClass != "";
 		});
 		if(linkedItems.length > 0) {
-			this.fileApi.copy(this.supportDir + "/haxe/files",dir);
-			var baseMovieClipTemplate = this.fileApi.getContent(this.supportDir + "/haxe/BaseMovieClip.hx");
-			var movieClipTemplate = this.fileApi.getContent(this.supportDir + "/haxe/MovieClip.hx");
+			this.fileApi.copy(this.supportDir + "/languages/haxe/files",dir);
+			var baseMovieClipTemplate = this.fileApi.getContent(this.supportDir + "/languages/haxe/BaseMovieClip.hx");
+			var movieClipTemplate = this.fileApi.getContent(this.supportDir + "/languages/haxe/MovieClip.hx");
 			var _g = 0;
 			while(_g < linkedItems.length) {
 				var item1 = linkedItems[_g];
@@ -670,9 +667,9 @@ languages.TypeScriptGenerator.prototype = $extend(languages.CodeGenerator.protot
 		});
 		this.fileApi.remove(dir + "/gen/*");
 		if(linkedItems.length > 0) {
-			this.fileApi.copy(this.supportDir + "/typescript/files",dir);
-			var baseMovieClipTemplate = this.fileApi.getContent(this.supportDir + "/typescript/BaseMovieClip.ts");
-			var movieClipTemplate = this.fileApi.getContent(this.supportDir + "/typescript/MovieClip.ts");
+			this.fileApi.copy(this.supportDir + "/languages/typescript/files",dir);
+			var baseMovieClipTemplate = this.fileApi.getContent(this.supportDir + "/languages/typescript/BaseMovieClip.ts");
+			var movieClipTemplate = this.fileApi.getContent(this.supportDir + "/languages/typescript/MovieClip.ts");
 			var _g = 0;
 			while(_g < linkedItems.length) {
 				var item1 = linkedItems[_g];

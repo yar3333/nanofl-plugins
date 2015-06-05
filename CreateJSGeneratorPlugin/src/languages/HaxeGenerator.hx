@@ -26,15 +26,14 @@ class HaxeGenerator extends CodeGenerator
 	
 	function generateClasses(dir:String, name:String)
 	{
-		
 		var linkedItems = library.getInstancableItems().filter(function(item) return item.linkedClass != "");
 		
 		if (linkedItems.length > 0)
 		{
-			fileApi.copy(supportDir + "/haxe/files", dir);
+			fileApi.copy(supportDir + "/languages/haxe/files", dir);
 			
-			var baseMovieClipTemplate = fileApi.getContent(supportDir + "/haxe/BaseMovieClip.hx");
-			var movieClipTemplate = fileApi.getContent(supportDir + "/haxe/MovieClip.hx");
+			var baseMovieClipTemplate = fileApi.getContent(supportDir + "/languages/haxe/BaseMovieClip.hx");
+			var movieClipTemplate = fileApi.getContent(supportDir + "/languages/haxe/MovieClip.hx");
 			
 			for (item in linkedItems)
 			{

@@ -28,7 +28,7 @@ class HtmlGenerator extends BaseGenerator
 		
 		if (defines.indexOf("ALLOW_REGENERATION") >= 0)
 		{
-			var template = fileApi.getContent(supportDir + "/project.html");
+			var template = fileApi.getContent(supportDir + "/languages/project.html");
 			template = template.split("{defines}").join(defines.map(function(s) return "<!--" + s + "-->\n").join(""));
 			template = template.split("{title}").join(documentProperties.title != "" ? documentProperties.title : name);
 			template = template.split("{width}").join(untyped documentProperties.width);
@@ -39,7 +39,7 @@ class HtmlGenerator extends BaseGenerator
 			template = template.split("{framerate}").join(untyped documentProperties.framerate);
 			template = template.split("{scripts}").join(getScriptInlineBlocks()
 				.filter(function(s) return s != null && s != "")
-				.map(function(s) return "\t\t<script>\n" + s.split("\n").join("\n\t\t") + "\n</script>")
+				.map(function(s) return "\t\t<script>\n" + s.split("\n").join("\n\t\t") + "\n\t\t</script>")
 				.concat(getScriptUrls(dir, name).map(function(s) return "\t\t<script src=\"" + s + "\"></script>")).join("\n"));
 			fileApi.saveContent(file, template);
 		}
