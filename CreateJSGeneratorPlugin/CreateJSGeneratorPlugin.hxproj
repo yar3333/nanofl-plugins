@@ -4,7 +4,7 @@
   <output>
     <movie outputType="Application" />
     <movie input="" />
-    <movie path="..\bin\CreateJSEnginePlugin.js" />
+    <movie path="..\bin\CreateJSGeneratorPlugin.js" />
     <movie fps="0" />
     <movie width="0" />
     <movie height="0" />
@@ -23,7 +23,7 @@
     <option directives="" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
-    <option mainClass="CreateJSEnginePlugin" />
+    <option mainClass="CreateJSGeneratorPlugin" />
     <option enabledebug="False" />
     <option additional="-dce full" />
   </build>

@@ -1,16 +1,10 @@
 ﻿package ides;
 
-import nanofl.engine.DocumentProperties;
-import nanofl.engine.FileApi;
-import nanofl.engine.Library;
-
-class MsVisualStudio2013Generator
+class MsVisualStudio2013Generator extends BaseIdeGenerator
 {
-	public function new() {}
-	
-	public function generate(language:String, fileApi:FileApi, dir:String, name:String)
+	override public function generate(language:String, dir:String, name:String)
 	{
-		trace("MsVisualStudio2013Generator: dir = " + dir + "; name = " + name);
+		trace("MsVisualStudio2013Generator language = " + language+"; dir = " + dir + "; name = " + name);
 
 		var guid = this.newGuid();
 
@@ -20,7 +14,7 @@ class MsVisualStudio2013Generator
 			var destFile = dir + "/" + name + ext;
 			if (!fileApi.exists(destFile))
 			{
-				var srcFile = fileApi.getPluginsDirectory() + "/MsVisualStudio2013IdePlugin/" + language + "/project" + ext;
+				var srcFile = supportDir + "/" + language + "/project" + ext;
 				var template = fileApi.getContent(srcFile);
 				template = template.split("{name}").join(name);
 				template = template.split("{guid}").join(guid);

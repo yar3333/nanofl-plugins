@@ -8,9 +8,9 @@ import nanofl.ide.textureatlas.TextureAtlas;
 import languages.*;
 import ides.*;
 
-class CreateJSEnginePlugin implements IGeneratorPlugin
+class CreateJSGeneratorPlugin implements IGeneratorPlugin
 {
-	static function main() Plugins.registerGenerator(new CreateJSEnginePlugin());
+	static function main() Plugins.registerGenerator(new CreateJSGeneratorPlugin());
 	
 	public function new() { }
 	
@@ -29,7 +29,7 @@ class CreateJSEnginePlugin implements IGeneratorPlugin
 	
 	public function generateFiles(mode:String, fileApi:FileApi, filePath:String, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>) : Void
 	{
-		var supportDir = fileApi.getPluginsDirectory() + "/CreateJSEnginePlugin";
+		var supportDir = fileApi.getPluginsDirectory() + "/CreateJSGeneratorPlugin";
 		
 		var languageAndIde = mode.split("/");
 		
@@ -46,16 +46,18 @@ class CreateJSEnginePlugin implements IGeneratorPlugin
 			case "Haxe":		new HaxeGenerator(fileApi, documentProperties, library, textureAtlases, supportDir);
 			case _: throw "Unsupported language '" + languageAndIde[0] + "'."; null;
 		}
-		trace("CreateJSEnginePlugin.generate filePath = " + filePath + "; supportDir = " + supportDir + "; dir= " + dir + "; name = " + name);
+		trace("CreateJSGeneratorPlugin.generate filePath = " + filePath + "; supportDir = " + supportDir + "; dir= " + dir + "; name = " + name);
 		generator.generate(dir, name);
 		
 		if (languageAndIde.length > 1)
 		{
-			switch (languageAndIde[1])
+			var generator : BaseIdeGenerator = switch (languageAndIde[1])
 			{
-				case "FlashDevelop": new FlashDevelopGenerator().generate(languageAndIde[0], fileApi, dir, name);
-				case "MsVisualStudio2013": new MsVisualStudio2013Generator().generate(languageAndIde[0], fileApi, dir, name);
-			}
+				case "FlashDevelop": new FlashDevelopGenerator(fileApi, supportDir);
+				case "MsVisualStudio2013": new MsVisualStudio2013Generator(fileApi, supportDir);
+				case _: throw "Unsupported IDE '" + languageAndIde[1] + "'."; null;
+			};
+			generator.generate(languageAndIde[0], dir, name);
 		}
 		
 	}
