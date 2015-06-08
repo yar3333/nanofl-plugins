@@ -6,6 +6,7 @@ import htmlparser.XmlDocument;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
+import nanofl.engine.libraryitemloaders.SoundLoader;
 import nanofl.engine.libraryitems.SoundItem;
 using htmlparser.HtmlParserTools;
 using StringTools;
@@ -86,10 +87,9 @@ class DocumentImporter
 		
 		for (node in docPropNode.find(">media>DOMSoundItem"))
 		{
-			var soundItem = SoundItem.load(node.getAttr("name"), destLibrary.libraryDir, fileApi);
-			if (soundItem != null)
+			for (soundItem in new SoundLoader(destLibrary.libraryDir, fileApi, null, null).load([node.getAttr("name")]))
 			{
-				if (node.getAttr("linkageExportForAS", false)) soundItem.linkage = node.getAttr("linkageIdentifier");
+				if (node.getAttr("linkageExportForAS", false)) cast(soundItem, SoundItem).linkage = node.getAttr("linkageIdentifier");
 				destLibrary.addItem(soundItem);
 			}
 		}
