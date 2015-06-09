@@ -8994,6 +8994,11 @@ declare module nanofl.ide.editorelements
 		get_element() : nanofl.engine.elements.Instance;
 	}
 	
+	export class EditorElementRO extends nanofl.ide.editorelements.EditorElement
+	{
+		getPropertiesObject(newObjectParams:nanofl.ide.NewObjectParams) : nanofl.ide.PropertiesObject;
+	}
+	
 	export class EditorElementShape extends nanofl.ide.editorelements.EditorElement
 	{
 		get_element() : nanofl.engine.elements.ShapeElement;
