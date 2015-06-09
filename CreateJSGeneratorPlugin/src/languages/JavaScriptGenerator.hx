@@ -8,6 +8,7 @@ class JavaScriptGenerator extends CodeGenerator
 		generateClasses(dir, name);
 		generateSoundsClass(dir, name);
 		generateHtml(dir, name);
+		generateTextureAtlases(dir);
 	}
 	
 	override function getScriptUrls(dir:String, name:String) : Array<String> 

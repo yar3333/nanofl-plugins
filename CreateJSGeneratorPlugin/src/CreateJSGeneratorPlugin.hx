@@ -24,7 +24,8 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 		"TypeScript",
 		"TypeScript/MsVisualStudio2013", 
 		"Haxe",
-		"Haxe/FlashDevelop"
+		"Haxe/FlashDevelop",
+		"TextureAtlas"
 	];
 	
 	public function generateFiles(mode:String, fileApi:FileApi, filePath:String, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>) : Void
@@ -44,6 +45,7 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 			case "JavaScript":	new JavaScriptGenerator(fileApi, documentProperties, library, textureAtlases, supportDir);
 			case "TypeScript":	new TypeScriptGenerator(fileApi, documentProperties, library, textureAtlases, supportDir);
 			case "Haxe":		new HaxeGenerator(fileApi, documentProperties, library, textureAtlases, supportDir);
+			case "TextureAtlas":new TextureAtlasGenerator(fileApi, documentProperties, library, textureAtlases, supportDir);
 			case _: throw "Unsupported language '" + languageAndIde[0] + "'."; null;
 		}
 		trace("CreateJSGeneratorPlugin.generate filePath = " + filePath + "; supportDir = " + supportDir + "; dir= " + dir + "; name = " + name);

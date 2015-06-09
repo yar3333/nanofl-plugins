@@ -4,10 +4,11 @@ class TypeScriptGenerator extends CodeGenerator
 {
 	override public function generate(dir:String, name:String)
 	{
-        generateLibrary(dir, name);
-        generateHtml(dir, name);
-        generateClasses(dir, name);
-        generateSoundsClass(dir, name);
+		generateLibrary(dir, name);
+		generateHtml(dir, name);
+		generateClasses(dir, name);
+		generateSoundsClass(dir, name);
+		generateTextureAtlases(dir);
 	}
 	
 	override function getScriptUrls(dir:String, name:String) : Array<String> 
@@ -26,11 +27,11 @@ class TypeScriptGenerator extends CodeGenerator
 		var linkedItems = library.getInstancableItems().filter(function(item) return item.linkedClass != "");
 		
         fileApi.remove(dir + "/gen/*");
-
+		
 		if (linkedItems.length > 0)
 		{
             fileApi.copy(supportDir + "/languages/typescript/files", dir);
-
+			
 			var baseMovieClipTemplate = fileApi.getContent(supportDir + "/languages/typescript/BaseMovieClip.ts");
 			var movieClipTemplate = fileApi.getContent(supportDir + "/languages/typescript/MovieClip.ts");
 			

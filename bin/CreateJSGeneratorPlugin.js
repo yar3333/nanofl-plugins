@@ -6,7 +6,7 @@ function $extend(from, fields) {
 	return proto;
 }
 var CreateJSGeneratorPlugin = function() {
-	this.modes = ["HTML","JavaScript","JavaScript/FlashDevelop","JavaScript/MsVisualStudio2013","TypeScript","TypeScript/MsVisualStudio2013","Haxe","Haxe/FlashDevelop"];
+	this.modes = ["HTML","JavaScript","JavaScript/FlashDevelop","JavaScript/MsVisualStudio2013","TypeScript","TypeScript/MsVisualStudio2013","Haxe","Haxe/FlashDevelop","TextureAtlas"];
 	this.name = "CreateJS";
 };
 CreateJSGeneratorPlugin.__name__ = true;
@@ -37,6 +37,9 @@ CreateJSGeneratorPlugin.prototype = {
 			break;
 		case "Haxe":
 			generator = new languages.HaxeGenerator(fileApi,documentProperties,library,textureAtlases,supportDir);
+			break;
+		case "TextureAtlas":
+			generator = new languages.TextureAtlasGenerator(fileApi,documentProperties,library,textureAtlases,supportDir);
 			break;
 		default:
 			throw "Unsupported language '" + languageAndIde[0] + "'.";
@@ -381,12 +384,61 @@ languages.BaseGenerator.prototype = {
 	generate: function(dir,name) {
 	}
 };
-languages.HtmlGenerator = function(fileApi,documentProperties,library,textureAtlases,supportDir) {
+languages.TextureAtlasGenerator = function(fileApi,documentProperties,library,textureAtlases,supportDir) {
 	languages.BaseGenerator.call(this,fileApi,documentProperties,library,textureAtlases,supportDir);
 };
+languages.TextureAtlasGenerator.__name__ = true;
+languages.TextureAtlasGenerator.__super__ = languages.BaseGenerator;
+languages.TextureAtlasGenerator.prototype = $extend(languages.BaseGenerator.prototype,{
+	generate: function(dir,name) {
+		this.generateTextureAtlases(dir);
+	}
+	,generateTextureAtlases: function(dir) {
+		var jsonFilePath = dir + "/bin/textureatlases.js";
+		if(this.textureAtlases.iterator().hasNext()) {
+			var textureAtlasesJson = "";
+			var $it0 = this.textureAtlases.keys();
+			while( $it0.hasNext() ) {
+				var textureAtlasName = $it0.next();
+				var textureAtlas = this.textureAtlases.get(textureAtlasName);
+				var imageUrl = "bin/" + textureAtlasName + ".png";
+				this.fileApi.saveBinary(dir + "/" + imageUrl,textureAtlas.imagePng);
+				textureAtlasesJson += "(function() {\n";
+				textureAtlasesJson += "\tvar images = [ '" + imageUrl + "' ];\n";
+				var namePaths = Reflect.fields(textureAtlas.itemFrames);
+				namePaths.sort(Reflect.compare);
+				var _g = 0;
+				while(_g < namePaths.length) {
+					var namePath = namePaths[_g];
+					++_g;
+					textureAtlasesJson += "\tnanofl.Player.spriteSheets['" + namePath + "'] = new createjs.SpriteSheet({ images:images, frames:[ " + this.getSpriteSheetFrames(textureAtlas,namePath).join(", ") + " ] });\n";
+				}
+				textureAtlasesJson += "})();\n\n";
+			}
+			this.fileApi.saveContent(jsonFilePath,textureAtlasesJson);
+		} else this.fileApi.remove(jsonFilePath);
+	}
+	,getSpriteSheetFrames: function(textureAtlas,namePath) {
+		var r = new Array();
+		var frameIndexes = Reflect.field(textureAtlas.itemFrames,namePath);
+		var _g = 0;
+		while(_g < frameIndexes.length) {
+			var frameIndex = frameIndexes[_g];
+			++_g;
+			if(frameIndex != null) {
+				var frame = textureAtlas.frames[frameIndex];
+				r.push([frame.x,frame.y,frame.width,frame.height,0,frame.regX,frame.regY]);
+			} else r.push([]);
+		}
+		return r;
+	}
+});
+languages.HtmlGenerator = function(fileApi,documentProperties,library,textureAtlases,supportDir) {
+	languages.TextureAtlasGenerator.call(this,fileApi,documentProperties,library,textureAtlases,supportDir);
+};
 languages.HtmlGenerator.__name__ = true;
-languages.HtmlGenerator.__super__ = languages.BaseGenerator;
-languages.HtmlGenerator.prototype = $extend(languages.BaseGenerator.prototype,{
+languages.HtmlGenerator.__super__ = languages.TextureAtlasGenerator;
+languages.HtmlGenerator.prototype = $extend(languages.TextureAtlasGenerator.prototype,{
 	generate: function(dir,name) {
 		this.generateHtml(dir,name);
 		this.generateTextureAtlases(dir);
@@ -420,50 +472,11 @@ languages.HtmlGenerator.prototype = $extend(languages.BaseGenerator.prototype,{
 			this.fileApi.saveContent(file,template);
 		}
 	}
-	,generateTextureAtlases: function(dir) {
-		var jsonFilePath = dir + "/bin/textureatlases.js";
-		if(this.textureAtlases.iterator().hasNext()) {
-			var textureAtlasesJson = "";
-			var $it0 = this.textureAtlases.keys();
-			while( $it0.hasNext() ) {
-				var textureAtlasName = $it0.next();
-				var textureAtlas = this.textureAtlases.get(textureAtlasName);
-				var imageUrl = "bin/" + textureAtlasName + ".png";
-				this.fileApi.saveBinary(dir + "/" + imageUrl,textureAtlas.imagePng);
-				textureAtlasesJson += "(function() {\n";
-				textureAtlasesJson += "\tvar images = [ '" + imageUrl + "' ];\n";
-				var namePaths = Reflect.fields(textureAtlas.itemFrames);
-				namePaths.sort(Reflect.compare);
-				var _g = 0;
-				while(_g < namePaths.length) {
-					var namePath = namePaths[_g];
-					++_g;
-					textureAtlasesJson += "\tnanofl.Player.spriteSheets['" + namePath + "'] = new createjs.SpriteSheet({ images:images, frames:[ " + this.getSpriteSheetFrames(textureAtlas,namePath).join(", ") + " ] });\n";
-				}
-				textureAtlasesJson += "})();\n\n";
-			}
-			this.fileApi.saveContent(jsonFilePath,textureAtlasesJson);
-		} else this.fileApi.remove(jsonFilePath);
-	}
 	,getScriptInlineBlocks: function() {
 		return [this.library.compile("library")];
 	}
 	,getScriptUrls: function(dir,name) {
 		if(this.documentProperties.useTextureAtlases) return ["bin/textureatlases.js"]; else return [];
-	}
-	,getSpriteSheetFrames: function(textureAtlas,namePath) {
-		var r = new Array();
-		var frameIndexes = Reflect.field(textureAtlas.itemFrames,namePath);
-		var _g = 0;
-		while(_g < frameIndexes.length) {
-			var frameIndex = frameIndexes[_g];
-			++_g;
-			if(frameIndex != null) {
-				var frame = textureAtlas.frames[frameIndex];
-				r.push([frame.x,frame.y,frame.width,frame.height,0,frame.regX,frame.regY]);
-			} else r.push([]);
-		}
-		return r;
 	}
 });
 languages.CodeGenerator = function(fileApi,documentProperties,library,textureAtlases,supportDir) {
@@ -563,6 +576,7 @@ languages.JavaScriptGenerator.prototype = $extend(languages.CodeGenerator.protot
 		this.generateClasses(dir,name);
 		this.generateSoundsClass(dir,name);
 		this.generateHtml(dir,name);
+		this.generateTextureAtlases(dir);
 	}
 	,getScriptUrls: function(dir,name) {
 		return languages.CodeGenerator.prototype.getScriptUrls.call(this,dir,name).concat(this.findFiles(dir + "/gen",".js")).concat(this.findFiles(dir + "/src",".js"));
@@ -654,6 +668,7 @@ languages.TypeScriptGenerator.prototype = $extend(languages.CodeGenerator.protot
 		this.generateHtml(dir,name);
 		this.generateClasses(dir,name);
 		this.generateSoundsClass(dir,name);
+		this.generateTextureAtlases(dir);
 	}
 	,getScriptUrls: function(dir,name) {
 		return languages.CodeGenerator.prototype.getScriptUrls.call(this,dir,name).concat(["bin/" + name + ".js"]);
