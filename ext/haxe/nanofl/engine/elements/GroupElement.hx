@@ -1,6 +1,6 @@
 package nanofl.engine.elements;
 
-extern class GroupElement extends nanofl.engine.elements.Element implements nanofl.engine.ILayersContainer implements nanofl.engine.IPathElement
+extern class GroupElement extends nanofl.engine.elements.Element implements nanofl.engine.IPathElement
 {
 	function new(elements:Array<nanofl.engine.elements.Element>) : Void;
 	var name : String;

@@ -11,6 +11,5 @@ extern class SoundItem extends nanofl.engine.libraryitems.LibraryItem
 	override function saveToXml(out:nanofl.engine.XmlWriter) : Void;
 	function getUrl() : String;
 	override function toString() : String;
-	static function load(namePath:String, libraryDir:String, fileApi:nanofl.engine.FileApi) : nanofl.engine.libraryitems.SoundItem;
 	static function parse(namePath:String, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.SoundItem;
 }

@@ -30,7 +30,7 @@ extern class EditorLibrary
 	function showPropertiesPopup() : Void;
 	function createEmptySymbol() : Void;
 	function createFolder() : Void;
-	function importImagesFromPaths(paths:Array<String>, folderPath:String, ?ready:Void -> Void) : Void;
-	function importLibraryItemsFromFiles(files:Array<js.html.File>, folderPath:String, ?callb:Array<nanofl.engine.libraryitems.LibraryItem> -> Void) : Void;
+	function importFromPaths(paths:Array<String>, ?folderPath:String, ?ready:Void -> Void) : Void;
+	function importFromFiles(files:Array<js.html.File>, ?folderPath:String, ?callb:Array<nanofl.engine.libraryitems.LibraryItem> -> Void) : Void;
 	function generateTextureAtlases(width:Int, height:Int, padding:Int) : Map<String, nanofl.ide.textureatlas.TextureAtlas>;
 }

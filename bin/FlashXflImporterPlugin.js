@@ -785,9 +785,12 @@ flashimport.DocumentImporter.importXmlFiles = function(fileApi,srcFilePath,destD
 	while(_g < _g1.length) {
 		var node = _g1[_g];
 		++_g;
-		var soundItem = nanofl.engine.libraryitems.SoundItem.load(htmlparser.HtmlParserTools.getAttr(node,"name"),destLibrary.libraryDir,fileApi);
-		if(soundItem != null) {
-			if(htmlparser.HtmlParserTools.getAttr(node,"linkageExportForAS",false)) soundItem.linkage = htmlparser.HtmlParserTools.getAttr(node,"linkageIdentifier");
+		var _g2 = 0;
+		var _g3 = new nanofl.engine.libraryitemloaders.SoundLoader(destLibrary.libraryDir,fileApi,null,null).load([htmlparser.HtmlParserTools.getAttr(node,"name")]);
+		while(_g2 < _g3.length) {
+			var soundItem = _g3[_g2];
+			++_g2;
+			if(htmlparser.HtmlParserTools.getAttr(node,"linkageExportForAS",false)) (js.Boot.__cast(soundItem , nanofl.engine.libraryitems.SoundItem)).linkage = htmlparser.HtmlParserTools.getAttr(node,"linkageIdentifier");
 			destLibrary.addItem(soundItem);
 		}
 	}

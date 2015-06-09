@@ -1,13 +1,13 @@
 package nanofl.engine.libraryitems;
 
-extern class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem implements nanofl.engine.ITimeline implements nanofl.engine.ILayersContainer
+extern class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem implements nanofl.engine.ISpriteSheetableItem implements nanofl.engine.IFramedItem implements nanofl.engine.ITimeline implements nanofl.engine.ILayersContainer
 {
 	function new(namePath:String) : Void;
 	var layers(default, never) : nanofl.engine.ArrayRO<nanofl.engine.Layer>;
 	var likeButton : Bool;
-	var exportAsSpriteSheet : Bool;
 	var autoPlay : Bool;
 	var loop : Bool;
+	var exportAsSpriteSheet : Bool;
 	var textureAtlas : String;
 	override function getType() : String;
 	override function clone() : nanofl.engine.libraryitems.LibraryItem;
@@ -35,6 +35,5 @@ extern class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem im
 	override function getDisplayObjectClassName() : String;
 	function transform(m:nanofl.engine.geom.Matrix) : Void;
 	override function toString() : String;
-	static function load(namePath:String, libraryDir:String, fileApi:nanofl.engine.FileApi) : nanofl.engine.libraryitems.MovieClipItem;
 	static function parse(namePath:String, movieClipNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MovieClipItem;
 }
