@@ -23,6 +23,7 @@ extern class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem im
 	override function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	override function getIcon() : String;
 	override function save(fileApi:nanofl.engine.FileApi) : Void;
+	override function loadProperties(xml:htmlparser.HtmlNodeElement) : Void;
 	override function saveToXml(out:nanofl.engine.XmlWriter) : Void;
 	function getTotalFrames() : Int;
 	function getTimelineState() : nanofl.ide.undo.states.TimelineState;

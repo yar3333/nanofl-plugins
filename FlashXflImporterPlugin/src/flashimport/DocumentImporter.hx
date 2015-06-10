@@ -1,12 +1,10 @@
 package flashimport;
 
 import haxe.io.Path;
-import haxe.Timer;
 import htmlparser.XmlDocument;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
-import nanofl.engine.libraryitemloaders.SoundLoader;
 import nanofl.engine.libraryitems.SoundItem;
 using htmlparser.HtmlParserTools;
 using StringTools;
@@ -87,10 +85,13 @@ class DocumentImporter
 		
 		for (node in docPropNode.find(">media>DOMSoundItem"))
 		{
-			for (soundItem in new SoundLoader(destLibrary.libraryDir, fileApi, null, null).load([node.getAttr("name")]))
+			var soundItem = destLibrary.getItem(node.getAttr("name"));
+			if (Std.is(soundItem, SoundItem))
 			{
-				if (node.getAttr("linkageExportForAS", false)) cast(soundItem, SoundItem).linkage = node.getAttr("linkageIdentifier");
-				destLibrary.addItem(soundItem);
+				if (node.getAttr("linkageExportForAS", false))
+				{
+					(cast soundItem:SoundItem).linkage = node.getAttr("linkageIdentifier");
+				}
 			}
 		}
 		
@@ -111,7 +112,7 @@ class DocumentImporter
 		else
 		{
 			var start = Date.now().getTime();
-			var timer = new Timer(200);
+			var timer = new haxe.Timer(200);
 			timer.run = function()
 			{
 				if (condition())

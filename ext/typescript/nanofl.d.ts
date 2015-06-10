@@ -7224,6 +7224,25 @@ declare module nanofl.ide.plugins
 		fileFilterExtensions : string[];
 		importDocument(fileApi:nanofl.engine.FileApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, fonts:string[], callb:(arg:boolean) => void) : void;
 	}
+	
+	export interface ILoaderPlugin
+	{
+		/**
+		 * Internal name (for example: "Blender3DLoader", "CreateJSTextureAtlasLoader").
+		 */
+		name : string;
+		/**
+		 * Used to determine the order of your plugin in load queue.
+		 * Use 0 if you want load() called at the end (if you load simple files).
+		 * Use 1000 if you want load() called at the begin (if your loader is complex).
+		 */
+		priority : number;
+		/**
+		 * Method must detect loadable files and returns created LibraryItems.
+		 * Successfully processed files must be marked with exclude() to prevent loading them by other loaders.
+		 */
+		load(files:Map<string, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.LibraryItem[];
+	}
 }
 
 declare module createjs.Sound
@@ -7244,45 +7263,6 @@ declare module createjs.Sound
 		src : string;
 		target : any;
 		type : string;
-	}
-}
-
-declare module nanofl.engine.libraryitemloaders
-{
-	export class BaseLoader
-	{
-		constructor(libraryDir:string, fileApi:nanofl.engine.FileApi, xmlFileCache:Map<string, htmlparser.XmlDocument>, jsonFileCache:Map<string, any>);
-		load(files:string[]) : nanofl.engine.libraryitems.LibraryItem[];
-	}
-	
-	export class BitmapLoader extends nanofl.engine.libraryitemloaders.BaseLoader
-	{
-		constructor(libraryDir:string, fileApi:nanofl.engine.FileApi, xmlFileCache:Map<string, htmlparser.XmlDocument>, jsonFileCache:Map<string, any>);
-		load(files:string[]) : nanofl.engine.libraryitems.LibraryItem[];
-	}
-	
-	export class FontLoader extends nanofl.engine.libraryitemloaders.BaseLoader
-	{
-		constructor(libraryDir:string, fileApi:nanofl.engine.FileApi, xmlFileCache:Map<string, htmlparser.XmlDocument>, jsonFileCache:Map<string, any>);
-		load(files:string[]) : nanofl.engine.libraryitems.LibraryItem[];
-	}
-	
-	export class MovieClipLoader extends nanofl.engine.libraryitemloaders.BaseLoader
-	{
-		constructor(libraryDir:string, fileApi:nanofl.engine.FileApi, xmlFileCache:Map<string, htmlparser.XmlDocument>, jsonFileCache:Map<string, any>);
-		load(files:string[]) : nanofl.engine.libraryitems.LibraryItem[];
-	}
-	
-	export class SoundLoader extends nanofl.engine.libraryitemloaders.BaseLoader
-	{
-		constructor(libraryDir:string, fileApi:nanofl.engine.FileApi, xmlFileCache:Map<string, htmlparser.XmlDocument>, jsonFileCache:Map<string, any>);
-		load(files:string[]) : nanofl.engine.libraryitems.LibraryItem[];
-	}
-	
-	export class SpriteLoader extends nanofl.engine.libraryitemloaders.BaseLoader
-	{
-		constructor(libraryDir:string, fileApi:nanofl.engine.FileApi, xmlFileCache:Map<string, htmlparser.XmlDocument>, jsonFileCache:Map<string, any>);
-		load(files:string[]) : nanofl.engine.libraryitems.LibraryItem[];
 	}
 }
 
@@ -7353,6 +7333,17 @@ declare module nanofl.ide
 		quit(force?:boolean, exitCode?:number) : void;
 		saveDocumentIfNeed(callb:() => void) : void;
 		serverApi : nanofl.ide.ServerApi;
+	}
+	
+	export class CachedFile
+	{
+		constructor(fileApi:nanofl.engine.FileApi, libraryDir:string, path:string);
+		path : string;
+		excluded : boolean;
+		exclude() : void;
+		getText() : string;
+		getXml() : htmlparser.XmlDocument;
+		getJson() : any;
 	}
 	
 	export class Clipboard
@@ -8546,10 +8537,23 @@ declare module nanofl.engine
 		static importers : Map<string, nanofl.ide.plugins.IImporterPlugin>;
 		static exporters : Map<string, nanofl.ide.plugins.IExporterPlugin>;
 		static generators : Map<string, nanofl.ide.plugins.IGeneratorPlugin>;
+		static loaders : Map<string, nanofl.ide.plugins.ILoaderPlugin>;
 		static registerFilter(plugin:nanofl.engine.plugins.IFilterPlugin) : void;
 		static registerImporter(plugin:nanofl.ide.plugins.IImporterPlugin) : void;
 		static registerExporter(plugin:nanofl.ide.plugins.IExporterPlugin) : void;
 		static registerGenerator(plugin:nanofl.ide.plugins.IGeneratorPlugin) : void;
+		static registerLoader(plugin:nanofl.ide.plugins.ILoaderPlugin) : void;
+	}
+	
+	type SpriteItemFrame =
+	{
+		height : number;
+		image : string;
+		regX : number;
+		regY : number;
+		width : number;
+		x : number;
+		y : number;
 	}
 	
 	type TweenedElement =
@@ -8804,6 +8808,7 @@ declare module nanofl.engine.libraryitems
 		getType() : string;
 		getIcon() : string;
 		clone() : nanofl.engine.libraryitems.LibraryItem;
+		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		save(fileApi:nanofl.engine.FileApi) : void;
 		saveToXml(out:nanofl.engine.XmlWriter) : void;
 		getFilePathTemplate() : string;
@@ -8821,6 +8826,7 @@ declare module nanofl.engine.libraryitems
 	export class InstancableItem extends nanofl.engine.libraryitems.LibraryItem
 	{
 		linkedClass : string;
+		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		newInstance() : nanofl.engine.elements.Instance;
 		hasInstance(namePath:string) : boolean;
 		getDisplayObjectClassName() : string;
@@ -8838,6 +8844,7 @@ declare module nanofl.engine.libraryitems
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;
 		saveToXml(out:nanofl.engine.XmlWriter) : void;
+		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		getUrl() : string;
 		preload(ready:() => void) : void;
 		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
@@ -8894,6 +8901,7 @@ declare module nanofl.engine.libraryitems
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;
+		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		saveToXml(out:nanofl.engine.XmlWriter) : void;
 		getTotalFrames() : number;
 		getTimelineState() : nanofl.ide.undo.states.TimelineState;
@@ -8918,6 +8926,7 @@ declare module nanofl.engine.libraryitems
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;
 		saveToXml(out:nanofl.engine.XmlWriter) : void;
+		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		getUrl() : string;
 		toString() : string;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.SoundItem;
@@ -8935,6 +8944,7 @@ declare module nanofl.engine.libraryitems
 		getType() : string;
 		clone() : nanofl.engine.libraryitems.LibraryItem;
 		getIcon() : string;
+		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		saveToXml(out:nanofl.engine.XmlWriter) : void;
 		preload(ready:() => void) : void;
 		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;

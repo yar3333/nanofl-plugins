@@ -9,6 +9,7 @@ extern class SoundItem extends nanofl.engine.libraryitems.LibraryItem
 	override function getIcon() : String;
 	override function save(fileApi:nanofl.engine.FileApi) : Void;
 	override function saveToXml(out:nanofl.engine.XmlWriter) : Void;
+	override function loadProperties(xml:htmlparser.HtmlNodeElement) : Void;
 	function getUrl() : String;
 	override function toString() : String;
 	static function parse(namePath:String, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.SoundItem;

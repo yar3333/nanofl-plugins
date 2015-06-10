@@ -6,6 +6,7 @@ extern class LibraryItem
 	function getType() : String;
 	function getIcon() : String;
 	function clone() : nanofl.engine.libraryitems.LibraryItem;
+	function loadProperties(xml:htmlparser.HtmlNodeElement) : Void;
 	function save(fileApi:nanofl.engine.FileApi) : Void;
 	function saveToXml(out:nanofl.engine.XmlWriter) : Void;
 	function getFilePathTemplate() : String;
