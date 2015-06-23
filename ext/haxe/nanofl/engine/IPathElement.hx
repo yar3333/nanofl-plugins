@@ -7,7 +7,7 @@ extern interface IPathElement extends nanofl.engine.ILayersContainer
 	function isScene() : Bool;
 	function getNavigatorName() : String;
 	function getNavigatorIcon() : String;
-	function getChildren() : Array<nanofl.engine.elements.Element>;
+	function getChildren() : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
 	function createDisplayObject(frameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.DisplayObject;
 	function getTimeline() : nanofl.engine.ITimeline;
 }

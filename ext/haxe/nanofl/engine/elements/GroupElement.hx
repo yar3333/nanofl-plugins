@@ -13,13 +13,13 @@ extern class GroupElement extends nanofl.engine.elements.Element implements nano
 	override function clone() : nanofl.engine.elements.Element;
 	override function getUsedItems() : Array<nanofl.engine.libraryitems.LibraryItem>;
 	override function getUsedFilters() : Array<String>;
+	function getChildren() : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
 	override function createDisplayObject(frameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.DisplayObject;
 	override function updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.Container;
 	function getMaskFilter(layer:nanofl.engine.Layer, frameIndex:Int) : createjs.Container;
 	function isScene() : Bool;
 	function getNavigatorName() : String;
 	function getNavigatorIcon() : String;
-	function getChildren() : Array<nanofl.engine.elements.Element>;
 	function getTimeline() : nanofl.engine.ITimeline;
 	override function transform(m:nanofl.engine.geom.Matrix, ?applyToStrokeAndFill:Bool) : Void;
 }

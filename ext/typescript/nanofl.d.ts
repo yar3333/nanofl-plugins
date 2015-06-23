@@ -7692,13 +7692,13 @@ declare module nanofl.engine.elements
 		clone() : nanofl.engine.elements.Element;
 		getUsedItems() : nanofl.engine.libraryitems.LibraryItem[];
 		getUsedFilters() : string[];
+		getChildren() : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
 		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
 		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.Container;
 		getMaskFilter(layer:nanofl.engine.Layer, frameIndex:number) : createjs.Container;
 		isScene() : boolean;
 		getNavigatorName() : string;
 		getNavigatorIcon() : string;
-		getChildren() : nanofl.engine.elements.Element[];
 		getTimeline() : nanofl.engine.ITimeline;
 		transform(m:nanofl.engine.geom.Matrix, applyToStrokeAndFill?:boolean) : void;
 	}
@@ -8409,7 +8409,7 @@ declare module nanofl.engine
 		isScene() : boolean;
 		getNavigatorName() : string;
 		getNavigatorIcon() : string;
-		getChildren() : nanofl.engine.elements.Element[];
+		getChildren() : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
 		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
 		getTimeline() : nanofl.engine.ITimeline;
 	}
