@@ -1921,7 +1921,8 @@ svgexporter.Gradient.prototype = {
 		var _g2 = this.attributes.length;
 		while(_g11 < _g2) {
 			var i1 = _g11++;
-			if(g.attributes[i1] != this.attributes[i1]) return false;
+			if(g.attributes[i1].name != this.attributes[i1].name) return false;
+			if(g.attributes[i1].value != this.attributes[i1].value) return false;
 		}
 		return true;
 	}

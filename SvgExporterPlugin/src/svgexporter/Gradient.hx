@@ -43,7 +43,8 @@ class Gradient
 		}
 		for (i in 0...attributes.length)
 		{
-			if (g.attributes[i] != attributes[i]) return false;
+			if (g.attributes[i].name != attributes[i].name) return false;
+			if (g.attributes[i].value != attributes[i].value) return false;
 		}
 		return true;
 	}
