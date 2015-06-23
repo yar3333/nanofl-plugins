@@ -17,7 +17,6 @@ class FlashXflExporterPlugin implements IExporterPlugin
 	public var menuItemIcon = "";
 	public var fileFilterDescription = "Adobe Flash Document (*.xfl)";
 	public var fileFilterExtensions = [ "xfl" ];
-	public var fileDefaultExtension = "xfl";
 	
 	public function exportDocument(fileApi:FileApi, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
 	{

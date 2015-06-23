@@ -19,8 +19,6 @@ class SvgExporterPlugin implements IExporterPlugin
 	public var menuItemIcon = "";
 	public var fileFilterDescription = "Scalable Vector Graphics (*.svg)";
 	public var fileFilterExtensions = [ "svg" ];
-	public var fileDefaultExtension = "svg";
-	
 	
 	public function exportDocument(fileApi:FileApi, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
 	{

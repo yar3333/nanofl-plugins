@@ -459,7 +459,6 @@ StringTools.hex = function(n,digits) {
 	return s;
 };
 var SvgExporterPlugin = function() {
-	this.fileDefaultExtension = "svg";
 	this.fileFilterExtensions = ["svg"];
 	this.fileFilterDescription = "Scalable Vector Graphics (*.svg)";
 	this.menuItemIcon = "";

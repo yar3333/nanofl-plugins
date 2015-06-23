@@ -22,9 +22,5 @@ extern interface IExporterPlugin
 	 * Like [ "fla", "xfl" ].
 	 */
 	var fileFilterExtensions : Array<String>;
-	/**
-	 * Like "fla".
-	 */
-	var fileDefaultExtension : String;
 	function exportDocument(fileApi:nanofl.engine.FileApi, srcFilePath:String, destFilePath:String, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library) : Bool;
 }

@@ -7174,10 +7174,6 @@ declare module nanofl.ide.plugins
 		 * Like [ "fla", "xfl" ].
 		 */
 		fileFilterExtensions : string[];
-		/**
-		 * Like "fla".
-		 */
-		fileDefaultExtension : string;
 		exportDocument(fileApi:nanofl.engine.FileApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library) : boolean;
 	}
 	
