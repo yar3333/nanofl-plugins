@@ -10,7 +10,7 @@ class PngImageSequenceExporterPlugin implements IExporterPlugin
 	public var name = "PngImageSequenceExporter";
 	
 	public var menuItemName = "Sequence of PNG Images (*.png)";
-	public var menuItemIcon = "";
+	public var menuItemIcon = "icon-film";
 	public var fileFilterDescription = "PNG Image (*.png)";
 	public var fileFilterExtensions = [ "png" ];
 	public var fileDefaultExtension = "png";

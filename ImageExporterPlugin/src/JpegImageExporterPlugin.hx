@@ -10,7 +10,7 @@ class JpegImageExporterPlugin implements IExporterPlugin
 	public var name = "JpegImageExporter";
 	
 	public var menuItemName = "JPEG Image (*.jpg)";
-	public var menuItemIcon = "";
+	public var menuItemIcon = "icon-picture";
 	public var fileFilterDescription = "JPEG Image (*.jpg)";
 	public var fileFilterExtensions = [ "jpg", "jpeg" ];
 	public var fileDefaultExtension = "jpg";
