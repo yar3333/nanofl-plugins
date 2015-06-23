@@ -39,12 +39,14 @@ class ShapePathsRender
 	
 	public function beginStroke(color:String) : Render
 	{
+		attr("fill", "none");
 		attr("stroke", color);
 		return this;
 	}
 	
 	public function beginLinearGradientStroke(colors:Array<String>, ratios:Array<Float>, x0:Float, y0:Float, x1:Float, y1:Float) : Render
 	{
+		attr("fill", "none");
 		var g = Gradient.createLinear(colors, ratios, x0, y0, x1, y1);
 		attr("stroke", "url(#" + gradients.find.fn(_.equ(g)).id + ")");
 		return this;
@@ -52,6 +54,7 @@ class ShapePathsRender
 	
 	public function beginRadialGradientStroke(colors:Array<String>, ratios:Array<Float>, fx:Float, fy:Float, fr:Float, cx:Float, cy:Float, cr:Float) : Render
 	{
+		attr("fill", "none");
 		var g = Gradient.createRadial(colors, ratios, cx, cy, cr, fx, fy);
 		attributes.push({ name:"stroke", value:"url(#" + gradients.find.fn(_.equ(g)).id + ")" });
 		return this;
@@ -60,12 +63,14 @@ class ShapePathsRender
 	#if js
 	public function beginBitmapStroke(image:Dynamic, repeat:String) : Render
 	{
+		attr("fill", "none");
 		attr("stroke", "#000000");
 		return this;
 	}
 	#else
 	public function beginBitmapStroke(url:String, repeat:String) : Render
 	{
+		attr("fill", "none");
 		attr("stroke", "#000000");
 		return this;
 	}
@@ -82,11 +87,7 @@ class ShapePathsRender
 	
 	public function endStroke() : Render
 	{
-		if (d != "")
-		{
-			d += "Z";
-			finishPath();
-		}
+		finishPath();
 		return this;
 	}
 	
@@ -126,17 +127,16 @@ class ShapePathsRender
 	
 	public function endFill() : Render
 	{
-		if (d != "")
-		{
-			d += "Z";
-			finishPath();
-		}
+		finishPath();
 		return this;
 	}
 	
 	function finishPath()
 	{
-		xml.begin("path", attributes).attr("d", d).end();
+		if (d != "")
+		{
+			xml.begin("path", attributes).attr("d", d).end();
+		}
 		
 		attributes = [];
 		d = "";

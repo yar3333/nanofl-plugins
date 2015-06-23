@@ -58,6 +58,7 @@ class Gradient
 		{
 			xml.attr(a.name, a.value);
 		}
+		xml.attr("gradientUnits", "userSpaceOnUse");
 		
 		for (i in 0...colors.length)
 		{
@@ -116,10 +117,10 @@ class Gradient
 	{
 		return new Gradient("linearGradient", colors, ratios,
 		[
-			{ name:"x0", value:x0 },
-			{ name:"y0", value:y0 },
-			{ name:"x1", value:x1 },
-			{ name:"y1", value:y1 }
+			{ name:"x1", value:x0 },
+			{ name:"y1", value:y0 },
+			{ name:"x2", value:x1 },
+			{ name:"y2", value:y1 }
 		]);
 	}
 	

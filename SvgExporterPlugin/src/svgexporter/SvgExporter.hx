@@ -44,7 +44,11 @@ class SvgExporter
 			{
 				if (layer.keyFrames.length > 0)
 				{
-					shapeExporter.exportGradients(layer.keyFrames[0].getShape(false), xml);
+					var shape = layer.keyFrames[0].getShape(false);
+					if (shape != null)
+					{
+						shapeExporter.exportGradients(shape, xml);
+					}
 				}
 			}
 		}
