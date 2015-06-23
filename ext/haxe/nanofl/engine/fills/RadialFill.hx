@@ -13,7 +13,7 @@ extern class RadialFill extends nanofl.engine.fills.BaseFill implements nanofl.e
 	function save(out:nanofl.engine.XmlWriter) : Void;
 	function clone() : nanofl.engine.fills.IFill;
 	function applyAlpha(alpha:Float) : Void;
-	function begin(g:createjs.Graphics) : Void;
+	function begin(g:nanofl.engine.Render) : Void;
 	function equ(e:nanofl.engine.fills.IFill) : Bool;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	function getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;

@@ -5,7 +5,7 @@ extern class Contour
 	function new(edges:Array<nanofl.engine.geom.Edge>) : Void;
 	var edges(default, null) : Array<nanofl.engine.geom.Edge>;
 	function save(out:nanofl.engine.XmlWriter) : Void;
-	function draw(g:createjs.Graphics) : Void;
+	function draw(g:nanofl.engine.Render) : Void;
 	function translate(dx:Float, dy:Float) : Void;
 	function isPointInside(px:Float, py:Float) : Bool;
 	function isPointInsideP(p:nanofl.engine.geom.Point) : Bool;

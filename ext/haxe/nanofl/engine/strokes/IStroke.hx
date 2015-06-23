@@ -7,7 +7,7 @@ extern interface IStroke
 	var joints : String;
 	var miterLimit : Float;
 	var ignoreScale : Bool;
-	function begin(g:createjs.Graphics) : Void;
+	function begin(g:nanofl.engine.Render) : Void;
 	function clone() : nanofl.engine.strokes.IStroke;
 	function equ(e:nanofl.engine.strokes.IStroke) : Bool;
 	function applyAlpha(alpha:Float) : Void;

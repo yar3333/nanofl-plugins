@@ -2,7 +2,7 @@ package nanofl.engine.fills;
 
 extern interface IFill
 {
-	function begin(g:createjs.Graphics) : Void;
+	function begin(g:nanofl.engine.Render) : Void;
 	function clone() : nanofl.engine.fills.IFill;
 	function equ(e:nanofl.engine.fills.IFill) : Bool;
 	function applyAlpha(alpha:Float) : Void;

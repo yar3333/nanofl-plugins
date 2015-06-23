@@ -15,6 +15,8 @@ typedef FillParams =
 	@:optional
 	var ratios : Array<Float>;
 	@:optional
+	var repeat : String;
+	@:optional
 	var x0 : Float;
 	@:optional
 	var x1 : Float;

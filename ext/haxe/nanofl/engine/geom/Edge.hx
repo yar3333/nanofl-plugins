@@ -19,7 +19,7 @@ extern class Edge
 	function getIntersectionCount_rightRay(x:Float, y:Float) : Int;
 	function getIntersectionDirectedCount_rightRay(x:Float, y:Float) : Int;
 	function getIntersectionPointsX_rightRay(x:Float, y:Float) : Array<Float>;
-	function drawTo(g:createjs.Graphics) : Void;
+	function drawTo(g:nanofl.engine.Render) : Void;
 	function equ(e:nanofl.engine.geom.Edge) : Bool;
 	function equDirected(e:nanofl.engine.geom.Edge) : Bool;
 	function getNearestPoint(x:Float, y:Float) : { var point : nanofl.engine.geom.Point; var t : Float; };

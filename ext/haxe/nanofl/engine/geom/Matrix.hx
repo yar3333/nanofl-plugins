@@ -63,6 +63,7 @@ extern class Matrix
 	function createGradientBox(width:Float, height:Float, ?rotation:Float, ?tx:Float, ?ty:Float) : nanofl.engine.geom.Matrix;
 	function getAverageScale() : Float;
 	function toMatrix2D() : createjs.Matrix2D;
+	function toArray() : Array<Float>;
 	function toString() : String;
 	static function load(node:htmlparser.HtmlNodeElement) : nanofl.engine.geom.Matrix;
 	static function fromMatrix2D(m:createjs.Matrix2D) : nanofl.engine.geom.Matrix;

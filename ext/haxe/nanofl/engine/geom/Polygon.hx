@@ -7,7 +7,7 @@ extern class Polygon implements nanofl.engine.ISelectable
 	var fill : nanofl.engine.fills.IFill;
 	var selected : Bool;
 	function save(fills:Array<nanofl.engine.fills.IFill>, out:nanofl.engine.XmlWriter) : Void;
-	function draw(g:createjs.Graphics, scaleSelection:Float) : Void;
+	function draw(g:nanofl.engine.Render, scaleSelection:Float) : Void;
 	function translate(dx:Float, dy:Float) : Void;
 	function isPointInside(px:Float, py:Float) : Bool;
 	function hasPoint(px:Float, py:Float) : Bool;

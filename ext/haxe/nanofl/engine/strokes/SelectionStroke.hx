@@ -4,7 +4,7 @@ extern class SelectionStroke extends nanofl.engine.strokes.BaseStroke implements
 {
 	function new(base:nanofl.engine.strokes.IStroke, scale:Float) : Void;
 	function save(out:nanofl.engine.XmlWriter) : Void;
-	function begin(g:createjs.Graphics) : Void;
+	function begin(g:nanofl.engine.Render) : Void;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	function applyAlpha(alpha:Float) : Void;
 	function toString() : String;

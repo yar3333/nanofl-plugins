@@ -8,7 +8,7 @@ extern class ShapeElement extends nanofl.engine.elements.Element
 	override function getType() : String;
 	override function save(out:nanofl.engine.XmlWriter) : Void;
 	function ensureNoTransform() : Void;
-	function drawOnGraphics(g:createjs.Graphics, scaleSelection:Float) : Void;
+	function draw(g:nanofl.engine.Render, scaleSelection:Float) : Void;
 	override function createDisplayObject(frameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.DisplayObject;
 	override function updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.DisplayObject;
 	override function clone() : nanofl.engine.elements.Element;
@@ -54,7 +54,8 @@ extern class ShapeElement extends nanofl.engine.elements.Element
 	var colors : Array<String>; @:optional
 	var matrix : nanofl.engine.geom.Matrix; @:optional
 	var r : Float; @:optional
-	var ratios : Array<Float>; var type : String; @:optional
+	var ratios : Array<Float>; @:optional
+	var repeat : String; var type : String; @:optional
 	var x0 : Float; @:optional
 	var x1 : Float; @:optional
 	var y0 : Float; @:optional

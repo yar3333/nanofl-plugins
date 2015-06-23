@@ -10,7 +10,7 @@ extern class LinearStroke extends nanofl.engine.strokes.BaseStroke implements na
 	var x1 : Float;
 	var y1 : Float;
 	function save(out:nanofl.engine.XmlWriter) : Void;
-	function begin(g:createjs.Graphics) : Void;
+	function begin(g:nanofl.engine.Render) : Void;
 	override function clone() : nanofl.engine.strokes.IStroke;
 	override function equ(e:nanofl.engine.strokes.IStroke) : Bool;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
