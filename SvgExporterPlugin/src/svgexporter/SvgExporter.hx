@@ -15,11 +15,11 @@ using Slambda;
 
 class SvgExporter
 {
-	var library:Library;
+	var library : Library;
 	
 	var shapeExporter = new ShapeExporter();
 	
-	public function new(library:Library) 
+	public function new(library:Library)
 	{
 		this.library = library;
 	}
