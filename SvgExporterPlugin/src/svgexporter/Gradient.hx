@@ -9,7 +9,6 @@ import nanofl.engine.strokes.IStroke;
 import nanofl.engine.strokes.LinearStroke;
 import nanofl.engine.strokes.RadialStroke;
 import nanofl.engine.XmlWriter;
-import stdlib.Uuid;
 
 class Gradient
 {
@@ -18,16 +17,12 @@ class Gradient
 	var ratios : Array<Float>;
 	var attributes : Array<{ name:String, value:Dynamic }>;
 	
-	public var id : String;
-	
 	function new(tag:String, colors:Array<String>, ratios:Array<Float>, attributes:Array<{ name:String, value:Dynamic }>)
 	{
 		this.tag = tag;
 		this.colors = colors;
 		this.ratios = ratios;
 		this.attributes = attributes;
-		
-		id = Uuid.newUuid();
 	}
 	
 	public function equ(g:Gradient) : Bool
@@ -49,11 +44,11 @@ class Gradient
 		return true;
 	}
 	
-	public function write(xml:XmlWriter)
+	public function write(id:Int, xml:XmlWriter)
 	{
 		xml.begin(tag);
 		
-		xml.attr("id", id);
+		xml.attr("id", "grad" + id);
 		for (a in attributes)
 		{
 			xml.attr(a.name, a.value);

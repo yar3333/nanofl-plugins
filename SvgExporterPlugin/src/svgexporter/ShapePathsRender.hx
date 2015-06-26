@@ -48,7 +48,7 @@ class ShapePathsRender
 	{
 		attr("fill", "none");
 		var g = Gradient.createLinear(colors, ratios, x0, y0, x1, y1);
-		attr("stroke", "url(#" + gradients.find.fn(_.equ(g)).id + ")");
+		attr("stroke", "url(#grad" + gradients.findIndex.fn(_.equ(g)) + ")");
 		return this;
 	}
 	
@@ -56,7 +56,7 @@ class ShapePathsRender
 	{
 		attr("fill", "none");
 		var g = Gradient.createRadial(colors, ratios, cx, cy, cr, fx, fy);
-		attributes.push({ name:"stroke", value:"url(#" + gradients.find.fn(_.equ(g)).id + ")" });
+		attributes.push({ name:"stroke", value:"url(#grad" + gradients.findIndex.fn(_.equ(g)) + ")" });
 		return this;
 	}
 	
@@ -100,14 +100,14 @@ class ShapePathsRender
 	public function beginLinearGradientFill(colors:Array<String>, ratios:Array<Float>, x0:Float, y0:Float, x1:Float, y1:Float) : Render
 	{
 		var g = Gradient.createLinear(colors, ratios, x0, y0, x1, y1);
-		attr("fill", "url(#" + gradients.find.fn(_.equ(g)).id + ")");
+		attr("fill", "url(#grad" + gradients.findIndex.fn(_.equ(g)) + ")");
 		return this;
 	}
 	
 	public function beginRadialGradientFill(colors:Array<String>, ratios:Array<Float>, fx:Float, fy:Float, fr:Float, cx:Float, cy:Float, cr:Float) : Render
 	{
 		var g = Gradient.createRadial(colors, ratios, cx, cy, cr, fx, fy);
-		attr("fill", "url(#" + gradients.find.fn(_.equ(g)).id + ")");
+		attr("fill", "url(#grad" + gradients.findIndex.fn(_.equ(g)) + ")");
 		return this;
 	}
 	

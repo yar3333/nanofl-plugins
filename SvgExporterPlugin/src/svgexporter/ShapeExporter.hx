@@ -26,8 +26,8 @@ class ShapeExporter
 				{
 					if (!gradients.exists.fn(_.equ(g)))
 					{
+						g.write(gradients.length, xml);
 						gradients.push(g);
-						g.write(xml);
 					}
 					strokes.push(edge.stroke);
 				}
@@ -43,8 +43,8 @@ class ShapeExporter
 				{
 					if (!gradients.exists.fn(_.equ(g)))
 					{
+						g.write(gradients.length, xml);
 						gradients.push(g);
-						g.write(xml);
 					}
 					fills.push(polygon.fill);
 				}
