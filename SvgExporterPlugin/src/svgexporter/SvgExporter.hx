@@ -18,6 +18,8 @@ class SvgExporter
 {
 	var library : Library;
 	
+	var svgClipPaths = new Array<MovieClipItem>();
+	var svgGroups = new Array<MovieClipItem>();
 	var shapeExporter = new ShapeExporter();
 	var layerItems = new Map<Layer, String>();
 	
@@ -31,8 +33,6 @@ class SvgExporter
 		var scene = library.getSceneItem();
 		var items = library.getItems();
 		
-		var svgClipPaths = new Array<MovieClipItem>();
-		var svgGroups = new Array<MovieClipItem>();
 		
 		xml.begin("defs");
 			
@@ -76,7 +76,7 @@ class SvgExporter
 				
 				for (element in layer.keyFrames[0].elements)
 				{
-					exportElement(element, xml);
+					exportElement(element, true, xml);
 				}
 				
 				xml.end();
@@ -101,7 +101,7 @@ class SvgExporter
 					
 					for (element in layer.keyFrames[0].elements)
 					{
-						exportElement(element, xml);
+						exportElement(element, false, xml);
 					}
 				}
 				xml.end();
@@ -112,7 +112,7 @@ class SvgExporter
 	
 	function exportSvgClipPath(mc:MovieClipItem, xml:XmlWriter)
 	{
-		xml.begin("clipPath").attr("id", mc.namePath);
+		xml.begin("clipPath").attr("id", mapNamePath(mc.namePath, true));
 		for (layer in mc.layers)
 		{
 			if (layer.type == "normal" && layer.keyFrames.length > 0)
@@ -130,7 +130,7 @@ class SvgExporter
 		xml.end();
 	}
 	
-	function exportElement(element:Element, xml:XmlWriter)
+	function exportElement(element:Element, insideClipPath:Bool, xml:XmlWriter)
 	{
 		if (Std.is(element, Instance))
 		{
@@ -148,7 +148,7 @@ class SvgExporter
 						xml.attr("transform", "matrix(" + instance.matrix.toArray().join(",") + ")");
 					}
 				}
-				xml.attr("xlink:href", "#" + instance.symbol.namePath);
+				xml.attr("xlink:href", "#" + mapNamePath(instance.symbol.namePath, insideClipPath));
 			xml.end();
 		}
 		else
@@ -157,13 +157,15 @@ class SvgExporter
 			var group : GroupElement = cast element;
 			for (e in group.getChildren())
 			{
-				exportElement(e, xml);
+				exportElement(e, insideClipPath, xml);
 			}
 		}
 		else
 		if (Std.is(element, ShapeElement))
 		{
-			shapeExporter.exportPaths((cast element:ShapeElement), xml);
+			//if (!insideClipPath) shapeExporter.exportContours((cast element:ShapeElement), xml);
+			//else                 shapeExporter.export((cast element:ShapeElement), xml);
+			shapeExporter.export((cast element:ShapeElement), xml);
 		}
 		//else
 		//if (Std.is(element, TextElement))
@@ -211,6 +213,13 @@ class SvgExporter
 				iterateMovieClipThree((cast asInstance(element).symbol : MovieClipItem), layerType, onMovieClip, onShape, insideMask);
 			}
 		}
+	}
+	
+	function mapNamePath(namePath:String, insideClipPath:Bool) : String
+	{
+		return insideClipPath && svgGroups.exists.fn(_.namePath == namePath)
+			? namePath + "_clipPath"
+			: namePath;
 	}
 	
 	static inline function asInstance(element:Element) : Instance return cast element;

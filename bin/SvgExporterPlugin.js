@@ -1295,7 +1295,23 @@ svgexporter.ShapeExporter.prototype = {
 			}
 		}
 	}
-	,exportPaths: function(shape,xml) {
+	,exportContours: function(shape,xml) {
+		var render = new svgexporter.ShapePathsRender(this.gradients,xml);
+		var _g = 0;
+		var _g1 = shape.polygons;
+		while(_g < _g1.length) {
+			var polygon = _g1[_g];
+			++_g;
+			var _g2 = 0;
+			var _g3 = polygon.contours;
+			while(_g2 < _g3.length) {
+				var contour = _g3[_g2];
+				++_g2;
+				contour.draw(render);
+			}
+		}
+	}
+	,'export': function(shape,xml) {
 		shape.draw(new svgexporter.ShapePathsRender(this.gradients,xml),null);
 	}
 	,__class__: svgexporter.ShapeExporter
@@ -1412,6 +1428,8 @@ svgexporter.ShapePathsRender.prototype = {
 svgexporter.SvgExporter = function(library) {
 	this.layerItems = new haxe.ds.ObjectMap();
 	this.shapeExporter = new svgexporter.ShapeExporter();
+	this.svgGroups = new Array();
+	this.svgClipPaths = new Array();
 	this.library = library;
 };
 svgexporter.SvgExporter.__name__ = true;
@@ -1423,38 +1441,39 @@ svgexporter.SvgExporter.prototype = {
 		var _g = this;
 		var scene = this.library.getSceneItem();
 		var items = this.library.getItems();
-		var svgClipPaths = new Array();
-		var svgGroups = new Array();
 		xml.begin("defs");
 		this.iterateMovieClipThree(scene,null,function(mc,insideMask) {
 			if(insideMask) {
-				if(HxOverrides.indexOf(svgClipPaths,mc,0) < 0) svgClipPaths.push(mc);
-			} else if(HxOverrides.indexOf(svgGroups,mc,0) < 0) svgGroups.push(mc);
+				if(HxOverrides.indexOf(_g.svgClipPaths,mc,0) < 0) _g.svgClipPaths.push(mc);
+			} else if(HxOverrides.indexOf(_g.svgGroups,mc,0) < 0) _g.svgGroups.push(mc);
 		},function(shape,insideMask1) {
 			if(!insideMask1) _g.shapeExporter.exportGradients(shape,xml);
 		});
 		var _g1 = 0;
-		while(_g1 < svgClipPaths.length) {
-			var mc1 = svgClipPaths[_g1];
+		var _g11 = this.svgClipPaths;
+		while(_g1 < _g11.length) {
+			var mc1 = _g11[_g1];
 			++_g1;
 			this.exportLayersAsClipPaths(mc1,null,xml);
 		}
 		var _g2 = 0;
-		while(_g2 < svgClipPaths.length) {
-			var mc2 = svgClipPaths[_g2];
+		var _g12 = this.svgClipPaths;
+		while(_g2 < _g12.length) {
+			var mc2 = _g12[_g2];
 			++_g2;
 			this.exportSvgClipPath(mc2,xml);
 		}
 		var _g3 = 0;
-		var _g11 = [scene].concat(svgGroups);
-		while(_g3 < _g11.length) {
-			var mc3 = _g11[_g3];
+		var _g13 = [scene].concat(this.svgGroups);
+		while(_g3 < _g13.length) {
+			var mc3 = _g13[_g3];
 			++_g3;
 			this.exportLayersAsClipPaths(mc3,"mask",xml);
 		}
 		var _g4 = 0;
-		while(_g4 < svgGroups.length) {
-			var mc4 = svgGroups[_g4];
+		var _g14 = this.svgGroups;
+		while(_g4 < _g14.length) {
+			var mc4 = _g14[_g4];
 			++_g4;
 			this.exportSvgGroup(mc4,xml);
 		}
@@ -1476,7 +1495,7 @@ svgexporter.SvgExporter.prototype = {
 				while(_g2 < _g3.length) {
 					var element = _g3[_g2];
 					++_g2;
-					this.exportElement(element,xml);
+					this.exportElement(element,true,xml);
 				}
 				xml.end();
 			}
@@ -1498,7 +1517,7 @@ svgexporter.SvgExporter.prototype = {
 					while(_g2 < _g3.length) {
 						var element = _g3[_g2];
 						++_g2;
-						this.exportElement(element,xml);
+						this.exportElement(element,false,xml);
 					}
 				}
 				xml.end();
@@ -1507,7 +1526,7 @@ svgexporter.SvgExporter.prototype = {
 		xml.end();
 	}
 	,exportSvgClipPath: function(mc,xml) {
-		xml.begin("clipPath").attr("id",mc.namePath);
+		xml.begin("clipPath").attr("id",this.mapNamePath(mc.namePath,true));
 		var _g = 0;
 		var _g1 = mc.layers;
 		while(_g < _g1.length) {
@@ -1523,7 +1542,7 @@ svgexporter.SvgExporter.prototype = {
 		}
 		xml.end();
 	}
-	,exportElement: function(element,xml) {
+	,exportElement: function(element,insideClipPath,xml) {
 		if(js.Boot.__instanceof(element,nanofl.engine.elements.Instance)) {
 			var instance = element;
 			xml.begin("use");
@@ -1533,7 +1552,7 @@ svgexporter.SvgExporter.prototype = {
 					xml.attr("y",instance.matrix.ty);
 				} else xml.attr("transform","matrix(" + instance.matrix.toArray().join(",") + ")");
 			}
-			xml.attr("xlink:href","#" + instance.symbol.namePath);
+			xml.attr("xlink:href","#" + this.mapNamePath(instance.symbol.namePath,insideClipPath));
 			xml.end();
 		} else if(js.Boot.__instanceof(element,nanofl.engine.elements.GroupElement)) {
 			var group = element;
@@ -1542,9 +1561,9 @@ svgexporter.SvgExporter.prototype = {
 			while(_g < _g1.length) {
 				var e = _g1[_g];
 				++_g;
-				this.exportElement(e,xml);
+				this.exportElement(e,insideClipPath,xml);
 			}
-		} else if(js.Boot.__instanceof(element,nanofl.engine.elements.ShapeElement)) this.shapeExporter.exportPaths(element,xml); else console.log("Unsupported element: " + element.toString());
+		} else if(js.Boot.__instanceof(element,nanofl.engine.elements.ShapeElement)) this.shapeExporter["export"](element,xml); else console.log("Unsupported element: " + element.toString());
 	}
 	,iterateMovieClipThree: function(item,layerType,onMovieClip,onShape,insideMask) {
 		if(insideMask == null) insideMask = false;
@@ -1574,6 +1593,15 @@ svgexporter.SvgExporter.prototype = {
 				this.iterateMovieClipThree(element.symbol,layerType,onMovieClip,onShape,insideMask);
 			}
 		}
+	}
+	,mapNamePath: function(namePath,insideClipPath) {
+		if(insideClipPath && ((function(_e) {
+			return function(f) {
+				return Lambda.exists(_e,f);
+			};
+		})(this.svgGroups))(function(_) {
+			return _.namePath == namePath;
+		})) return namePath + "_clipPath"; else return namePath;
 	}
 	,__class__: svgexporter.SvgExporter
 };

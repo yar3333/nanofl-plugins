@@ -310,6 +310,10 @@ ValueType.TUnknown = ["TUnknown",8];
 ValueType.TUnknown.__enum__ = ValueType;
 var Type = function() { };
 Type.__name__ = ["Type"];
+Type.getClass = function(o) {
+	if(o == null) return null;
+	if((o instanceof Array) && o.__enum__ == null) return Array; else return o.__class__;
+};
 Type.getClassName = function(c) {
 	var a = c.__name__;
 	return a.join(".");
@@ -1168,6 +1172,58 @@ flashimport.SymbolLoader.prototype = {
 	,__class__: flashimport.SymbolLoader
 };
 var haxe = {};
+haxe.StackItem = { __ename__ : ["haxe","StackItem"], __constructs__ : ["CFunction","Module","FilePos","Method","LocalFunction"] };
+haxe.StackItem.CFunction = ["CFunction",0];
+haxe.StackItem.CFunction.__enum__ = haxe.StackItem;
+haxe.StackItem.Module = function(m) { var $x = ["Module",1,m]; $x.__enum__ = haxe.StackItem; return $x; };
+haxe.StackItem.FilePos = function(s,file,line) { var $x = ["FilePos",2,s,file,line]; $x.__enum__ = haxe.StackItem; return $x; };
+haxe.StackItem.Method = function(classname,method) { var $x = ["Method",3,classname,method]; $x.__enum__ = haxe.StackItem; return $x; };
+haxe.StackItem.LocalFunction = function(v) { var $x = ["LocalFunction",4,v]; $x.__enum__ = haxe.StackItem; return $x; };
+haxe.CallStack = function() { };
+haxe.CallStack.__name__ = ["haxe","CallStack"];
+haxe.CallStack.callStack = function() {
+	var oldValue = Error.prepareStackTrace;
+	Error.prepareStackTrace = function(error,callsites) {
+		var stack = [];
+		var _g = 0;
+		while(_g < callsites.length) {
+			var site = callsites[_g];
+			++_g;
+			var method = null;
+			var fullName = site.getFunctionName();
+			if(fullName != null) {
+				var idx = fullName.lastIndexOf(".");
+				if(idx >= 0) {
+					var className = HxOverrides.substr(fullName,0,idx);
+					var methodName = HxOverrides.substr(fullName,idx + 1,null);
+					method = haxe.StackItem.Method(className,methodName);
+				}
+			}
+			stack.push(haxe.StackItem.FilePos(method,site.getFileName(),site.getLineNumber()));
+		}
+		return stack;
+	};
+	var a = haxe.CallStack.makeStack(new Error().stack);
+	a.shift();
+	Error.prepareStackTrace = oldValue;
+	return a;
+};
+haxe.CallStack.exceptionStack = function() {
+	return [];
+};
+haxe.CallStack.makeStack = function(s) {
+	if(typeof(s) == "string") {
+		var stack = s.split("\n");
+		var m = [];
+		var _g = 0;
+		while(_g < stack.length) {
+			var line = stack[_g];
+			++_g;
+			m.push(haxe.StackItem.Module(line));
+		}
+		return m;
+	} else return s;
+};
 haxe.Timer = function(time_ms) {
 	var me = this;
 	this.id = setInterval(function() {
@@ -1505,6 +1561,41 @@ stdlib.Debug.getObjectDump = function(obj,limit,level,prefix) {
 stdlib.Debug.assert = function(e,message,pos) {
 };
 stdlib.Debug.traceStack = function(v,pos) {
+};
+stdlib.Debug.methodMustBeOverriden = function(_this,pos) {
+	throw new stdlib.Exception("Method " + pos.methodName + "() must be overriden in class " + Type.getClassName(Type.getClass(_this)) + ".");
+	return null;
+};
+stdlib.Debug.methodNotSupported = function(_this,pos) {
+	throw new stdlib.Exception("Method " + pos.methodName + "() is not supported by class " + Type.getClassName(Type.getClass(_this)) + ".");
+	return null;
+};
+stdlib.Exception = function(message) {
+	if(message == null) this.message = ""; else this.message = message;
+	this.stack = haxe.CallStack.callStack();
+	this.stack.shift();
+	this.stack.shift();
+};
+stdlib.Exception.__name__ = ["stdlib","Exception"];
+stdlib.Exception.string = function(e) {
+	return Std.string(e);
+};
+stdlib.Exception.rethrow = function(exception) {
+	throw stdlib.Exception.wrap(exception);
+};
+stdlib.Exception.wrap = function(exception) {
+	if(!js.Boot.__instanceof(exception,stdlib.Exception)) {
+		var r = new stdlib.Exception(Std.string(exception));
+		r.stack = haxe.CallStack.exceptionStack();
+		return r;
+	}
+	return exception;
+};
+stdlib.Exception.prototype = {
+	toString: function() {
+		return this.message;
+	}
+	,__class__: stdlib.Exception
 };
 stdlib.Std = function() { };
 stdlib.Std.__name__ = ["stdlib","Std"];
