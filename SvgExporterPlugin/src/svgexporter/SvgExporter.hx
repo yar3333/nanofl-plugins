@@ -80,7 +80,7 @@ class SvgExporter
 			
 		xml.end();
 		
-		exportSvgGroup(scene, xml);
+		exportMovieClipLayers(scene, xml);
 	}
 
 	function exportLayersAsClipPaths(mc:MovieClipItem, xml:XmlWriter)
@@ -124,6 +124,12 @@ class SvgExporter
 	function exportSvgGroup(mc:MovieClipItem, xml:XmlWriter)
 	{
 		xml.begin("g").attr("id", mc.namePath);
+			exportMovieClipLayers(mc, xml);
+		xml.end();
+	}
+	
+	function exportMovieClipLayers(mc:MovieClipItem, xml:XmlWriter)
+	{
 		for (layer in mc.layers)
 		{
 			if (layer.type == "normal")
@@ -144,7 +150,6 @@ class SvgExporter
 				xml.end();
 			}
 		}
-		xml.end();
 	}
 	
 	function exportElement(element:Element, xml:XmlWriter)

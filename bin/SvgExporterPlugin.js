@@ -1477,7 +1477,7 @@ svgexporter.SvgExporter.prototype = {
 			this.exportSvgGroup(mc3,xml);
 		}
 		xml.end();
-		this.exportSvgGroup(scene,xml);
+		this.exportMovieClipLayers(scene,xml);
 	}
 	,exportLayersAsClipPaths: function(mc,xml) {
 		var _g4 = this;
@@ -1505,6 +1505,10 @@ svgexporter.SvgExporter.prototype = {
 	}
 	,exportSvgGroup: function(mc,xml) {
 		xml.begin("g").attr("id",mc.namePath);
+		this.exportMovieClipLayers(mc,xml);
+		xml.end();
+	}
+	,exportMovieClipLayers: function(mc,xml) {
 		var _g = 0;
 		var _g1 = mc.layers;
 		while(_g < _g1.length) {
@@ -1525,7 +1529,6 @@ svgexporter.SvgExporter.prototype = {
 				xml.end();
 			}
 		}
-		xml.end();
 	}
 	,exportElement: function(element,xml) {
 		if(js.Boot.__instanceof(element,nanofl.engine.elements.Instance)) {
