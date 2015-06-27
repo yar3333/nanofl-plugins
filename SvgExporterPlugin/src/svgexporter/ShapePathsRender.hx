@@ -7,14 +7,19 @@ using Slambda;
 
 class ShapePathsRender
 {
+	var idPrefix = null;
+	
 	var gradients : Array<Gradient>;
 	var xml : XmlWriter;
 	
 	var attributes = new Array<{ name:String, value:Dynamic }>();
 	var d = "";
 	
-	public function new(gradients:Array<Gradient>, xml:XmlWriter)
+	public var ids(default, null) = new Array<String>();
+	
+	public function new(?idPrefix:String, gradients:Array<Gradient>, xml:XmlWriter)
 	{
+		this.idPrefix = idPrefix;
 		this.gradients = gradients;
 		this.xml = xml;
 	}
@@ -135,6 +140,12 @@ class ShapePathsRender
 	{
 		if (d != "")
 		{
+			if (idPrefix != null)
+			{
+				var id = idPrefix + ids.length;
+				ids.push(id);
+				attributes.unshift({ name:"id", value:id });
+			}
 			xml.begin("path", attributes).attr("d", d).end();
 		}
 		

@@ -1295,30 +1295,19 @@ svgexporter.ShapeExporter.prototype = {
 			}
 		}
 	}
-	,exportContours: function(shape,xml) {
-		var render = new svgexporter.ShapePathsRender(this.gradients,xml);
-		var _g = 0;
-		var _g1 = shape.polygons;
-		while(_g < _g1.length) {
-			var polygon = _g1[_g];
-			++_g;
-			var _g2 = 0;
-			var _g3 = polygon.contours;
-			while(_g2 < _g3.length) {
-				var contour = _g3[_g2];
-				++_g2;
-				contour.draw(render);
-			}
-		}
-	}
-	,'export': function(shape,xml) {
-		shape.draw(new svgexporter.ShapePathsRender(this.gradients,xml),null);
+	,'export': function(idPrefix,shape,xml) {
+		var render = new svgexporter.ShapePathsRender(idPrefix,this.gradients,xml);
+		shape.draw(render,null);
+		return render.ids;
 	}
 	,__class__: svgexporter.ShapeExporter
 };
-svgexporter.ShapePathsRender = function(gradients,xml) {
+svgexporter.ShapePathsRender = function(idPrefix,gradients,xml) {
+	this.ids = new Array();
 	this.d = "";
 	this.attributes = new Array();
+	this.idPrefix = null;
+	this.idPrefix = idPrefix;
 	this.gradients = gradients;
 	this.xml = xml;
 };
@@ -1416,7 +1405,14 @@ svgexporter.ShapePathsRender.prototype = {
 		return this;
 	}
 	,finishPath: function() {
-		if(this.d != "") this.xml.begin("path",this.attributes).attr("d",this.d).end();
+		if(this.d != "") {
+			if(this.idPrefix != null) {
+				var id = this.idPrefix + this.ids.length;
+				this.ids.push(id);
+				this.attributes.unshift({ name : "id", value : id});
+			}
+			this.xml.begin("path",this.attributes).attr("d",this.d).end();
+		}
 		this.attributes = [];
 		this.d = "";
 	}
@@ -1426,10 +1422,10 @@ svgexporter.ShapePathsRender.prototype = {
 	,__class__: svgexporter.ShapePathsRender
 };
 svgexporter.SvgExporter = function(library) {
+	this.allShapes = [];
+	this.shapePaths = new haxe.ds.ObjectMap();
 	this.layerItems = new haxe.ds.ObjectMap();
 	this.shapeExporter = new svgexporter.ShapeExporter();
-	this.svgGroups = new Array();
-	this.svgClipPaths = new Array();
 	this.library = library;
 };
 svgexporter.SvgExporter.__name__ = true;
@@ -1438,55 +1434,59 @@ svgexporter.SvgExporter.asInstance = function(element) {
 };
 svgexporter.SvgExporter.prototype = {
 	'export': function(xml) {
-		var _g = this;
+		var _g1 = this;
 		var scene = this.library.getSceneItem();
-		var items = this.library.getItems();
-		xml.begin("defs");
-		this.iterateMovieClipThree(scene,null,function(mc,insideMask) {
-			if(insideMask) {
-				if(HxOverrides.indexOf(_g.svgClipPaths,mc,0) < 0) _g.svgClipPaths.push(mc);
-			} else if(HxOverrides.indexOf(_g.svgGroups,mc,0) < 0) _g.svgGroups.push(mc);
-		},function(shape,insideMask1) {
-			if(!insideMask1) _g.shapeExporter.exportGradients(shape,xml);
+		var items = this.library.getItems().filter(function(_) {
+			return js.Boot.__instanceof(_,nanofl.engine.libraryitems.MovieClipItem);
 		});
-		var _g1 = 0;
-		var _g11 = this.svgClipPaths;
-		while(_g1 < _g11.length) {
-			var mc1 = _g11[_g1];
-			++_g1;
-			this.exportLayersAsClipPaths(mc1,null,xml);
+		var sceneWithItems = [scene].concat(items);
+		xml.begin("defs");
+		var _g = 0;
+		while(_g < sceneWithItems.length) {
+			var mc = sceneWithItems[_g];
+			++_g;
+			this.iterateMovieClipKeyFrames(mc,function(layerIndex,keyFrame) {
+				var shape = keyFrame.getShape(false);
+				if(shape != null) {
+					if(HxOverrides.indexOf(_g1.allShapes,shape,0) < 0) _g1.allShapes.push(shape);
+					_g1.shapeExporter.exportGradients(shape,xml);
+				}
+			});
 		}
 		var _g2 = 0;
-		var _g12 = this.svgClipPaths;
-		while(_g2 < _g12.length) {
-			var mc2 = _g12[_g2];
+		while(_g2 < sceneWithItems.length) {
+			var mc1 = sceneWithItems[_g2];
 			++_g2;
-			this.exportSvgClipPath(mc2,xml);
+			this.findShapes(mc1,null,function(shape1,matrix,insideMask,baseID) {
+				if(insideMask && !(_g1.shapePaths.h.__keys__[shape1.__id__] != null)) {
+					var value = _g1.shapeExporter["export"](baseID,shape1,xml);
+					_g1.shapePaths.set(shape1,value);
+				}
+			});
 		}
 		var _g3 = 0;
-		var _g13 = [scene].concat(this.svgGroups);
-		while(_g3 < _g13.length) {
-			var mc3 = _g13[_g3];
+		while(_g3 < sceneWithItems.length) {
+			var mc2 = sceneWithItems[_g3];
 			++_g3;
-			this.exportLayersAsClipPaths(mc3,"mask",xml);
+			this.exportLayersAsClipPaths(mc2,xml);
 		}
 		var _g4 = 0;
-		var _g14 = this.svgGroups;
-		while(_g4 < _g14.length) {
-			var mc4 = _g14[_g4];
+		while(_g4 < items.length) {
+			var mc3 = items[_g4];
 			++_g4;
-			this.exportSvgGroup(mc4,xml);
+			this.exportSvgGroup(mc3,xml);
 		}
 		xml.end();
 		this.exportSvgGroup(scene,xml);
 	}
-	,exportLayersAsClipPaths: function(mc,layerType,xml) {
+	,exportLayersAsClipPaths: function(mc,xml) {
+		var _g4 = this;
 		var _g1 = 0;
 		var _g = mc.layers.length;
 		while(_g1 < _g) {
 			var i = _g1++;
 			var layer = mc.layers[i];
-			if(!(this.layerItems.h.__keys__[layer.__id__] != null) && (layerType == null || layer.type == layerType) && layer.keyFrames.length > 0) {
+			if(!(this.layerItems.h.__keys__[layer.__id__] != null) && layer.type == "mask" && layer.keyFrames.length > 0) {
 				var layerID = mc.namePath + "_layer" + i;
 				this.layerItems.set(layer,layerID);
 				xml.begin("clipPath").attr("id",layerID);
@@ -1495,7 +1495,9 @@ svgexporter.SvgExporter.prototype = {
 				while(_g2 < _g3.length) {
 					var element = _g3[_g2];
 					++_g2;
-					this.exportElement(element,true,xml);
+					if(js.Boot.__instanceof(element,nanofl.engine.elements.ShapeElement)) this.exportExistShapeElement(element,null,xml); else if(js.Boot.__instanceof(element,nanofl.engine.elements.Instance) && js.Boot.__instanceof(element.symbol,nanofl.engine.libraryitems.MovieClipItem)) this.findShapes(element.symbol,element.matrix,function(shape,matrix,insideMask,baseID) {
+						_g4.exportExistShapeElement(shape,matrix,xml);
+					});
 				}
 				xml.end();
 			}
@@ -1517,7 +1519,7 @@ svgexporter.SvgExporter.prototype = {
 					while(_g2 < _g3.length) {
 						var element = _g3[_g2];
 						++_g2;
-						this.exportElement(element,false,xml);
+						this.exportElement(element,xml);
 					}
 				}
 				xml.end();
@@ -1525,34 +1527,12 @@ svgexporter.SvgExporter.prototype = {
 		}
 		xml.end();
 	}
-	,exportSvgClipPath: function(mc,xml) {
-		xml.begin("clipPath").attr("id",this.mapNamePath(mc.namePath,true));
-		var _g = 0;
-		var _g1 = mc.layers;
-		while(_g < _g1.length) {
-			var layer = _g1[_g];
-			++_g;
-			if(layer.type == "normal" && layer.keyFrames.length > 0) {
-				xml.begin("use");
-				xml.attr("title",layer.name);
-				xml.attr("xlink:href","#" + this.layerItems.h[layer.__id__]);
-				if(layer.parentLayer != null && layer.parentLayer.type == "mask") xml.attr("clip-path","url(#" + this.layerItems.h[layer.parentLayer.__id__] + ")");
-				xml.end();
-			}
-		}
-		xml.end();
-	}
-	,exportElement: function(element,insideClipPath,xml) {
+	,exportElement: function(element,xml) {
 		if(js.Boot.__instanceof(element,nanofl.engine.elements.Instance)) {
 			var instance = element;
 			xml.begin("use");
-			if(!instance.matrix.isIdentity()) {
-				if(instance.matrix.a == 1 && instance.matrix.b == 0 && instance.matrix.c == 0 && instance.matrix.d == 1) {
-					xml.attr("x",instance.matrix.tx);
-					xml.attr("y",instance.matrix.ty);
-				} else xml.attr("transform","matrix(" + instance.matrix.toArray().join(",") + ")");
-			}
-			xml.attr("xlink:href","#" + this.mapNamePath(instance.symbol.namePath,insideClipPath));
+			xml.attr("xlink:href","#" + instance.symbol.namePath);
+			this.exportMatrix(instance.matrix,xml);
 			xml.end();
 		} else if(js.Boot.__instanceof(element,nanofl.engine.elements.GroupElement)) {
 			var group = element;
@@ -1561,47 +1541,63 @@ svgexporter.SvgExporter.prototype = {
 			while(_g < _g1.length) {
 				var e = _g1[_g];
 				++_g;
-				this.exportElement(e,insideClipPath,xml);
+				this.exportElement(e,xml);
 			}
-		} else if(js.Boot.__instanceof(element,nanofl.engine.elements.ShapeElement)) this.shapeExporter["export"](element,xml); else console.log("Unsupported element: " + element.toString());
+		} else if(js.Boot.__instanceof(element,nanofl.engine.elements.ShapeElement)) {
+			if(this.shapePaths.h.__keys__[element.__id__] != null) this.exportExistShapeElement(element,null,xml); else this.shapeExporter["export"](null,element,xml);
+		} else console.log("Unsupported element: " + element.toString());
 	}
-	,iterateMovieClipThree: function(item,layerType,onMovieClip,onShape,insideMask) {
-		if(insideMask == null) insideMask = false;
+	,exportExistShapeElement: function(shape,matrix,xml) {
 		var _g = 0;
-		var _g1 = item.layers;
+		var _g1 = this.shapePaths.h[shape.__id__];
 		while(_g < _g1.length) {
-			var layer = _g1[_g];
+			var pathID = _g1[_g];
 			++_g;
-			if(layerType == null || layer.type == layerType) {
-				if(layer.keyFrames.length > 0) {
-					if(onShape != null) {
-						var shape = layer.keyFrames[0].getShape(false);
-						if(shape != null) onShape(shape,insideMask || layerType == "mask");
-					}
-					this.iterateMovieClipThreeInner(layer.keyFrames[0].elements,layerType,onMovieClip,onShape,insideMask || layerType == "mask");
-				}
-			}
+			xml.begin("use");
+			xml.attr("xlink:href","#" + pathID);
+			if(matrix != null) this.exportMatrix(matrix,xml);
+			xml.end();
 		}
 	}
-	,iterateMovieClipThreeInner: function(elements,layerType,onMovieClip,onShape,insideMask) {
+	,findShapes: function(item,matrix,callb,insideMask) {
+		if(insideMask == null) insideMask = false;
+		var _g = this;
+		if(matrix == null) matrix = new nanofl.engine.geom.Matrix();
+		this.iterateMovieClipKeyFrames(item,function(layerIndex,keyFrame) {
+			var localInsideMask = insideMask || item.layers[layerIndex].type == "mask";
+			var shape = keyFrame.getShape(false);
+			if(shape != null) callb(shape,matrix,localInsideMask,item.namePath + "_layer" + layerIndex + "_shape");
+			_g.findShapesInner(keyFrame.elements,callb,localInsideMask,matrix);
+		});
+	}
+	,findShapesInner: function(elements,callb,insideMask,matrix) {
 		var _g = 0;
 		while(_g < elements.length) {
 			var element = elements[_g];
 			++_g;
-			if(js.Boot.__instanceof(element,nanofl.engine.elements.GroupElement)) this.iterateMovieClipThreeInner(element.getChildren(),layerType,onMovieClip,onShape,insideMask); else if(js.Boot.__instanceof(element,nanofl.engine.elements.Instance) && js.Boot.__instanceof(element.symbol,nanofl.engine.libraryitems.MovieClipItem)) {
-				if(onMovieClip != null) onMovieClip(element.symbol,insideMask);
-				this.iterateMovieClipThree(element.symbol,layerType,onMovieClip,onShape,insideMask);
+			if(js.Boot.__instanceof(element,nanofl.engine.elements.GroupElement)) this.findShapesInner(element.getChildren(),callb,insideMask,matrix); else if(js.Boot.__instanceof(element,nanofl.engine.elements.Instance) && js.Boot.__instanceof(element.symbol,nanofl.engine.libraryitems.MovieClipItem)) {
+				var m = matrix.clone();
+				m.appendMatrix(element.matrix);
+				this.findShapes(element.symbol,m,callb,insideMask);
 			}
 		}
 	}
-	,mapNamePath: function(namePath,insideClipPath) {
-		if(insideClipPath && ((function(_e) {
-			return function(f) {
-				return Lambda.exists(_e,f);
-			};
-		})(this.svgGroups))(function(_) {
-			return _.namePath == namePath;
-		})) return namePath + "_clipPath"; else return namePath;
+	,iterateMovieClipKeyFrames: function(item,callb) {
+		var _g1 = 0;
+		var _g = item.layers.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var layer = item.layers[i];
+			if(layer.keyFrames.length > 0) callb(i,layer.keyFrames[0]);
+		}
+	}
+	,exportMatrix: function(matrix,xml) {
+		if(!matrix.isIdentity()) {
+			if(matrix.a == 1 && matrix.b == 0 && matrix.c == 0 && matrix.d == 1) {
+				xml.attr("x",matrix.tx);
+				xml.attr("y",matrix.ty);
+			} else xml.attr("transform","matrix(" + matrix.toArray().join(",") + ")");
+		}
 	}
 	,__class__: svgexporter.SvgExporter
 };
@@ -1631,6 +1627,17 @@ if(Array.prototype.map == null) Array.prototype.map = function(f) {
 		a[i] = f(this[i]);
 	}
 	return a;
+};
+if(Array.prototype.filter == null) Array.prototype.filter = function(f1) {
+	var a1 = [];
+	var _g11 = 0;
+	var _g2 = this.length;
+	while(_g11 < _g2) {
+		var i1 = _g11++;
+		var e = this[i1];
+		if(f1(e)) a1.push(e);
+	}
+	return a1;
 };
 SvgExporterPlugin.embeddedIcon = "\r\niVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAC\r\n5ElEQVQozz2LbUxbZQBGn7ctLVDpZQKi4KJjAYTGLBIEYU2gxTlKhAhZ0MQxZupMNoPBBbP5gX/Q\r\naKIGTDSaiM5snciHwB0lHTKENWxZMAxi1LBunSKDNh2jwAps7e199kPnv5Occ0ASqqoKkiIWi2lI\r\noqev356akhJ4cFty8JSz6wWSuO/+a/E/THgmnz7cfLx1QB62PZmf+/tIaxbPt2XTnLvD2z/oqjjy\r\n5tvvjY5NlNyfQRKeyYuFaQ8I5WhlAh/dplVMRr0S6itVNwd3q6lSvJJu0igt9kSmGcGfz43vJgkN\r\nAJwZGrXWW5O0n31ftfXlG3lifSOi9c1viL9ubInltTvaz1/PFZ+csG81ViVDPjNSAeDfsbj4qdne\r\n8XW4v5qLr9mbLj4++DiUGBGJqmjb/xherH5EnPvGa3CeXcUzxQUzAIDu3p+qzE/s9D6UbFABsOPQ\r\nTvK8jVHZwqhsIT02fn0kmwCYJhnU/JwdvpOnfqgVGRmZvvaXdFkFWYkcuxwQkiTBkmeEMcEAIQQ2\r\nNu/g4pVN3AqFUL4rnVeWIuK1724vaQXUD2eurug12ytF7aEP8OPZWQSTrHBOLGPwchSRjGpc+OMm\r\nDhz9AkPTW6Ld6WFg5W68ABC2WCzGru5eDMgu7LFasBlew6h7COHwbdTVvwytzoBL07/heftzeNXx\r\nCtxut6IF8K61vDyupKQYDfvsmByToY1LQEFhISSThLsRBaYkI/bvq8HUr1NY8gcQDAYJvT4uLIRg\r\nT3cXSbLj049oNpu5eOMfeuf+ZMtbx3jpgofvNDtIkgcaGwkgCiFEODMzkznZ2Xw41US/389nK2y8\r\ndtVLv3+J9sq9vO7zEQBH3MNsbX2fACIA4CstLWUoFFI7O7/lwsICkyWJ47+McXZmhvEGPf+en6fz\r\n9Gn6/QHVZrMRwCI0Gs1BAKt1dXUxl8sVLSsrUwAoDodDaWpqUgAoRUVFiizL0YaGhhiAdZ1O57gH\r\nue+ALxPHGYEAAAAASUVORK5CYII=\r\n";
 haxe.ds.ObjectMap.count = 0;

@@ -52,17 +52,10 @@ class ShapeExporter
 		}
 	}
 	
-	public function exportContours(shape:ShapeElement, xml:XmlWriter)
+	public function export(idPrefix:String, shape:ShapeElement, xml:XmlWriter) : Array<String>
 	{
-		var render = new ShapePathsRender(gradients, xml);
-		for (polygon in shape.polygons)
-		{
-			for (contour in polygon.contours) contour.draw(render);
-		}
-	}
-	
-	public function export(shape:ShapeElement, xml:XmlWriter)
-	{
-		shape.draw(new ShapePathsRender(gradients, xml), null);
+		var render = new ShapePathsRender(idPrefix, gradients, xml);
+		shape.draw(render, null);
+		return render.ids;
 	}
 }

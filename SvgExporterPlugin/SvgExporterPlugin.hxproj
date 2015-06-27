@@ -43,7 +43,8 @@
   <!-- Executed before build -->
   <preBuildCommand />
   <!-- Executed after build -->
-  <postBuildCommand alwaysRun="False" />
+  <postBuildCommand alwaysRun="False">cmd /C "IF EXIST support IF NOT EXIST ..\bin\$(ProjectName) mkdir  ..\bin\$(ProjectName)"
+cmd /C "IF EXIST support xcopy /E /Q /Y support ..\bin\$(ProjectName) &gt; nul"</postBuildCommand>
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
