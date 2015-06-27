@@ -88,7 +88,7 @@ class SvgGroup extends SvgDisplayObject
 	
 	function loadGradient(node:HtmlNodeElement) : Void
 	{
-		var baseID = XmlTools.getIdFromXlink(node, "xlink:href");
+		var baseID = XmlTools.getIdFromXlink(node);
 		if (baseID == null || svg.gradients.exists(baseID))
 		{
 			var id = node.getAttribute("id");

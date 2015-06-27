@@ -130,9 +130,9 @@ class XmlTools
 		return s.startsWith("svg:") ? s.substring("svg:".length) : s;
 	}
 	
-	public static function getIdFromXlink(node:HtmlNodeElement, attrName="xlink:href") : String
+	public static function getIdFromXlink(node:HtmlNodeElement) : String
 	{
-		var xlink = StringTools.trim(node.getAttr(attrName, ""));
+		var xlink = StringTools.trim(node.getAttr("xlink:href", ""));
 		if (xlink == "") return  null;
 		if (!xlink.startsWith("#"))
 		{

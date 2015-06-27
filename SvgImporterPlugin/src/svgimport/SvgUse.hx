@@ -13,7 +13,7 @@ class SvgUse extends SvgDisplayObject
 	{
 		super(svg, node, baseStyles, id);
 		
-		groupID = XmlTools.getIdFromXlink(node, "xlink:href");
+		groupID = XmlTools.getIdFromXlink(node);
 		
 		if (groupID == null)
 		{

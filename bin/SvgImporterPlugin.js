@@ -1663,7 +1663,7 @@ svgimport.SvgGroup.prototype = $extend(svgimport.SvgDisplayObject.prototype,{
 		}
 	}
 	,loadGradient: function(node) {
-		var baseID = svgimport.XmlTools.getIdFromXlink(node,"xlink:href");
+		var baseID = svgimport.XmlTools.getIdFromXlink(node);
 		if(baseID == null || this.svg.gradients.exists(baseID)) {
 			var id = node.getAttribute("id");
 			if(!this.svg.gradients.exists(id)) {
@@ -2396,7 +2396,7 @@ svgimport.SvgTextExporter.prototype = $extend(svgimport.BaseExporter.prototype,{
 });
 svgimport.SvgUse = function(svg,node,baseStyles) {
 	svgimport.SvgDisplayObject.call(this,svg,node,baseStyles,this.id);
-	this.groupID = svgimport.XmlTools.getIdFromXlink(node,"xlink:href");
+	this.groupID = svgimport.XmlTools.getIdFromXlink(node);
 	if(this.groupID == null) {
 		console.log("Use: 'xlink:href' attribute must be specified.");
 		return;
@@ -2596,9 +2596,8 @@ svgimport.XmlTools.getStrokeStyle = function(node,key,styles,gradients) {
 svgimport.XmlTools.normalizeTag = function(s) {
 	if(StringTools.startsWith(s,"svg:")) return s.substring("svg:".length); else return s;
 };
-svgimport.XmlTools.getIdFromXlink = function(node,attrName) {
-	if(attrName == null) attrName = "xlink:href";
-	var xlink = StringTools.trim(htmlparser.HtmlParserTools.getAttr(node,attrName,""));
+svgimport.XmlTools.getIdFromXlink = function(node) {
+	var xlink = StringTools.trim(htmlparser.HtmlParserTools.getAttr(node,"xlink:href",""));
 	if(xlink == "") return null;
 	if(!StringTools.startsWith(xlink,"#")) {
 		console.log("WARNING: Unkown xlink syntax ('" + xlink + "').");
