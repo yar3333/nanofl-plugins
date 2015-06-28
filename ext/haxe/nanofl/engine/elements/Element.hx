@@ -11,7 +11,7 @@ extern class Element
 	function removeInstance(namePath:String) : Void;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	function hasInstance(namePath:String) : Bool;
-	function save(out:nanofl.engine.XmlWriter) : Void;
+	function save(out:htmlparser.XmlBuilder) : Void;
 	function clone() : nanofl.engine.elements.Element;
 	function translate(dx:Float, dy:Float) : Void;
 	function createDisplayObject(frameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.DisplayObject;

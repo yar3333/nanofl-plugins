@@ -6,7 +6,7 @@ extern class MotionTween
 	var easing : Int;
 	var rotateCount : Int;
 	var orientToPath : Bool;
-	function save(out:nanofl.engine.XmlWriter) : Void;
+	function save(out:htmlparser.XmlBuilder) : Void;
 	function apply(frameSubIndex:Int) : Array<nanofl.engine.TweenedElement>;
 	function clone() : nanofl.engine.tweens.MotionTween;
 	function isGood() : Bool;

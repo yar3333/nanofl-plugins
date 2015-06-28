@@ -5,7 +5,7 @@ extern class FilterDef
 	function new(name:String, params:Dynamic) : Void;
 	var name(default, null) : String;
 	var params(default, never) : Dynamic;
-	function save(out:nanofl.engine.XmlWriter) : Void;
+	function save(out:htmlparser.XmlBuilder) : Void;
 	function equ(filter:nanofl.engine.FilterDef) : Bool;
 	function clone() : nanofl.engine.FilterDef;
 	function cloneTweened(t:Float, finish:nanofl.engine.FilterDef) : nanofl.engine.FilterDef;

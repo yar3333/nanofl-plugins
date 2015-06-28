@@ -9,7 +9,7 @@ extern class LinearFill extends nanofl.engine.fills.BaseFill implements nanofl.e
 	var y0 : Float;
 	var x1 : Float;
 	var y1 : Float;
-	function save(out:nanofl.engine.XmlWriter) : Void;
+	function save(out:htmlparser.XmlBuilder) : Void;
 	function clone() : nanofl.engine.fills.IFill;
 	function applyAlpha(alpha:Float) : Void;
 	function begin(g:nanofl.engine.Render) : Void;

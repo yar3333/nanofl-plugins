@@ -6,7 +6,7 @@ extern class Polygon implements nanofl.engine.ISelectable
 	var contours(default, null) : Array<nanofl.engine.geom.Contour>;
 	var fill : nanofl.engine.fills.IFill;
 	var selected : Bool;
-	function save(fills:Array<nanofl.engine.fills.IFill>, out:nanofl.engine.XmlWriter) : Void;
+	function save(fills:Array<nanofl.engine.fills.IFill>, out:htmlparser.XmlBuilder) : Void;
 	function draw(g:nanofl.engine.Render, scaleSelection:Float) : Void;
 	function translate(dx:Float, dy:Float) : Void;
 	function isPointInside(px:Float, py:Float) : Bool;
@@ -23,7 +23,7 @@ extern class Polygon implements nanofl.engine.ISelectable
 	function getPointInside() : nanofl.engine.geom.Point;
 	function clone() : nanofl.engine.geom.Polygon;
 	function replaceEdge(search:nanofl.engine.geom.Edge, replacement:Array<nanofl.engine.geom.Edge>) : Void;
-	function export(out:nanofl.engine.XmlWriter, fills:Array<nanofl.engine.fills.IFill>) : Void;
+	function export(out:htmlparser.XmlBuilder, fills:Array<nanofl.engine.fills.IFill>) : Void;
 	function split() : Array<nanofl.engine.geom.Polygon>;
 	function equ(p:nanofl.engine.geom.Polygon) : Bool;
 	function normalize() : Void;

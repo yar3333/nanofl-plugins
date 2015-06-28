@@ -25,7 +25,7 @@ extern class Layer
 	function getParentGuide(frameIndex:Int) : nanofl.engine.Guide;
 	function getChildLayers() : Array<nanofl.engine.Layer>;
 	function getTweenedElements(frameIndex:Int) : Array<nanofl.engine.TweenedElement>;
-	function save(out:nanofl.engine.XmlWriter) : Void;
+	function save(out:htmlparser.XmlBuilder) : Void;
 	function clone() : nanofl.engine.Layer;
 	function duplicate(keyFrames:nanofl.engine.ArrayRO<nanofl.engine.KeyFrame>, parentIndex:Int) : nanofl.engine.Layer;
 	function getIndex() : Int;

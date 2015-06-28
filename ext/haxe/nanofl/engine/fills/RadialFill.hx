@@ -10,7 +10,7 @@ extern class RadialFill extends nanofl.engine.fills.BaseFill implements nanofl.e
 	var r : Float;
 	var fx : Float;
 	var fy : Float;
-	function save(out:nanofl.engine.XmlWriter) : Void;
+	function save(out:htmlparser.XmlBuilder) : Void;
 	function clone() : nanofl.engine.fills.IFill;
 	function applyAlpha(alpha:Float) : Void;
 	function begin(g:nanofl.engine.Render) : Void;

@@ -10,7 +10,7 @@ extern class TextElement extends nanofl.engine.elements.Element
 	var border : Bool;
 	var textRuns : Array<nanofl.TextRun>;
 	var newTextFormat : nanofl.TextRun;
-	override function save(out:nanofl.engine.XmlWriter) : Void;
+	override function save(out:htmlparser.XmlBuilder) : Void;
 	function getText() : String;
 	override function createDisplayObject(frameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.DisplayObject;
 	override function updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.DisplayObject;

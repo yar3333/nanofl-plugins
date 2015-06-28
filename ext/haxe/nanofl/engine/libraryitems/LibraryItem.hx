@@ -8,7 +8,7 @@ extern class LibraryItem
 	function clone() : nanofl.engine.libraryitems.LibraryItem;
 	function loadProperties(xml:htmlparser.HtmlNodeElement) : Void;
 	function save(fileApi:nanofl.engine.FileApi) : Void;
-	function saveToXml(out:nanofl.engine.XmlWriter) : Void;
+	function saveToXml(out:htmlparser.XmlBuilder) : Void;
 	function getFilePathTemplate() : String;
 	function preload(ready:Void -> Void) : Void;
 	function removeInstance(namePath:String) : Void;

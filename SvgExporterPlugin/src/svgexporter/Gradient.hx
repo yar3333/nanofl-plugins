@@ -1,5 +1,6 @@
 package svgexporter;
 
+import htmlparser.XmlBuilder;
 import nanofl.engine.fills.BitmapFill;
 import nanofl.engine.fills.IFill;
 import nanofl.engine.fills.LinearFill;
@@ -8,7 +9,6 @@ import nanofl.engine.strokes.BitmapStroke;
 import nanofl.engine.strokes.IStroke;
 import nanofl.engine.strokes.LinearStroke;
 import nanofl.engine.strokes.RadialStroke;
-import nanofl.engine.XmlWriter;
 
 class Gradient
 {
@@ -44,7 +44,7 @@ class Gradient
 		return true;
 	}
 	
-	public function write(id:Int, xml:XmlWriter)
+	public function write(id:Int, xml:XmlBuilder)
 	{
 		xml.begin(tag);
 		

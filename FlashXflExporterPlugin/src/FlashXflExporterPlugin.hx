@@ -1,9 +1,9 @@
+import htmlparser.XmlBuilder;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IExporterPlugin;
-import nanofl.engine.XmlWriter;
 
 class FlashXflExporterPlugin implements IExporterPlugin
 {
@@ -24,7 +24,7 @@ class FlashXflExporterPlugin implements IExporterPlugin
 		var scene = library.getSceneItem();
 		trace("scene.layers.length = " + scene.layers.length);
 		
-		var xml = new XmlWriter();
+		var xml = new XmlBuilder();
 		xml.begin("root").attr("a", "123");
 			xml.begin("inner");
 			xml.content("text");

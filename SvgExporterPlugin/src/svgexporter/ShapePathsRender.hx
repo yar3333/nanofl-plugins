@@ -1,7 +1,7 @@
 package svgexporter;
 
+import htmlparser.XmlBuilder;
 import nanofl.engine.Render;
-import nanofl.engine.XmlWriter;
 using stdlib.Lambda;
 using Slambda;
 
@@ -10,14 +10,14 @@ class ShapePathsRender
 	var idPrefix = null;
 	
 	var gradients : Array<Gradient>;
-	var xml : XmlWriter;
+	var xml : XmlBuilder;
 	
 	var attributes = new Array<{ name:String, value:Dynamic }>();
 	var d = "";
 	
 	public var ids(default, null) = new Array<String>();
 	
-	public function new(?idPrefix:String, gradients:Array<Gradient>, xml:XmlWriter)
+	public function new(?idPrefix:String, gradients:Array<Gradient>, xml:XmlBuilder)
 	{
 		this.idPrefix = idPrefix;
 		this.gradients = gradients;

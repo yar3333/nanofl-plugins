@@ -11,7 +11,7 @@ extern class ColorEffectAdvanced extends nanofl.engine.coloreffects.ColorEffect
 	var greenOffset : Float;
 	var blueOffset : Float;
 	var alphaOffset : Float;
-	override function save(out:nanofl.engine.XmlWriter) : Void;
+	override function save(out:htmlparser.XmlBuilder) : Void;
 	override function apply(obj:createjs.DisplayObject) : Void;
 	override function clone() : nanofl.engine.coloreffects.ColorEffectAdvanced;
 	override function getNeutralClone() : nanofl.engine.coloreffects.ColorEffect;

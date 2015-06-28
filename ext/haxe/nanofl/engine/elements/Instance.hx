@@ -9,7 +9,7 @@ extern class Instance extends nanofl.engine.elements.Element implements nanofl.e
 	var filters : Array<nanofl.engine.FilterDef>;
 	var symbol(default, never) : nanofl.engine.libraryitems.InstancableItem;
 	override function getType() : String;
-	override function save(out:nanofl.engine.XmlWriter) : Void;
+	override function save(out:htmlparser.XmlBuilder) : Void;
 	override function clone() : nanofl.engine.elements.Element;
 	override function hasInstance(namePath:String) : Bool;
 	override function swapInstance(oldNamePath:String, newNamePath:String) : Void;

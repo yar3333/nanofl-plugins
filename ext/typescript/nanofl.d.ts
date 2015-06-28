@@ -6647,7 +6647,7 @@ declare module nanofl.engine.geom
 	{
 		constructor(edges:nanofl.engine.geom.Edge[]);
 		edges : nanofl.engine.geom.Edge[];
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		draw(g:nanofl.engine.Render) : void;
 		translate(dx:number, dy:number) : void;
 		isPointInside(px:number, py:number) : boolean;
@@ -6734,8 +6734,8 @@ declare module nanofl.engine.geom
 		static exclude(edges:nanofl.engine.geom.Edge[], exclude:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Edge[];
 		static draw<T>(edges:T[], g:nanofl.engine.Render, fixLineJoinsInClosedContours:boolean) : void;
 		static getBounds<T>(edges:T[], bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
-		static export<T>(edges:T[], out:nanofl.engine.XmlWriter) : void;
-		static exportStroked(edges:nanofl.engine.geom.StrokeEdge[], out:nanofl.engine.XmlWriter) : void;
+		static export<T>(edges:T[], out:htmlparser.XmlBuilder) : void;
+		static exportStroked(edges:nanofl.engine.geom.StrokeEdge[], out:htmlparser.XmlBuilder) : void;
 		static load(s:string) : nanofl.engine.geom.Edge[];
 		static save(edges:nanofl.engine.geom.Edge[]) : string;
 		static replace<T>(edges:T[], search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[]) : number;
@@ -6773,7 +6773,7 @@ declare module nanofl.engine.geom
 		d : number;
 		tx : number;
 		ty : number;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		decompose() : { rotation : number; scaleX : number; scaleY : number; skewX : number; skewY : number; x : number; y : number; };
 		setMatrix(m:{ a : number; b : number; c : number; d : number; tx : number; ty : number; }) : nanofl.engine.geom.Matrix;
 		isIdentity() : boolean;
@@ -6864,7 +6864,7 @@ declare module nanofl.engine.geom
 		contours : nanofl.engine.geom.Contour[];
 		fill : nanofl.engine.fills.IFill;
 		selected : boolean;
-		save(fills:nanofl.engine.fills.IFill[], out:nanofl.engine.XmlWriter) : void;
+		save(fills:nanofl.engine.fills.IFill[], out:htmlparser.XmlBuilder) : void;
 		draw(g:nanofl.engine.Render, scaleSelection:number) : void;
 		translate(dx:number, dy:number) : void;
 		isPointInside(px:number, py:number) : boolean;
@@ -6881,7 +6881,7 @@ declare module nanofl.engine.geom
 		getPointInside() : nanofl.engine.geom.Point;
 		clone() : nanofl.engine.geom.Polygon;
 		replaceEdge(search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[]) : void;
-		export(out:nanofl.engine.XmlWriter, fills:nanofl.engine.fills.IFill[]) : void;
+		export(out:htmlparser.XmlBuilder, fills:nanofl.engine.fills.IFill[]) : void;
 		split() : nanofl.engine.geom.Polygon[];
 		equ(p:nanofl.engine.geom.Polygon) : boolean;
 		normalize() : void;
@@ -6948,7 +6948,7 @@ declare module nanofl.engine.geom
 	export class StrokeEdges
 	{
 		static load(node:htmlparser.HtmlNodeElement, strokes:nanofl.engine.strokes.IStroke[]) : nanofl.engine.geom.StrokeEdge[];
-		static save(edges:nanofl.engine.geom.StrokeEdge[], strokes:nanofl.engine.strokes.IStroke[], out:nanofl.engine.XmlWriter) : void;
+		static save(edges:nanofl.engine.geom.StrokeEdge[], strokes:nanofl.engine.strokes.IStroke[], out:htmlparser.XmlBuilder) : void;
 		static getBounds(edges:nanofl.engine.geom.StrokeEdge[], bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 		static processStrokes(edges:nanofl.engine.geom.StrokeEdge[], callb:(arg:nanofl.engine.strokes.IStroke) => void) : void;
 		static drawSorted(edges:nanofl.engine.geom.StrokeEdge[], g:nanofl.engine.Render, scaleSelection:number) : void;
@@ -7048,7 +7048,7 @@ declare module nanofl.engine.strokes
 		equ(e:nanofl.engine.strokes.IStroke) : boolean;
 		applyAlpha(alpha:number) : void;
 		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.strokes.IStroke;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		setLibrary(library:nanofl.engine.Library) : void;
 		toString() : string;
@@ -7059,7 +7059,7 @@ declare module nanofl.engine.strokes
 		constructor(bitmapPath?:string, repeat?:string, thickness?:number, caps?:string, joints?:string, miterLimit?:number, ignoreScale?:boolean);
 		bitmapPath : string;
 		repeat : string;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		begin(g:nanofl.engine.Render) : void;
 		clone() : nanofl.engine.strokes.IStroke;
 		equ(e:nanofl.engine.strokes.IStroke) : boolean;
@@ -7078,7 +7078,7 @@ declare module nanofl.engine.strokes
 		y0 : number;
 		x1 : number;
 		y1 : number;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		begin(g:nanofl.engine.Render) : void;
 		clone() : nanofl.engine.strokes.IStroke;
 		equ(e:nanofl.engine.strokes.IStroke) : boolean;
@@ -7098,7 +7098,7 @@ declare module nanofl.engine.strokes
 		r : number;
 		fx : number;
 		fy : number;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		begin(g:nanofl.engine.Render) : void;
 		clone() : nanofl.engine.strokes.IStroke;
 		equ(e:nanofl.engine.strokes.IStroke) : boolean;
@@ -7111,7 +7111,7 @@ declare module nanofl.engine.strokes
 	export class SelectionStroke extends nanofl.engine.strokes.BaseStroke implements nanofl.engine.strokes.IStroke
 	{
 		constructor(base:nanofl.engine.strokes.IStroke, scale:number);
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		begin(g:nanofl.engine.Render) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		applyAlpha(alpha:number) : void;
@@ -7122,7 +7122,7 @@ declare module nanofl.engine.strokes
 	{
 		constructor(color?:string, thickness?:number, caps?:string, joints?:string, miterLimit?:number, ignoreScale?:boolean);
 		color : string;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		begin(g:nanofl.engine.Render) : void;
 		clone() : nanofl.engine.strokes.IStroke;
 		equ(e:nanofl.engine.strokes.IStroke) : boolean;
@@ -7659,7 +7659,7 @@ declare module nanofl.engine.elements
 		removeInstance(namePath:string) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		hasInstance(namePath:string) : boolean;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		clone() : nanofl.engine.elements.Element;
 		translate(dx:number, dy:number) : void;
 		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
@@ -7676,7 +7676,7 @@ declare module nanofl.engine.elements
 	export class Elements
 	{
 		static parse(base:htmlparser.HtmlNodeElement) : nanofl.engine.elements.Element[];
-		static save(elements:nanofl.engine.elements.Element[], out:nanofl.engine.XmlWriter) : void;
+		static save(elements:nanofl.engine.elements.Element[], out:htmlparser.XmlBuilder) : void;
 	}
 	
 	export class GroupElement extends nanofl.engine.elements.Element implements nanofl.engine.IPathElement
@@ -7688,7 +7688,7 @@ declare module nanofl.engine.elements
 		addElement(element:nanofl.engine.elements.Element) : void;
 		removeInstance(namePath:string) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		clone() : nanofl.engine.elements.Element;
 		getUsedItems() : nanofl.engine.libraryitems.LibraryItem[];
 		getUsedFilters() : string[];
@@ -7712,7 +7712,7 @@ declare module nanofl.engine.elements
 		filters : nanofl.engine.FilterDef[];
 		symbol : nanofl.engine.libraryitems.InstancableItem;
 		getType() : string;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		clone() : nanofl.engine.elements.Element;
 		hasInstance(namePath:string) : boolean;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
@@ -7737,7 +7737,7 @@ declare module nanofl.engine.elements
 		edges : nanofl.engine.geom.StrokeEdge[];
 		polygons : nanofl.engine.geom.Polygon[];
 		getType() : string;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		ensureNoTransform() : void;
 		draw(g:nanofl.engine.Render, scaleSelection:number) : void;
 		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
@@ -7789,7 +7789,7 @@ declare module nanofl.engine.elements
 	{
 		constructor(sprite:nanofl.engine.libraryitems.SpriteItem, index:number);
 		getType() : string;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		clone() : nanofl.engine.elements.Element;
 		getState() : nanofl.ide.undo.states.ElementState;
 		setState(state:nanofl.ide.undo.states.ElementState) : void;
@@ -7808,7 +7808,7 @@ declare module nanofl.engine.elements
 		border : boolean;
 		textRuns : nanofl.TextRun[];
 		newTextFormat : nanofl.TextRun;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		getText() : string;
 		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
 		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
@@ -7874,7 +7874,7 @@ declare module nanofl.engine.coloreffects
 		clone() : nanofl.engine.coloreffects.ColorEffect;
 		getNeutralClone() : nanofl.engine.coloreffects.ColorEffect;
 		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffect;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
 		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffect;
 		static equS(a:nanofl.engine.coloreffects.ColorEffect, b:nanofl.engine.coloreffects.ColorEffect) : boolean;
@@ -7891,7 +7891,7 @@ declare module nanofl.engine.coloreffects
 		greenOffset : number;
 		blueOffset : number;
 		alphaOffset : number;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		apply(obj:createjs.DisplayObject) : void;
 		clone() : nanofl.engine.coloreffects.ColorEffectAdvanced;
 		getNeutralClone() : nanofl.engine.coloreffects.ColorEffect;
@@ -7904,7 +7904,7 @@ declare module nanofl.engine.coloreffects
 	{
 		constructor(value:number);
 		value : number;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		apply(obj:createjs.DisplayObject) : void;
 		clone() : nanofl.engine.coloreffects.ColorEffectAlpha;
 		getNeutralClone() : nanofl.engine.coloreffects.ColorEffect;
@@ -7917,7 +7917,7 @@ declare module nanofl.engine.coloreffects
 	{
 		constructor(value:number);
 		value : number;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		apply(obj:createjs.DisplayObject) : void;
 		clone() : nanofl.engine.coloreffects.ColorEffectBrightness;
 		getNeutralClone() : nanofl.engine.coloreffects.ColorEffect;
@@ -7938,7 +7938,7 @@ declare module nanofl.engine.coloreffects
 		constructor(color:string, multiplier:number);
 		color : string;
 		multiplier : number;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		apply(obj:createjs.DisplayObject) : void;
 		clone() : nanofl.engine.coloreffects.ColorEffectTint;
 		getNeutralClone() : nanofl.engine.coloreffects.ColorEffect;
@@ -8047,6 +8047,19 @@ declare module htmlparser
 		static findOne(node:htmlparser.HtmlNodeElement, selector:string) : htmlparser.HtmlNodeElement;
 	}
 	
+	type XmlAttribute = htmlparser.HtmlAttribute;
+	
+	export class XmlBuilder
+	{
+		constructor();
+		xml : htmlparser.XmlDocument;
+		begin(tag:string, attrs?:{ value : any; name : string; }[]) : htmlparser.XmlBuilder;
+		end() : htmlparser.XmlBuilder;
+		attr(name:string, value:any, defValue?:any) : htmlparser.XmlBuilder;
+		content(s:string) : htmlparser.XmlBuilder;
+		toString() : string;
+	}
+	
 	export class XmlNodeElement extends htmlparser.HtmlNodeElement
 	{
 		constructor(name:string, attributes:htmlparser.HtmlAttribute[]);
@@ -8057,6 +8070,8 @@ declare module htmlparser
 	{
 		constructor(str?:string);
 	}
+	
+	type XmlNodeText = htmlparser.HtmlNodeText;
 	
 	export class XmlParser extends htmlparser.HtmlParser
 	{
@@ -8333,7 +8348,7 @@ declare module nanofl.engine
 		constructor(name:string, params:any);
 		name : string;
 		params : any;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		equ(filter:nanofl.engine.FilterDef) : boolean;
 		clone() : nanofl.engine.FilterDef;
 		cloneTweened(t:number, finish:nanofl.engine.FilterDef) : nanofl.engine.FilterDef;
@@ -8461,7 +8476,7 @@ declare module nanofl.engine
 		getParentLayerFrame(frameSubIndex:number) : nanofl.engine.Frame;
 		hasGoodMotionTween() : boolean;
 		getParentGuide(frameSubIndex:number) : nanofl.engine.Guide;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		getIndex() : number;
 		getUsedItems() : nanofl.engine.libraryitems.LibraryItem[];
 		getUsedFilters() : string[];
@@ -8493,7 +8508,7 @@ declare module nanofl.engine
 		getParentGuide(frameIndex:number) : nanofl.engine.Guide;
 		getChildLayers() : nanofl.engine.Layer[];
 		getTweenedElements(frameIndex:number) : nanofl.engine.TweenedElement[];
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		clone() : nanofl.engine.Layer;
 		duplicate(keyFrames:nanofl.engine.ArrayRO<nanofl.engine.KeyFrame>, parentIndex:number) : nanofl.engine.Layer;
 		getIndex() : number;
@@ -8587,16 +8602,6 @@ declare module nanofl.engine
 		static playerUrl : string;
 		static compare(v1:string, v2:string) : number;
 	}
-	
-	export class XmlWriter
-	{
-		constructor();
-		begin(tag:string, attrs?:{ value : any; name : string; }[]) : nanofl.engine.XmlWriter;
-		end() : nanofl.engine.XmlWriter;
-		attr(name:string, value:any, defValue?:any) : nanofl.engine.XmlWriter;
-		content(s:string) : nanofl.engine.XmlWriter;
-		toString() : string;
-	}
 }
 
 declare module nanofl.engine.fills
@@ -8613,7 +8618,7 @@ declare module nanofl.engine.fills
 		equ(e:nanofl.engine.fills.IFill) : boolean;
 		applyAlpha(alpha:number) : void;
 		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		setLibrary(library:nanofl.engine.Library) : void;
 		toString() : string;
@@ -8625,7 +8630,7 @@ declare module nanofl.engine.fills
 		bitmapPath : string;
 		repeat : string;
 		matrix : nanofl.engine.geom.Matrix;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		clone() : nanofl.engine.fills.IFill;
 		applyAlpha(alpha:number) : void;
 		begin(g:nanofl.engine.Render) : void;
@@ -8662,7 +8667,7 @@ declare module nanofl.engine.fills
 		y0 : number;
 		x1 : number;
 		y1 : number;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		clone() : nanofl.engine.fills.IFill;
 		applyAlpha(alpha:number) : void;
 		begin(g:nanofl.engine.Render) : void;
@@ -8683,7 +8688,7 @@ declare module nanofl.engine.fills
 		r : number;
 		fx : number;
 		fy : number;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		clone() : nanofl.engine.fills.IFill;
 		applyAlpha(alpha:number) : void;
 		begin(g:nanofl.engine.Render) : void;
@@ -8697,7 +8702,7 @@ declare module nanofl.engine.fills
 	export class SelectionFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
 	{
 		constructor(scale:number);
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		clone() : nanofl.engine.fills.IFill;
 		applyAlpha(alpha:number) : void;
 		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
@@ -8711,7 +8716,7 @@ declare module nanofl.engine.fills
 	{
 		constructor(color:string);
 		color : string;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		clone() : nanofl.engine.fills.IFill;
 		applyAlpha(alpha:number) : void;
 		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
@@ -8827,7 +8832,7 @@ declare module nanofl.engine.libraryitems
 		clone() : nanofl.engine.libraryitems.LibraryItem;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		save(fileApi:nanofl.engine.FileApi) : void;
-		saveToXml(out:nanofl.engine.XmlWriter) : void;
+		saveToXml(out:htmlparser.XmlBuilder) : void;
 		getFilePathTemplate() : string;
 		preload(ready:() => void) : void;
 		removeInstance(namePath:string) : void;
@@ -8860,7 +8865,7 @@ declare module nanofl.engine.libraryitems
 		clone() : nanofl.engine.libraryitems.LibraryItem;
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;
-		saveToXml(out:nanofl.engine.XmlWriter) : void;
+		saveToXml(out:htmlparser.XmlBuilder) : void;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		getUrl() : string;
 		preload(ready:() => void) : void;
@@ -8888,7 +8893,7 @@ declare module nanofl.engine.libraryitems
 		clone() : nanofl.engine.libraryitems.LibraryItem;
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;
-		saveToXml(out:nanofl.engine.XmlWriter) : void;
+		saveToXml(out:htmlparser.XmlBuilder) : void;
 		toFont() : nanofl.engine.Font;
 		preload(ready:() => void) : void;
 		toString() : string;
@@ -8919,7 +8924,7 @@ declare module nanofl.engine.libraryitems
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
-		saveToXml(out:nanofl.engine.XmlWriter) : void;
+		saveToXml(out:htmlparser.XmlBuilder) : void;
 		getTotalFrames() : number;
 		getTimelineState() : nanofl.ide.undo.states.TimelineState;
 		setTimelineState(state:nanofl.ide.undo.states.TimelineState) : void;
@@ -8942,7 +8947,7 @@ declare module nanofl.engine.libraryitems
 		clone() : nanofl.engine.libraryitems.LibraryItem;
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;
-		saveToXml(out:nanofl.engine.XmlWriter) : void;
+		saveToXml(out:htmlparser.XmlBuilder) : void;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		getUrl() : string;
 		toString() : string;
@@ -8962,7 +8967,7 @@ declare module nanofl.engine.libraryitems
 		clone() : nanofl.engine.libraryitems.LibraryItem;
 		getIcon() : string;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
-		saveToXml(out:nanofl.engine.XmlWriter) : void;
+		saveToXml(out:htmlparser.XmlBuilder) : void;
 		preload(ready:() => void) : void;
 		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
 		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
@@ -8979,7 +8984,7 @@ declare module nanofl.engine.tweens
 		easing : number;
 		rotateCount : number;
 		orientToPath : boolean;
-		save(out:nanofl.engine.XmlWriter) : void;
+		save(out:htmlparser.XmlBuilder) : void;
 		apply(frameSubIndex:number) : nanofl.engine.TweenedElement[];
 		clone() : nanofl.engine.tweens.MotionTween;
 		isGood() : boolean;

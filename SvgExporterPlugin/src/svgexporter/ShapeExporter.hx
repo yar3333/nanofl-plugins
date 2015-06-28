@@ -1,9 +1,9 @@
 package svgexporter;
 
+import htmlparser.XmlBuilder;
 import nanofl.engine.elements.ShapeElement;
 import nanofl.engine.fills.IFill;
 import nanofl.engine.strokes.IStroke;
-import nanofl.engine.XmlWriter;
 import svgexporter.ShapeExporter;
 using Slambda;
 
@@ -15,7 +15,7 @@ class ShapeExporter
 
 	public function new() {}
 	
-	public function exportGradients(shape:ShapeElement, xml:XmlWriter)
+	public function exportGradients(shape:ShapeElement, xml:XmlBuilder)
 	{
 		for (edge in shape.edges)
 		{
@@ -52,7 +52,7 @@ class ShapeExporter
 		}
 	}
 	
-	public function export(idPrefix:String, shape:ShapeElement, xml:XmlWriter) : Array<String>
+	public function export(idPrefix:String, shape:ShapeElement, xml:XmlBuilder) : Array<String>
 	{
 		var render = new ShapePathsRender(idPrefix, gradients, xml);
 		shape.draw(render, null);

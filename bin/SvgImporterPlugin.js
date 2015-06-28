@@ -301,7 +301,9 @@ SvgImporterPlugin.prototype = {
 		var svg = new svgimport.Svg(xml);
 		documentProperties.width = Math.round(svg.width);
 		documentProperties.height = Math.round(svg.height);
-		if(svg.id == "") {
+		if(svg.id != nanofl.engine.Library.SCENE_NAME_PATH) {
+			stdlib.Debug.assert(svg.id == "" || svg.elements.exists(svg.id),null,{ fileName : "SvgImporterPlugin.hx", lineNumber : 64, className : "SvgImporterPlugin", methodName : "importDocument"});
+			svg.elements.remove(svg.id);
 			svg.id = nanofl.engine.Library.SCENE_NAME_PATH;
 			var value = svgimport.SvgElement.DisplayGroup(svg);
 			svg.elements.set(nanofl.engine.Library.SCENE_NAME_PATH,value);
@@ -330,13 +332,6 @@ SvgImporterPlugin.prototype = {
 					}(this)) + "' is not supported.");
 				}
 			}
-		}
-		if(!svg.elements.exists(nanofl.engine.Library.SCENE_NAME_PATH)) {
-			var scene = new nanofl.engine.libraryitems.MovieClipItem(nanofl.engine.Library.SCENE_NAME_PATH);
-			scene.addLayer(new nanofl.engine.Layer("auto"));
-			scene.layers[0].addKeyFrame(new nanofl.engine.KeyFrame());
-			scene.layers[0].keyFrames[0].addElement(new nanofl.engine.elements.Instance(svg.id));
-			library.addItem(scene);
 		}
 		callb(true);
 	}
@@ -514,6 +509,12 @@ haxe.ds.StringMap.prototype = {
 	}
 	,exists: function(key) {
 		return this.h.hasOwnProperty("$" + key);
+	}
+	,remove: function(key) {
+		key = "$" + key;
+		if(!this.h.hasOwnProperty(key)) return false;
+		delete(this.h[key]);
+		return true;
 	}
 	,keys: function() {
 		var a = [];

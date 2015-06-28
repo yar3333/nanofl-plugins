@@ -10,8 +10,8 @@ extern class Edges
 	static function exclude(edges:Array<nanofl.engine.geom.Edge>, exclude:Array<nanofl.engine.geom.Edge>) : Array<nanofl.engine.geom.Edge>;
 	static function draw<T>(edges:Array<T>, g:nanofl.engine.Render, fixLineJoinsInClosedContours:Bool) : Void;
 	static function getBounds<T>(edges:Array<T>, ?bounds:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
-	static function export<T>(edges:Array<T>, out:nanofl.engine.XmlWriter) : Void;
-	static function exportStroked(edges:Array<nanofl.engine.geom.StrokeEdge>, out:nanofl.engine.XmlWriter) : Void;
+	static function export<T>(edges:Array<T>, out:htmlparser.XmlBuilder) : Void;
+	static function exportStroked(edges:Array<nanofl.engine.geom.StrokeEdge>, out:htmlparser.XmlBuilder) : Void;
 	static function load(s:String) : Array<nanofl.engine.geom.Edge>;
 	static function save(edges:Array<nanofl.engine.geom.Edge>) : String;
 	static function replace<T>(edges:Array<T>, search:nanofl.engine.geom.Edge, replacement:Array<nanofl.engine.geom.Edge>) : Int;

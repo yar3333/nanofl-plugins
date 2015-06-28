@@ -293,7 +293,7 @@ SvgExporterPlugin.main = function() {
 SvgExporterPlugin.prototype = {
 	exportDocument: function(fileApi,srcFilePath,destFilePath,documentProperties,library) {
 		console.log("Plugin.exportDocument " + srcFilePath + " => " + destFilePath);
-		var xml = new nanofl.engine.XmlWriter();
+		var xml = new htmlparser.XmlBuilder();
 		xml.begin("svg").attr("xmlns","http://www.w3.org/2000/svg").attr("width",documentProperties.width).attr("height",documentProperties.height).attr("xmlns:xlink","http://www.w3.org/1999/xlink");
 		new svgexporter.SvgExporter(library)["export"](xml);
 		xml.end();

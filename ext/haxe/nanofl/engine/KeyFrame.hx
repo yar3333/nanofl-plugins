@@ -22,7 +22,7 @@ extern class KeyFrame
 	function getParentLayerFrame(frameSubIndex:Int) : nanofl.engine.Frame;
 	function hasGoodMotionTween() : Bool;
 	function getParentGuide(frameSubIndex:Int) : nanofl.engine.Guide;
-	function save(out:nanofl.engine.XmlWriter) : Void;
+	function save(out:htmlparser.XmlBuilder) : Void;
 	function getIndex() : Int;
 	function getUsedItems() : Array<nanofl.engine.libraryitems.LibraryItem>;
 	function getUsedFilters() : Array<String>;

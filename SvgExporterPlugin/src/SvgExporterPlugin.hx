@@ -1,8 +1,8 @@
+import htmlparser.XmlBuilder;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
-import nanofl.engine.XmlWriter;
 import nanofl.ide.plugins.IExporterPlugin;
 import svgexporter.SvgExporter;
 using StringTools;
@@ -43,7 +43,7 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 	{
 		trace("Plugin.exportDocument " + srcFilePath + " => " + destFilePath);
 		
-		var xml = new XmlWriter();
+		var xml = new XmlBuilder();
 		xml.begin("svg")
 			.attr("xmlns", "http://www.w3.org/2000/svg")
 			.attr("width", documentProperties.width)

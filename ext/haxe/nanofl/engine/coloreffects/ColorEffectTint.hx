@@ -5,7 +5,7 @@ extern class ColorEffectTint extends nanofl.engine.coloreffects.ColorEffect
 	function new(color:String, multiplier:Float) : Void;
 	var color : String;
 	var multiplier : Float;
-	override function save(out:nanofl.engine.XmlWriter) : Void;
+	override function save(out:htmlparser.XmlBuilder) : Void;
 	override function apply(obj:createjs.DisplayObject) : Void;
 	override function clone() : nanofl.engine.coloreffects.ColorEffectTint;
 	override function getNeutralClone() : nanofl.engine.coloreffects.ColorEffect;

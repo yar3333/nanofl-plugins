@@ -9,7 +9,7 @@ extern class BitmapItem extends nanofl.engine.libraryitems.InstancableItem imple
 	override function clone() : nanofl.engine.libraryitems.LibraryItem;
 	override function getIcon() : String;
 	override function save(fileApi:nanofl.engine.FileApi) : Void;
-	override function saveToXml(out:nanofl.engine.XmlWriter) : Void;
+	override function saveToXml(out:htmlparser.XmlBuilder) : Void;
 	override function loadProperties(xml:htmlparser.HtmlNodeElement) : Void;
 	function getUrl() : String;
 	override function preload(ready:Void -> Void) : Void;

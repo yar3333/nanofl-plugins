@@ -1,5 +1,6 @@
 package svgexporter;
 
+import htmlparser.XmlBuilder;
 import nanofl.engine.ArrayRO;
 import nanofl.engine.elements.Element;
 import nanofl.engine.elements.GroupElement;
@@ -10,7 +11,6 @@ import nanofl.engine.KeyFrame;
 import nanofl.engine.Layer;
 import nanofl.engine.Library;
 import nanofl.engine.libraryitems.MovieClipItem;
-import nanofl.engine.XmlWriter;
 import svgexporter.ShapeExporter;
 import svgexporter.SvgExporter;
 using Slambda;
@@ -29,7 +29,7 @@ class SvgExporter
 		this.library = library;
 	}
 	
-	public function export(xml:XmlWriter)
+	public function export(xml:XmlBuilder)
 	{
 		var scene = library.getSceneItem();
 		var items : Array<MovieClipItem> = cast library.getItems().filter.fn(Std.is(_, MovieClipItem));
@@ -83,7 +83,7 @@ class SvgExporter
 		exportMovieClipLayers(scene, xml);
 	}
 
-	function exportLayersAsClipPaths(mc:MovieClipItem, xml:XmlWriter)
+	function exportLayersAsClipPaths(mc:MovieClipItem, xml:XmlBuilder)
 	{
 		for (i in 0...mc.layers.length)
 		{
@@ -121,14 +121,14 @@ class SvgExporter
 		}
 	}
 	
-	function exportSvgGroup(mc:MovieClipItem, xml:XmlWriter)
+	function exportSvgGroup(mc:MovieClipItem, xml:XmlBuilder)
 	{
 		xml.begin("g").attr("id", mc.namePath);
 			exportMovieClipLayers(mc, xml);
 		xml.end();
 	}
 	
-	function exportMovieClipLayers(mc:MovieClipItem, xml:XmlWriter)
+	function exportMovieClipLayers(mc:MovieClipItem, xml:XmlBuilder)
 	{
 		for (layer in mc.layers)
 		{
@@ -152,7 +152,7 @@ class SvgExporter
 		}
 	}
 	
-	function exportElement(element:Element, xml:XmlWriter)
+	function exportElement(element:Element, xml:XmlBuilder)
 	{
 		if (Std.is(element, Instance))
 		{
@@ -194,7 +194,7 @@ class SvgExporter
 		}
 	}
 	
-	function exportExistShapeElement(shape:ShapeElement, matrix:Matrix, xml:XmlWriter)
+	function exportExistShapeElement(shape:ShapeElement, matrix:Matrix, xml:XmlBuilder)
 	{
 		for (pathID in shapePaths.get(shape))
 		{
@@ -250,7 +250,7 @@ class SvgExporter
 		}
 	}
 	
-	function exportMatrix(matrix:Matrix, xml:XmlWriter)
+	function exportMatrix(matrix:Matrix, xml:XmlBuilder)
 	{
 		if (!matrix.isIdentity())
 		{
