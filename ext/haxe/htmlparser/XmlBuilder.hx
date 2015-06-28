@@ -2,7 +2,7 @@ package htmlparser;
 
 extern class XmlBuilder
 {
-	function new() : Void;
+	function new(?indent:String) : Void;
 	var xml : htmlparser.XmlDocument;
 	function begin(tag:String, ?attrs:Array<{ var value : Dynamic; var name : String; }>) : htmlparser.XmlBuilder;
 	function end() : htmlparser.XmlBuilder;

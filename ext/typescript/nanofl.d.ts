@@ -7507,6 +7507,7 @@ declare module nanofl.ide
 		importFromPaths(paths:string[], folderPath?:string, ready?:() => void) : void;
 		importFromFiles(files:File[], folderPath?:string, callb?:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
 		generateTextureAtlases(width:number, height:number, padding:number) : Map<string, nanofl.ide.textureatlas.TextureAtlas>;
+		selectUnused() : void;
 	}
 	
 	export class Figure
@@ -7550,6 +7551,21 @@ declare module nanofl.ide
 		exportDocument(pluginName:string, destFilePath?:string, callb?:(arg:boolean) => void) : void;
 		importDocument(pluginName:string, srcFilePath?:string, callb?:(arg:nanofl.ide.Document) => void) : void;
 		reload(alertOnSuccess?:boolean) : boolean;
+	}
+	
+	export class LibraryProcessor
+	{
+		constructor(library:nanofl.engine.Library);
+		optimize() : void;
+		getUnused() : string[];
+	}
+	
+	export class MovieClipItemTools
+	{
+		static findShapes(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, matrix?:nanofl.engine.geom.Matrix, callb:(arg0:nanofl.engine.elements.ShapeElement, arg1:{ matrix : nanofl.engine.geom.Matrix; layerIndex : number; item : nanofl.engine.libraryitems.MovieClipItem; insideMask : boolean; }) => void) : void;
+		static findMovieClipItems(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, matrix?:nanofl.engine.geom.Matrix, callb:(arg0:nanofl.engine.libraryitems.MovieClipItem, arg1:nanofl.engine.geom.Matrix, arg2:boolean) => void) : void;
+		static findMovieClipInstances(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, matrix?:nanofl.engine.geom.Matrix, callb:(arg0:nanofl.engine.elements.Instance, arg1:nanofl.engine.geom.Matrix, arg2:boolean) => void, insideMask?:boolean) : void;
+		static iterateElements(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, insideMask?:boolean, callb:(arg0:nanofl.engine.elements.Element, arg1:number, arg2:boolean) => void) : void;
 	}
 	
 	export class Navigator
@@ -7677,6 +7693,7 @@ declare module nanofl.engine.elements
 	{
 		static parse(base:htmlparser.HtmlNodeElement) : nanofl.engine.elements.Element[];
 		static save(elements:nanofl.engine.elements.Element[], out:htmlparser.XmlBuilder) : void;
+		static expandGroups(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>) : nanofl.engine.elements.Element[];
 	}
 	
 	export class GroupElement extends nanofl.engine.elements.Element implements nanofl.engine.IPathElement
@@ -8051,7 +8068,7 @@ declare module htmlparser
 	
 	export class XmlBuilder
 	{
-		constructor();
+		constructor(indent?:string);
 		xml : htmlparser.XmlDocument;
 		begin(tag:string, attrs?:{ value : any; name : string; }[]) : htmlparser.XmlBuilder;
 		end() : htmlparser.XmlBuilder;
@@ -8063,7 +8080,6 @@ declare module htmlparser
 	export class XmlNodeElement extends htmlparser.HtmlNodeElement
 	{
 		constructor(name:string, attributes:htmlparser.HtmlAttribute[]);
-		toString() : string;
 	}
 	
 	export class XmlDocument extends htmlparser.XmlNodeElement

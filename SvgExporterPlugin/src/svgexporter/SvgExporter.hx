@@ -1,16 +1,16 @@
 package svgexporter;
 
 import htmlparser.XmlBuilder;
-import nanofl.engine.ArrayRO;
 import nanofl.engine.elements.Element;
+import nanofl.engine.elements.Elements;
 import nanofl.engine.elements.GroupElement;
 import nanofl.engine.elements.Instance;
 import nanofl.engine.elements.ShapeElement;
 import nanofl.engine.geom.Matrix;
-import nanofl.engine.KeyFrame;
 import nanofl.engine.Layer;
 import nanofl.engine.Library;
 import nanofl.engine.libraryitems.MovieClipItem;
+import nanofl.ide.MovieClipItemTools;
 import svgexporter.ShapeExporter;
 import svgexporter.SvgExporter;
 using Slambda;
@@ -22,7 +22,6 @@ class SvgExporter
 	var shapeExporter = new ShapeExporter();
 	var layerItems = new Map<Layer, String>();
 	var shapePaths = new Map<ShapeElement, Array<String>>();
-	var allShapes = [];
 	
 	public function new(library:Library)
 	{
@@ -37,45 +36,42 @@ class SvgExporter
 		
 		xml.begin("defs");
 			
-			for (mc in sceneWithItems)
+			for (item in sceneWithItems)
 			{
-				iterateMovieClipKeyFrames(mc, function(layerIndex:Int, keyFrame:KeyFrame)
+				for (layer in item.layers) if (layer.keyFrames.length > 0)
 				{
-					var shape = keyFrame.getShape(false);
+					var shape = layer.keyFrames[0].getShape(false);
 					if (shape != null)
 					{
-						if (allShapes.indexOf(shape) < 0)
-						{
-							allShapes.push(shape);
-						}
 						shapeExporter.exportGradients(shape, xml);
 					}
-				});
+				}
 			}
 			
-			for (mc in sceneWithItems)
+			for (item in sceneWithItems)
 			{
-				findShapes
+				MovieClipItemTools.findShapes
 				(
-					mc,
-					function(shape:ShapeElement, matrix:Matrix, insideMask:Bool, baseID:String)
+					item,
+					false,
+					function(shape:ShapeElement, e)
 					{
-						if (insideMask && !shapePaths.exists(shape))
+						if (e.insideMask && !shapePaths.exists(shape))
 						{
-							shapePaths.set(shape, shapeExporter.export(baseID, shape, xml));
+							shapePaths.set(shape, shapeExporter.export(e.item.namePath + "_layer" + e.layerIndex + "_shape", shape, xml));
 						}
 					}
 				);
 			}
 			
-			for (mc in sceneWithItems)
+			for (item in sceneWithItems)
 			{
-				exportLayersAsClipPaths(mc, xml);
+				exportMaskLayers(item, xml);
 			}
 			
-			for (mc in items)
+			for (item in items)
 			{
-				exportSvgGroup(mc, xml);
+				exportSvgGroup(item, xml);
 			}
 			
 		xml.end();
@@ -83,19 +79,19 @@ class SvgExporter
 		exportMovieClipLayers(scene, xml);
 	}
 
-	function exportLayersAsClipPaths(mc:MovieClipItem, xml:XmlBuilder)
+	function exportMaskLayers(item:MovieClipItem, xml:XmlBuilder)
 	{
-		for (i in 0...mc.layers.length)
+		for (i in 0...item.layers.length)
 		{
-			var layer = mc.layers[i];
+			var layer = item.layers[i];
 			if (!layerItems.exists(layer) && layer.type == "mask" && layer.keyFrames.length > 0)
 			{
-				var layerID = mc.namePath + "_layer" + i;
+				var layerID = item.namePath + "_layer" + i;
 				layerItems.set(layer, layerID);
 				
 				xml.begin("clipPath").attr("id", layerID);
 				
-				for (element in layer.keyFrames[0].elements)
+				for (element in Elements.expandGroups(layer.keyFrames[0].elements))
 				{
 					if (Std.is(element, ShapeElement))
 					{
@@ -104,14 +100,12 @@ class SvgExporter
 					else
 					if (Std.is(element, Instance) && Std.is(asInstance(element).symbol, MovieClipItem))
 					{
-						findShapes
+						MovieClipItemTools.findShapes
 						(
 							(cast asInstance(element).symbol:MovieClipItem),
+							false,
 							element.matrix,
-							function(shape:ShapeElement, matrix:Matrix, insideMask:Bool, baseID:String)
-							{
-								exportExistShapeElement(shape, matrix, xml);
-							}
+							function(shape, e) exportExistShapeElement(shape, e.matrix, xml)
 						);
 					}
 				}
@@ -121,16 +115,16 @@ class SvgExporter
 		}
 	}
 	
-	function exportSvgGroup(mc:MovieClipItem, xml:XmlBuilder)
+	function exportSvgGroup(item:MovieClipItem, xml:XmlBuilder)
 	{
-		xml.begin("g").attr("id", mc.namePath);
-			exportMovieClipLayers(mc, xml);
+		xml.begin("g").attr("id", item.namePath);
+			exportMovieClipLayers(item, xml);
 		xml.end();
 	}
 	
-	function exportMovieClipLayers(mc:MovieClipItem, xml:XmlBuilder)
+	function exportMovieClipLayers(item:MovieClipItem, xml:XmlBuilder)
 	{
-		for (layer in mc.layers)
+		for (layer in item.layers)
 		{
 			if (layer.type == "normal")
 			{
@@ -202,51 +196,6 @@ class SvgExporter
 				xml.attr("xlink:href", "#" + pathID);
 				if (matrix != null) exportMatrix(matrix, xml);
 			xml.end();
-		}
-	}
-	
-	function findShapes(item:MovieClipItem, ?matrix:Matrix, callb:ShapeElement->Matrix->Bool->String->Void, insideMask=false)
-	{
-		if (matrix == null) matrix = new Matrix();
-		
-		iterateMovieClipKeyFrames(item, function(layerIndex:Int, keyFrame:KeyFrame)
-		{
-			var localInsideMask = insideMask || item.layers[layerIndex].type == "mask";
-			
-			var shape = keyFrame.getShape(false);
-			if (shape != null) callb(shape, matrix, localInsideMask, item.namePath + "_layer" + layerIndex + "_shape");
-			
-			findShapesInner(keyFrame.elements, callb, localInsideMask, matrix);
-		});
-	}
-	
-	function findShapesInner(elements:ArrayRO<Element>, callb:ShapeElement->Matrix->Bool->String->Void, insideMask:Bool, matrix:Matrix)
-	{
-		for (element in elements)
-		{
-			if (Std.is(element, GroupElement))
-			{
-				findShapesInner((cast element:GroupElement).getChildren(), callb, insideMask, matrix);
-			}
-			else
-			if (Std.is(element, Instance) && Std.is((cast element:Instance).symbol, MovieClipItem))
-			{
-				var m = matrix.clone();
-				m.appendMatrix(asInstance(element).matrix);
-				findShapes((cast asInstance(element).symbol:MovieClipItem), m, callb, insideMask);
-			}
-		}
-	}
-	
-	function iterateMovieClipKeyFrames(item:MovieClipItem, callb:Int->KeyFrame->Void)
-	{
-		for (i in 0...(cast item:MovieClipItem).layers.length)
-		{
-			var layer = (cast item:MovieClipItem).layers[i];
-			if (layer.keyFrames.length > 0)
-			{
-				callb(i, layer.keyFrames[0]);
-			}
 		}
 	}
 	

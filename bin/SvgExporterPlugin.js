@@ -1,18 +1,6 @@
 (function () { "use strict";
 var HxOverrides = function() { };
 HxOverrides.__name__ = true;
-HxOverrides.indexOf = function(a,obj,i) {
-	var len = a.length;
-	if(i < 0) {
-		i += len;
-		if(i < 0) i = 0;
-	}
-	while(i < len) {
-		if(a[i] === obj) return i;
-		i++;
-	}
-	return -1;
-};
 HxOverrides.iter = function(a) {
 	return { cur : 0, arr : a, hasNext : function() {
 		return this.cur < this.arr.length;
@@ -1422,7 +1410,6 @@ svgexporter.ShapePathsRender.prototype = {
 	,__class__: svgexporter.ShapePathsRender
 };
 svgexporter.SvgExporter = function(library) {
-	this.allShapes = [];
 	this.shapePaths = new haxe.ds.ObjectMap();
 	this.layerItems = new haxe.ds.ObjectMap();
 	this.shapeExporter = new svgexporter.ShapeExporter();
@@ -1443,74 +1430,77 @@ svgexporter.SvgExporter.prototype = {
 		xml.begin("defs");
 		var _g = 0;
 		while(_g < sceneWithItems.length) {
-			var mc = sceneWithItems[_g];
+			var item = sceneWithItems[_g];
 			++_g;
-			this.iterateMovieClipKeyFrames(mc,function(layerIndex,keyFrame) {
-				var shape = keyFrame.getShape(false);
-				if(shape != null) {
-					if(HxOverrides.indexOf(_g1.allShapes,shape,0) < 0) _g1.allShapes.push(shape);
-					_g1.shapeExporter.exportGradients(shape,xml);
+			var _g11 = 0;
+			var _g2 = item.layers;
+			while(_g11 < _g2.length) {
+				var layer = _g2[_g11];
+				++_g11;
+				if(layer.keyFrames.length > 0) {
+					var shape = layer.keyFrames[0].getShape(false);
+					if(shape != null) this.shapeExporter.exportGradients(shape,xml);
 				}
-			});
+			}
 		}
-		var _g2 = 0;
-		while(_g2 < sceneWithItems.length) {
-			var mc1 = sceneWithItems[_g2];
-			++_g2;
-			this.findShapes(mc1,null,function(shape1,matrix,insideMask,baseID) {
-				if(insideMask && !(_g1.shapePaths.h.__keys__[shape1.__id__] != null)) {
-					var value = _g1.shapeExporter["export"](baseID,shape1,xml);
+		var _g3 = 0;
+		while(_g3 < sceneWithItems.length) {
+			var item1 = sceneWithItems[_g3];
+			++_g3;
+			nanofl.ide.MovieClipItemTools.findShapes(item1,false,null,function(shape1,e) {
+				if(e.insideMask && !(_g1.shapePaths.h.__keys__[shape1.__id__] != null)) {
+					var value = _g1.shapeExporter["export"](e.item.namePath + "_layer" + e.layerIndex + "_shape",shape1,xml);
 					_g1.shapePaths.set(shape1,value);
 				}
 			});
 		}
-		var _g3 = 0;
-		while(_g3 < sceneWithItems.length) {
-			var mc2 = sceneWithItems[_g3];
-			++_g3;
-			this.exportLayersAsClipPaths(mc2,xml);
-		}
 		var _g4 = 0;
-		while(_g4 < items.length) {
-			var mc3 = items[_g4];
+		while(_g4 < sceneWithItems.length) {
+			var item2 = sceneWithItems[_g4];
 			++_g4;
-			this.exportSvgGroup(mc3,xml);
+			this.exportMaskLayers(item2,xml);
+		}
+		var _g5 = 0;
+		while(_g5 < items.length) {
+			var item3 = items[_g5];
+			++_g5;
+			this.exportSvgGroup(item3,xml);
 		}
 		xml.end();
 		this.exportMovieClipLayers(scene,xml);
 	}
-	,exportLayersAsClipPaths: function(mc,xml) {
+	,exportMaskLayers: function(item,xml) {
 		var _g4 = this;
 		var _g1 = 0;
-		var _g = mc.layers.length;
+		var _g = item.layers.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			var layer = mc.layers[i];
+			var layer = item.layers[i];
 			if(!(this.layerItems.h.__keys__[layer.__id__] != null) && layer.type == "mask" && layer.keyFrames.length > 0) {
-				var layerID = mc.namePath + "_layer" + i;
+				var layerID = item.namePath + "_layer" + i;
 				this.layerItems.set(layer,layerID);
 				xml.begin("clipPath").attr("id",layerID);
 				var _g2 = 0;
-				var _g3 = layer.keyFrames[0].elements;
+				var _g3 = nanofl.engine.elements.Elements.expandGroups(layer.keyFrames[0].elements);
 				while(_g2 < _g3.length) {
 					var element = _g3[_g2];
 					++_g2;
-					if(js.Boot.__instanceof(element,nanofl.engine.elements.ShapeElement)) this.exportExistShapeElement(element,null,xml); else if(js.Boot.__instanceof(element,nanofl.engine.elements.Instance) && js.Boot.__instanceof(element.symbol,nanofl.engine.libraryitems.MovieClipItem)) this.findShapes(element.symbol,element.matrix,function(shape,matrix,insideMask,baseID) {
-						_g4.exportExistShapeElement(shape,matrix,xml);
+					if(js.Boot.__instanceof(element,nanofl.engine.elements.ShapeElement)) this.exportExistShapeElement(element,null,xml); else if(js.Boot.__instanceof(element,nanofl.engine.elements.Instance) && js.Boot.__instanceof(element.symbol,nanofl.engine.libraryitems.MovieClipItem)) nanofl.ide.MovieClipItemTools.findShapes(element.symbol,false,element.matrix,function(shape,e) {
+						_g4.exportExistShapeElement(shape,e.matrix,xml);
 					});
 				}
 				xml.end();
 			}
 		}
 	}
-	,exportSvgGroup: function(mc,xml) {
-		xml.begin("g").attr("id",mc.namePath);
-		this.exportMovieClipLayers(mc,xml);
+	,exportSvgGroup: function(item,xml) {
+		xml.begin("g").attr("id",item.namePath);
+		this.exportMovieClipLayers(item,xml);
 		xml.end();
 	}
-	,exportMovieClipLayers: function(mc,xml) {
+	,exportMovieClipLayers: function(item,xml) {
 		var _g = 0;
-		var _g1 = mc.layers;
+		var _g1 = item.layers;
 		while(_g < _g1.length) {
 			var layer = _g1[_g];
 			++_g;
@@ -1562,38 +1552,6 @@ svgexporter.SvgExporter.prototype = {
 			xml.end();
 		}
 	}
-	,findShapes: function(item,matrix,callb,insideMask) {
-		if(insideMask == null) insideMask = false;
-		var _g = this;
-		if(matrix == null) matrix = new nanofl.engine.geom.Matrix();
-		this.iterateMovieClipKeyFrames(item,function(layerIndex,keyFrame) {
-			var localInsideMask = insideMask || item.layers[layerIndex].type == "mask";
-			var shape = keyFrame.getShape(false);
-			if(shape != null) callb(shape,matrix,localInsideMask,item.namePath + "_layer" + layerIndex + "_shape");
-			_g.findShapesInner(keyFrame.elements,callb,localInsideMask,matrix);
-		});
-	}
-	,findShapesInner: function(elements,callb,insideMask,matrix) {
-		var _g = 0;
-		while(_g < elements.length) {
-			var element = elements[_g];
-			++_g;
-			if(js.Boot.__instanceof(element,nanofl.engine.elements.GroupElement)) this.findShapesInner(element.getChildren(),callb,insideMask,matrix); else if(js.Boot.__instanceof(element,nanofl.engine.elements.Instance) && js.Boot.__instanceof(element.symbol,nanofl.engine.libraryitems.MovieClipItem)) {
-				var m = matrix.clone();
-				m.appendMatrix(element.matrix);
-				this.findShapes(element.symbol,m,callb,insideMask);
-			}
-		}
-	}
-	,iterateMovieClipKeyFrames: function(item,callb) {
-		var _g1 = 0;
-		var _g = item.layers.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var layer = item.layers[i];
-			if(layer.keyFrames.length > 0) callb(i,layer.keyFrames[0]);
-		}
-	}
 	,exportMatrix: function(matrix,xml) {
 		if(!matrix.isIdentity()) {
 			if(matrix.a == 1 && matrix.b == 0 && matrix.c == 0 && matrix.d == 1) {
@@ -1607,9 +1565,6 @@ svgexporter.SvgExporter.prototype = {
 function $iterator(o) { if( o instanceof Array ) return function() { return HxOverrides.iter(o); }; return typeof(o.iterator) == 'function' ? $bind(o,o.iterator) : o.iterator; }
 var $_, $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }
-if(Array.prototype.indexOf) HxOverrides.indexOf = function(a,o,i) {
-	return Array.prototype.indexOf.call(a,o,i);
-};
 String.prototype.__class__ = String;
 String.__name__ = true;
 Array.__name__ = true;

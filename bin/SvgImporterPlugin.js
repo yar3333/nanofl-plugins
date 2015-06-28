@@ -302,7 +302,7 @@ SvgImporterPlugin.prototype = {
 		documentProperties.width = Math.round(svg.width);
 		documentProperties.height = Math.round(svg.height);
 		if(svg.id != nanofl.engine.Library.SCENE_NAME_PATH) {
-			stdlib.Debug.assert(svg.id == "" || svg.elements.exists(svg.id),null,{ fileName : "SvgImporterPlugin.hx", lineNumber : 64, className : "SvgImporterPlugin", methodName : "importDocument"});
+			stdlib.Debug.assert(svg.id == "" || svg.elements.exists(svg.id),null,{ fileName : "SvgImporterPlugin.hx", lineNumber : 65, className : "SvgImporterPlugin", methodName : "importDocument"});
 			svg.elements.remove(svg.id);
 			svg.id = nanofl.engine.Library.SCENE_NAME_PATH;
 			var value = svgimport.SvgElement.DisplayGroup(svg);
@@ -333,6 +333,7 @@ SvgImporterPlugin.prototype = {
 				}
 			}
 		}
+		new nanofl.ide.LibraryProcessor(library).optimize();
 		callb(true);
 	}
 	,__class__: SvgImporterPlugin
