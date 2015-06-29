@@ -14,7 +14,6 @@ extern class LibraryItem
 	function removeInstance(namePath:String) : Void;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	function getUsedItems() : Array<nanofl.engine.libraryitems.LibraryItem>;
-	function getUsedFilters() : Array<String>;
 	function duplicate(newNamePath:String) : nanofl.engine.libraryitems.LibraryItem;
 	function remove() : Void;
 	function toString() : String;

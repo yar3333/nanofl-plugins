@@ -6,7 +6,7 @@ extern class Element
 	var regX : Float;
 	var regY : Float;
 	var visible : Bool;
-	var keyFrame(default, null) : nanofl.engine.KeyFrame;
+	var parent(default, null) : nanofl.engine.IElementsContainer;
 	function getType() : String;
 	function removeInstance(namePath:String) : Void;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
@@ -19,7 +19,6 @@ extern class Element
 	function getState() : nanofl.ide.undo.states.ElementState;
 	function setState(state:nanofl.ide.undo.states.ElementState) : Void;
 	function getUsedItems() : Array<nanofl.engine.libraryitems.LibraryItem>;
-	function getUsedFilters() : Array<String>;
 	function transform(m:nanofl.engine.geom.Matrix, ?applyToStrokeAndFill:Bool) : Void;
 	function toString() : String;
 	static function parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.elements.Element;

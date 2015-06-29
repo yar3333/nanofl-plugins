@@ -1,6 +1,6 @@
 package nanofl.engine;
 
-extern class KeyFrame
+extern class KeyFrame implements nanofl.engine.IElementsContainer
 {
 	function new(?label:String, ?duration:Int, ?motionTween:nanofl.engine.tweens.MotionTween, ?elements:Array<nanofl.engine.elements.Element>) : Void;
 	var layer : nanofl.engine.Layer;
@@ -25,6 +25,6 @@ extern class KeyFrame
 	function save(out:htmlparser.XmlBuilder) : Void;
 	function getIndex() : Int;
 	function getUsedItems() : Array<nanofl.engine.libraryitems.LibraryItem>;
-	function getUsedFilters() : Array<String>;
+	function toString() : String;
 	static function parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.KeyFrame;
 }
