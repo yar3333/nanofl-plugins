@@ -7665,7 +7665,6 @@ declare module nanofl.engine.elements
 		parent : nanofl.engine.IElementsContainer;
 		getType() : string;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		hasInstance(namePath:string) : boolean;
 		save(out:htmlparser.XmlBuilder) : void;
 		clone() : nanofl.engine.elements.Element;
 		translate(dx:number, dy:number) : void;
@@ -7721,7 +7720,6 @@ declare module nanofl.engine.elements
 		getType() : string;
 		save(out:htmlparser.XmlBuilder) : void;
 		clone() : nanofl.engine.elements.Element;
-		hasInstance(namePath:string) : boolean;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		isScene() : boolean;
 		getState() : nanofl.ide.undo.states.ElementState;
@@ -8513,7 +8511,6 @@ declare module nanofl.engine
 		convertToKeyFrame(frameIndex:number) : boolean;
 		removeFrame(frameIndex:number) : boolean;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		hasInstance(namePath:string) : boolean;
 		getHumanType() : string;
 		getIcon() : string;
 		getNestLevel(layers:nanofl.engine.ArrayRO<nanofl.engine.Layer>) : number;
@@ -8562,6 +8559,7 @@ declare module nanofl.engine
 		static findInstances(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, matrix?:nanofl.engine.geom.Matrix, callb:(arg0:nanofl.engine.elements.Instance, arg1:{ matrix : nanofl.engine.geom.Matrix; layerIndex : number; keyFrameIndex : number; item : nanofl.engine.libraryitems.MovieClipItem; insideMask : boolean; }) => void, insideMask?:boolean) : void;
 		static iterateInstances(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, insideMask?:boolean, callb:(arg0:nanofl.engine.elements.Instance, arg1:{ layerIndex : number; keyFrameIndex : number; insideMask : boolean; }) => void) : void;
 		static iterateElements(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, insideMask?:boolean, callb:(arg0:nanofl.engine.elements.Element, arg1:{ layerIndex : number; keyFrameIndex : number; insideMask : boolean; }) => void) : void;
+		static hasInstance(item:nanofl.engine.libraryitems.MovieClipItem, namePath:string, deep:boolean) : boolean;
 	}
 	
 	export class Plugins
@@ -8867,7 +8865,6 @@ declare module nanofl.engine.libraryitems
 		linkedClass : string;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		newInstance() : nanofl.engine.elements.Instance;
-		hasInstance(namePath:string) : boolean;
 		getDisplayObjectClassName() : string;
 		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
 		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
@@ -8946,7 +8943,6 @@ declare module nanofl.engine.libraryitems
 		setTimelineState(state:nanofl.ide.undo.states.TimelineState) : void;
 		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : nanofl.MovieClip;
 		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
-		hasInstance(namePath:string) : boolean;
 		getDisplayObjectClassName() : string;
 		transform(m:nanofl.engine.geom.Matrix) : void;
 		toString() : string;
