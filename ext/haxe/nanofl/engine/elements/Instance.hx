@@ -18,7 +18,6 @@ extern class Instance extends nanofl.engine.elements.Element implements nanofl.e
 	override function setState(state:nanofl.ide.undo.states.ElementState) : Void;
 	override function toString() : String;
 	var layers(default, never) : nanofl.engine.ArrayRO<nanofl.engine.Layer>;
-	override function getUsedItems() : Array<nanofl.engine.libraryitems.LibraryItem>;
 	override function createDisplayObject(frameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.DisplayObject;
 	override function updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.DisplayObject;
 	function getNavigatorName() : String;

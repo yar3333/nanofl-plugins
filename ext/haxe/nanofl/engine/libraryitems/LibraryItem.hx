@@ -13,7 +13,6 @@ extern class LibraryItem
 	function preload(ready:Void -> Void) : Void;
 	function removeInstance(namePath:String) : Void;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
-	function getUsedItems() : Array<nanofl.engine.libraryitems.LibraryItem>;
 	function duplicate(newNamePath:String) : nanofl.engine.libraryitems.LibraryItem;
 	function remove() : Void;
 	function toString() : String;

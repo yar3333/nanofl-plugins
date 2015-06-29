@@ -1,4 +1,4 @@
-package nanofl.ide;
+package nanofl.engine;
 
 extern class MovieClipItemTools
 {

@@ -31,7 +31,6 @@ extern class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem im
 	override function createDisplayObject(initFrameIndex:Int, childFrameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : nanofl.MovieClip;
 	override function updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : Void;
 	override function hasInstance(namePath:String) : Bool;
-	override function getUsedItems() : Array<nanofl.engine.libraryitems.LibraryItem>;
 	override function getDisplayObjectClassName() : String;
 	function transform(m:nanofl.engine.geom.Matrix) : Void;
 	override function toString() : String;

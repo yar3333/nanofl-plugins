@@ -13,7 +13,6 @@ extern class GroupElement extends nanofl.engine.elements.Element implements nano
 	override function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	override function save(out:htmlparser.XmlBuilder) : Void;
 	override function clone() : nanofl.engine.elements.Element;
-	override function getUsedItems() : Array<nanofl.engine.libraryitems.LibraryItem>;
 	function getChildren() : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
 	override function createDisplayObject(frameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.DisplayObject;
 	override function updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.Container;

@@ -10,7 +10,7 @@ import nanofl.engine.geom.Matrix;
 import nanofl.engine.Layer;
 import nanofl.engine.Library;
 import nanofl.engine.libraryitems.MovieClipItem;
-import nanofl.ide.MovieClipItemTools;
+import nanofl.engine.MovieClipItemTools;
 import svgexporter.ShapeExporter;
 import svgexporter.SvgExporter;
 using Slambda;

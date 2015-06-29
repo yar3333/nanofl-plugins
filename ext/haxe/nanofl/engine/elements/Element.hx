@@ -18,7 +18,6 @@ extern class Element
 	function updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.DisplayObject;
 	function getState() : nanofl.ide.undo.states.ElementState;
 	function setState(state:nanofl.ide.undo.states.ElementState) : Void;
-	function getUsedItems() : Array<nanofl.engine.libraryitems.LibraryItem>;
 	function transform(m:nanofl.engine.geom.Matrix, ?applyToStrokeAndFill:Bool) : Void;
 	function toString() : String;
 	static function parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.elements.Element;

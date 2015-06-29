@@ -1447,7 +1447,7 @@ svgexporter.SvgExporter.prototype = {
 		while(_g3 < sceneWithItems.length) {
 			var item1 = sceneWithItems[_g3];
 			++_g3;
-			nanofl.ide.MovieClipItemTools.findShapes(item1,false,null,function(shape1,e) {
+			nanofl.engine.MovieClipItemTools.findShapes(item1,false,null,function(shape1,e) {
 				if(e.insideMask && !(_g1.shapePaths.h.__keys__[shape1.__id__] != null)) {
 					var value = _g1.shapeExporter["export"](e.item.namePath + "_layer" + e.layerIndex + "_shape",shape1,xml);
 					_g1.shapePaths.set(shape1,value);
@@ -1485,7 +1485,7 @@ svgexporter.SvgExporter.prototype = {
 				while(_g2 < _g3.length) {
 					var element = _g3[_g2];
 					++_g2;
-					if(js.Boot.__instanceof(element,nanofl.engine.elements.ShapeElement)) this.exportExistShapeElement(element,null,xml); else if(js.Boot.__instanceof(element,nanofl.engine.elements.Instance) && js.Boot.__instanceof(element.symbol,nanofl.engine.libraryitems.MovieClipItem)) nanofl.ide.MovieClipItemTools.findShapes(element.symbol,false,element.matrix,function(shape,e) {
+					if(js.Boot.__instanceof(element,nanofl.engine.elements.ShapeElement)) this.exportExistShapeElement(element,null,xml); else if(js.Boot.__instanceof(element,nanofl.engine.elements.Instance) && js.Boot.__instanceof(element.symbol,nanofl.engine.libraryitems.MovieClipItem)) nanofl.engine.MovieClipItemTools.findShapes(element.symbol,false,element.matrix,function(shape,e) {
 						_g4.exportExistShapeElement(shape,e.matrix,xml);
 					});
 				}

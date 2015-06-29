@@ -7560,15 +7560,6 @@ declare module nanofl.ide
 		getUnused() : string[];
 	}
 	
-	export class MovieClipItemTools
-	{
-		static findShapes(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, matrix?:nanofl.engine.geom.Matrix, callb:(arg0:nanofl.engine.elements.ShapeElement, arg1:{ matrix : nanofl.engine.geom.Matrix; layerIndex : number; item : nanofl.engine.libraryitems.MovieClipItem; insideMask : boolean; }) => void) : void;
-		static findMovieClipItems(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, matrix?:nanofl.engine.geom.Matrix, callb:(arg0:nanofl.engine.libraryitems.MovieClipItem, arg1:nanofl.engine.geom.Matrix, arg2:boolean) => void) : void;
-		static findInstances(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, matrix?:nanofl.engine.geom.Matrix, callb:(arg0:nanofl.engine.elements.Instance, arg1:{ matrix : nanofl.engine.geom.Matrix; layerIndex : number; keyFrameIndex : number; item : nanofl.engine.libraryitems.MovieClipItem; insideMask : boolean; }) => void, insideMask?:boolean) : void;
-		static iterateInstances(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, insideMask?:boolean, callb:(arg0:nanofl.engine.elements.Instance, arg1:{ layerIndex : number; keyFrameIndex : number; insideMask : boolean; }) => void) : void;
-		static iterateElements(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, insideMask?:boolean, callb:(arg0:nanofl.engine.elements.Element, arg1:{ layerIndex : number; keyFrameIndex : number; insideMask : boolean; }) => void) : void;
-	}
-	
 	export class Navigator
 	{
 		editPath : nanofl.ide.PathItem[];
@@ -7683,7 +7674,6 @@ declare module nanofl.engine.elements
 		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
 		getState() : nanofl.ide.undo.states.ElementState;
 		setState(state:nanofl.ide.undo.states.ElementState) : void;
-		getUsedItems() : nanofl.engine.libraryitems.LibraryItem[];
 		transform(m:nanofl.engine.geom.Matrix, applyToStrokeAndFill?:boolean) : void;
 		toString() : string;
 		static parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.elements.Element;
@@ -7694,6 +7684,7 @@ declare module nanofl.engine.elements
 		static parse(base:htmlparser.HtmlNodeElement) : nanofl.engine.elements.Element[];
 		static save(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>, out:htmlparser.XmlBuilder) : void;
 		static expandGroups(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>) : nanofl.engine.elements.Element[];
+		static findSymbols(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>, callb:(arg:nanofl.engine.libraryitems.InstancableItem) => void) : void;
 	}
 	
 	export class GroupElement extends nanofl.engine.elements.Element implements nanofl.engine.IElementsContainer, nanofl.engine.IPathElement
@@ -7709,7 +7700,6 @@ declare module nanofl.engine.elements
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		save(out:htmlparser.XmlBuilder) : void;
 		clone() : nanofl.engine.elements.Element;
-		getUsedItems() : nanofl.engine.libraryitems.LibraryItem[];
 		getChildren() : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
 		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
 		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.Container;
@@ -7739,7 +7729,6 @@ declare module nanofl.engine.elements
 		setState(state:nanofl.ide.undo.states.ElementState) : void;
 		toString() : string;
 		layers : nanofl.engine.ArrayRO<nanofl.engine.Layer>;
-		getUsedItems() : nanofl.engine.libraryitems.LibraryItem[];
 		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
 		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
 		getNavigatorName() : string;
@@ -8414,18 +8403,46 @@ declare module nanofl.engine
 		subIndex : number;
 	}
 	
-	export class Guide
-	{
-		constructor(shape:nanofl.engine.elements.ShapeElement);
-		get(startProps:{ rotation : number; x : number; y : number; }, finishProps:{ rotation : number; x : number; y : number; }, orientToPath:boolean, t:number) : { rotation : number; x : number; y : number; };
-	}
-	
 	export interface IElementsContainer
 	{
 		elements : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
 		addElement(element:nanofl.engine.elements.Element, index?:number) : void;
 		removeElementAt(n:number) : void;
 		toString() : string;
+	}
+	
+	export class KeyFrame implements nanofl.engine.IElementsContainer
+	{
+		constructor(label?:string, duration?:number, motionTween?:nanofl.engine.tweens.MotionTween, elements?:nanofl.engine.elements.Element[]);
+		layer : nanofl.engine.Layer;
+		label : string;
+		duration : number;
+		motionTween : nanofl.engine.tweens.MotionTween;
+		elements : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
+		addElement(element:nanofl.engine.elements.Element, index?:number) : void;
+		removeElementAt(n:number) : void;
+		swapElement(i:number, j:number) : void;
+		duplicate(label?:string, duration?:number, elements?:nanofl.engine.elements.Element[]) : nanofl.engine.KeyFrame;
+		getShape(createIfNotExist:boolean) : nanofl.engine.elements.ShapeElement;
+		clone() : nanofl.engine.KeyFrame;
+		isEmpty() : boolean;
+		getElementsState() : { elements : nanofl.engine.elements.Element[]; };
+		setElementsState(state:{ elements : nanofl.engine.elements.Element[]; }) : void;
+		getTweenedElements(frameSubIndex:number) : nanofl.engine.TweenedElement[];
+		getNextKeyFrame() : nanofl.engine.KeyFrame;
+		getParentLayerFrame(frameSubIndex:number) : nanofl.engine.Frame;
+		hasGoodMotionTween() : boolean;
+		getParentGuide(frameSubIndex:number) : nanofl.engine.Guide;
+		save(out:htmlparser.XmlBuilder) : void;
+		getIndex() : number;
+		toString() : string;
+		static parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.KeyFrame;
+	}
+	
+	export class Guide
+	{
+		constructor(shape:nanofl.engine.elements.ShapeElement);
+		get(startProps:{ rotation : number; x : number; y : number; }, finishProps:{ rotation : number; x : number; y : number; }, orientToPath:boolean, t:number) : { rotation : number; x : number; y : number; };
 	}
 	
 	export interface IFramedItem
@@ -8478,35 +8495,6 @@ declare module nanofl.engine
 		setTimelineState(state:nanofl.ide.undo.states.TimelineState) : void;
 	}
 	
-	export class KeyFrame implements nanofl.engine.IElementsContainer
-	{
-		constructor(label?:string, duration?:number, motionTween?:nanofl.engine.tweens.MotionTween, elements?:nanofl.engine.elements.Element[]);
-		layer : nanofl.engine.Layer;
-		label : string;
-		duration : number;
-		motionTween : nanofl.engine.tweens.MotionTween;
-		elements : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
-		addElement(element:nanofl.engine.elements.Element, index?:number) : void;
-		removeElementAt(n:number) : void;
-		swapElement(i:number, j:number) : void;
-		duplicate(label?:string, duration?:number, elements?:nanofl.engine.elements.Element[]) : nanofl.engine.KeyFrame;
-		getShape(createIfNotExist:boolean) : nanofl.engine.elements.ShapeElement;
-		clone() : nanofl.engine.KeyFrame;
-		isEmpty() : boolean;
-		getElementsState() : { elements : nanofl.engine.elements.Element[]; };
-		setElementsState(state:{ elements : nanofl.engine.elements.Element[]; }) : void;
-		getTweenedElements(frameSubIndex:number) : nanofl.engine.TweenedElement[];
-		getNextKeyFrame() : nanofl.engine.KeyFrame;
-		getParentLayerFrame(frameSubIndex:number) : nanofl.engine.Frame;
-		hasGoodMotionTween() : boolean;
-		getParentGuide(frameSubIndex:number) : nanofl.engine.Guide;
-		save(out:htmlparser.XmlBuilder) : void;
-		getIndex() : number;
-		getUsedItems() : nanofl.engine.libraryitems.LibraryItem[];
-		toString() : string;
-		static parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.KeyFrame;
-	}
-	
 	export class Layer
 	{
 		constructor(name:string, type?:string, visible?:boolean, locked?:boolean, parentIndex?:number);
@@ -8536,7 +8524,6 @@ declare module nanofl.engine
 		clone() : nanofl.engine.Layer;
 		duplicate(keyFrames:nanofl.engine.ArrayRO<nanofl.engine.KeyFrame>, parentIndex:number) : nanofl.engine.Layer;
 		getIndex() : number;
-		getUsedItems() : nanofl.engine.libraryitems.LibraryItem[];
 		toString() : string;
 		static parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.Layer;
 	}
@@ -8566,6 +8553,15 @@ declare module nanofl.engine
 		preload(ready:() => void) : void;
 		getItemCount() : number;
 		static SCENE_NAME_PATH : string;
+	}
+	
+	export class MovieClipItemTools
+	{
+		static findShapes(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, matrix?:nanofl.engine.geom.Matrix, callb:(arg0:nanofl.engine.elements.ShapeElement, arg1:{ matrix : nanofl.engine.geom.Matrix; layerIndex : number; item : nanofl.engine.libraryitems.MovieClipItem; insideMask : boolean; }) => void) : void;
+		static findMovieClipItems(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, matrix?:nanofl.engine.geom.Matrix, callb:(arg0:nanofl.engine.libraryitems.MovieClipItem, arg1:nanofl.engine.geom.Matrix, arg2:boolean) => void) : void;
+		static findInstances(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, matrix?:nanofl.engine.geom.Matrix, callb:(arg0:nanofl.engine.elements.Instance, arg1:{ matrix : nanofl.engine.geom.Matrix; layerIndex : number; keyFrameIndex : number; item : nanofl.engine.libraryitems.MovieClipItem; insideMask : boolean; }) => void, insideMask?:boolean) : void;
+		static iterateInstances(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, insideMask?:boolean, callb:(arg0:nanofl.engine.elements.Instance, arg1:{ layerIndex : number; keyFrameIndex : number; insideMask : boolean; }) => void) : void;
+		static iterateElements(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, insideMask?:boolean, callb:(arg0:nanofl.engine.elements.Element, arg1:{ layerIndex : number; keyFrameIndex : number; insideMask : boolean; }) => void) : void;
 	}
 	
 	export class Plugins
@@ -8861,7 +8857,6 @@ declare module nanofl.engine.libraryitems
 		preload(ready:() => void) : void;
 		removeInstance(namePath:string) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		getUsedItems() : nanofl.engine.libraryitems.LibraryItem[];
 		duplicate(newNamePath:string) : nanofl.engine.libraryitems.LibraryItem;
 		remove() : void;
 		toString() : string;
@@ -8954,7 +8949,6 @@ declare module nanofl.engine.libraryitems
 		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : nanofl.MovieClip;
 		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
 		hasInstance(namePath:string) : boolean;
-		getUsedItems() : nanofl.engine.libraryitems.LibraryItem[];
 		getDisplayObjectClassName() : string;
 		transform(m:nanofl.engine.geom.Matrix) : void;
 		toString() : string;
