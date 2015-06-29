@@ -7664,7 +7664,6 @@ declare module nanofl.engine.elements
 		visible : boolean;
 		parent : nanofl.engine.IElementsContainer;
 		getType() : string;
-		removeInstance(namePath:string) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		hasInstance(namePath:string) : boolean;
 		save(out:htmlparser.XmlBuilder) : void;
@@ -7696,7 +7695,7 @@ declare module nanofl.engine.elements
 		layers : nanofl.engine.ArrayRO<nanofl.engine.Layer>;
 		addElement(element:nanofl.engine.elements.Element, index?:number) : void;
 		removeElementAt(n:number) : void;
-		removeInstance(namePath:string) : void;
+		removeElement(element:nanofl.engine.elements.Element) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		save(out:htmlparser.XmlBuilder) : void;
 		clone() : nanofl.engine.elements.Element;
@@ -8408,6 +8407,7 @@ declare module nanofl.engine
 		elements : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
 		addElement(element:nanofl.engine.elements.Element, index?:number) : void;
 		removeElementAt(n:number) : void;
+		removeElement(element:nanofl.engine.elements.Element) : void;
 		toString() : string;
 	}
 	
@@ -8421,6 +8421,7 @@ declare module nanofl.engine
 		elements : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
 		addElement(element:nanofl.engine.elements.Element, index?:number) : void;
 		removeElementAt(n:number) : void;
+		removeElement(element:nanofl.engine.elements.Element) : void;
 		swapElement(i:number, j:number) : void;
 		duplicate(label?:string, duration?:number, elements?:nanofl.engine.elements.Element[]) : nanofl.engine.KeyFrame;
 		getShape(createIfNotExist:boolean) : nanofl.engine.elements.ShapeElement;
@@ -8511,7 +8512,6 @@ declare module nanofl.engine
 		insertFrame(frameIndex:number) : void;
 		convertToKeyFrame(frameIndex:number) : boolean;
 		removeFrame(frameIndex:number) : boolean;
-		removeInstance(namePath:string) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		hasInstance(namePath:string) : boolean;
 		getHumanType() : string;
@@ -8855,7 +8855,6 @@ declare module nanofl.engine.libraryitems
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		getFilePathTemplate() : string;
 		preload(ready:() => void) : void;
-		removeInstance(namePath:string) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		duplicate(newNamePath:string) : nanofl.engine.libraryitems.LibraryItem;
 		remove() : void;
@@ -8937,7 +8936,6 @@ declare module nanofl.engine.libraryitems
 		addLayersBlock(layersToAdd:nanofl.engine.Layer[], index?:number) : void;
 		removeLayers(index:number) : nanofl.engine.Layer[];
 		getFramesAt(frameIndex:number) : nanofl.engine.Frame[];
-		removeInstance(namePath:string) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;

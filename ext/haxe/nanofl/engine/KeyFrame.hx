@@ -10,6 +10,7 @@ extern class KeyFrame implements nanofl.engine.IElementsContainer
 	var elements(default, never) : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
 	function addElement(element:nanofl.engine.elements.Element, ?index:Int) : Void;
 	function removeElementAt(n:Int) : Void;
+	function removeElement(element:nanofl.engine.elements.Element) : Void;
 	function swapElement(i:Int, j:Int) : Void;
 	function duplicate(?label:String, ?duration:Int, ?elements:Array<nanofl.engine.elements.Element>) : nanofl.engine.KeyFrame;
 	function getShape(createIfNotExist:Bool) : nanofl.engine.elements.ShapeElement;

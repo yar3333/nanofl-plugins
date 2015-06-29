@@ -19,7 +19,6 @@ extern class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem im
 	function addLayersBlock(layersToAdd:Array<nanofl.engine.Layer>, ?index:Int) : Void;
 	function removeLayers(index:Int) : Array<nanofl.engine.Layer>;
 	function getFramesAt(frameIndex:Int) : Array<nanofl.engine.Frame>;
-	override function removeInstance(namePath:String) : Void;
 	override function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	override function getIcon() : String;
 	override function save(fileApi:nanofl.engine.FileApi) : Void;

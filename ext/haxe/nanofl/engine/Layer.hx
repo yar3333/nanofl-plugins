@@ -16,7 +16,6 @@ extern class Layer
 	function insertFrame(frameIndex:Int) : Void;
 	function convertToKeyFrame(frameIndex:Int) : Bool;
 	function removeFrame(frameIndex:Int) : Bool;
-	function removeInstance(namePath:String) : Void;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	function hasInstance(namePath:String) : Bool;
 	function getHumanType() : String;

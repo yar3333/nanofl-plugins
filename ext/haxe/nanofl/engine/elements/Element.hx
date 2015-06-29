@@ -8,7 +8,6 @@ extern class Element
 	var visible : Bool;
 	var parent(default, null) : nanofl.engine.IElementsContainer;
 	function getType() : String;
-	function removeInstance(namePath:String) : Void;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	function hasInstance(namePath:String) : Bool;
 	function save(out:htmlparser.XmlBuilder) : Void;
