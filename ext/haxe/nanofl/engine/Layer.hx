@@ -16,7 +16,6 @@ extern class Layer
 	function insertFrame(frameIndex:Int) : Void;
 	function convertToKeyFrame(frameIndex:Int) : Bool;
 	function removeFrame(frameIndex:Int) : Bool;
-	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	function getHumanType() : String;
 	function getIcon() : String;
 	function getNestLevel(layers:nanofl.engine.ArrayRO<nanofl.engine.Layer>) : Int;

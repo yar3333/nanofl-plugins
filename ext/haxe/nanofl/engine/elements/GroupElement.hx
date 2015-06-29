@@ -10,7 +10,6 @@ extern class GroupElement extends nanofl.engine.elements.Element implements nano
 	function addElement(element:nanofl.engine.elements.Element, ?index:Int) : Void;
 	function removeElementAt(n:Int) : Void;
 	function removeElement(element:nanofl.engine.elements.Element) : Void;
-	override function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	override function save(out:htmlparser.XmlBuilder) : Void;
 	override function clone() : nanofl.engine.elements.Element;
 	function getChildren() : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;

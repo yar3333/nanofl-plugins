@@ -11,7 +11,6 @@ extern class Instance extends nanofl.engine.elements.Element implements nanofl.e
 	override function getType() : String;
 	override function save(out:htmlparser.XmlBuilder) : Void;
 	override function clone() : nanofl.engine.elements.Element;
-	override function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	function isScene() : Bool;
 	override function getState() : nanofl.ide.undo.states.ElementState;
 	override function setState(state:nanofl.ide.undo.states.ElementState) : Void;

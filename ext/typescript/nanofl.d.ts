@@ -7664,7 +7664,6 @@ declare module nanofl.engine.elements
 		visible : boolean;
 		parent : nanofl.engine.IElementsContainer;
 		getType() : string;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		save(out:htmlparser.XmlBuilder) : void;
 		clone() : nanofl.engine.elements.Element;
 		translate(dx:number, dy:number) : void;
@@ -7695,7 +7694,6 @@ declare module nanofl.engine.elements
 		addElement(element:nanofl.engine.elements.Element, index?:number) : void;
 		removeElementAt(n:number) : void;
 		removeElement(element:nanofl.engine.elements.Element) : void;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		save(out:htmlparser.XmlBuilder) : void;
 		clone() : nanofl.engine.elements.Element;
 		getChildren() : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
@@ -7720,7 +7718,6 @@ declare module nanofl.engine.elements
 		getType() : string;
 		save(out:htmlparser.XmlBuilder) : void;
 		clone() : nanofl.engine.elements.Element;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		isScene() : boolean;
 		getState() : nanofl.ide.undo.states.ElementState;
 		setState(state:nanofl.ide.undo.states.ElementState) : void;
@@ -8510,7 +8507,6 @@ declare module nanofl.engine
 		insertFrame(frameIndex:number) : void;
 		convertToKeyFrame(frameIndex:number) : boolean;
 		removeFrame(frameIndex:number) : boolean;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		getHumanType() : string;
 		getIcon() : string;
 		getNestLevel(layers:nanofl.engine.ArrayRO<nanofl.engine.Layer>) : number;
@@ -8853,7 +8849,6 @@ declare module nanofl.engine.libraryitems
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		getFilePathTemplate() : string;
 		preload(ready:() => void) : void;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		duplicate(newNamePath:string) : nanofl.engine.libraryitems.LibraryItem;
 		remove() : void;
 		toString() : string;
@@ -8933,7 +8928,6 @@ declare module nanofl.engine.libraryitems
 		addLayersBlock(layersToAdd:nanofl.engine.Layer[], index?:number) : void;
 		removeLayers(index:number) : nanofl.engine.Layer[];
 		getFramesAt(frameIndex:number) : nanofl.engine.Frame[];
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
