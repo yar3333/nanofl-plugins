@@ -17,4 +17,5 @@ extern interface FileApi
 	function remove(path:String) : Void;
 	function findFiles(dirPath:String, ?onFile:String -> Void, ?onDir:String -> Bool) : Void;
 	function getPluginPaths() : Array<String>;
+	function getLastModified(path:String) : Date;
 }

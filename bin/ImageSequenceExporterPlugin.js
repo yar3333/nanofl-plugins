@@ -319,6 +319,7 @@ js.Boot.__string_rec = function(o,s) {
 };
 String.__name__ = true;
 Array.__name__ = true;
+Date.__name__ = ["Date"];
 haxe.crypto.Base64.CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 haxe.crypto.Base64.BYTES = haxe.io.Bytes.ofString(haxe.crypto.Base64.CHARS);
 Main.main();

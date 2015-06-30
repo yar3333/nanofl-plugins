@@ -6,7 +6,7 @@ extern class EditorLibrary
 	var activeItem(default, never) : nanofl.engine.libraryitems.LibraryItem;
 	function renameItem(namePath:String, newNamePath:String) : Bool;
 	function removeItems(namePaths:Array<String>) : Void;
-	function copyAndChangeDir(libraryDir:String, ?callb:Void -> Void) : Void;
+	function copyAndChangeDir(libraryDir:String, ?callb:{ var lastModified : Date; } -> Void) : Void;
 	function getNextItemName() : String;
 	function hasItem(namePath:String) : Bool;
 	function addItem(item:nanofl.engine.libraryitems.LibraryItem) : Void;

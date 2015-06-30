@@ -1568,6 +1568,8 @@ function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id
 String.prototype.__class__ = String;
 String.__name__ = true;
 Array.__name__ = true;
+Date.prototype.__class__ = Date;
+Date.__name__ = ["Date"];
 var Int = { __name__ : ["Int"]};
 var Dynamic = { __name__ : ["Dynamic"]};
 var Float = Number;

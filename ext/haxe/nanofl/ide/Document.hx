@@ -5,7 +5,7 @@ extern class Document
 	var path(default, null) : String;
 	var properties(default, null) : nanofl.engine.DocumentProperties;
 	var library(default, null) : nanofl.ide.EditorLibrary;
-	var neverSaved(default, null) : Bool;
+	var lastModified(default, null) : Date;
 	var navigator(default, null) : nanofl.ide.Navigator;
 	var editor(default, null) : nanofl.ide.Editor;
 	var undoQueue(default, null) : nanofl.ide.undo.UndoQueue;

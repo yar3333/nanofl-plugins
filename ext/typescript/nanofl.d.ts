@@ -7360,7 +7360,7 @@ declare module nanofl.ide
 		path : string;
 		properties : nanofl.engine.DocumentProperties;
 		library : nanofl.ide.EditorLibrary;
-		neverSaved : boolean;
+		lastModified : Date;
 		navigator : nanofl.ide.Navigator;
 		editor : nanofl.ide.Editor;
 		undoQueue : nanofl.ide.undo.UndoQueue;
@@ -7480,7 +7480,7 @@ declare module nanofl.ide
 		activeItem : nanofl.engine.libraryitems.LibraryItem;
 		renameItem(namePath:string, newNamePath:string) : boolean;
 		removeItems(namePaths:string[]) : void;
-		copyAndChangeDir(libraryDir:string, callb?:() => void) : void;
+		copyAndChangeDir(libraryDir:string, callb?:(arg:{ lastModified : Date; }) => void) : void;
 		getNextItemName() : string;
 		hasItem(namePath:string) : boolean;
 		addItem(item:nanofl.engine.libraryitems.LibraryItem) : void;
@@ -7609,7 +7609,7 @@ declare module nanofl.ide
 	export interface ServerApi
 	{
 		getTempDirectory() : string;
-		copyDir(src:string, dest:string, overwrite?:boolean, callb?:() => void) : void;
+		copyDir(src:string, dest:string, overwrite?:boolean, callb:(arg:{ lastModified : Date; }) => void) : void;
 		requestUrl(url:string, callb:(arg:string) => void) : void;
 		openInBrowser(url:string) : void;
 		uploadFilesAsLibraryItems(library:nanofl.engine.Library, folderPath:string, files:File[], callb:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
@@ -7649,6 +7649,7 @@ declare module nanofl.ide
 		findFiles(dirPath:string, onFile?:(arg:string) => void, onDir?:(arg:string) => boolean) : void;
 		getPluginPaths() : string[];
 		nativePath(path:string) : string;
+		getLastModified(path:string) : Date;
 		basicRemove(path:string) : void;
 		basicRename(oldPath:string, newPath:string) : void;
 	}
@@ -8340,6 +8341,7 @@ declare module nanofl.engine
 		remove(path:string) : void;
 		findFiles(dirPath:string, onFile?:(arg:string) => void, onDir?:(arg:string) => boolean) : void;
 		getPluginPaths() : string[];
+		getLastModified(path:string) : Date;
 	}
 	
 	export class FilterDef
