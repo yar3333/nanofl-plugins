@@ -333,7 +333,7 @@ SvgImporterPlugin.prototype = {
 				}
 			}
 		}
-		new nanofl.ide.LibraryProcessor(library).optimize();
+		new nanofl.ide.LibraryTools(library).optimize();
 		callb(true);
 	}
 	,__class__: SvgImporterPlugin
@@ -1223,18 +1223,14 @@ svgimport.BaseExporter = function(svg,library) {
 svgimport.BaseExporter.__name__ = ["svgimport","BaseExporter"];
 svgimport.BaseExporter.prototype = {
 	elementsToLibraryItem: function(elements,id) {
-		var mc = new nanofl.engine.libraryitems.MovieClipItem(id);
-		mc.addLayer(new nanofl.engine.Layer("auto"));
-		mc.layers[0].addKeyFrame(new nanofl.engine.KeyFrame(null,null,null,elements));
-		this.library.addItem(mc);
-		return mc;
+		return this.library.addItem(nanofl.engine.MovieClipItemTools.create(id,elements,"auto"));
 	}
 	,applyMaskToElement: function(element,matrix,maskID,prefixID) {
 		if(element == null) return null;
 		if(maskID != null) {
 			element = this.elementsToLibraryItem([element],this.getNextFreeID(prefixID)).newInstance();
-			stdlib.Debug.assert(js.Boot.__instanceof(element,nanofl.engine.elements.Instance),null,{ fileName : "BaseExporter.hx", lineNumber : 49, className : "svgimport.BaseExporter", methodName : "applyMaskToElement"});
-			stdlib.Debug.assert(this.library.getItem((js.Boot.__cast(element , nanofl.engine.elements.Instance)).namePath) != null,null,{ fileName : "BaseExporter.hx", lineNumber : 50, className : "svgimport.BaseExporter", methodName : "applyMaskToElement"});
+			stdlib.Debug.assert(js.Boot.__instanceof(element,nanofl.engine.elements.Instance),null,{ fileName : "BaseExporter.hx", lineNumber : 46, className : "svgimport.BaseExporter", methodName : "applyMaskToElement"});
+			stdlib.Debug.assert(this.library.getItem((js.Boot.__cast(element , nanofl.engine.elements.Instance)).namePath) != null,null,{ fileName : "BaseExporter.hx", lineNumber : 47, className : "svgimport.BaseExporter", methodName : "applyMaskToElement"});
 			var item;
 			item = js.Boot.__cast(this.library.getItem((js.Boot.__cast(element , nanofl.engine.elements.Instance)).namePath) , nanofl.engine.libraryitems.MovieClipItem);
 			this.addMaskItemLayerToMovieClipItem(item,matrix,maskID);

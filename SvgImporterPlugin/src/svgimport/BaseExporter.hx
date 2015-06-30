@@ -6,13 +6,14 @@ import nanofl.engine.elements.Instance;
 import nanofl.engine.elements.ShapeElement;
 import nanofl.engine.fills.SolidFill;
 import nanofl.engine.geom.Contour;
+import nanofl.engine.geom.Matrix;
 import nanofl.engine.geom.Polygon;
 import nanofl.engine.KeyFrame;
 import nanofl.engine.Layer;
 import nanofl.engine.Library;
 import nanofl.engine.libraryitems.MovieClipItem;
+import nanofl.engine.MovieClipItemTools;
 import svgimport.SvgElement;
-import nanofl.engine.geom.Matrix;
 
 class BaseExporter
 {
@@ -28,11 +29,7 @@ class BaseExporter
 	function elementsToLibraryItem(elements:Array<Element>, id:String) : MovieClipItem
 	{
 		stdlib.Debug.assert(id != null && id != "", "ID must not be empty (" + id + ").");
-		var mc = new MovieClipItem(id);
-		mc.addLayer(new Layer("auto"));
-		mc.layers[0].addKeyFrame(new KeyFrame(elements));
-		library.addItem(mc);
-		return mc;
+		return library.addItem(MovieClipItemTools.create(id, elements, "auto"));
 	}
 	
 	function applyMaskToElement<T:Element>(element:T, matrix:Matrix, maskID:String, prefixID:String) : T

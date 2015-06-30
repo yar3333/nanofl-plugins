@@ -7,7 +7,7 @@ import nanofl.engine.Layer;
 import nanofl.engine.Library;
 import nanofl.engine.libraryitems.MovieClipItem;
 import nanofl.engine.Plugins;
-import nanofl.ide.LibraryProcessor;
+import nanofl.ide.LibraryTools;
 import nanofl.ide.plugins.IImporterPlugin;
 import stdlib.Debug;
 import svgimport.Svg;
@@ -88,7 +88,7 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 			}
 		}
 		
-		new nanofl.ide.LibraryProcessor(library).optimize();
+		new nanofl.ide.LibraryTools(library).optimize();
 		
 		callb(true);
 	}

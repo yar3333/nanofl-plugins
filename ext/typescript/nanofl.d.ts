@@ -7553,7 +7553,7 @@ declare module nanofl.ide
 		reload(alertOnSuccess?:boolean) : boolean;
 	}
 	
-	export class LibraryProcessor
+	export class LibraryTools
 	{
 		constructor(library:nanofl.engine.Library);
 		optimize() : void;
@@ -8523,14 +8523,15 @@ declare module nanofl.engine
 	
 	export class Library
 	{
-		constructor(libraryDir:string, addEmptyScene:boolean);
+		constructor(libraryDir:string, items?:Map<string, nanofl.engine.libraryitems.LibraryItem>);
 		libraryDir : string;
+		addEmptyScene() : nanofl.engine.libraryitems.MovieClipItem;
 		loadItems(fileApi:nanofl.engine.FileApi) : void;
 		parseItems(base:htmlparser.HtmlNodeElement) : void;
 		addFont(family:string, variants:nanofl.engine.FontVariant[]) : void;
 		renameItem(oldNamePath:string, newNamePath:string) : void;
 		compile(libraryDir:string) : string;
-		addItem(item:nanofl.engine.libraryitems.LibraryItem) : nanofl.engine.libraryitems.LibraryItem;
+		addItem<T>(item:T) : T;
 		removeItem(namePath:string) : void;
 		getSceneItem() : nanofl.engine.libraryitems.MovieClipItem;
 		getSceneInstance() : nanofl.engine.elements.Instance;
@@ -8556,6 +8557,7 @@ declare module nanofl.engine
 		static iterateInstances(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, insideMask?:boolean, callb:(arg0:nanofl.engine.elements.Instance, arg1:{ layerIndex : number; keyFrameIndex : number; insideMask : boolean; }) => void) : void;
 		static iterateElements(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, insideMask?:boolean, callb:(arg0:nanofl.engine.elements.Element, arg1:{ layerIndex : number; keyFrameIndex : number; insideMask : boolean; }) => void) : void;
 		static hasInstance(item:nanofl.engine.libraryitems.MovieClipItem, namePath:string, deep:boolean) : boolean;
+		static create(namePath:string, elements?:nanofl.engine.elements.Element[], layerName?:string) : nanofl.engine.libraryitems.MovieClipItem;
 	}
 	
 	export class Plugins

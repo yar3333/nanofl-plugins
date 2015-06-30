@@ -1,6 +1,6 @@
 package nanofl.ide;
 
-extern class LibraryProcessor
+extern class LibraryTools
 {
 	function new(library:nanofl.engine.Library) : Void;
 	function optimize() : Void;

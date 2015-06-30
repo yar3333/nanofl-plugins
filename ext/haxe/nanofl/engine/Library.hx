@@ -2,14 +2,15 @@ package nanofl.engine;
 
 extern class Library
 {
-	function new(libraryDir:String, addEmptyScene:Bool) : Void;
+	function new(libraryDir:String, ?items:Map<String, nanofl.engine.libraryitems.LibraryItem>) : Void;
 	var libraryDir(default, null) : String;
+	function addEmptyScene() : nanofl.engine.libraryitems.MovieClipItem;
 	function loadItems(fileApi:nanofl.engine.FileApi) : Void;
 	function parseItems(base:htmlparser.HtmlNodeElement) : Void;
 	function addFont(family:String, variants:Array<nanofl.engine.FontVariant>) : Void;
 	function renameItem(oldNamePath:String, newNamePath:String) : Void;
 	function compile(libraryDir:String) : String;
-	function addItem(item:nanofl.engine.libraryitems.LibraryItem) : nanofl.engine.libraryitems.LibraryItem;
+	function addItem<T>(item:T) : T;
 	function removeItem(namePath:String) : Void;
 	function getSceneItem() : nanofl.engine.libraryitems.MovieClipItem;
 	function getSceneInstance() : nanofl.engine.elements.Instance;
