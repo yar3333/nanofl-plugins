@@ -7480,7 +7480,7 @@ declare module nanofl.ide
 		activeItem : nanofl.engine.libraryitems.LibraryItem;
 		renameItem(namePath:string, newNamePath:string) : boolean;
 		removeItems(namePaths:string[]) : void;
-		copyAndChangeDir(libraryDir:string, callb?:(arg:{ lastModified : Date; }) => void) : void;
+		copyAndChangeDir(libraryDir:string, callb:(arg:{ lastModified : Date; }) => void) : void;
 		getNextItemName() : string;
 		hasItem(namePath:string) : boolean;
 		addItem(item:nanofl.engine.libraryitems.LibraryItem) : void;
