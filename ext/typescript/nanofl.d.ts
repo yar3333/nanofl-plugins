@@ -7370,6 +7370,7 @@ declare module nanofl.ide
 		save(callb?:() => void) : void;
 		saveAs(newPath?:string, callb?:() => void) : void;
 		resize(width:number, height:number) : void;
+		wasReloaded(lastModified:Date) : void;
 		test() : void;
 	}
 	
