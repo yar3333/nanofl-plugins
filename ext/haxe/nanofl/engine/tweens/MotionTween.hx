@@ -10,5 +10,6 @@ extern class MotionTween
 	function apply(frameSubIndex:Int) : Array<nanofl.engine.TweenedElement>;
 	function clone() : nanofl.engine.tweens.MotionTween;
 	function isGood() : Bool;
+	function equ(motionTween:nanofl.engine.tweens.MotionTween) : Bool;
 	static function load(node:htmlparser.HtmlNodeElement) : nanofl.engine.tweens.MotionTween;
 }

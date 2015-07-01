@@ -15,7 +15,7 @@ extern class EditorLibrary
 	function getItem(namePath:String) : nanofl.engine.libraryitems.LibraryItem;
 	function getSceneInstance() : nanofl.engine.elements.Instance;
 	function getSceneItem() : nanofl.engine.libraryitems.MovieClipItem;
-	function getItems() : Array<nanofl.engine.libraryitems.LibraryItem>;
+	function getItems(?includeScene:Bool) : Array<nanofl.engine.libraryitems.LibraryItem>;
 	function getRawLibrary() : nanofl.engine.Library;
 	function getForClipboard() : String;
 	function pasteFromXml(data:String) : Bool;

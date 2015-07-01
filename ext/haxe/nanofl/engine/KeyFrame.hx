@@ -25,6 +25,7 @@ extern class KeyFrame implements nanofl.engine.IElementsContainer
 	function getParentGuide(frameSubIndex:Int) : nanofl.engine.Guide;
 	function save(out:htmlparser.XmlBuilder) : Void;
 	function getIndex() : Int;
+	function equ(keyFrame:nanofl.engine.KeyFrame) : Bool;
 	function toString() : String;
 	static function parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.KeyFrame;
 }

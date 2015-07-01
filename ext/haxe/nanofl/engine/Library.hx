@@ -24,6 +24,7 @@ extern class Library
 	function realUrl(url:String) : String;
 	function getItems(?includeScene:Bool) : Array<nanofl.engine.libraryitems.LibraryItem>;
 	function preload(ready:Void -> Void) : Void;
+	function clone() : nanofl.engine.Library;
 	function getItemCount() : Int;
 	static var SCENE_NAME_PATH(default, never) : String;
 }

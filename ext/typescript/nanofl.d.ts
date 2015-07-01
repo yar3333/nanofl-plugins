@@ -7238,7 +7238,7 @@ declare module nanofl.ide.plugins
 		 * Method must detect loadable files and returns created LibraryItems.
 		 * Successfully processed files must be marked with exclude() to prevent loading them by other loaders.
 		 */
-		load(files:Map<string, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.LibraryItem[];
+		load(files:nanofl.engine.MapRO<string, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.LibraryItem[];
 	}
 }
 
@@ -7490,7 +7490,7 @@ declare module nanofl.ide
 		getItem(namePath:string) : nanofl.engine.libraryitems.LibraryItem;
 		getSceneInstance() : nanofl.engine.elements.Instance;
 		getSceneItem() : nanofl.engine.libraryitems.MovieClipItem;
-		getItems() : nanofl.engine.libraryitems.LibraryItem[];
+		getItems(includeScene?:boolean) : nanofl.engine.libraryitems.LibraryItem[];
 		getRawLibrary() : nanofl.engine.Library;
 		getForClipboard() : string;
 		pasteFromXml(data:string) : boolean;
@@ -7674,6 +7674,7 @@ declare module nanofl.engine.elements
 		getState() : nanofl.ide.undo.states.ElementState;
 		setState(state:nanofl.ide.undo.states.ElementState) : void;
 		transform(m:nanofl.engine.geom.Matrix, applyToStrokeAndFill?:boolean) : void;
+		equ(element:nanofl.engine.elements.Element) : boolean;
 		toString() : string;
 		static parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.elements.Element;
 	}
@@ -7707,6 +7708,7 @@ declare module nanofl.engine.elements
 		getNavigatorIcon() : string;
 		getTimeline() : nanofl.engine.ITimeline;
 		transform(m:nanofl.engine.geom.Matrix, applyToStrokeAndFill?:boolean) : void;
+		equ(element:nanofl.engine.elements.Element) : boolean;
 	}
 	
 	export class Instance extends nanofl.engine.elements.Element implements nanofl.engine.IPathElement
@@ -7731,6 +7733,7 @@ declare module nanofl.engine.elements
 		getNavigatorIcon() : string;
 		getChildren() : nanofl.engine.elements.Element[];
 		getTimeline() : nanofl.engine.ITimeline;
+		equ(element:nanofl.engine.elements.Element) : boolean;
 	}
 	
 	export class ShapeElement extends nanofl.engine.elements.Element
@@ -7784,6 +7787,7 @@ declare module nanofl.engine.elements
 		applyStrokeAlpha(alpha:number) : void;
 		applyFillAlpha(alpha:number) : void;
 		getEdgeCount() : number;
+		equ(element:nanofl.engine.elements.Element) : boolean;
 		toString() : string;
 	}
 	
@@ -7797,6 +7801,7 @@ declare module nanofl.engine.elements
 		setState(state:nanofl.ide.undo.states.ElementState) : void;
 		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
 		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		equ(element:nanofl.engine.elements.Element) : boolean;
 		toString() : string;
 	}
 	
@@ -7818,6 +7823,7 @@ declare module nanofl.engine.elements
 		clone() : nanofl.engine.elements.Element;
 		getState() : nanofl.ide.undo.states.ElementState;
 		setState(_state:nanofl.ide.undo.states.ElementState) : void;
+		equ(element:nanofl.engine.elements.Element) : boolean;
 	}
 }
 
@@ -8434,6 +8440,7 @@ declare module nanofl.engine
 		getParentGuide(frameSubIndex:number) : nanofl.engine.Guide;
 		save(out:htmlparser.XmlBuilder) : void;
 		getIndex() : number;
+		equ(keyFrame:nanofl.engine.KeyFrame) : boolean;
 		toString() : string;
 		static parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.KeyFrame;
 	}
@@ -8520,6 +8527,7 @@ declare module nanofl.engine
 		clone() : nanofl.engine.Layer;
 		duplicate(keyFrames:nanofl.engine.ArrayRO<nanofl.engine.KeyFrame>, parentIndex:number) : nanofl.engine.Layer;
 		getIndex() : number;
+		equ(layer:nanofl.engine.Layer) : boolean;
 		toString() : string;
 		static parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.Layer;
 	}
@@ -8548,9 +8556,12 @@ declare module nanofl.engine
 		realUrl(url:string) : string;
 		getItems(includeScene?:boolean) : nanofl.engine.libraryitems.LibraryItem[];
 		preload(ready:() => void) : void;
+		clone() : nanofl.engine.Library;
 		getItemCount() : number;
 		static SCENE_NAME_PATH : string;
 	}
+	
+	type MapRO<K, T> = Map<K, T>;
 	
 	export class MovieClipItemTools
 	{
@@ -8856,6 +8867,7 @@ declare module nanofl.engine.libraryitems
 		preload(ready:() => void) : void;
 		duplicate(newNamePath:string) : nanofl.engine.libraryitems.LibraryItem;
 		remove() : void;
+		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 		toString() : string;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.LibraryItem;
 	}
@@ -8886,6 +8898,7 @@ declare module nanofl.engine.libraryitems
 		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
 		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
 		getDisplayObjectClassName() : string;
+		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 		toString() : string;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.BitmapItem;
 	}
@@ -8897,6 +8910,7 @@ declare module nanofl.engine.libraryitems
 		clone() : nanofl.engine.libraryitems.LibraryItem;
 		getIcon() : string;
 		toString() : string;
+		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 	}
 	
 	export class FontItem extends nanofl.engine.libraryitems.LibraryItem
@@ -8910,6 +8924,7 @@ declare module nanofl.engine.libraryitems
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		toFont() : nanofl.engine.Font;
 		preload(ready:() => void) : void;
+		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 		toString() : string;
 		static parse(namePath:string, fontNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.FontItem;
 	}
@@ -8944,6 +8959,7 @@ declare module nanofl.engine.libraryitems
 		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
 		getDisplayObjectClassName() : string;
 		transform(m:nanofl.engine.geom.Matrix) : void;
+		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 		toString() : string;
 		static parse(namePath:string, movieClipNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MovieClipItem;
 	}
@@ -8959,6 +8975,7 @@ declare module nanofl.engine.libraryitems
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		getUrl() : string;
+		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 		toString() : string;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.SoundItem;
 	}
@@ -8997,6 +9014,7 @@ declare module nanofl.engine.tweens
 		apply(frameSubIndex:number) : nanofl.engine.TweenedElement[];
 		clone() : nanofl.engine.tweens.MotionTween;
 		isGood() : boolean;
+		equ(motionTween:nanofl.engine.tweens.MotionTween) : boolean;
 		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.tweens.MotionTween;
 	}
 }

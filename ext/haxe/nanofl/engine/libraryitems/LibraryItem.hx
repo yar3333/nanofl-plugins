@@ -13,6 +13,7 @@ extern class LibraryItem
 	function preload(ready:Void -> Void) : Void;
 	function duplicate(newNamePath:String) : nanofl.engine.libraryitems.LibraryItem;
 	function remove() : Void;
+	function equ(item:nanofl.engine.libraryitems.LibraryItem) : Bool;
 	function toString() : String;
 	static function parse(namePath:String, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.LibraryItem;
 }

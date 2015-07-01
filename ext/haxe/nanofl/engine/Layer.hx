@@ -26,6 +26,7 @@ extern class Layer
 	function clone() : nanofl.engine.Layer;
 	function duplicate(keyFrames:nanofl.engine.ArrayRO<nanofl.engine.KeyFrame>, parentIndex:Int) : nanofl.engine.Layer;
 	function getIndex() : Int;
+	function equ(layer:nanofl.engine.Layer) : Bool;
 	function toString() : String;
 	static function parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.Layer;
 }

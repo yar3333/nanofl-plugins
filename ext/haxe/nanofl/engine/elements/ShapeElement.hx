@@ -76,5 +76,6 @@ extern class ShapeElement extends nanofl.engine.elements.Element
 	function applyStrokeAlpha(alpha:Float) : Void;
 	function applyFillAlpha(alpha:Float) : Void;
 	function getEdgeCount() : Int;
+	override function equ(element:nanofl.engine.elements.Element) : Bool;
 	override function toString() : String;
 }

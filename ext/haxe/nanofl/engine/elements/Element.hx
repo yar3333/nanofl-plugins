@@ -16,6 +16,7 @@ extern class Element
 	function getState() : nanofl.ide.undo.states.ElementState;
 	function setState(state:nanofl.ide.undo.states.ElementState) : Void;
 	function transform(m:nanofl.engine.geom.Matrix, ?applyToStrokeAndFill:Bool) : Void;
+	function equ(element:nanofl.engine.elements.Element) : Bool;
 	function toString() : String;
 	static function parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.elements.Element;
 }

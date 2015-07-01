@@ -10,7 +10,6 @@ BitmapLoaderPlugin.prototype = {
 		var $it0 = files.iterator();
 		while( $it0.hasNext() ) {
 			var file = $it0.next();
-			if(file.excluded) continue;
 			var ext = haxe.io.Path.extension(file.path);
 			if(HxOverrides.indexOf(BitmapLoaderPlugin.extensions,ext,0) >= 0) {
 				var namePath = [haxe.io.Path.withoutExtension(file.path)];
@@ -50,7 +49,6 @@ FontLoaderPlugin.prototype = {
 		var $it0 = files.iterator();
 		while( $it0.hasNext() ) {
 			var file = $it0.next();
-			if(file.excluded) continue;
 			if(haxe.io.Path.extension(file.path) == "font") {
 				var namePath = [haxe.io.Path.withoutExtension(file.path)];
 				if(!Lambda.exists(r,(function(namePath) {
@@ -117,7 +115,6 @@ MovieClipLoaderPlugin.prototype = {
 		var $it0 = files.iterator();
 		while( $it0.hasNext() ) {
 			var file = $it0.next();
-			if(file.excluded) continue;
 			if(haxe.io.Path.extension(file.path) == "movieclip") {
 				var namePath = [haxe.io.Path.withoutExtension(file.path)];
 				if(!Lambda.exists(r,(function(namePath) {
@@ -145,7 +142,6 @@ SoundLoaderPlugin.prototype = {
 		var $it0 = files.iterator();
 		while( $it0.hasNext() ) {
 			var file = $it0.next();
-			if(file.excluded) continue;
 			var ext = haxe.io.Path.extension(file.path);
 			if(HxOverrides.indexOf(SoundLoaderPlugin.extensions,ext,0) >= 0) {
 				var namePath = [haxe.io.Path.withoutExtension(file.path)];

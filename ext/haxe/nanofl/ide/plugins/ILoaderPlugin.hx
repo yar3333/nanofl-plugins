@@ -16,5 +16,5 @@ extern interface ILoaderPlugin
 	 * Method must detect loadable files and returns created LibraryItems.
 	 * Successfully processed files must be marked with exclude() to prevent loading them by other loaders.
 	 */
-	function load(files:Map<String, nanofl.ide.CachedFile>) : Array<nanofl.engine.libraryitems.LibraryItem>;
+	function load(files:nanofl.engine.MapRO<String, nanofl.ide.CachedFile>) : Array<nanofl.engine.libraryitems.LibraryItem>;
 }

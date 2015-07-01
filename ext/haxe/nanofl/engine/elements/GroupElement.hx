@@ -21,4 +21,5 @@ extern class GroupElement extends nanofl.engine.elements.Element implements nano
 	function getNavigatorIcon() : String;
 	function getTimeline() : nanofl.engine.ITimeline;
 	override function transform(m:nanofl.engine.geom.Matrix, ?applyToStrokeAndFill:Bool) : Void;
+	override function equ(element:nanofl.engine.elements.Element) : Bool;
 }

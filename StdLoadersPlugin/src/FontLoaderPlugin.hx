@@ -1,6 +1,7 @@
 import haxe.io.Path;
 import nanofl.engine.libraryitems.FontItem;
 import nanofl.engine.libraryitems.LibraryItem;
+import nanofl.engine.MapRO;
 import nanofl.ide.CachedFile;
 import nanofl.ide.plugins.ILoaderPlugin;
 using Lambda;
@@ -12,14 +13,12 @@ class FontLoaderPlugin implements ILoaderPlugin
 	
 	public function new() {}
 	
-	public function load(files:Map<String, CachedFile>) : Array<LibraryItem>
+	public function load(files:MapRO<String, CachedFile>) : Array<LibraryItem>
 	{
 		var r = new Array<LibraryItem>();
 		
 		for (file in files)
 		{
-			if (file.excluded) continue;
-			
 			if (Path.extension(file.path) == "font")
 			{
 				var namePath = Path.withoutExtension(file.path);
