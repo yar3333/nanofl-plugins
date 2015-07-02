@@ -7508,7 +7508,9 @@ declare module nanofl.ide
 		importFromPaths(paths:string[], folderPath?:string, ready?:() => void) : void;
 		importFromFiles(files:File[], folderPath?:string, callb?:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
 		generateTextureAtlases(width:number, height:number, padding:number) : Map<string, nanofl.ide.textureatlas.TextureAtlas>;
-		selectUnused() : void;
+		selectUnusedItems() : void;
+		removeUnusedItems() : void;
+		optimize() : void;
 	}
 	
 	export class Figure
@@ -7556,9 +7558,8 @@ declare module nanofl.ide
 	
 	export class LibraryTools
 	{
-		constructor(library:nanofl.engine.Library);
-		optimize() : void;
-		getUnused() : string[];
+		static optimize(library:nanofl.engine.Library) : void;
+		static getUnusedItems(library:nanofl.engine.Library) : string[];
 	}
 	
 	export class Navigator
@@ -8543,6 +8544,8 @@ declare module nanofl.engine
 		addFont(family:string, variants:nanofl.engine.FontVariant[]) : void;
 		renameItem(oldNamePath:string, newNamePath:string) : void;
 		compile(libraryDir:string) : string;
+		removeUnusedItems() : void;
+		optimize() : void;
 		addItem<T>(item:T) : T;
 		removeItem(namePath:string) : void;
 		getSceneItem() : nanofl.engine.libraryitems.MovieClipItem;

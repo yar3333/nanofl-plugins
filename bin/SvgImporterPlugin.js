@@ -333,7 +333,7 @@ SvgImporterPlugin.prototype = {
 				}
 			}
 		}
-		new nanofl.ide.LibraryTools(library).optimize();
+		nanofl.ide.LibraryTools.optimize(library);
 		callb(true);
 	}
 	,__class__: SvgImporterPlugin

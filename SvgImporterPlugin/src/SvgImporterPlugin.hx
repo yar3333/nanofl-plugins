@@ -88,7 +88,7 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 			}
 		}
 		
-		new nanofl.ide.LibraryTools(library).optimize();
+		LibraryTools.optimize(library);
 		
 		callb(true);
 	}

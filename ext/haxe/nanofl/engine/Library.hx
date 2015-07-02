@@ -10,6 +10,8 @@ extern class Library
 	function addFont(family:String, variants:Array<nanofl.engine.FontVariant>) : Void;
 	function renameItem(oldNamePath:String, newNamePath:String) : Void;
 	function compile(libraryDir:String) : String;
+	function removeUnusedItems() : Void;
+	function optimize() : Void;
 	function addItem<T>(item:T) : T;
 	function removeItem(namePath:String) : Void;
 	function getSceneItem() : nanofl.engine.libraryitems.MovieClipItem;

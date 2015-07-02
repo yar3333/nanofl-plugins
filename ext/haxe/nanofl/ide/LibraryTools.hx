@@ -2,7 +2,6 @@ package nanofl.ide;
 
 extern class LibraryTools
 {
-	function new(library:nanofl.engine.Library) : Void;
-	function optimize() : Void;
-	function getUnused() : Array<String>;
+	static function optimize(library:nanofl.engine.Library) : Void;
+	static function getUnusedItems(library:nanofl.engine.Library) : Array<String>;
 }
