@@ -8106,6 +8106,7 @@ declare module nanofl
 		static uncache(obj:createjs.DisplayObject) : void;
 		static getBounds(obj:createjs.DisplayObject, ignoreSelf?:boolean) : createjs.Rectangle;
 		static callMethod(parent:createjs.DisplayObject, name:string) : void;
+		static dump(obj:createjs.DisplayObject, level?:number) : void;
 	}
 	
 	export class MovieClip extends createjs.Container
