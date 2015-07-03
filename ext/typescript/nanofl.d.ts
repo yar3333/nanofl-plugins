@@ -7511,6 +7511,7 @@ declare module nanofl.ide
 		selectUnusedItems() : void;
 		removeUnusedItems() : void;
 		optimize() : void;
+		extractNewAndChangedItems(oldLibrary:nanofl.engine.Library) : nanofl.engine.Library;
 	}
 	
 	export class Figure
@@ -7560,6 +7561,8 @@ declare module nanofl.ide
 	{
 		static optimize(library:nanofl.engine.Library) : void;
 		static getUnusedItems(library:nanofl.engine.Library) : string[];
+		static getNewAndChangedItems(currentLibrary:nanofl.engine.Library, oldLibrary:nanofl.engine.Library) : nanofl.engine.libraryitems.LibraryItem[];
+		static getItemsContainInstances(library:nanofl.engine.Library, namePaths:string[]) : nanofl.engine.libraryitems.LibraryItem[];
 	}
 	
 	export class Navigator
@@ -7835,7 +7838,7 @@ declare module nanofl.ide.undo
 		/**
 		 * This method may be called several times with different operations.
 		 */
-		beginTransaction(operations:{ document : boolean; element : nanofl.engine.elements.Element; elements : boolean; figure : boolean; libraryAddItem : string; libraryItem : string; libraryRemoveItems : string[]; libraryRenameItem : { newNamePath : string; oldNamePath : string; }; timeline : boolean; transformations : boolean; }) : void;
+		beginTransaction(operations:{ document : boolean; element : nanofl.engine.elements.Element; elements : boolean; figure : boolean; libraryAddItem : string; libraryChangeItems : string[]; libraryRemoveItems : string[]; libraryRenameItem : { newNamePath : string; oldNamePath : string; }; timeline : boolean; transformations : boolean; }) : void;
 		cancelTransaction() : void;
 		revertTransaction() : void;
 		forgetTransaction() : void;
@@ -8536,7 +8539,7 @@ declare module nanofl.engine
 	
 	export class Library
 	{
-		constructor(libraryDir:string, items?:Map<string, nanofl.engine.libraryitems.LibraryItem>);
+		constructor(libraryDir:string, items?:nanofl.engine.libraryitems.LibraryItem[]);
 		libraryDir : string;
 		addEmptyScene() : nanofl.engine.libraryitems.MovieClipItem;
 		loadItems(fileApi:nanofl.engine.FileApi) : void;

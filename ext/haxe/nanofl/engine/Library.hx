@@ -2,7 +2,7 @@ package nanofl.engine;
 
 extern class Library
 {
-	function new(libraryDir:String, ?items:Map<String, nanofl.engine.libraryitems.LibraryItem>) : Void;
+	function new(libraryDir:String, ?items:Array<nanofl.engine.libraryitems.LibraryItem>) : Void;
 	var libraryDir(default, null) : String;
 	function addEmptyScene() : nanofl.engine.libraryitems.MovieClipItem;
 	function loadItems(fileApi:nanofl.engine.FileApi) : Void;

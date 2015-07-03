@@ -12,7 +12,7 @@ extern class UndoQueue
 	var elements : Bool; @:optional
 	var figure : Bool; @:optional
 	var libraryAddItem : String; @:optional
-	var libraryItem : String; @:optional
+	var libraryChangeItems : Array<String>; @:optional
 	var libraryRemoveItems : Array<String>; @:optional
 	var libraryRenameItem : { var newNamePath : String; var oldNamePath : String; }; @:optional
 	var timeline : Bool; @:optional
