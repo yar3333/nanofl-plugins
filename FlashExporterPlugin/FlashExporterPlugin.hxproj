@@ -4,7 +4,7 @@
   <output>
     <movie outputType="CustomBuild" />
     <movie input="" />
-    <movie path="..\bin\FlashXflExporterPlugin.js" />
+    <movie path="..\bin\FlashExporterPlugin.js" />
     <movie fps="0" />
     <movie width="0" />
     <movie height="0" />
@@ -23,7 +23,7 @@
     <option directives="" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
-    <option mainClass="FlashXflExporterPlugin" />
+    <option mainClass="FlashExporterPlugin" />
     <option enabledebug="False" />
     <option additional="" />
   </build>
