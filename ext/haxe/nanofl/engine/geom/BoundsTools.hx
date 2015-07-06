@@ -8,4 +8,5 @@ extern class BoundsTools
 	static function isPointInside(bounds:nanofl.engine.geom.Bounds, x:Float, y:Float, ?gap:Float) : Bool;
 	static function clone(bounds:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 	static function toString(bounds:nanofl.engine.geom.Bounds) : String;
+	static function toRectangle(bounds:nanofl.engine.geom.Bounds) : createjs.Rectangle;
 }

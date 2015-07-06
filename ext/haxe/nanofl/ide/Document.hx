@@ -2,6 +2,13 @@ package nanofl.ide;
 
 extern class Document
 {
+	/**
+	 * Used when document was imported from none-NanoFL format. In other cases is null.
+	 */
+	var originalPath(default, null) : String;
+	/**
+	 * Path to NanoFL document file (*.nfl).
+	 */
 	var path(default, null) : String;
 	var properties(default, null) : nanofl.engine.DocumentProperties;
 	var library(default, null) : nanofl.ide.EditorLibrary;
@@ -17,4 +24,5 @@ extern class Document
 	function resize(width:Int, height:Int) : Void;
 	function wasReloaded(lastModified:Date) : Void;
 	function test() : Void;
+	static function loadDocument(app:nanofl.ide.Application, path:String, callb:nanofl.ide.Document -> Void) : Void;
 }

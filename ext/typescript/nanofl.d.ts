@@ -6641,6 +6641,7 @@ declare module nanofl.engine.geom
 		static isPointInside(bounds:nanofl.engine.geom.Bounds, x:number, y:number, gap?:number) : boolean;
 		static clone(bounds:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 		static toString(bounds:nanofl.engine.geom.Bounds) : string;
+		static toRectangle(bounds:nanofl.engine.geom.Bounds) : createjs.Rectangle;
 	}
 	
 	export class Contour
@@ -7319,12 +7320,12 @@ declare module nanofl.ide
 	{
 		addRecent(path:string) : void;
 		clipboard : nanofl.ide.Clipboard;
-		createNewEmptyDocument(addEmptySceneToLibrary:boolean, docProp?:nanofl.engine.DocumentProperties) : nanofl.ide.Document;
+		createNewEmptyDocument(addEmptySceneToLibrary:boolean, originalPath?:string) : nanofl.ide.Document;
 		document : nanofl.ide.Document;
 		fileApi : nanofl.ide.XpcomFileApi;
 		generateTempDocumentFilePath() : string;
-		loadDocument(path:string, activateAfterLoad?:boolean, callb?:(arg:nanofl.ide.Document) => void) : void;
 		newObjectParams : nanofl.ide.NewObjectParams;
+		openDocument(path:string, callb?:(arg:nanofl.ide.Document) => void) : void;
 		pid : string;
 		plugins : nanofl.ide.IPlugins;
 		quit(force?:boolean, exitCode?:number) : void;
@@ -7357,6 +7358,13 @@ declare module nanofl.ide
 	
 	export class Document
 	{
+		/**
+		 * Used when document was imported from none-NanoFL format. In other cases is null.
+		 */
+		originalPath : string;
+		/**
+		 * Path to NanoFL document file (*.nfl).
+		 */
 		path : string;
 		properties : nanofl.engine.DocumentProperties;
 		library : nanofl.ide.EditorLibrary;
@@ -7372,6 +7380,7 @@ declare module nanofl.ide
 		resize(width:number, height:number) : void;
 		wasReloaded(lastModified:Date) : void;
 		test() : void;
+		static loadDocument(app:nanofl.ide.Application, path:string, callb:(arg:nanofl.ide.Document) => void) : void;
 	}
 	
 	export class Editor
@@ -7434,6 +7443,9 @@ declare module nanofl.ide
 		cutToClipboard() : void;
 		copyToClipboard() : void;
 		pasteFromClipboard() : void;
+		flipSelectedHorizontal() : void;
+		flipSelectedVertical() : void;
+		getSelectedBounds() : { height : number; width : number; x : number; y : number; };
 	}
 	
 	export class EditorLayer
@@ -7647,7 +7659,7 @@ declare module nanofl.ide
 		saveContent(filePath:string, text:string, append?:boolean) : void;
 		saveBinary(filePath:string, data:number[]) : void;
 		isDirectory(path:string) : boolean;
-		run(filePath:string, args:string[], blocking:boolean) : void;
+		run(filePath:string, args:string[], blocking:boolean) : number;
 		copy(srcPath:string, destPath:string) : void;
 		rename(oldName:string, newName:string) : void;
 		remove(path:string) : void;
@@ -7655,6 +7667,8 @@ declare module nanofl.ide
 		getPluginPaths() : string[];
 		nativePath(path:string) : string;
 		getLastModified(path:string) : Date;
+		zip(srcDir:string, destZip:string) : boolean;
+		unzip(srcZip:string, destDir:string) : boolean;
 		basicRemove(path:string) : void;
 		basicRename(oldPath:string, newPath:string) : void;
 	}
@@ -8347,13 +8361,15 @@ declare module nanofl.engine
 		saveBinary(filePath:string, data:number[]) : void;
 		exists(path:string) : boolean;
 		isDirectory(path:string) : boolean;
-		run(filePath:string, args:string[], blocking:boolean) : void;
+		run(filePath:string, args:string[], blocking:boolean) : number;
 		copy(srcPath:string, destPath:string) : void;
 		rename(oldPath:string, newPath:string) : void;
 		remove(path:string) : void;
 		findFiles(dirPath:string, onFile?:(arg:string) => void, onDir?:(arg:string) => boolean) : void;
 		getPluginPaths() : string[];
 		getLastModified(path:string) : Date;
+		zip(srcDir:string, destZip:string) : boolean;
+		unzip(srcZip:string, destDir:string) : boolean;
 	}
 	
 	export class FilterDef

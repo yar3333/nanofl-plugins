@@ -64,4 +64,7 @@ extern class Editor
 	function cutToClipboard() : Void;
 	function copyToClipboard() : Void;
 	function pasteFromClipboard() : Void;
+	function flipSelectedHorizontal() : Void;
+	function flipSelectedVertical() : Void;
+	function getSelectedBounds() : { var height : Float; var width : Float; var x : Float; var y : Float; };
 }

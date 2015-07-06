@@ -11,11 +11,13 @@ extern interface FileApi
 	function saveBinary(filePath:String, data:Array<Int>) : Void;
 	function exists(path:String) : Bool;
 	function isDirectory(path:String) : Bool;
-	function run(filePath:String, args:Array<String>, blocking:Bool) : Void;
+	function run(filePath:String, args:Array<String>, blocking:Bool) : Int;
 	function copy(srcPath:String, destPath:String) : Void;
 	function rename(oldPath:String, newPath:String) : Void;
 	function remove(path:String) : Void;
 	function findFiles(dirPath:String, ?onFile:String -> Void, ?onDir:String -> Bool) : Void;
 	function getPluginPaths() : Array<String>;
 	function getLastModified(path:String) : Date;
+	function zip(srcDir:String, destZip:String) : Bool;
+	function unzip(srcZip:String, destDir:String) : Bool;
 }
