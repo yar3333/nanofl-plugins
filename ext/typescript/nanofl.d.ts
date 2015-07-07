@@ -7320,16 +7320,19 @@ declare module nanofl.ide
 	{
 		addRecent(path:string) : void;
 		clipboard : nanofl.ide.Clipboard;
-		createNewEmptyDocument(addEmptySceneToLibrary:boolean, originalPath?:string) : nanofl.ide.Document;
+		createNewEmptyDocument() : nanofl.ide.Document;
 		document : nanofl.ide.Document;
+		exportDocument(exporter:nanofl.ide.plugins.IExporterPlugin, callb?:(arg:boolean) => void) : void;
 		fileApi : nanofl.ide.XpcomFileApi;
 		generateTempDocumentFilePath() : string;
+		helpers : nanofl.ide.Helpers;
+		importDocument(importer:nanofl.ide.plugins.IImporterPlugin, callb?:(arg:nanofl.ide.Document) => void) : void;
 		newObjectParams : nanofl.ide.NewObjectParams;
-		openDocument(path:string, callb?:(arg:nanofl.ide.Document) => void) : void;
+		openDocument(path?:string, callb?:(arg:nanofl.ide.Document) => void) : void;
 		pid : string;
 		plugins : nanofl.ide.IPlugins;
 		quit(force?:boolean, exitCode?:number) : void;
-		saveDocumentIfNeed(callb:() => void) : void;
+		saveDocumentIfNeed(callb:(arg:boolean) => void) : void;
 		serverApi : nanofl.ide.ServerApi;
 	}
 	
@@ -7375,12 +7378,14 @@ declare module nanofl.ide
 		activate(isCenterView:boolean) : void;
 		setProperties(properties:nanofl.engine.DocumentProperties) : void;
 		updateTitle() : void;
-		save(callb?:() => void) : void;
-		saveAs(newPath?:string, callb?:() => void) : void;
+		save(callb?:(arg:boolean) => void) : void;
+		saveAs(newPath?:string, callb?:(arg:boolean) => void) : void;
+		export(path:string, callb:(arg:boolean) => void) : void;
 		resize(width:number, height:number) : void;
 		wasReloaded(lastModified:Date) : void;
 		test() : void;
-		static loadDocument(app:nanofl.ide.Application, path:string, callb:(arg:nanofl.ide.Document) => void) : void;
+		static createTemporary(app:nanofl.ide.Application, originalPath?:string) : nanofl.ide.Document;
+		static load(app:nanofl.ide.Application, path:string, callb:(arg:nanofl.ide.Document) => void) : void;
 	}
 	
 	export class Editor
@@ -7564,8 +7569,6 @@ declare module nanofl.ide
 	
 	type IPlugins =
 	{
-		exportDocument(pluginName:string, destFilePath?:string, callb?:(arg:boolean) => void) : void;
-		importDocument(pluginName:string, srcFilePath?:string, callb?:(arg:nanofl.ide.Document) => void) : void;
 		reload(alertOnSuccess?:boolean) : boolean;
 	}
 	
