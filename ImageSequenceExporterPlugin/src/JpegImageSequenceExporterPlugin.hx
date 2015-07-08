@@ -11,7 +11,7 @@ class JpegImageSequenceExporterPlugin implements IExporterPlugin
 	
 	public var menuItemName = "Sequence of JPEG Images (*.jpg)";
 	public var menuItemIcon = "icon-film";
-	public var fileFilterDescription = "JPEG Image (*.jpg)";
+	public var fileFilterDescription = "JPEG Images Sequence (*.jpg)";
 	public var fileFilterExtensions = [ "jpg", "jpeg" ];
 	public var fileDefaultExtension = "jpg";
 	
