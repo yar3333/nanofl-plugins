@@ -7320,11 +7320,10 @@ declare module nanofl.ide
 	{
 		addRecent(path:string) : void;
 		clipboard : nanofl.ide.Clipboard;
-		createNewEmptyDocument() : nanofl.ide.Document;
+		createNewEmptyDocument(callb?:(arg:nanofl.ide.Document) => void) : void;
 		document : nanofl.ide.Document;
 		exportDocument(exporter:nanofl.ide.plugins.IExporterPlugin, callb?:(arg:boolean) => void) : void;
 		fileApi : nanofl.ide.XpcomFileApi;
-		generateTempDocumentFilePath() : string;
 		helpers : nanofl.ide.Helpers;
 		importDocument(importer:nanofl.ide.plugins.IImporterPlugin, callb?:(arg:nanofl.ide.Document) => void) : void;
 		newObjectParams : nanofl.ide.NewObjectParams;
@@ -7332,7 +7331,6 @@ declare module nanofl.ide
 		pid : string;
 		plugins : nanofl.ide.IPlugins;
 		quit(force?:boolean, exitCode?:number) : void;
-		saveDocumentIfNeed(callb:(arg:boolean) => void) : void;
 		serverApi : nanofl.ide.ServerApi;
 	}
 	
@@ -7384,6 +7382,7 @@ declare module nanofl.ide
 		resize(width:number, height:number) : void;
 		wasReloaded(lastModified:Date) : void;
 		test() : void;
+		static generateTempFilePath(app:nanofl.ide.Application) : string;
 		static createTemporary(app:nanofl.ide.Application, originalPath?:string) : nanofl.ide.Document;
 		static load(app:nanofl.ide.Application, path:string, callb:(arg:nanofl.ide.Document) => void) : void;
 	}

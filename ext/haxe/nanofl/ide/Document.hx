@@ -25,6 +25,7 @@ extern class Document
 	function resize(width:Int, height:Int) : Void;
 	function wasReloaded(lastModified:Date) : Void;
 	function test() : Void;
+	static function generateTempFilePath(app:nanofl.ide.Application) : String;
 	static function createTemporary(app:nanofl.ide.Application, ?originalPath:String) : nanofl.ide.Document;
 	static function load(app:nanofl.ide.Application, path:String, callb:nanofl.ide.Document -> Void) : Void;
 }
