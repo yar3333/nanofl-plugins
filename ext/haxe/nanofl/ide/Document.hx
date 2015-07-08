@@ -22,9 +22,9 @@ extern class Document
 	function save(?callb:Bool -> Void) : Void;
 	function saveAs(?newPath:String, ?callb:Bool -> Void) : Void;
 	function export(destPath:String, ?exporter:nanofl.ide.plugins.IExporterPlugin, ?callb:Bool -> Void) : Void;
+	function reload(events:{ var add : String -> Void; var begin : Void -> Void; var end : Void -> Void; var remove : String -> Void; }) : Void;
 	function test() : Void;
 	function resize(width:Int, height:Int) : Void;
-	function wasReloaded(lastModified:Date) : Void;
 	function canBeSaved() : Bool;
 	static function createTemporary(app:nanofl.ide.Application) : nanofl.ide.Document;
 	static function load(app:nanofl.ide.Application, path:String, callb:nanofl.ide.Document -> Void) : Void;
