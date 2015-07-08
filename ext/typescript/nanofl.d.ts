@@ -7378,10 +7378,11 @@ declare module nanofl.ide
 		updateTitle() : void;
 		save(callb?:(arg:boolean) => void) : void;
 		saveAs(newPath?:string, callb?:(arg:boolean) => void) : void;
-		export(path:string, exporter?:nanofl.ide.plugins.IExporterPlugin, callb?:(arg:boolean) => void) : void;
+		export(destPath:string, exporter?:nanofl.ide.plugins.IExporterPlugin, callb?:(arg:boolean) => void) : void;
 		test() : void;
 		resize(width:number, height:number) : void;
 		wasReloaded(lastModified:Date) : void;
+		canBeSaved() : boolean;
 		static createTemporary(app:nanofl.ide.Application) : nanofl.ide.Document;
 		static load(app:nanofl.ide.Application, path:string, callb:(arg:nanofl.ide.Document) => void) : void;
 		static import_(app:nanofl.ide.Application, path:string, importer?:nanofl.ide.plugins.IImporterPlugin, callb?:(arg:nanofl.ide.Document) => void) : void;
