@@ -7498,7 +7498,7 @@ declare module nanofl.ide
 		activeItem : nanofl.engine.libraryitems.LibraryItem;
 		renameItem(namePath:string, newNamePath:string) : boolean;
 		removeItems(namePaths:string[]) : void;
-		copyAndChangeDir(libraryDir:string, callb:(arg:{ lastModified : Date; }) => void) : void;
+		copyAndChangeDir(libraryDir:string, callb:() => void) : void;
 		getNextItemName() : string;
 		hasItem(namePath:string) : boolean;
 		addItem(item:nanofl.engine.libraryitems.LibraryItem) : void;
@@ -7629,7 +7629,7 @@ declare module nanofl.ide
 	export interface ServerApi
 	{
 		getTempDirectory() : string;
-		copyDir(src:string, dest:string, overwrite?:boolean, callb:(arg:{ lastModified : Date; }) => void) : void;
+		copyDir(src:string, dest:string, overwrite?:boolean, callb:() => void) : void;
 		requestUrl(url:string, callb:(arg:string) => void) : void;
 		openInBrowser(url:string) : void;
 		uploadFilesAsLibraryItems(library:nanofl.engine.Library, folderPath:string, files:File[], callb:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
