@@ -17,7 +17,8 @@ extern class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem im
 	 * Assume that layers' parentIndex referenced inside block.
 	 */
 	function addLayersBlock(layersToAdd:Array<nanofl.engine.Layer>, ?index:Int) : Void;
-	function removeLayers(index:Int) : Array<nanofl.engine.Layer>;
+	function removeLayer(index:Int) : Void;
+	function removeLayerWithChildren(index:Int) : Array<nanofl.engine.Layer>;
 	function getFramesAt(frameIndex:Int) : Array<nanofl.engine.Frame>;
 	override function getIcon() : String;
 	override function save(fileApi:nanofl.engine.FileApi) : Void;

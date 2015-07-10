@@ -8522,7 +8522,8 @@ declare module nanofl.engine
 	{
 		addLayer(layer:nanofl.engine.Layer) : void;
 		addLayersBlock(layersToAdd:nanofl.engine.Layer[], index?:number) : void;
-		removeLayers(index:number) : nanofl.engine.Layer[];
+		removeLayer(index:number) : void;
+		removeLayerWithChildren(index:number) : nanofl.engine.Layer[];
 		getTimelineState() : nanofl.ide.undo.states.TimelineState;
 		setTimelineState(state:nanofl.ide.undo.states.TimelineState) : void;
 	}
@@ -8974,7 +8975,8 @@ declare module nanofl.engine.libraryitems
 		 * Assume that layers' parentIndex referenced inside block.
 		 */
 		addLayersBlock(layersToAdd:nanofl.engine.Layer[], index?:number) : void;
-		removeLayers(index:number) : nanofl.engine.Layer[];
+		removeLayer(index:number) : void;
+		removeLayerWithChildren(index:number) : nanofl.engine.Layer[];
 		getFramesAt(frameIndex:number) : nanofl.engine.Frame[];
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;
