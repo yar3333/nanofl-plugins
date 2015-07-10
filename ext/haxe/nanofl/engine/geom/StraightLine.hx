@@ -16,6 +16,7 @@ extern class StraightLine
 	function getIntersectionPointX_rightRay(mx:Float, my:Float) : Float;
 	function isIntersect_rightRay(mx:Float, my:Float) : Bool;
 	function getIntersection_straightSection(line:nanofl.engine.geom.StraightLine) : nanofl.engine.geom.Point;
+	function getIntersection_infinityLine(line:nanofl.engine.geom.StraightLine) : nanofl.engine.geom.Point;
 	function isDegenerated() : Bool;
 	function getFirstPart(t:Float) : nanofl.engine.geom.StraightLine;
 	function getSecondPart(t:Float) : nanofl.engine.geom.StraightLine;

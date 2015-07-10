@@ -529,9 +529,6 @@ haxe.ds.StringMap.prototype = {
 var js = {};
 js.Boot = function() { };
 js.Boot.__name__ = ["js","Boot"];
-js.Boot.getClass = function(o) {
-	if((o instanceof Array) && o.__enum__ == null) return Array; else return o.__class__;
-};
 js.Boot.__string_rec = function(o,s) {
 	if(o == null) return "null";
 	if(s.length >= 5) return "<...>";
@@ -633,7 +630,7 @@ js.Boot.__instanceof = function(o,cl) {
 		if(o != null) {
 			if(typeof(cl) == "function") {
 				if(o instanceof cl) return true;
-				if(js.Boot.__interfLoop(js.Boot.getClass(o),cl)) return true;
+				if(js.Boot.__interfLoop((o instanceof Array) && o.__enum__ == null?Array:o.__class__,cl)) return true;
 			}
 		} else return false;
 		if(cl == Class && o.__name__ != null) return true;
@@ -765,15 +762,6 @@ stdlib.Exception.prototype = {
 };
 stdlib.Std = function() { };
 stdlib.Std.__name__ = ["stdlib","Std"];
-stdlib.Std["is"] = function(v,t) {
-	return js.Boot.__instanceof(v,t);
-};
-stdlib.Std.string = function(s) {
-	return Std.string(s);
-};
-stdlib.Std["int"] = function(x) {
-	return x | 0;
-};
 stdlib.Std.parseInt = function(x,defaultValue) {
 	if(x != null) {
 		if(new EReg("^\\s*[+-]?\\s*((?:0x[0-9a-fA-F]{1,7})|(?:\\d{1,9}))\\s*$","").match(x)) return Std.parseInt(x); else return defaultValue;
@@ -783,9 +771,6 @@ stdlib.Std.parseFloat = function(x,defaultValue) {
 	if(x != null) {
 		if(new EReg("^\\s*[+-]?\\s*\\d{1,9}(?:[.]\\d+)?(?:e[+-]?\\d{1,9})?\\s*$","").match(x)) return Std.parseFloat(x); else return defaultValue;
 	} else return defaultValue;
-};
-stdlib.Std.random = function(x) {
-	return Std.random(x);
 };
 stdlib.Std.bool = function(v) {
 	return v != false && v != null && v != 0 && v != "" && v != "0" && (!(typeof(v) == "string") || (js.Boot.__cast(v , String)).toLowerCase() != "false" && (js.Boot.__cast(v , String)).toLowerCase() != "off" && (js.Boot.__cast(v , String)).toLowerCase() != "null");
@@ -827,29 +812,23 @@ stdlib.Std.array = function(it) {
 	}
 	return r;
 };
+stdlib.Std["is"] = function(v,t) {
+	return js.Boot.__instanceof(v,t);
+};
+stdlib.Std.instance = function(value,c) {
+	if((value instanceof c)) return value; else return null;
+};
+stdlib.Std.string = function(s) {
+	return Std.string(s);
+};
+stdlib.Std["int"] = function(x) {
+	return x | 0;
+};
+stdlib.Std.random = function(x) {
+	return Std.random(x);
+};
 stdlib.StringTools = function() { };
 stdlib.StringTools.__name__ = ["stdlib","StringTools"];
-stdlib.StringTools.urlEncode = function(s) {
-	return encodeURIComponent(s);
-};
-stdlib.StringTools.urlDecode = function(s) {
-	return decodeURIComponent(s.split("+").join(" "));
-};
-stdlib.StringTools.htmlEscape = function(s) {
-	return StringTools.replace(StringTools.htmlEscape(s),"\n","&#xA;");
-};
-stdlib.StringTools.htmlUnescape = function(s) {
-	return StringTools.htmlUnescape(StringTools.replace(s,"&#xA;","\n"));
-};
-stdlib.StringTools.startsWith = function(s,start) {
-	return StringTools.startsWith(s,start);
-};
-stdlib.StringTools.endsWith = function(s,end) {
-	return StringTools.endsWith(s,end);
-};
-stdlib.StringTools.isSpace = function(s,pos) {
-	return StringTools.isSpace(s,pos);
-};
 stdlib.StringTools.ltrim = function(s,chars) {
 	if(chars == null) return StringTools.ltrim(s);
 	while(s.length > 0 && chars.indexOf(HxOverrides.substr(s,0,1)) >= 0) s = HxOverrides.substr(s,1,null);
@@ -863,24 +842,6 @@ stdlib.StringTools.rtrim = function(s,chars) {
 stdlib.StringTools.trim = function(s,chars) {
 	if(chars == null) return StringTools.trim(s);
 	return stdlib.StringTools.rtrim(stdlib.StringTools.ltrim(s,chars),chars);
-};
-stdlib.StringTools.rpad = function(s,c,l) {
-	return StringTools.rpad(s,c,l);
-};
-stdlib.StringTools.lpad = function(s,c,l) {
-	return StringTools.lpad(s,c,l);
-};
-stdlib.StringTools.replace = function(s,sub,by) {
-	return StringTools.replace(s,sub,by);
-};
-stdlib.StringTools.hex = function(n,digits) {
-	return StringTools.hex(n,digits);
-};
-stdlib.StringTools.fastCodeAt = function(s,index) {
-	return s.charCodeAt(index);
-};
-stdlib.StringTools.isEOF = function(c) {
-	return c != c;
 };
 stdlib.StringTools.hexdec = function(s) {
 	return stdlib.Std.parseInt("0x" + s);
@@ -972,34 +933,49 @@ stdlib.StringTools.isEmpty = function(s) {
 stdlib.StringTools.capitalize = function(s) {
 	if(stdlib.StringTools.isEmpty(s)) return s; else return HxOverrides.substr(s,0,1).toUpperCase() + HxOverrides.substr(s,1,null);
 };
+stdlib.StringTools.urlEncode = function(s) {
+	return encodeURIComponent(s);
+};
+stdlib.StringTools.urlDecode = function(s) {
+	return decodeURIComponent(s.split("+").join(" "));
+};
+stdlib.StringTools.htmlEscape = function(s,quotes) {
+	return StringTools.htmlEscape(s,quotes);
+};
+stdlib.StringTools.htmlUnescape = function(s) {
+	return StringTools.htmlUnescape(s);
+};
+stdlib.StringTools.startsWith = function(s,start) {
+	return StringTools.startsWith(s,start);
+};
+stdlib.StringTools.endsWith = function(s,end) {
+	return StringTools.endsWith(s,end);
+};
+stdlib.StringTools.isSpace = function(s,pos) {
+	return StringTools.isSpace(s,pos);
+};
+stdlib.StringTools.lpad = function(s,c,l) {
+	return StringTools.lpad(s,c,l);
+};
+stdlib.StringTools.rpad = function(s,c,l) {
+	return StringTools.rpad(s,c,l);
+};
+stdlib.StringTools.replace = function(s,sub,by) {
+	return StringTools.replace(s,sub,by);
+};
+stdlib.StringTools.hex = function(n,digits) {
+	return StringTools.hex(n,digits);
+};
+stdlib.StringTools.fastCodeAt = function(s,index) {
+	return s.charCodeAt(index);
+};
+stdlib.StringTools.isEof = function(c) {
+	return c != c;
+};
 stdlib.Utf8 = function(size) {
 	haxe.Utf8.call(this,size);
 };
 stdlib.Utf8.__name__ = ["stdlib","Utf8"];
-stdlib.Utf8.iter = function(s,chars) {
-	haxe.Utf8.iter(s,chars);
-};
-stdlib.Utf8.encode = function(s) {
-	return haxe.Utf8.encode(s);
-};
-stdlib.Utf8.decode = function(s) {
-	return haxe.Utf8.decode(s);
-};
-stdlib.Utf8.charCodeAt = function(s,index) {
-	return HxOverrides.cca(s,index);
-};
-stdlib.Utf8.validate = function(s) {
-	return true;
-};
-stdlib.Utf8.$length = function(s) {
-	return s.length;
-};
-stdlib.Utf8.compare = function(a,b) {
-	return haxe.Utf8.compare(a,b);
-};
-stdlib.Utf8.sub = function(s,pos,len) {
-	return HxOverrides.substr(s,pos,len);
-};
 stdlib.Utf8.replace = function(s,from,to) {
 	var codes = [];
 	haxe.Utf8.iter(s,function(c) {
@@ -1204,6 +1180,30 @@ stdlib.Utf8.get_htmlUnescapeMap = function() {
 		stdlib.Utf8.htmlUnescapeMap = _g;
 	}
 	return stdlib.Utf8.htmlUnescapeMap;
+};
+stdlib.Utf8.iter = function(s,chars) {
+	return haxe.Utf8.iter(s,chars);
+};
+stdlib.Utf8.encode = function(s) {
+	return haxe.Utf8.encode(s);
+};
+stdlib.Utf8.decode = function(s) {
+	return haxe.Utf8.decode(s);
+};
+stdlib.Utf8.charCodeAt = function(s,index) {
+	return HxOverrides.cca(s,index);
+};
+stdlib.Utf8.validate = function(s) {
+	return true;
+};
+stdlib.Utf8.$length = function(s) {
+	return s.length;
+};
+stdlib.Utf8.compare = function(a,b) {
+	return haxe.Utf8.compare(a,b);
+};
+stdlib.Utf8.sub = function(s,pos,len) {
+	return HxOverrides.substr(s,pos,len);
 };
 stdlib.Utf8.__super__ = haxe.Utf8;
 stdlib.Utf8.prototype = $extend(haxe.Utf8.prototype,{

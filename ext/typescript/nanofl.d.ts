@@ -6757,6 +6757,7 @@ declare module nanofl.engine.geom
 		static getDifferent(edgesA:nanofl.engine.geom.Edge[], edgesB:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Edge[];
 		static getNearestVertex(edges:nanofl.engine.geom.Edge[], x:number, y:number) : nanofl.engine.geom.Point;
 		static getTailPoints(edges:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Point[];
+		static smoothStraightLineSequence<T>(edges:T[], power:number) : void;
 	}
 	
 	export class Equation
@@ -6922,6 +6923,7 @@ declare module nanofl.engine.geom
 		getIntersectionPointX_rightRay(mx:number, my:number) : number;
 		isIntersect_rightRay(mx:number, my:number) : boolean;
 		getIntersection_straightSection(line:nanofl.engine.geom.StraightLine) : nanofl.engine.geom.Point;
+		getIntersection_infinityLine(line:nanofl.engine.geom.StraightLine) : nanofl.engine.geom.Point;
 		isDegenerated() : boolean;
 		getFirstPart(t:number) : nanofl.engine.geom.StraightLine;
 		getSecondPart(t:number) : nanofl.engine.geom.StraightLine;
