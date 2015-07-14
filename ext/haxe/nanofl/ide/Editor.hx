@@ -8,11 +8,8 @@ extern class Editor
 	var magnet(get, set) : Bool;
 	var shift(get, set) : Bool;
 	var zoomLevel(get, set) : Float;
-	@:profile
 	function beginEditing(pathItem:nanofl.ide.PathItem, ?isCenterView:Bool) : Void;
-	@:profile
 	function updateShapes() : Void;
-	@:profile
 	function updateElement(element:nanofl.engine.elements.Element) : Void;
 	function hasSelected() : Bool;
 	function toggleSelection() : Bool;
@@ -42,9 +39,7 @@ extern class Editor
 	function convertToSymbol() : Void;
 	function groupSelected() : Void;
 	function translateVertex(point:nanofl.engine.geom.Point, dx:Float, dy:Float, ?addUndoTransaction:Bool) : Void;
-	@:profile
 	function rebind(?isCenterView:Bool) : Void;
-	@:profile
 	function update() : Void;
 	function showAllLayers() : Void;
 	function hideAllLayers() : Void;

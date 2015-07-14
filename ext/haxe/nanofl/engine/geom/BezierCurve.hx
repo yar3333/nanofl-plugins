@@ -12,19 +12,14 @@ extern class BezierCurve
 	var p1(default, null) : nanofl.engine.geom.Point;
 	var p2(default, null) : nanofl.engine.geom.Point;
 	var p3(default, null) : nanofl.engine.geom.Point;
-	@:profile
 	function getNearestPoint(x:Float, y:Float) : { var dist : Float; var nor : nanofl.engine.geom.Point; var orientedDist : Float; var point : nanofl.engine.geom.Point; var t : Float; };
 	function getNearestPointP(pt:nanofl.engine.geom.Point) : { var dist : Float; var nor : nanofl.engine.geom.Point; var orientedDist : Float; var point : nanofl.engine.geom.Point; var t : Float; };
 	function getPoint(t:Float) : nanofl.engine.geom.Point;
 	function getNor(t:Float) : nanofl.engine.geom.Point;
-	@:profile
 	function getBounds() : nanofl.engine.geom.Bounds;
-	@:profile
 	function getIntersectionPointsX_rightRay(mx:Float, my:Float) : Array<Float>;
 	function getIntersectionCount_rightRay(mx:Float, my:Float) : Int;
-	@:profile
 	function getIntersection_straightSection(line:nanofl.engine.geom.StraightLine) : { var curves : Array<nanofl.engine.geom.BezierCurve>; var lines : Array<nanofl.engine.geom.StraightLine>; };
-	@:profile
 	function getIntersection_bezierCurve(curve:nanofl.engine.geom.BezierCurve) : nanofl.engine.geom.BezierCurve.BezierCurvesIntersection;
 	function isDegenerated() : Bool;
 	function getFirstPart(t:Float) : nanofl.engine.geom.BezierCurve;

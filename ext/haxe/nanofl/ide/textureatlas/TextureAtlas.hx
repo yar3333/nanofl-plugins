@@ -3,6 +3,6 @@ package nanofl.ide.textureatlas;
 typedef TextureAtlas =
 {
 	var frames : Array<nanofl.ide.textureatlas.TextureAtlasFrame>;
-	var imagePng : Array<Int>;
+	var imagePng : nanofl.engine.Bytes;
 	var itemFrames : Dynamic<Array<Int>>;
 };

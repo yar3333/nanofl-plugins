@@ -2,6 +2,7 @@ package nanofl.ide;
 
 extern class ShapePropertiesOptions
 {
+	function new() : Void;
 	var strokePane(default, null) : Bool;
 	var fillPane(default, null) : Bool;
 	var roundRadiusPane(default, null) : Bool;

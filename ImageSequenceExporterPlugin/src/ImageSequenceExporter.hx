@@ -32,7 +32,7 @@ class ImageSequenceExporter
 			scene.draw(ctx);
 			
 			var data = canvas.toDataURL(type).split(",")[1];
-			fileApi.saveBinary(baseDestFilePath + Std.string(i).lpad("0", digits) + ext, Base64.decode(data).getData());
+			fileApi.saveBinary(baseDestFilePath + Std.string(i).lpad("0", digits) + ext, Base64.decode(data));
 		}
 		
 		return true;

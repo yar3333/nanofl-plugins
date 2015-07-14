@@ -31,35 +31,10 @@ extern class ShapeElement extends nanofl.engine.elements.Element
 	function getNearestVertex(pt:nanofl.engine.geom.Point, ?excludeSelf:Bool) : { var dist : Float; var distMinusEdgeThickness : Float; var point : nanofl.engine.geom.Point; };
 	function setSelectedEdgesStroke(stroke:nanofl.engine.strokes.IStroke) : Void;
 	function setSelectedEdgesStrokeParams(params:nanofl.engine.strokes.StrokeParams) : Void;
-	function getSelectedEdgesStrokeParams() : { @:optional
-	var bitmapPath : String; @:optional
-	var caps : String; @:optional
-	var color : String; @:optional
-	var colors : Array<String>; @:optional
-	var ignoreScale : Bool; @:optional
-	var joints : String; @:optional
-	var miterLimit : Float; @:optional
-	var r : Float; @:optional
-	var ratios : Array<Float>; @:optional
-	var thickness : Float; var type : String; @:optional
-	var x0 : Float; @:optional
-	var x1 : Float; @:optional
-	var y0 : Float; @:optional
-	var y1 : Float; };
+	function getSelectedEdgesStrokeParams() : { @:optional var bitmapPath : String; @:optional var caps : String; @:optional var color : String; @:optional var colors : Array<String>; @:optional var ignoreScale : Bool; @:optional var joints : String; @:optional var miterLimit : Float; @:optional var r : Float; @:optional var ratios : Array<Float>; @:optional var thickness : Float; var type : String; @:optional var x0 : Float; @:optional var x1 : Float; @:optional var y0 : Float; @:optional var y1 : Float; };
 	function setSelectedPolygonsFill(fill:nanofl.engine.fills.IFill, ?x1:Float, ?y1:Float, ?x2:Float, ?y2:Float) : Void;
 	function setSelectedPolygonsFillParams(params:nanofl.engine.fills.FillParams) : Void;
-	function getSelectedPolygonsFillParams() : { @:optional
-	var bitmapPath : String; @:optional
-	var color : String; @:optional
-	var colors : Array<String>; @:optional
-	var matrix : nanofl.engine.geom.Matrix; @:optional
-	var r : Float; @:optional
-	var ratios : Array<Float>; @:optional
-	var repeat : String; var type : String; @:optional
-	var x0 : Float; @:optional
-	var x1 : Float; @:optional
-	var y0 : Float; @:optional
-	var y1 : Float; };
+	function getSelectedPolygonsFillParams() : { @:optional var bitmapPath : String; @:optional var color : String; @:optional var colors : Array<String>; @:optional var matrix : nanofl.engine.geom.Matrix; @:optional var r : Float; @:optional var ratios : Array<Float>; @:optional var repeat : String; var type : String; @:optional var x0 : Float; @:optional var x1 : Float; @:optional var y0 : Float; @:optional var y1 : Float; };
 	function floodFill(fill:nanofl.engine.fills.IFill, x1:Float, y1:Float, x2:Float, y2:Float) : Void;
 	function getBounds(?bounds:nanofl.engine.geom.Bounds, ?useStrokeThickness:Bool) : nanofl.engine.geom.Bounds;
 	function getSelectedBounds(?bounds:nanofl.engine.geom.Bounds, ?useStrokeThickness:Bool) : nanofl.engine.geom.Bounds;

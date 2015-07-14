@@ -17,9 +17,7 @@ extern class Edges
 	static function replace<T>(edges:Array<T>, search:nanofl.engine.geom.Edge, replacement:Array<nanofl.engine.geom.Edge>) : Int;
 	static function replaceAll<T>(edges:Array<T>, search:nanofl.engine.geom.Edge, replacement:Array<nanofl.engine.geom.Edge>) : Void;
 	static function replaceAt<T>(edges:Array<T>, n:Int, replacement:Array<nanofl.engine.geom.Edge>, reverse:Bool) : Void;
-	@:profile
 	static function intersect<T>(edgesA:Array<T>, edgesB:Array<T>, ?onReplace:nanofl.engine.geom.Edge -> Array<nanofl.engine.geom.Edge> -> Void) : Void;
-	@:profile
 	static function intersectSelf<T>(edges:Array<T>, ?onReplace:nanofl.engine.geom.Edge -> Array<nanofl.engine.geom.Edge> -> Void) : Void;
 	static function normalize<T>(edges:Array<T>) : Array<T>;
 	static function roundPoints<T>(edges:Array<T>) : Array<T>;

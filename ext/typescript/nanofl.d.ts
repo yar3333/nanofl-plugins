@@ -1978,11 +1978,11 @@ declare module createjs
 	 */
 	export class DOMElement extends createjs.DisplayObject
 	{
-		constructor(htmlElement:Element);
+		constructor(htmlElement:HTMLElement);
 		/**
 		 * The DOM object to manage.
 		 */
-		htmlElement : Element;
+		htmlElement : HTMLElement;
 		/**
 		 * Returns true or false indicating whether the display object would be visible if drawn to a canvas.
 		 * This does not account for whether it would be visible within the boundaries of the stage.
@@ -6505,7 +6505,7 @@ declare module createjs
 		 *
 		 * Can be accessed by advanced users through createjs.Sound.activePlugin.gainNode.
 		 */
-		gainNode : any;
+		gainNode : GainNode;
 		/**
 		 * The web audio context, which WebAudio uses to play audio. All nodes that interact with the WebAudioPlugin
 		 * need to be created within this context.
@@ -6546,7 +6546,7 @@ declare module createjs
 		 * NOTE this is only intended for use by advanced users.
 		 * <br />GainNode for controlling <code>WebAudioSoundInstance</code> volume. Connected to the {{#crossLink "WebAudioSoundInstance/destinationNode:property"}}{{/crossLink}}.
 		 */
-		gainNode : any;
+		gainNode : GainNode;
 		/**
 		 * NOTE this is only intended for use by advanced users.
 		 * <br />A panNode allowing left and right audio channel panning only. Connected to WebAudioSoundInstance {{#crossLink "WebAudioSoundInstance/gainNode:property"}}{{/crossLink}}.
@@ -7271,7 +7271,7 @@ declare module nanofl.ide.textureatlas
 	type TextureAtlas =
 	{
 		frames : nanofl.ide.textureatlas.TextureAtlasFrame[];
-		imagePng : number[];
+		imagePng : nanofl.engine.Bytes;
 		itemFrames : any;
 	}
 	
@@ -7640,6 +7640,7 @@ declare module nanofl.ide
 	
 	export class ShapePropertiesOptions
 	{
+		constructor();
 		strokePane : boolean;
 		fillPane : boolean;
 		roundRadiusPane : boolean;
@@ -7662,7 +7663,7 @@ declare module nanofl.ide
 		exists(path:string) : boolean;
 		getContent(filePath:string) : string;
 		saveContent(filePath:string, text:string, append?:boolean) : void;
-		saveBinary(filePath:string, data:number[]) : void;
+		saveBinary(filePath:string, data:nanofl.engine.Bytes) : void;
 		isDirectory(path:string) : boolean;
 		run(filePath:string, args:string[], blocking:boolean) : number;
 		copy(srcPath:string, destPath:string) : void;
@@ -7857,7 +7858,7 @@ declare module nanofl.ide.undo
 		/**
 		 * This method may be called several times with different operations.
 		 */
-		beginTransaction(operations:{ document : boolean; element : nanofl.engine.elements.Element; elements : boolean; figure : boolean; libraryAddItem : string; libraryChangeItems : string[]; libraryRemoveItems : string[]; libraryRenameItem : { newNamePath : string; oldNamePath : string; }; timeline : boolean; transformations : boolean; }) : void;
+		beginTransaction(operations:{ document : boolean; element : nanofl.engine.elements.Element; elements : boolean; figure : boolean; libraryAddItem : string; libraryChangeItems : string[]; libraryRemoveItems : string[]; libraryRenameItem : { oldNamePath : string; newNamePath : string; }; timeline : boolean; transformations : boolean; }) : void;
 		cancelTransaction() : void;
 		revertTransaction() : void;
 		forgetTransaction() : void;
@@ -8278,6 +8279,8 @@ declare module nanofl.engine
 {
 	interface ArrayRO<T> extends Array<T> { }
 	
+	type Bytes = haxe.io.Bytes;
+	
 	export class ColorTools
 	{
 		static parse(s:string) : { a : number; b : number; g : number; r : number; };
@@ -8363,7 +8366,7 @@ declare module nanofl.engine
 		readDirectory(dir:string) : string[];
 		getContent(filePath:string) : string;
 		saveContent(filePath:string, text:string, append?:boolean) : void;
-		saveBinary(filePath:string, data:number[]) : void;
+		saveBinary(filePath:string, data:nanofl.engine.Bytes) : void;
 		exists(path:string) : boolean;
 		isDirectory(path:string) : boolean;
 		run(filePath:string, args:string[], blocking:boolean) : number;

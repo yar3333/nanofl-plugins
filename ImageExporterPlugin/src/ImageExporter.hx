@@ -23,7 +23,7 @@ class ImageExporter
 		scene.draw(ctx);
 		
 		var data = canvas.toDataURL(type).split(",")[1];
-		fileApi.saveBinary(destFilePath, Base64.decode(data).getData());
+		fileApi.saveBinary(destFilePath, Base64.decode(data));
 		
 		return true;
 	}

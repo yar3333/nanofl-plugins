@@ -1978,11 +1978,11 @@ declare module createjs
 	 */
 	export class DOMElement extends createjs.DisplayObject
 	{
-		constructor(htmlElement:Element);
+		constructor(htmlElement:HTMLElement);
 		/**
 		 * The DOM object to manage.
 		 */
-		htmlElement : Element;
+		htmlElement : HTMLElement;
 		/**
 		 * Returns true or false indicating whether the display object would be visible if drawn to a canvas.
 		 * This does not account for whether it would be visible within the boundaries of the stage.
@@ -6505,7 +6505,7 @@ declare module createjs
 		 *
 		 * Can be accessed by advanced users through createjs.Sound.activePlugin.gainNode.
 		 */
-		gainNode : any;
+		gainNode : GainNode;
 		/**
 		 * The web audio context, which WebAudio uses to play audio. All nodes that interact with the WebAudioPlugin
 		 * need to be created within this context.
@@ -6546,7 +6546,7 @@ declare module createjs
 		 * NOTE this is only intended for use by advanced users.
 		 * <br />GainNode for controlling <code>WebAudioSoundInstance</code> volume. Connected to the {{#crossLink "WebAudioSoundInstance/destinationNode:property"}}{{/crossLink}}.
 		 */
-		gainNode : any;
+		gainNode : GainNode;
 		/**
 		 * NOTE this is only intended for use by advanced users.
 		 * <br />A panNode allowing left and right audio channel panning only. Connected to WebAudioSoundInstance {{#crossLink "WebAudioSoundInstance/gainNode:property"}}{{/crossLink}}.

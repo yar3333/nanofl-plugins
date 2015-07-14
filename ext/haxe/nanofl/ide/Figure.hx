@@ -13,43 +13,14 @@ extern class Figure
 	function hasSelected() : Bool;
 	function hasSelectedEdges() : Bool;
 	function hasSelectedPolygons() : Bool;
-	@:profile
 	function updateShapes() : Void;
-	@:profile
-	function getSelectedEdgesStrokeParams() : { @:optional
-	var bitmapPath : String; @:optional
-	var caps : String; @:optional
-	var color : String; @:optional
-	var colors : Array<String>; @:optional
-	var ignoreScale : Bool; @:optional
-	var joints : String; @:optional
-	var miterLimit : Float; @:optional
-	var r : Float; @:optional
-	var ratios : Array<Float>; @:optional
-	var thickness : Float; var type : String; @:optional
-	var x0 : Float; @:optional
-	var x1 : Float; @:optional
-	var y0 : Float; @:optional
-	var y1 : Float; };
-	@:profile
-	function getSelectedPolygonsFillParams() : { @:optional
-	var bitmapPath : String; @:optional
-	var color : String; @:optional
-	var colors : Array<String>; @:optional
-	var matrix : nanofl.engine.geom.Matrix; @:optional
-	var r : Float; @:optional
-	var ratios : Array<Float>; @:optional
-	var repeat : String; var type : String; @:optional
-	var x0 : Float; @:optional
-	var x1 : Float; @:optional
-	var y0 : Float; @:optional
-	var y1 : Float; };
+	function getSelectedEdgesStrokeParams() : { @:optional var bitmapPath : String; @:optional var caps : String; @:optional var color : String; @:optional var colors : Array<String>; @:optional var ignoreScale : Bool; @:optional var joints : String; @:optional var miterLimit : Float; @:optional var r : Float; @:optional var ratios : Array<Float>; @:optional var thickness : Float; var type : String; @:optional var x0 : Float; @:optional var x1 : Float; @:optional var y0 : Float; @:optional var y1 : Float; };
+	function getSelectedPolygonsFillParams() : { @:optional var bitmapPath : String; @:optional var color : String; @:optional var colors : Array<String>; @:optional var matrix : nanofl.engine.geom.Matrix; @:optional var r : Float; @:optional var ratios : Array<Float>; @:optional var repeat : String; var type : String; @:optional var x0 : Float; @:optional var x1 : Float; @:optional var y0 : Float; @:optional var y1 : Float; };
 	function getSelectedElements() : Array<nanofl.ide.FigureElement>;
 	function selectAll() : Void;
 	function deselectAll() : Void;
 	function getBounds(?bounds:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 	function getSelectedBounds(?bounds:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
-	@:profile
 	function removeSelected() : Void;
 	function translateSelected(dx:Float, dy:Float) : Void;
 	function transformSelected(m:nanofl.engine.geom.Matrix) : Void;
