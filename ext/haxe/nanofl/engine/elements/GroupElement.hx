@@ -11,7 +11,7 @@ extern class GroupElement extends nanofl.engine.elements.Element implements nano
 	function removeElementAt(n:Int) : Void;
 	function removeElement(element:nanofl.engine.elements.Element) : Void;
 	override function save(out:htmlparser.XmlBuilder) : Void;
-	override function clone() : nanofl.engine.elements.Element;
+	override function clone() : nanofl.engine.elements.GroupElement;
 	function getChildren() : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
 	override function createDisplayObject(frameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.DisplayObject;
 	override function updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.Container;

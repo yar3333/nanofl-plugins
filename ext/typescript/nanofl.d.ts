@@ -6942,8 +6942,9 @@ declare module nanofl.engine.geom
 		addTo(edges:nanofl.engine.geom.StrokeEdge[]) : void;
 		transform(m:nanofl.engine.geom.Matrix, applyToStroke?:boolean) : void;
 		translate(dx:number, dy:number) : void;
-		clone() : nanofl.engine.geom.Edge;
-		duplicate(e:nanofl.engine.geom.Edge) : nanofl.engine.geom.Edge;
+		clone() : nanofl.engine.geom.StrokeEdge;
+		duplicate(e:nanofl.engine.geom.Edge) : nanofl.engine.geom.StrokeEdge;
+		split(tt:number[]) : nanofl.engine.geom.Edge[];
 		toString() : string;
 		static fromEdge(edge:nanofl.engine.geom.Edge, stroke?:nanofl.engine.strokes.IStroke, selected?:boolean) : nanofl.engine.geom.StrokeEdge;
 	}
@@ -7064,7 +7065,7 @@ declare module nanofl.engine.strokes
 		repeat : string;
 		save(out:htmlparser.XmlBuilder) : void;
 		begin(g:nanofl.engine.Render) : void;
-		clone() : nanofl.engine.strokes.IStroke;
+		clone() : nanofl.engine.strokes.BitmapStroke;
 		equ(e:nanofl.engine.strokes.IStroke) : boolean;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		setLibrary(library:nanofl.engine.Library) : void;
@@ -7083,7 +7084,7 @@ declare module nanofl.engine.strokes
 		y1 : number;
 		save(out:htmlparser.XmlBuilder) : void;
 		begin(g:nanofl.engine.Render) : void;
-		clone() : nanofl.engine.strokes.IStroke;
+		clone() : nanofl.engine.strokes.LinearStroke;
 		equ(e:nanofl.engine.strokes.IStroke) : boolean;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		applyAlpha(alpha:number) : void;
@@ -7103,7 +7104,7 @@ declare module nanofl.engine.strokes
 		fy : number;
 		save(out:htmlparser.XmlBuilder) : void;
 		begin(g:nanofl.engine.Render) : void;
-		clone() : nanofl.engine.strokes.IStroke;
+		clone() : nanofl.engine.strokes.RadialStroke;
 		equ(e:nanofl.engine.strokes.IStroke) : boolean;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		applyAlpha(alpha:number) : void;
@@ -7127,7 +7128,7 @@ declare module nanofl.engine.strokes
 		color : string;
 		save(out:htmlparser.XmlBuilder) : void;
 		begin(g:nanofl.engine.Render) : void;
-		clone() : nanofl.engine.strokes.IStroke;
+		clone() : nanofl.engine.strokes.SolidStroke;
 		equ(e:nanofl.engine.strokes.IStroke) : boolean;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		applyAlpha(alpha:number) : void;
@@ -7722,7 +7723,7 @@ declare module nanofl.engine.elements
 		removeElementAt(n:number) : void;
 		removeElement(element:nanofl.engine.elements.Element) : void;
 		save(out:htmlparser.XmlBuilder) : void;
-		clone() : nanofl.engine.elements.Element;
+		clone() : nanofl.engine.elements.GroupElement;
 		getChildren() : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
 		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
 		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.Container;
@@ -7745,7 +7746,7 @@ declare module nanofl.engine.elements
 		symbol : nanofl.engine.libraryitems.InstancableItem;
 		getType() : string;
 		save(out:htmlparser.XmlBuilder) : void;
-		clone() : nanofl.engine.elements.Element;
+		clone() : nanofl.engine.elements.Instance;
 		isScene() : boolean;
 		getState() : nanofl.ide.undo.states.ElementState;
 		setState(state:nanofl.ide.undo.states.ElementState) : void;
@@ -7769,9 +7770,9 @@ declare module nanofl.engine.elements
 		save(out:htmlparser.XmlBuilder) : void;
 		ensureNoTransform() : void;
 		draw(g:nanofl.engine.Render, scaleSelection:number) : void;
-		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
-		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
-		clone() : nanofl.engine.elements.Element;
+		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.Shape;
+		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.Shape;
+		clone() : nanofl.engine.elements.ShapeElement;
 		translate(dx:number, dy:number) : void;
 		isEmpty() : boolean;
 		hasSelected() : boolean;
@@ -7820,7 +7821,7 @@ declare module nanofl.engine.elements
 		constructor(sprite:nanofl.engine.libraryitems.SpriteItem, index:number);
 		getType() : string;
 		save(out:htmlparser.XmlBuilder) : void;
-		clone() : nanofl.engine.elements.Element;
+		clone() : nanofl.engine.elements.SpriteFrameElement;
 		getState() : nanofl.ide.undo.states.ElementState;
 		setState(state:nanofl.ide.undo.states.ElementState) : void;
 		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
@@ -7841,10 +7842,10 @@ declare module nanofl.engine.elements
 		newTextFormat : nanofl.TextRun;
 		save(out:htmlparser.XmlBuilder) : void;
 		getText() : string;
-		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
-		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : nanofl.TextField;
+		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : nanofl.TextField;
 		getMinSize(dispObj:createjs.DisplayObject) : { height : number; width : number; };
-		clone() : nanofl.engine.elements.Element;
+		clone() : nanofl.engine.elements.TextElement;
 		getState() : nanofl.ide.undo.states.ElementState;
 		setState(_state:nanofl.ide.undo.states.ElementState) : void;
 		equ(element:nanofl.engine.elements.Element) : boolean;
@@ -7926,8 +7927,8 @@ declare module nanofl.engine.coloreffects
 		save(out:htmlparser.XmlBuilder) : void;
 		apply(obj:createjs.DisplayObject) : void;
 		clone() : nanofl.engine.coloreffects.ColorEffectAdvanced;
-		getNeutralClone() : nanofl.engine.coloreffects.ColorEffect;
-		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffect;
+		getNeutralClone() : nanofl.engine.coloreffects.ColorEffectAdvanced;
+		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffectAdvanced;
 		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
 		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffectAdvanced;
 	}
@@ -7939,8 +7940,8 @@ declare module nanofl.engine.coloreffects
 		save(out:htmlparser.XmlBuilder) : void;
 		apply(obj:createjs.DisplayObject) : void;
 		clone() : nanofl.engine.coloreffects.ColorEffectAlpha;
-		getNeutralClone() : nanofl.engine.coloreffects.ColorEffect;
-		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffect;
+		getNeutralClone() : nanofl.engine.coloreffects.ColorEffectAlpha;
+		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffectAlpha;
 		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
 		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffectAlpha;
 	}
@@ -7952,8 +7953,8 @@ declare module nanofl.engine.coloreffects
 		save(out:htmlparser.XmlBuilder) : void;
 		apply(obj:createjs.DisplayObject) : void;
 		clone() : nanofl.engine.coloreffects.ColorEffectBrightness;
-		getNeutralClone() : nanofl.engine.coloreffects.ColorEffect;
-		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffect;
+		getNeutralClone() : nanofl.engine.coloreffects.ColorEffectBrightness;
+		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffectBrightness;
 		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
 		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffectBrightness;
 	}
@@ -7973,8 +7974,8 @@ declare module nanofl.engine.coloreffects
 		save(out:htmlparser.XmlBuilder) : void;
 		apply(obj:createjs.DisplayObject) : void;
 		clone() : nanofl.engine.coloreffects.ColorEffectTint;
-		getNeutralClone() : nanofl.engine.coloreffects.ColorEffect;
-		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffect;
+		getNeutralClone() : nanofl.engine.coloreffects.ColorEffectTint;
+		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffectTint;
 		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
 		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffectTint;
 	}
@@ -8120,7 +8121,7 @@ declare module nanofl
 	export class Bitmap extends createjs.Bitmap
 	{
 		constructor(symbol:nanofl.engine.libraryitems.InstancableItem);
-		clone(recursive?:boolean) : createjs.DisplayObject;
+		clone(recursive?:boolean) : nanofl.Bitmap;
 		toString() : string;
 	}
 	
@@ -8149,7 +8150,7 @@ declare module nanofl
 		 * Return keeped children MovieClips. Return null if all children are keeped.
 		 */
 		gotoFrame(labelOrIndex:any) : nanofl.AdvancableDisplayObject[];
-		clone(recursive?:boolean) : createjs.DisplayObject;
+		clone(recursive?:boolean) : nanofl.MovieClip;
 		toString() : string;
 		static applyMask(mask:createjs.DisplayObject, obj:createjs.DisplayObject) : boolean;
 	}
@@ -8182,7 +8183,7 @@ declare module nanofl
 		getSelectionFormat() : nanofl.TextRun;
 		setSelectionFormat(format:nanofl.TextRun) : void;
 		dispose() : void;
-		clone(recursive?:boolean) : createjs.DisplayObject;
+		clone(recursive?:boolean) : nanofl.TextField;
 		static PADDING : number;
 		static measureFontHeight(family:string, style:string, size:number) : number;
 		static measureFontBaselineCoef(family:string, style:string) : number;
@@ -8920,7 +8921,7 @@ declare module nanofl.engine.libraryitems
 		textureAtlas : string;
 		image : HTMLImageElement;
 		getType() : string;
-		clone() : nanofl.engine.libraryitems.LibraryItem;
+		clone() : nanofl.engine.libraryitems.BitmapItem;
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
@@ -8939,7 +8940,7 @@ declare module nanofl.engine.libraryitems
 	{
 		constructor(namePath:string);
 		opened : boolean;
-		clone() : nanofl.engine.libraryitems.LibraryItem;
+		clone() : nanofl.engine.libraryitems.FolderItem;
 		getIcon() : string;
 		toString() : string;
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
@@ -8950,7 +8951,7 @@ declare module nanofl.engine.libraryitems
 		constructor(namePath:string, variants:nanofl.engine.FontVariant[]);
 		variants : nanofl.engine.FontVariant[];
 		getType() : string;
-		clone() : nanofl.engine.libraryitems.LibraryItem;
+		clone() : nanofl.engine.libraryitems.FontItem;
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
@@ -8971,7 +8972,7 @@ declare module nanofl.engine.libraryitems
 		exportAsSpriteSheet : boolean;
 		textureAtlas : string;
 		getType() : string;
-		clone() : nanofl.engine.libraryitems.LibraryItem;
+		clone() : nanofl.engine.libraryitems.MovieClipItem;
 		addLayer(layer:nanofl.engine.Layer) : void;
 		/**
 		 * Add block of layers into timeline.
@@ -9002,7 +9003,7 @@ declare module nanofl.engine.libraryitems
 		constructor(namePath:string, ext:string);
 		linkage : string;
 		getType() : string;
-		clone() : nanofl.engine.libraryitems.LibraryItem;
+		clone() : nanofl.engine.libraryitems.SoundItem;
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
@@ -9023,7 +9024,7 @@ declare module nanofl.engine.libraryitems
 		textureAtlas : string;
 		spriteSheet : createjs.SpriteSheet;
 		getType() : string;
-		clone() : nanofl.engine.libraryitems.LibraryItem;
+		clone() : nanofl.engine.libraryitems.SpriteItem;
 		getIcon() : string;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		saveToXml(out:htmlparser.XmlBuilder) : void;

@@ -12,7 +12,7 @@ extern class RadialStroke extends nanofl.engine.strokes.BaseStroke implements na
 	var fy : Float;
 	function save(out:htmlparser.XmlBuilder) : Void;
 	function begin(g:nanofl.engine.Render) : Void;
-	override function clone() : nanofl.engine.strokes.IStroke;
+	override function clone() : nanofl.engine.strokes.RadialStroke;
 	override function equ(e:nanofl.engine.strokes.IStroke) : Bool;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	function applyAlpha(alpha:Float) : Void;

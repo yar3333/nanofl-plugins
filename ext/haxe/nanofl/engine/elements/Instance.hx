@@ -10,7 +10,7 @@ extern class Instance extends nanofl.engine.elements.Element implements nanofl.e
 	var symbol(default, never) : nanofl.engine.libraryitems.InstancableItem;
 	override function getType() : String;
 	override function save(out:htmlparser.XmlBuilder) : Void;
-	override function clone() : nanofl.engine.elements.Element;
+	override function clone() : nanofl.engine.elements.Instance;
 	function isScene() : Bool;
 	override function getState() : nanofl.ide.undo.states.ElementState;
 	override function setState(state:nanofl.ide.undo.states.ElementState) : Void;

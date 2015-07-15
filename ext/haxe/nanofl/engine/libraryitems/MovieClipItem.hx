@@ -10,7 +10,7 @@ extern class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem im
 	var exportAsSpriteSheet : Bool;
 	var textureAtlas : String;
 	override function getType() : String;
-	override function clone() : nanofl.engine.libraryitems.LibraryItem;
+	override function clone() : nanofl.engine.libraryitems.MovieClipItem;
 	function addLayer(layer:nanofl.engine.Layer) : Void;
 	/**
 	 * Add block of layers into timeline.

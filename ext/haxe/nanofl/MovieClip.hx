@@ -16,7 +16,7 @@ extern class MovieClip extends createjs.Container
 	 * Return keeped children MovieClips. Return null if all children are keeped.
 	 */
 	function gotoFrame(labelOrIndex:Dynamic) : Array<nanofl.AdvancableDisplayObject>;
-	override function clone(?recursive:Bool) : createjs.DisplayObject;
+	override function clone(?recursive:Bool) : nanofl.MovieClip;
 	override function toString() : String;
 	static function applyMask(mask:createjs.DisplayObject, obj:createjs.DisplayObject) : Bool;
 }

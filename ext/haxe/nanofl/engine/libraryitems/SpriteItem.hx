@@ -10,7 +10,7 @@ extern class SpriteItem extends nanofl.engine.libraryitems.InstancableItem imple
 	var textureAtlas : String;
 	var spriteSheet(default, null) : createjs.SpriteSheet;
 	override function getType() : String;
-	override function clone() : nanofl.engine.libraryitems.LibraryItem;
+	override function clone() : nanofl.engine.libraryitems.SpriteItem;
 	override function getIcon() : String;
 	override function loadProperties(xml:htmlparser.HtmlNodeElement) : Void;
 	override function saveToXml(out:htmlparser.XmlBuilder) : Void;

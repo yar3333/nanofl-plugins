@@ -5,7 +5,7 @@ extern class FontItem extends nanofl.engine.libraryitems.LibraryItem
 	function new(namePath:String, variants:Array<nanofl.engine.FontVariant>) : Void;
 	var variants : Array<nanofl.engine.FontVariant>;
 	override function getType() : String;
-	override function clone() : nanofl.engine.libraryitems.LibraryItem;
+	override function clone() : nanofl.engine.libraryitems.FontItem;
 	override function getIcon() : String;
 	override function save(fileApi:nanofl.engine.FileApi) : Void;
 	override function saveToXml(out:htmlparser.XmlBuilder) : Void;

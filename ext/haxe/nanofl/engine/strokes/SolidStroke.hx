@@ -6,7 +6,7 @@ extern class SolidStroke extends nanofl.engine.strokes.BaseStroke implements nan
 	var color : String;
 	function save(out:htmlparser.XmlBuilder) : Void;
 	function begin(g:nanofl.engine.Render) : Void;
-	override function clone() : nanofl.engine.strokes.IStroke;
+	override function clone() : nanofl.engine.strokes.SolidStroke;
 	override function equ(e:nanofl.engine.strokes.IStroke) : Bool;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	function applyAlpha(alpha:Float) : Void;

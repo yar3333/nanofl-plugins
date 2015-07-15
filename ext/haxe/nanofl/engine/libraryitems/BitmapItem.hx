@@ -6,7 +6,7 @@ extern class BitmapItem extends nanofl.engine.libraryitems.InstancableItem imple
 	var textureAtlas : String;
 	var image(default, null) : js.html.Image;
 	override function getType() : String;
-	override function clone() : nanofl.engine.libraryitems.LibraryItem;
+	override function clone() : nanofl.engine.libraryitems.BitmapItem;
 	override function getIcon() : String;
 	override function save(fileApi:nanofl.engine.FileApi) : Void;
 	override function saveToXml(out:htmlparser.XmlBuilder) : Void;

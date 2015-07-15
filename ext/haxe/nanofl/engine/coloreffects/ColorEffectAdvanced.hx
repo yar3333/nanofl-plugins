@@ -14,8 +14,8 @@ extern class ColorEffectAdvanced extends nanofl.engine.coloreffects.ColorEffect
 	override function save(out:htmlparser.XmlBuilder) : Void;
 	override function apply(obj:createjs.DisplayObject) : Void;
 	override function clone() : nanofl.engine.coloreffects.ColorEffectAdvanced;
-	override function getNeutralClone() : nanofl.engine.coloreffects.ColorEffect;
-	override function getTweened(k:Float, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffect;
+	override function getNeutralClone() : nanofl.engine.coloreffects.ColorEffectAdvanced;
+	override function getTweened(k:Float, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffectAdvanced;
 	override function equ(c:nanofl.engine.coloreffects.ColorEffect) : Bool;
 	static function load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffectAdvanced;
 }

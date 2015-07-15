@@ -22,7 +22,7 @@ extern class TextField extends createjs.Container
 	function getSelectionFormat() : nanofl.TextRun;
 	function setSelectionFormat(format:nanofl.TextRun) : Void;
 	function dispose() : Void;
-	override function clone(?recursive:Bool) : createjs.DisplayObject;
+	override function clone(?recursive:Bool) : nanofl.TextField;
 	static var PADDING : Float;
 	static function measureFontHeight(family:String, style:String, size:Float) : Float;
 	static function measureFontBaselineCoef(family:String, style:String) : Float;
