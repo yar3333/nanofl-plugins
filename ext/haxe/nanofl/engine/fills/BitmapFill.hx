@@ -7,7 +7,7 @@ extern class BitmapFill extends nanofl.engine.fills.BaseFill implements nanofl.e
 	var repeat : String;
 	var matrix : nanofl.engine.geom.Matrix;
 	function save(out:htmlparser.XmlBuilder) : Void;
-	function clone() : nanofl.engine.fills.IFill;
+	function clone() : nanofl.engine.fills.BitmapFill;
 	function applyAlpha(alpha:Float) : Void;
 	function begin(g:nanofl.engine.Render) : Void;
 	function getBitmapWidth() : Float;

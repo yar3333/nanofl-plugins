@@ -16,6 +16,6 @@ extern class RadialStroke extends nanofl.engine.strokes.BaseStroke implements na
 	override function equ(e:nanofl.engine.strokes.IStroke) : Bool;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	function applyAlpha(alpha:Float) : Void;
-	override function getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.strokes.IStroke;
+	override function getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.strokes.RadialStroke;
 	function toString() : String;
 }

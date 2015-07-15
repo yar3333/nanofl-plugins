@@ -7088,7 +7088,7 @@ declare module nanofl.engine.strokes
 		equ(e:nanofl.engine.strokes.IStroke) : boolean;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		applyAlpha(alpha:number) : void;
-		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.strokes.IStroke;
+		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.strokes.LinearStroke;
 		toString() : string;
 	}
 	
@@ -7108,7 +7108,7 @@ declare module nanofl.engine.strokes
 		equ(e:nanofl.engine.strokes.IStroke) : boolean;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		applyAlpha(alpha:number) : void;
-		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.strokes.IStroke;
+		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.strokes.RadialStroke;
 		toString() : string;
 	}
 	
@@ -8694,7 +8694,7 @@ declare module nanofl.engine.fills
 		repeat : string;
 		matrix : nanofl.engine.geom.Matrix;
 		save(out:htmlparser.XmlBuilder) : void;
-		clone() : nanofl.engine.fills.IFill;
+		clone() : nanofl.engine.fills.BitmapFill;
 		applyAlpha(alpha:number) : void;
 		begin(g:nanofl.engine.Render) : void;
 		getBitmapWidth() : number;
@@ -8731,7 +8731,7 @@ declare module nanofl.engine.fills
 		x1 : number;
 		y1 : number;
 		save(out:htmlparser.XmlBuilder) : void;
-		clone() : nanofl.engine.fills.IFill;
+		clone() : nanofl.engine.fills.LinearFill;
 		applyAlpha(alpha:number) : void;
 		begin(g:nanofl.engine.Render) : void;
 		equ(e:nanofl.engine.fills.IFill) : boolean;
@@ -8752,7 +8752,7 @@ declare module nanofl.engine.fills
 		fx : number;
 		fy : number;
 		save(out:htmlparser.XmlBuilder) : void;
-		clone() : nanofl.engine.fills.IFill;
+		clone() : nanofl.engine.fills.RadialFill;
 		applyAlpha(alpha:number) : void;
 		begin(g:nanofl.engine.Render) : void;
 		equ(e:nanofl.engine.fills.IFill) : boolean;
@@ -8766,7 +8766,7 @@ declare module nanofl.engine.fills
 	{
 		constructor(scale:number);
 		save(out:htmlparser.XmlBuilder) : void;
-		clone() : nanofl.engine.fills.IFill;
+		clone() : nanofl.engine.fills.SelectionFill;
 		applyAlpha(alpha:number) : void;
 		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
 		begin(g:nanofl.engine.Render) : void;
@@ -8780,7 +8780,7 @@ declare module nanofl.engine.fills
 		constructor(color:string);
 		color : string;
 		save(out:htmlparser.XmlBuilder) : void;
-		clone() : nanofl.engine.fills.IFill;
+		clone() : nanofl.engine.fills.SolidFill;
 		applyAlpha(alpha:number) : void;
 		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
 		begin(g:nanofl.engine.Render) : void;

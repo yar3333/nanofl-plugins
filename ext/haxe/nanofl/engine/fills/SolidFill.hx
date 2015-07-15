@@ -5,7 +5,7 @@ extern class SolidFill extends nanofl.engine.fills.BaseFill implements nanofl.en
 	function new(color:String) : Void;
 	var color : String;
 	function save(out:htmlparser.XmlBuilder) : Void;
-	function clone() : nanofl.engine.fills.IFill;
+	function clone() : nanofl.engine.fills.SolidFill;
 	function applyAlpha(alpha:Float) : Void;
 	function getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
 	function begin(g:nanofl.engine.Render) : Void;
