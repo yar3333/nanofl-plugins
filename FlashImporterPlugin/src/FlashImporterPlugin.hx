@@ -1,5 +1,7 @@
+import stdlib.Uuid;
 import flashimport.DocumentImporter;
 import flashimport.Macro;
+import haxe.io.Path;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
@@ -30,6 +32,45 @@ class FlashImporterPlugin implements IImporterPlugin
 	
 	public function importDocument(fileApi:FileApi, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, fonts:Array<String>, callb:Bool->Void)
 	{
-		DocumentImporter.process(IMPORT_MEDIA_SCRIPT_TEMPLATE, fileApi, srcFilePath, destFilePath, documentProperties, library, fonts, true, null, callb);
+		if (Path.extension(srcFilePath) == "fla")
+		{
+			var name = Uuid.newUuid();
+			var dir = fileApi.getTempDirectory() + "/" + name;
+			fileApi.unzip(srcFilePath, dir);
+			
+			DocumentImporter.process
+			(
+				IMPORT_MEDIA_SCRIPT_TEMPLATE,
+				fileApi,
+				dir + "/" + name + ".xfl",
+				destFilePath,
+				documentProperties,
+				library,
+				fonts,
+				true,
+				null,
+				function(success:Bool)
+				{
+					fileApi.remove(dir);
+					callb(success);
+				}
+			);
+		}
+		else
+		{
+			DocumentImporter.process
+			(
+				IMPORT_MEDIA_SCRIPT_TEMPLATE,
+				fileApi,
+				srcFilePath,
+				destFilePath,
+				documentProperties,
+				library,
+				fonts,
+				true,
+				null,
+				callb
+			);
+		}
 	}
 }

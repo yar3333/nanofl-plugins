@@ -85,7 +85,15 @@ FlashImporterPlugin.main = function() {
 };
 FlashImporterPlugin.prototype = {
 	importDocument: function(fileApi,srcFilePath,destFilePath,documentProperties,library,fonts,callb) {
-		flashimport_DocumentImporter.process(FlashImporterPlugin.IMPORT_MEDIA_SCRIPT_TEMPLATE,fileApi,srcFilePath,destFilePath,documentProperties,library,fonts,true,null,callb);
+		if(haxe_io_Path.extension(srcFilePath) == "fla") {
+			var name = stdlib_Uuid.newUuid();
+			var dir = fileApi.getTempDirectory() + "/" + name;
+			fileApi.unzip(srcFilePath,dir);
+			flashimport_DocumentImporter.process(FlashImporterPlugin.IMPORT_MEDIA_SCRIPT_TEMPLATE,fileApi,dir + "/" + name + ".xfl",destFilePath,documentProperties,library,fonts,true,null,function(success) {
+				fileApi.remove(dir);
+				callb(success);
+			});
+		} else flashimport_DocumentImporter.process(FlashImporterPlugin.IMPORT_MEDIA_SCRIPT_TEMPLATE,fileApi,srcFilePath,destFilePath,documentProperties,library,fonts,true,null,callb);
 	}
 	,__class__: FlashImporterPlugin
 };
@@ -1486,6 +1494,11 @@ haxe_io_Path.directory = function(path) {
 	if(s.dir == null) return "";
 	return s.dir;
 };
+haxe_io_Path.extension = function(path) {
+	var s = new haxe_io_Path(path);
+	if(s.ext == null) return "";
+	return s.ext;
+};
 haxe_io_Path.prototype = {
 	toString: function() {
 		return (this.dir == null?"":this.dir + (this.backslash?"\\":"/")) + this.file + (this.ext == null?"":"." + this.ext);
@@ -2400,6 +2413,14 @@ stdlib_Utf8.prototype = $extend(haxe_Utf8.prototype,{
 	}
 	,__class__: stdlib_Utf8
 });
+var stdlib_Uuid = function() { };
+stdlib_Uuid.__name__ = ["stdlib","Uuid"];
+stdlib_Uuid.newUuid = function() {
+	var timeF = new Date().getTime();
+	var time = timeF - 268435455. * (timeF / 268435455 | 0) | 0;
+	var uuid = stdlib_StringTools.hex(stdlib_Uuid.counter++,8) + "-" + StringTools.hex(timeF / 65536 | 0,8) + "-" + StringTools.hex(time % 65536,8) + "-" + stdlib_StringTools.hex(Std.random(65536),4) + "-" + stdlib_StringTools.hex(Std.random(65536),4);
+	return uuid;
+};
 function $iterator(o) { if( o instanceof Array ) return function() { return HxOverrides.iter(o); }; return typeof(o.iterator) == 'function' ? $bind(o,o.iterator) : o.iterator; }
 var $_, $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }
@@ -2447,5 +2468,6 @@ haxe_io_FPHelper.i64tmp = (function($this) {
 }(this));
 js_Boot.__toStr = {}.toString;
 js_html_compat_Uint8Array.BYTES_PER_ELEMENT = 1;
+stdlib_Uuid.counter = 0;
 FlashImporterPlugin.main();
 })(typeof console != "undefined" ? console : {log:function(){}});
