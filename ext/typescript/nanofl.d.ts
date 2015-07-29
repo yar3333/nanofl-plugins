@@ -6651,6 +6651,7 @@ declare module nanofl.engine.geom
 		save(out:htmlparser.XmlBuilder) : void;
 		draw(g:nanofl.engine.Render) : void;
 		translate(dx:number, dy:number) : void;
+		transform(m:nanofl.engine.geom.Matrix) : void;
 		isPointInside(px:number, py:number) : boolean;
 		isPointInsideP(p:nanofl.engine.geom.Point) : boolean;
 		hasPoint(px:number, py:number) : boolean;
@@ -6905,6 +6906,7 @@ declare module nanofl.engine.geom
 		static getReconstructed(polygons:nanofl.engine.geom.Polygon[], additionalEdges:nanofl.engine.geom.Edge[], force?:boolean) : nanofl.engine.geom.Polygon[];
 		static fromContours(originalContours:nanofl.engine.geom.Contour[], fill:nanofl.engine.fills.IFill, fillEvenOdd:boolean) : nanofl.engine.geom.Polygon[];
 		static assertCorrect(polygons:nanofl.engine.geom.Polygon[], intergrityChecks:boolean) : void;
+		static removeErased(polygons:nanofl.engine.geom.Polygon[]) : void;
 	}
 	
 	export class StraightLine
@@ -6956,6 +6958,7 @@ declare module nanofl.engine.geom
 		static getBounds(edges:nanofl.engine.geom.StrokeEdge[], bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 		static processStrokes(edges:nanofl.engine.geom.StrokeEdge[], callb:(arg:nanofl.engine.strokes.IStroke) => void) : void;
 		static drawSorted(edges:nanofl.engine.geom.StrokeEdge[], g:nanofl.engine.Render, scaleSelection:number) : void;
+		static fromEdges(edges:nanofl.engine.geom.Edge[], stroke:nanofl.engine.strokes.IStroke, selected?:boolean) : nanofl.engine.geom.StrokeEdge[];
 	}
 }
 
@@ -7678,6 +7681,7 @@ declare module nanofl.ide
 		unzip(srcZip:string, destDir:string) : boolean;
 		basicRemove(path:string) : void;
 		basicRename(oldPath:string, newPath:string) : void;
+		getEnvironmentVariable(name:string) : string;
 	}
 }
 
@@ -8379,6 +8383,7 @@ declare module nanofl.engine
 		getLastModified(path:string) : Date;
 		zip(srcDir:string, destZip:string) : boolean;
 		unzip(srcZip:string, destDir:string) : boolean;
+		getEnvironmentVariable(name:string) : string;
 	}
 	
 	export class FilterDef
@@ -8706,6 +8711,20 @@ declare module nanofl.engine.fills
 		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.fills.BitmapFill;
 	}
 	
+	export class EraseFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
+	{
+		constructor();
+		save(out:htmlparser.XmlBuilder) : void;
+		clone() : nanofl.engine.fills.EraseFill;
+		applyAlpha(alpha:number) : void;
+		getTyped() : nanofl.engine.fills.TypedFill;
+		begin(g:nanofl.engine.Render) : void;
+		equ(e:nanofl.engine.fills.IFill) : boolean;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
+		toString() : string;
+	}
+	
 	type FillParams =
 	{
 		bitmapPath : string;
@@ -8897,6 +8916,7 @@ declare module nanofl.engine.libraryitems
 		save(fileApi:nanofl.engine.FileApi) : void;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		getFilePathTemplate() : string;
+		getFilePathToRunWithEditor() : string;
 		preload(ready:() => void) : void;
 		duplicate(newNamePath:string) : nanofl.engine.libraryitems.LibraryItem;
 		remove() : void;
@@ -8932,6 +8952,7 @@ declare module nanofl.engine.libraryitems
 		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
 		getDisplayObjectClassName() : string;
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
+		getFilePathToRunWithEditor() : string;
 		toString() : string;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.BitmapItem;
 	}

@@ -7,6 +7,7 @@ extern class Contour
 	function save(out:htmlparser.XmlBuilder) : Void;
 	function draw(g:nanofl.engine.Render) : Void;
 	function translate(dx:Float, dy:Float) : Void;
+	function transform(m:nanofl.engine.geom.Matrix) : Void;
 	function isPointInside(px:Float, py:Float) : Bool;
 	function isPointInsideP(p:nanofl.engine.geom.Point) : Bool;
 	function hasPoint(px:Float, py:Float) : Bool;

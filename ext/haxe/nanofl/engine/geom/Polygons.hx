@@ -10,4 +10,5 @@ extern class Polygons
 	static function getReconstructed(polygons:Array<nanofl.engine.geom.Polygon>, additionalEdges:Array<nanofl.engine.geom.Edge>, ?force:Bool) : Array<nanofl.engine.geom.Polygon>;
 	static function fromContours(originalContours:Array<nanofl.engine.geom.Contour>, fill:nanofl.engine.fills.IFill, fillEvenOdd:Bool) : Array<nanofl.engine.geom.Polygon>;
 	static function assertCorrect(polygons:Array<nanofl.engine.geom.Polygon>, intergrityChecks:Bool) : Void;
+	static function removeErased(polygons:Array<nanofl.engine.geom.Polygon>) : Void;
 }

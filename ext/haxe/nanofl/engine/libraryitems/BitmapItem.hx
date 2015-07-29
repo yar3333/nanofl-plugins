@@ -17,6 +17,7 @@ extern class BitmapItem extends nanofl.engine.libraryitems.InstancableItem imple
 	override function updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : Void;
 	override function getDisplayObjectClassName() : String;
 	override function equ(item:nanofl.engine.libraryitems.LibraryItem) : Bool;
+	override function getFilePathToRunWithEditor() : String;
 	override function toString() : String;
 	static function parse(namePath:String, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.BitmapItem;
 }

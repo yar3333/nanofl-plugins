@@ -20,4 +20,5 @@ extern interface FileApi
 	function getLastModified(path:String) : Date;
 	function zip(srcDir:String, destZip:String) : Bool;
 	function unzip(srcZip:String, destDir:String) : Bool;
+	function getEnvironmentVariable(name:String) : String;
 }

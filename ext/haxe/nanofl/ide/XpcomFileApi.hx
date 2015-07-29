@@ -24,4 +24,5 @@ extern class XpcomFileApi implements nanofl.engine.FileApi
 	function unzip(srcZip:String, destDir:String) : Bool;
 	function basicRemove(path:String) : Void;
 	function basicRename(oldPath:String, newPath:String) : Void;
+	function getEnvironmentVariable(name:String) : String;
 }
