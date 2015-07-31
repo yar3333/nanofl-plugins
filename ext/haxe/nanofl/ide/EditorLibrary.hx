@@ -36,5 +36,4 @@ extern class EditorLibrary
 	function selectUnusedItems() : Void;
 	function removeUnusedItems() : Void;
 	function optimize() : Void;
-	function extractNewAndChangedItems(oldLibrary:nanofl.engine.Library) : nanofl.engine.Library;
 }

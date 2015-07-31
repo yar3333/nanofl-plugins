@@ -39,10 +39,10 @@ class HtmlGenerator extends TextureAtlasGenerator
 			template = template.split("{scaleMode}").join(documentProperties.scaleMode);
 			template = template.split("{scripts}").join
 			(
-				getScriptInlineBlocks()
-					.filter(function(s) return s != null && s != "")
-					.map(function(s) return "\t\t<script>\n" + s.split("\n").join("\n\t\t") + "\n\t\t</script>")
-					.concat(getScriptUrls(dir, name).map(function(s) return "\t\t<script src=\"" + s + "\"></script>")).join("\n")
+				"\t\t\t" + getScriptInlineBlocks()
+							.filter(function(s) return s != null && s != "")
+							.map(function(s) return "\t\t<script>\n" + s.split("\n").join("\n\t\t") + "\n\t\t</script>")
+							.concat(getScriptUrls(dir, name).map(function(s) return "\t\t<script src=\"" + s + "\"></script>")).join("\n")
 			);
 			fileApi.saveContent(file, template);
 		}
