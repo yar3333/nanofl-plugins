@@ -484,7 +484,6 @@ class SymbolLoader
 			case _: filter.name;
 		};
 		
-		
 		return new FilterDef(filter.name, params);
 	}
 	

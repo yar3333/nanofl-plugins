@@ -8,9 +8,9 @@ extern class FilterDef
 	function save(out:htmlparser.XmlBuilder) : Void;
 	function equ(filter:nanofl.engine.FilterDef) : Bool;
 	function clone() : nanofl.engine.FilterDef;
-	function cloneTweened(t:Float, finish:nanofl.engine.FilterDef) : nanofl.engine.FilterDef;
+	function tween(t:Float, finish:nanofl.engine.FilterDef) : nanofl.engine.FilterDef;
 	function getFilter() : createjs.Filter;
 	function getLabel() : String;
-	function getProperties() : Array<nanofl.engine.plugins.FilterProperty>;
+	function getProperties() : Array<nanofl.engine.CustomProperty>;
 	static function load(node:htmlparser.HtmlNodeElement) : nanofl.engine.FilterDef;
 }

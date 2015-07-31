@@ -6964,44 +6964,6 @@ declare module nanofl.engine.geom
 
 declare module nanofl.engine.plugins
 {
-	type FilterProperty =
-	{
-		/**
-		 * Like 123, 10.3, "#00aaff", "rgb(1,2,3)" or "rgba(12,32,255,128)".
-		 */
-		defaultValue : any;
-		/**
-		 * Used to display in form. If not specified then name will be used.
-		 */
-		label : string;
-		/**
-		 * Maximum value to validate on input. Used for int/float only.
-		 */
-		maxValue : any;
-		/**
-		 * Minimum value to validate on input. Used for int/float only.
-		 */
-		minValue : any;
-		/**
-		 * Used as field name in params.
-		 */
-		name : string;
-		/**
-		 * Value for neutral case.
-		 * Used to detect finish value in tween when finish filter is absent.
-		 * Don't specify or set to null if not need.
-		 */
-		neutralValue : any;
-		/**
-		 * int / float / string / color / bool
-		 */
-		type : string;
-		/**
-		 * Units to display ("px", "%").
-		 */
-		units : string;
-	}
-	
 	export interface IFilterPlugin
 	{
 		/**
@@ -7013,7 +6975,10 @@ declare module nanofl.engine.plugins
 		 * Filter name for screen forms (for example: "Drop Shadow").
 		 */
 		label : string;
-		properties : nanofl.engine.plugins.FilterProperty[];
+		/**
+		 * Custom filter properties.
+		 */
+		properties : nanofl.engine.CustomProperty[];
 		getFilter(params:any) : createjs.Filter;
 	}
 }
@@ -8344,14 +8309,53 @@ declare module nanofl.engine
 		static normalize(s:string) : string;
 	}
 	
+	type CustomProperty =
+	{
+		/**
+		 * Like 123, 10.3, "myStr", true, "#00aaff", "rgb(1,2,3)" or "rgba(12,32,255,128)".
+		 */
+		defaultValue : any;
+		/**
+		 * Used to display in form. If not specified then name will be used.
+		 */
+		label : string;
+		/**
+		 * Maximum value to validate on input. Used for int/float only.
+		 */
+		maxValue : any;
+		/**
+		 * Minimum value to validate on input. Used for int/float only.
+		 */
+		minValue : any;
+		/**
+		 * Used as field name in params.
+		 */
+		name : string;
+		/**
+		 * Value for neutral case.
+		 * Used to detect finish value in tween when finish filter is absent.
+		 * Don't specify or set to null if not need.
+		 */
+		neutralValue : any;
+		/**
+		 * int / float / string / color / bool
+		 */
+		type : string;
+		/**
+		 * Units to display ("px", "%").
+		 */
+		units : string;
+	}
+	
 	export class DocumentProperties
 	{
-		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, generator?:string, generatorMode?:string, useTextureAtlases?:boolean, textureAtlasWidth?:number, textureAtlasHeight?:number, textureAtlasPadding?:number, graphicsAcceleration?:boolean);
+		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, scaleMode?:string, generator?:string, generatorMode?:string, useTextureAtlases?:boolean, textureAtlasWidth?:number, textureAtlasHeight?:number, textureAtlasPadding?:number, graphicsAcceleration?:boolean);
 		title : string;
 		width : number;
 		height : number;
 		backgroundColor : string;
 		framerate : number;
+		scaleMode : string;
 		generator : string;
 		generatorMode : string;
 		useTextureAtlases : boolean;
@@ -8394,10 +8398,10 @@ declare module nanofl.engine
 		save(out:htmlparser.XmlBuilder) : void;
 		equ(filter:nanofl.engine.FilterDef) : boolean;
 		clone() : nanofl.engine.FilterDef;
-		cloneTweened(t:number, finish:nanofl.engine.FilterDef) : nanofl.engine.FilterDef;
+		tween(t:number, finish:nanofl.engine.FilterDef) : nanofl.engine.FilterDef;
 		getFilter() : createjs.Filter;
 		getLabel() : string;
-		getProperties() : nanofl.engine.plugins.FilterProperty[];
+		getProperties() : nanofl.engine.CustomProperty[];
 		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.FilterDef;
 	}
 	
@@ -8642,6 +8646,15 @@ declare module nanofl.engine
 		lineTo(x:number, y:number) : nanofl.engine.Render;
 		moveTo(x:number, y:number) : nanofl.engine.Render;
 		setStrokeStyle(thickness:number, caps:string, joints:string, miterLimit:number, ignoreScale:boolean) : nanofl.engine.Render;
+	}
+	
+	export class ScaleMode
+	{
+		static noScale : string;
+		static fit : string;
+		static fill : string;
+		static stretch : string;
+		static custom : string;
 	}
 	
 	type SpriteItemFrame =

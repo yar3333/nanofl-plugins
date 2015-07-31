@@ -1,5 +1,5 @@
 import createjs.GlowFilter;
-import nanofl.engine.plugins.FilterProperty;
+import nanofl.engine.CustomProperty;
 import nanofl.engine.plugins.IFilterPlugin;
 
 class GlowFilterPlugin implements IFilterPlugin
@@ -9,7 +9,7 @@ class GlowFilterPlugin implements IFilterPlugin
 	public var name = "GlowFilter";
 	public var label = "Glow";
 	
-	public var properties : Array<FilterProperty> =
+	public var properties : Array<CustomProperty> =
 	[
 		{ type:"float",	name:"blurX",		label:"Blur X",			defaultValue:5, 					units:"px",	minValue:0 },
 		{ type:"float",	name:"blurY",		label:"Blur Y",			defaultValue:5, 					units:"px",	minValue:0 },

@@ -2,12 +2,13 @@ package nanofl.engine;
 
 extern class DocumentProperties
 {
-	function new(?title:String, ?width:Int, ?height:Int, ?backgroundColor:String, ?framerate:Float, ?generator:String, ?generatorMode:String, ?useTextureAtlases:Bool, ?textureAtlasWidth:Int, ?textureAtlasHeight:Int, ?textureAtlasPadding:Int, ?graphicsAcceleration:Bool) : Void;
+	function new(?title:String, ?width:Int, ?height:Int, ?backgroundColor:String, ?framerate:Float, ?scaleMode:String, ?generator:String, ?generatorMode:String, ?useTextureAtlases:Bool, ?textureAtlasWidth:Int, ?textureAtlasHeight:Int, ?textureAtlasPadding:Int, ?graphicsAcceleration:Bool) : Void;
 	var title : String;
 	var width : Int;
 	var height : Int;
 	var backgroundColor : String;
 	var framerate : Float;
+	var scaleMode : String;
 	var generator : String;
 	var generatorMode : String;
 	var useTextureAtlases : Bool;

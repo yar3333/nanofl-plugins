@@ -1,9 +1,9 @@
-package nanofl.engine.plugins;
+package nanofl.engine;
 
-typedef FilterProperty =
+typedef CustomProperty =
 {
 	/**
-	 * Like 123, 10.3, "#00aaff", "rgb(1,2,3)" or "rgba(12,32,255,128)".
+	 * Like 123, 10.3, "myStr", true, "#00aaff", "rgb(1,2,3)" or "rgba(12,32,255,128)".
 	 */
 	var defaultValue : Dynamic;
 	/**

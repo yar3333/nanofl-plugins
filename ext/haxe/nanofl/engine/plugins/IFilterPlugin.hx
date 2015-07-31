@@ -11,6 +11,9 @@ extern interface IFilterPlugin
 	 * Filter name for screen forms (for example: "Drop Shadow").
 	 */
 	var label : String;
-	var properties : Array<nanofl.engine.plugins.FilterProperty>;
+	/**
+	 * Custom filter properties.
+	 */
+	var properties : Array<nanofl.engine.CustomProperty>;
 	function getFilter(params:Dynamic) : createjs.Filter;
 }

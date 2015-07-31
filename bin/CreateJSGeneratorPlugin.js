@@ -815,6 +815,7 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 			template = template.split("{createjsUrl}").join(nanofl.engine.VersionInfo.createjsUrl);
 			template = template.split("{playerUrl}").join(nanofl.engine.VersionInfo.playerUrl);
 			template = template.split("{framerate}").join(this.documentProperties.framerate);
+			template = template.split("{scaleMode}").join(this.documentProperties.scaleMode);
 			template = template.split("{scripts}").join(this.getScriptInlineBlocks().filter(function(s1) {
 				return s1 != null && s1 != "";
 			}).map(function(s2) {

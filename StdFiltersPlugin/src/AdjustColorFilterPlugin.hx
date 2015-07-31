@@ -1,6 +1,6 @@
-import createjs.ColorMatrixFilter;
 import createjs.ColorMatrix;
-import nanofl.engine.plugins.FilterProperty;
+import createjs.ColorMatrixFilter;
+import nanofl.engine.CustomProperty;
 import nanofl.engine.plugins.IFilterPlugin;
 
 class AdjustColorFilterPlugin implements IFilterPlugin
@@ -10,7 +10,7 @@ class AdjustColorFilterPlugin implements IFilterPlugin
 	public var name = "AdjustColorFilter";
 	public var label = "Adjust Color";
 	
-	public var properties : Array<FilterProperty> =
+	public var properties : Array<CustomProperty> =
 	[
 		{ type:"int",	name:"brightness",	label:"Brightness",	defaultValue:0,	minValue:-100,	maxValue:100,	units:"%" },
 		{ type:"int",	name:"contrast",	label:"Contrast",	defaultValue:0,	minValue:-100,	maxValue:100,	units:"%" },

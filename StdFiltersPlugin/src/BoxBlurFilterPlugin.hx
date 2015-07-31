@@ -1,5 +1,5 @@
 import createjs.BoxBlurFilter;
-import nanofl.engine.plugins.FilterProperty;
+import nanofl.engine.CustomProperty;
 import nanofl.engine.plugins.IFilterPlugin;
 
 class BoxBlurFilterPlugin implements IFilterPlugin
@@ -9,7 +9,7 @@ class BoxBlurFilterPlugin implements IFilterPlugin
 	public var name = "BoxBlurFilter";
 	public var label = "Box Blur";
 	
-	public var properties : Array<FilterProperty> =
+	public var properties : Array<CustomProperty> =
 	[
 		{ type:"float",	name:"blurX",	label:"Blur X",		defaultValue:10, neutralValue:0, units:"px",	minValue:0 },
 		{ type:"float",	name:"blurY",	label:"Blur Y",		defaultValue:10, neutralValue:0, units:"px",	minValue:0 },

@@ -1,7 +1,7 @@
 import createjs.DropShadowFilter;
-import nanofl.engine.plugins.FilterProperty;
-import nanofl.engine.plugins.IFilterPlugin;
 import nanofl.engine.ColorTools;
+import nanofl.engine.CustomProperty;
+import nanofl.engine.plugins.IFilterPlugin;
 
 class DropShadowFilterPlugin implements IFilterPlugin
 {
@@ -10,7 +10,7 @@ class DropShadowFilterPlugin implements IFilterPlugin
 	public var name = "DropShadowFilter";
 	public var label = "Drop Shadow";
 	
-	public var properties : Array<FilterProperty> =
+	public var properties : Array<CustomProperty> =
 	[
 		{ type:"float",	name:"blurX",		label:"Blur X",			defaultValue:5, 					units:"px",	minValue:0 },
 		{ type:"float",	name:"blurY",		label:"Blur Y",			defaultValue:5, 					units:"px",	minValue:0 },

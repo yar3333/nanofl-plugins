@@ -1,5 +1,5 @@
 import createjs.GaussianBlurFilter;
-import nanofl.engine.plugins.FilterProperty;
+import nanofl.engine.CustomProperty;
 import nanofl.engine.plugins.IFilterPlugin;
 
 class GaussianBlurFilterPlugin implements IFilterPlugin
@@ -9,7 +9,7 @@ class GaussianBlurFilterPlugin implements IFilterPlugin
 	public var name = "GaussianBlurFilterPlugin";
 	public var label = "Gaussian Blur";
 	
-	public var properties : Array<FilterProperty> =
+	public var properties : Array<CustomProperty> =
 	[
 		{ type:"int", name:"radius", label:"Radius", defaultValue:10, neutralValue:0, units:"px", minValue:0 }
 	];
