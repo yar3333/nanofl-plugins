@@ -86,10 +86,9 @@ FlashImporterPlugin.main = function() {
 FlashImporterPlugin.prototype = {
 	importDocument: function(fileApi,srcFilePath,destFilePath,documentProperties,library,fonts,callb) {
 		if(haxe_io_Path.extension(srcFilePath) == "fla") {
-			var name = stdlib_Uuid.newUuid();
-			var dir = fileApi.getTempDirectory() + "/" + name;
+			var dir = fileApi.getTempDirectory() + "/unsaved/" + stdlib_Uuid.newUuid();
 			fileApi.unzip(srcFilePath,dir);
-			flashimport_DocumentImporter.process(FlashImporterPlugin.IMPORT_MEDIA_SCRIPT_TEMPLATE,fileApi,dir + "/" + name + ".xfl",destFilePath,documentProperties,library,fonts,true,null,function(success) {
+			flashimport_DocumentImporter.process(FlashImporterPlugin.IMPORT_MEDIA_SCRIPT_TEMPLATE,fileApi,dir + "/" + haxe_io_Path.withoutDirectory(haxe_io_Path.withoutExtension(srcFilePath)) + ".xfl",destFilePath,documentProperties,library,fonts,true,null,function(success) {
 				fileApi.remove(dir);
 				callb(success);
 			});
@@ -1487,6 +1486,11 @@ haxe_io_Path.__name__ = ["haxe","io","Path"];
 haxe_io_Path.withoutExtension = function(path) {
 	var s = new haxe_io_Path(path);
 	s.ext = null;
+	return s.toString();
+};
+haxe_io_Path.withoutDirectory = function(path) {
+	var s = new haxe_io_Path(path);
+	s.dir = null;
 	return s.toString();
 };
 haxe_io_Path.directory = function(path) {

@@ -34,15 +34,14 @@ class FlashImporterPlugin implements IImporterPlugin
 	{
 		if (Path.extension(srcFilePath) == "fla")
 		{
-			var name = Uuid.newUuid();
-			var dir = fileApi.getTempDirectory() + "/" + name;
+			var dir = fileApi.getTempDirectory() + "/unsaved/" + Uuid.newUuid();
 			fileApi.unzip(srcFilePath, dir);
 			
 			DocumentImporter.process
 			(
 				IMPORT_MEDIA_SCRIPT_TEMPLATE,
 				fileApi,
-				dir + "/" + name + ".xfl",
+				dir + "/" + Path.withoutDirectory(Path.withoutExtension(srcFilePath)) + ".xfl",
 				destFilePath,
 				documentProperties,
 				library,
