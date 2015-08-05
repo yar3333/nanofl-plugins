@@ -6,7 +6,7 @@ import stdlib.Debug;
 using htmlparser.HtmlParserTools;
 using StringTools;
 
-class ContourParser
+class EdgeData
 {
 	public var strokeStyle(default, null) : Int;
 	public var fillStyle0(default, null) : Int;

@@ -225,18 +225,8 @@ class SymbolLoader
 	{
 		var strokes = element.find(">strokes>StrokeStyle>*").map(function(stroke) return loadShapeStroke(stroke));
 		var fills = element.find(">fills>FillStyle>*").map(function(fill) return loadShapeFill(fill).fill);
-		var contours = [];
-		for (edge in element.find(">edges>Edge"))
-		{
-			var contour = new ContourParser(edge);
-			if ((contour.fillStyle0 != null || contour.fillStyle1 != null || contour.strokeStyle != null) && contour.drawOps.length > 0)
-			{
-				contours.push(contour);
-			}
-		}
-		var contoursExporter = new ContoursExporter(strokes, fills);
-		new ContoursParser(contours).parse(contoursExporter);
-		var p = contoursExporter.export();
+		
+		var p = new ShapeConvertor(strokes, fills, loadEdgeDatas(element)).convert();
 		
 		var shape = new ShapeElement(p.edges, p.polygons);
 		shape.matrix = MatrixParser.load(element.findOne(">matrix>Matrix")).prependMatrix(parentMatrix);
@@ -244,6 +234,20 @@ class SymbolLoader
 		shape.ensureNoTransform();
 		
 		return shape;
+	}
+	
+	function loadEdgeDatas(element:HtmlNodeElement) : Array<EdgeData>
+	{
+		var r = [];
+		for (edge in element.find(">edges>Edge"))
+		{
+			var edgeData = new EdgeData(edge);
+			if ((edgeData.fillStyle0 != null || edgeData.fillStyle1 != null || edgeData.strokeStyle != null) && edgeData.drawOps.length > 0)
+			{
+				r.push(edgeData);
+			}
+		}
+		return r;
 	}
 	
 	function loadShapeFill(fill:HtmlNodeElement) : { fill:IFill, matrix:Matrix }

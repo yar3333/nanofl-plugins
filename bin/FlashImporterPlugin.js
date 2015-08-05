@@ -112,18 +112,6 @@ HxOverrides.substr = function(s,pos,len) {
 	} else if(len < 0) len = s.length + len - pos;
 	return s.substr(pos,len);
 };
-HxOverrides.indexOf = function(a,obj,i) {
-	var len = a.length;
-	if(i < 0) {
-		i += len;
-		if(i < 0) i = 0;
-	}
-	while(i < len) {
-		if(a[i] === obj) return i;
-		i++;
-	}
-	return -1;
-};
 HxOverrides.iter = function(a) {
 	return { cur : 0, arr : a, hasNext : function() {
 		return this.cur < this.arr.length;
@@ -133,15 +121,6 @@ HxOverrides.iter = function(a) {
 };
 var Lambda = function() { };
 Lambda.__name__ = ["Lambda"];
-Lambda.array = function(it) {
-	var a = [];
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var i = $it0.next();
-		a.push(i);
-	}
-	return a;
-};
 Lambda.has = function(it,elt) {
 	var $it0 = $iterator(it)();
 	while( $it0.hasNext() ) {
@@ -166,6 +145,14 @@ Lambda.count = function(it,pred) {
 		}
 	}
 	return n;
+};
+Lambda.find = function(it,f) {
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var v = $it0.next();
+		if(f(v)) return v;
+	}
+	return null;
 };
 var List = function() { };
 List.__name__ = ["List"];
@@ -369,397 +356,6 @@ Type["typeof"] = function(v) {
 Type.enumConstructor = function(e) {
 	return e[0];
 };
-var flashimport_ContourParser = function(edge) {
-	this.strokeStyle = Std["int"](htmlparser.HtmlParserTools.getAttr(edge,"strokeStyle",0));
-	this.fillStyle0 = Std["int"](htmlparser.HtmlParserTools.getAttr(edge,"fillStyle0",0));
-	this.fillStyle1 = Std["int"](htmlparser.HtmlParserTools.getAttr(edge,"fillStyle1",0));
-	this.drawOps = [];
-	var drawStr = htmlparser.HtmlParserTools.getAttr(edge,"edges");
-	if(drawStr == null) return;
-	var reNumber = "(#?-?[0-9A-F]+(?:[.][0-9A-F]+)?)";
-	var reXY = new EReg("^" + reNumber + "\\s+" + reNumber + "\\s*","i");
-	var reX1Y1X2Y2 = new EReg("^" + reNumber + "\\s+" + reNumber + "\\s+" + reNumber + "\\s+" + reNumber + "\\s*","i");
-	var lastX = 1.0e10;
-	var lastY = 1.0e10;
-	stdlib_Debug.assert(drawStr.length == 0 || StringTools.ltrim(drawStr).charAt(0) == "!","drawStr = " + drawStr,{ fileName : "ContourParser.hx", lineNumber : 39, className : "flashimport.ContourParser", methodName : "new"});
-	while(drawStr.length > 0) {
-		var opCode = drawStr.charAt(0);
-		drawStr = HxOverrides.substr(drawStr,1,null);
-		if(opCode == "!") {
-			if(reXY.match(drawStr)) {
-				var x = this.parseNumber(reXY.matched(1));
-				var y = this.parseNumber(reXY.matched(2));
-				if(x != lastX || y != lastY) {
-					this.drawOps.push(flashimport_DrawOp.move(x,y));
-					lastX = x;
-					lastY = y;
-				}
-				drawStr = reXY.matchedRight();
-			} else throw new js__$Boot_HaxeError("Expected (x, y).");
-		} else if(opCode == "|" || opCode == "/") while(reXY.match(drawStr)) {
-			this.drawOps.push(flashimport_DrawOp.line(lastX = this.parseNumber(reXY.matched(1)),lastY = this.parseNumber(reXY.matched(2))));
-			drawStr = reXY.matchedRight();
-		} else if(opCode == "[") while(reX1Y1X2Y2.match(drawStr)) {
-			this.drawOps.push(flashimport_DrawOp.curve(this.parseNumber(reX1Y1X2Y2.matched(1)),this.parseNumber(reX1Y1X2Y2.matched(2)),lastX = this.parseNumber(reX1Y1X2Y2.matched(3)),lastY = this.parseNumber(reX1Y1X2Y2.matched(4))));
-			drawStr = reX1Y1X2Y2.matchedRight();
-		} else if(opCode == "S") drawStr = HxOverrides.substr(drawStr,1,null); else if(opCode == " " || opCode == "\r" || opCode == "\n") drawStr = HxOverrides.substr(drawStr,1,null); else throw new js__$Boot_HaxeError("Unknow edges code = '" + opCode + "' near '" + drawStr + "'.");
-	}
-};
-flashimport_ContourParser.__name__ = ["flashimport","ContourParser"];
-flashimport_ContourParser.prototype = {
-	parseNumber: function(s) {
-		if(StringTools.startsWith(s,"#")) {
-			s = HxOverrides.substr(s,1,null);
-			var n = s.indexOf(".");
-			var high = HxOverrides.substr(s,0,n);
-			var low = StringTools.rpad(HxOverrides.substr(s,n + 1,null),"0",2);
-			var r = Std.parseInt("0x" + high + low);
-			if(r >= -2147483648) r = -(~r + 1);
-			return nanofl.engine.geom.PointTools.roundGap(r / 5120);
-		}
-		return nanofl.engine.geom.PointTools.roundGap(0.05 * parseFloat(s));
-	}
-	,__class__: flashimport_ContourParser
-};
-var flashimport_ContoursExporter = function(strokes,fills) {
-	this.y = null;
-	this.x = null;
-	this.stroke = null;
-	this.polygons = [];
-	this.edges = [];
-	this.isInFill = false;
-	this.strokes = strokes;
-	this.fills = fills;
-};
-flashimport_ContoursExporter.__name__ = ["flashimport","ContoursExporter"];
-flashimport_ContoursExporter.prototype = {
-	beginFill: function(n) {
-		this.isInFill = true;
-		this.polygons.push(new nanofl.engine.geom.Polygon(this.fills[n]));
-	}
-	,endFill: function() {
-		this.isInFill = false;
-	}
-	,beginStroke: function(n) {
-		this.stroke = this.strokes[n];
-	}
-	,endStroke: function() {
-	}
-	,moveTo: function(x,y) {
-		if(this.isInFill) this.polygons[this.polygons.length - 1].contours.push(new nanofl.engine.geom.Contour([]));
-		this.x = x;
-		this.y = y;
-	}
-	,lineTo: function(x,y) {
-		if(this.isInFill) {
-			var contours = this.polygons[this.polygons.length - 1].contours;
-			contours[contours.length - 1].edges.push(new nanofl.engine.geom.Edge(this.x,this.y,x,y));
-		} else this.edges.push(new nanofl.engine.geom.StrokeEdge(this.x,this.y,x,y,null,null,this.stroke));
-		this.x = x;
-		this.y = y;
-	}
-	,curveTo: function(controlX,controlY,anchorX,anchorY) {
-		if(this.isInFill) {
-			var contours = this.polygons[this.polygons.length - 1].contours;
-			contours[contours.length - 1].edges.push(new nanofl.engine.geom.Edge(this.x,this.y,controlX,controlY,anchorX,anchorY));
-		} else this.edges.push(new nanofl.engine.geom.StrokeEdge(this.x,this.y,controlX,controlY,anchorX,anchorY,this.stroke));
-		this.x = anchorX;
-		this.y = anchorY;
-	}
-	,'export': function() {
-		var polygons = [];
-		var _g = 0;
-		var _g1 = this.polygons;
-		while(_g < _g1.length) {
-			var p = _g1[_g];
-			++_g;
-			polygons = polygons.concat(p.split());
-		}
-		return { edges : this.edges, polygons : polygons};
-	}
-	,beginShape: function() {
-	}
-	,endShape: function() {
-	}
-	,beginFills: function() {
-	}
-	,endFills: function() {
-	}
-	,beginStrokes: function() {
-	}
-	,endStrokes: function() {
-	}
-	,__class__: flashimport_ContoursExporter
-};
-var flashimport_ContoursParser = function(contours) {
-	var xPos = 0.0;
-	var yPos = 0.0;
-	this.fillEdgeMap = new haxe_ds_IntMap();
-	this.lineEdgeMap = new haxe_ds_IntMap();
-	var _g = 0;
-	while(_g < contours.length) {
-		var contour = contours[_g];
-		++_g;
-		var subPath = [];
-		var _g1 = 0;
-		var _g2 = contour.drawOps;
-		while(_g1 < _g2.length) {
-			var drawOp = _g2[_g1];
-			++_g1;
-			switch(drawOp[1]) {
-			case 0:
-				var y = drawOp[3];
-				var x = drawOp[2];
-				xPos = x;
-				yPos = y;
-				break;
-			case 1:
-				var y1 = drawOp[3];
-				var x1 = drawOp[2];
-				var from = { x : xPos, y : yPos};
-				xPos = x1;
-				yPos = y1;
-				var to = { x : xPos, y : yPos};
-				subPath.push(new flashimport_StraightEdge(from,to,contour.strokeStyle,contour.fillStyle1));
-				break;
-			case 2:
-				var y2 = drawOp[5];
-				var x2 = drawOp[4];
-				var y11 = drawOp[3];
-				var x11 = drawOp[2];
-				var from1 = { x : xPos, y : yPos};
-				var xPosControl = x11;
-				var yPosControl = y11;
-				xPos = x2;
-				yPos = y2;
-				var control = { x : xPosControl, y : yPosControl};
-				var to1 = { x : xPos, y : yPos};
-				subPath.push(new flashimport_CurvedEdge(from1,control,to1,contour.strokeStyle,contour.fillStyle1));
-				break;
-			}
-		}
-		this.processSubPath(subPath,contour.strokeStyle,contour.fillStyle0,contour.fillStyle1);
-	}
-	this.cleanEdgeMap(this.fillEdgeMap);
-	this.cleanEdgeMap(this.lineEdgeMap);
-};
-flashimport_ContoursParser.__name__ = ["flashimport","ContoursParser"];
-flashimport_ContoursParser.prototype = {
-	parse: function(handler) {
-		handler.beginShape();
-		this.exportFillPath(handler);
-		this.exportLinePath(handler);
-		handler.endShape();
-	}
-	,processSubPath: function(subPath,lineStyleIdx,fillStyleIdx0,fillStyleIdx1) {
-		if(fillStyleIdx0 != 0) {
-			var path = this.fillEdgeMap.h[fillStyleIdx0];
-			if(path == null) this.fillEdgeMap.set(fillStyleIdx0,path = []);
-			var j = subPath.length - 1;
-			while(j >= 0) {
-				path.push(subPath[j].reverseWithNewFillStyle(fillStyleIdx0));
-				j--;
-			}
-		}
-		if(fillStyleIdx1 != 0) {
-			var path1 = this.fillEdgeMap.h[fillStyleIdx1];
-			if(path1 == null) this.fillEdgeMap.set(fillStyleIdx1,path1 = []);
-			this.appendEdges(path1,subPath);
-		}
-		if(lineStyleIdx != 0) {
-			var path2 = this.lineEdgeMap.h[lineStyleIdx];
-			if(path2 == null) this.lineEdgeMap.set(lineStyleIdx,path2 = []);
-			this.appendEdges(path2,subPath);
-		}
-	}
-	,cleanEdgeMap: function(edgeMap) {
-		var $it0 = edgeMap.keys();
-		while( $it0.hasNext() ) {
-			var styleIdx = $it0.next();
-			var subPath = edgeMap.h[styleIdx];
-			if(subPath != null && subPath.length > 0) {
-				var prevEdge = null;
-				var tmpPath = [];
-				var coordMap = this.createCoordMap(subPath);
-				while(subPath.length > 0) {
-					var idx = 0;
-					while(idx < subPath.length) if(prevEdge == null || nanofl.engine.geom.PointTools.equ(prevEdge.get_to(),subPath[idx].get_from())) {
-						var edge = subPath.splice(idx,1)[0];
-						tmpPath.push(edge);
-						this.removeEdgeFromCoordMap(coordMap,edge);
-						prevEdge = edge;
-					} else {
-						var edge1 = this.findNextEdgeInCoordMap(coordMap,prevEdge);
-						if(edge1 != null) idx = HxOverrides.indexOf(subPath,edge1,0); else {
-							idx = 0;
-							prevEdge = null;
-						}
-					}
-				}
-				edgeMap.h[styleIdx] = tmpPath;
-			}
-		}
-	}
-	,createCoordMap: function(path) {
-		var r = new haxe_ds_StringMap();
-		var _g = 0;
-		while(_g < path.length) {
-			var edge = path[_g];
-			++_g;
-			var from = edge.get_from();
-			var key = from.x + "_" + from.y;
-			var coordMapArray;
-			coordMapArray = __map_reserved[key] != null?r.getReserved(key):r.h[key];
-			if(coordMapArray == null) r.set(key,[edge]); else coordMapArray.push(edge);
-		}
-		return r;
-	}
-	,removeEdgeFromCoordMap: function(coordMap,edge) {
-		var key = edge.get_from().x + "_" + edge.get_from().y;
-		var coordMapArray;
-		coordMapArray = __map_reserved[key] != null?coordMap.getReserved(key):coordMap.h[key];
-		if(coordMapArray != null) {
-			if(coordMapArray.length == 1) coordMap.remove(key); else {
-				var i = HxOverrides.indexOf(coordMapArray,edge,0);
-				if(i >= 0) coordMapArray.splice(i,1);
-			}
-		}
-	}
-	,findNextEdgeInCoordMap: function(coordMap,edge) {
-		var key = edge.get_to().x + "_" + edge.get_to().y;
-		var coordMapArray;
-		coordMapArray = __map_reserved[key] != null?coordMap.getReserved(key):coordMap.h[key];
-		if(coordMapArray != null && coordMapArray.length > 0) return coordMapArray[0];
-		return null;
-	}
-	,exportFillPath: function(handler) {
-		var path = this.createPathFromEdgeMap(this.fillEdgeMap);
-		var pos = { x : 1e10, y : 1e10};
-		var fillStyleIdx = 2000000000;
-		if(path.length > 0) {
-			handler.beginFills();
-			var _g = 0;
-			while(_g < path.length) {
-				var e = path[_g];
-				++_g;
-				if(fillStyleIdx != e.get_fillStyleIdx()) {
-					if(fillStyleIdx != 2000000000) handler.endFill();
-					fillStyleIdx = e.get_fillStyleIdx();
-					pos = { x : 1e10, y : 1e10};
-					handler.beginFill(fillStyleIdx - 1);
-				}
-				if(!nanofl.engine.geom.PointTools.equ(pos,e.get_from())) handler.moveTo(e.get_from().x,e.get_from().y);
-				if(js_Boot.__instanceof(e,flashimport_CurvedEdge)) {
-					var c;
-					c = js_Boot.__cast(e , flashimport_CurvedEdge);
-					handler.curveTo(c.control.x,c.control.y,c.get_to().x,c.get_to().y);
-				} else handler.lineTo(e.get_to().x,e.get_to().y);
-				pos = e.get_to();
-			}
-			if(fillStyleIdx != 2000000000) handler.endFill();
-			handler.endFills();
-		}
-	}
-	,exportLinePath: function(handler) {
-		var path = this.createPathFromEdgeMap(this.lineEdgeMap);
-		var pos = { x : 1e10, y : 1e10};
-		var lineStyleIdx = 2000000000;
-		if(path.length > 0) {
-			handler.beginStrokes();
-			var _g = 0;
-			while(_g < path.length) {
-				var e = path[_g];
-				++_g;
-				if(lineStyleIdx != e.get_lineStyleIdx()) {
-					if(lineStyleIdx != 2000000000) handler.endStroke();
-					lineStyleIdx = e.get_lineStyleIdx();
-					pos = { x : 1e10, y : 1e10};
-					handler.beginStroke(lineStyleIdx - 1);
-				}
-				if(!nanofl.engine.geom.PointTools.equ(e.get_from(),pos)) handler.moveTo(e.get_from().x,e.get_from().y);
-				if(js_Boot.__instanceof(e,flashimport_CurvedEdge)) {
-					var c;
-					c = js_Boot.__cast(e , flashimport_CurvedEdge);
-					handler.curveTo(c.control.x,c.control.y,c.get_to().x,c.get_to().y);
-				} else handler.lineTo(e.get_to().x,e.get_to().y);
-				pos = e.get_to();
-			}
-			if(lineStyleIdx != 2000000000) handler.endStroke();
-			handler.endStrokes();
-		}
-	}
-	,createPathFromEdgeMap: function(edgeMap) {
-		var styleIndexes = Lambda.array({ iterator : $bind(edgeMap,edgeMap.keys)});
-		styleIndexes.sort(function(a,b) {
-			return a - b;
-		});
-		var path = [];
-		var _g = 0;
-		while(_g < styleIndexes.length) {
-			var styleIndex = styleIndexes[_g];
-			++_g;
-			this.appendEdges(path,edgeMap.h[styleIndex]);
-		}
-		return path;
-	}
-	,appendEdges: function(v1,v2) {
-		var _g = 0;
-		while(_g < v2.length) {
-			var e = v2[_g];
-			++_g;
-			v1.push(e);
-		}
-	}
-	,__class__: flashimport_ContoursParser
-};
-var flashimport_IEdge = function() { };
-flashimport_IEdge.__name__ = ["flashimport","IEdge"];
-flashimport_IEdge.prototype = {
-	__class__: flashimport_IEdge
-};
-var flashimport_StraightEdge = function(from,to,lineStyleIdx,fillStyleIdx) {
-	if(fillStyleIdx == null) fillStyleIdx = 0;
-	if(lineStyleIdx == null) lineStyleIdx = 0;
-	this.from = from;
-	this.to = to;
-	this.lineStyleIdx = lineStyleIdx;
-	this.fillStyleIdx = fillStyleIdx;
-};
-flashimport_StraightEdge.__name__ = ["flashimport","StraightEdge"];
-flashimport_StraightEdge.__interfaces__ = [flashimport_IEdge];
-flashimport_StraightEdge.prototype = {
-	get_from: function() {
-		return this.from;
-	}
-	,get_to: function() {
-		return this.to;
-	}
-	,get_lineStyleIdx: function() {
-		return this.lineStyleIdx;
-	}
-	,get_fillStyleIdx: function() {
-		return this.fillStyleIdx;
-	}
-	,reverseWithNewFillStyle: function(newFillStyleIdx) {
-		return new flashimport_StraightEdge(this.get_to(),this.get_from(),this.get_lineStyleIdx(),newFillStyleIdx);
-	}
-	,__class__: flashimport_StraightEdge
-};
-var flashimport_CurvedEdge = function(from,control,to,lineStyleIdx,fillStyleIdx) {
-	if(fillStyleIdx == null) fillStyleIdx = 0;
-	if(lineStyleIdx == null) lineStyleIdx = 0;
-	flashimport_StraightEdge.call(this,from,to,lineStyleIdx,fillStyleIdx);
-	this.control = control;
-};
-flashimport_CurvedEdge.__name__ = ["flashimport","CurvedEdge"];
-flashimport_CurvedEdge.__interfaces__ = [flashimport_IEdge];
-flashimport_CurvedEdge.__super__ = flashimport_StraightEdge;
-flashimport_CurvedEdge.prototype = $extend(flashimport_StraightEdge.prototype,{
-	reverseWithNewFillStyle: function(newFillStyleIdx) {
-		return new flashimport_CurvedEdge(this.get_to(),this.control,this.get_from(),this.get_lineStyleIdx(),newFillStyleIdx);
-	}
-	,__class__: flashimport_CurvedEdge
-});
 var flashimport_DocumentImporter = function() { };
 flashimport_DocumentImporter.__name__ = ["flashimport","DocumentImporter"];
 flashimport_DocumentImporter.process = function(importMediaScriptTemplate,fileApi,srcFilePath,destFilePath,destDocProp,destLibrary,fonts,runFlashToImportMedia,log,callb) {
@@ -839,6 +435,58 @@ var flashimport_DrawOp = { __ename__ : ["flashimport","DrawOp"], __constructs__ 
 flashimport_DrawOp.move = function(x,y) { var $x = ["move",0,x,y]; $x.__enum__ = flashimport_DrawOp; $x.toString = $estr; return $x; };
 flashimport_DrawOp.line = function(x,y) { var $x = ["line",1,x,y]; $x.__enum__ = flashimport_DrawOp; $x.toString = $estr; return $x; };
 flashimport_DrawOp.curve = function(x1,y1,x2,y2) { var $x = ["curve",2,x1,y1,x2,y2]; $x.__enum__ = flashimport_DrawOp; $x.toString = $estr; return $x; };
+var flashimport_EdgeData = function(edge) {
+	this.strokeStyle = Std["int"](htmlparser.HtmlParserTools.getAttr(edge,"strokeStyle",0));
+	this.fillStyle0 = Std["int"](htmlparser.HtmlParserTools.getAttr(edge,"fillStyle0",0));
+	this.fillStyle1 = Std["int"](htmlparser.HtmlParserTools.getAttr(edge,"fillStyle1",0));
+	this.drawOps = [];
+	var drawStr = htmlparser.HtmlParserTools.getAttr(edge,"edges");
+	if(drawStr == null) return;
+	var reNumber = "(#?-?[0-9A-F]+(?:[.][0-9A-F]+)?)";
+	var reXY = new EReg("^" + reNumber + "\\s+" + reNumber + "\\s*","i");
+	var reX1Y1X2Y2 = new EReg("^" + reNumber + "\\s+" + reNumber + "\\s+" + reNumber + "\\s+" + reNumber + "\\s*","i");
+	var lastX = 1.0e10;
+	var lastY = 1.0e10;
+	stdlib_Debug.assert(drawStr.length == 0 || StringTools.ltrim(drawStr).charAt(0) == "!","drawStr = " + drawStr,{ fileName : "EdgeData.hx", lineNumber : 39, className : "flashimport.EdgeData", methodName : "new"});
+	while(drawStr.length > 0) {
+		var opCode = drawStr.charAt(0);
+		drawStr = HxOverrides.substr(drawStr,1,null);
+		if(opCode == "!") {
+			if(reXY.match(drawStr)) {
+				var x = this.parseNumber(reXY.matched(1));
+				var y = this.parseNumber(reXY.matched(2));
+				if(x != lastX || y != lastY) {
+					this.drawOps.push(flashimport_DrawOp.move(x,y));
+					lastX = x;
+					lastY = y;
+				}
+				drawStr = reXY.matchedRight();
+			} else throw new js__$Boot_HaxeError("Expected (x, y).");
+		} else if(opCode == "|" || opCode == "/") while(reXY.match(drawStr)) {
+			this.drawOps.push(flashimport_DrawOp.line(lastX = this.parseNumber(reXY.matched(1)),lastY = this.parseNumber(reXY.matched(2))));
+			drawStr = reXY.matchedRight();
+		} else if(opCode == "[") while(reX1Y1X2Y2.match(drawStr)) {
+			this.drawOps.push(flashimport_DrawOp.curve(this.parseNumber(reX1Y1X2Y2.matched(1)),this.parseNumber(reX1Y1X2Y2.matched(2)),lastX = this.parseNumber(reX1Y1X2Y2.matched(3)),lastY = this.parseNumber(reX1Y1X2Y2.matched(4))));
+			drawStr = reX1Y1X2Y2.matchedRight();
+		} else if(opCode == "S") drawStr = HxOverrides.substr(drawStr,1,null); else if(opCode == " " || opCode == "\r" || opCode == "\n") drawStr = HxOverrides.substr(drawStr,1,null); else throw new js__$Boot_HaxeError("Unknow edges code = '" + opCode + "' near '" + drawStr + "'.");
+	}
+};
+flashimport_EdgeData.__name__ = ["flashimport","EdgeData"];
+flashimport_EdgeData.prototype = {
+	parseNumber: function(s) {
+		if(StringTools.startsWith(s,"#")) {
+			s = HxOverrides.substr(s,1,null);
+			var n = s.indexOf(".");
+			var high = HxOverrides.substr(s,0,n);
+			var low = StringTools.rpad(HxOverrides.substr(s,n + 1,null),"0",2);
+			var r = Std.parseInt("0x" + high + low);
+			if(r >= -2147483648) r = -(~r + 1);
+			return nanofl.engine.geom.PointTools.roundGap(r / 5120);
+		}
+		return nanofl.engine.geom.PointTools.roundGap(0.05 * parseFloat(s));
+	}
+	,__class__: flashimport_EdgeData
+};
 var flashimport_FontConvertor = function(fonts) {
 	this.fonts = fonts;
 };
@@ -901,6 +549,167 @@ flashimport_MatrixParser.load = function(node,divider,dx,dy) {
 	if(divider == null) divider = 1.0;
 	if(node != null) return new nanofl.engine.geom.Matrix(htmlparser.HtmlParserTools.getAttr(node,"a",1.0) / divider,htmlparser.HtmlParserTools.getAttr(node,"b",0.0) / divider,htmlparser.HtmlParserTools.getAttr(node,"c",0.0) / divider,htmlparser.HtmlParserTools.getAttr(node,"d",1.0) / divider,htmlparser.HtmlParserTools.getAttr(node,"tx",0.0) + dx,htmlparser.HtmlParserTools.getAttr(node,"ty",0.0) + dy);
 	return new nanofl.engine.geom.Matrix();
+};
+var flashimport_ShapeConvertor = function(stokes,fills,edgeDatas) {
+	this.stokes = stokes;
+	this.fills = fills;
+	this.edgeDatas = edgeDatas;
+};
+flashimport_ShapeConvertor.__name__ = ["flashimport","ShapeConvertor"];
+flashimport_ShapeConvertor.log = function(v,infos) {
+};
+flashimport_ShapeConvertor.prototype = {
+	convert: function() {
+		var strokeAndFillEdges = this.parseEdges();
+		var fillContours = this.findFillContours(strokeAndFillEdges.fillEdges);
+		flashimport_ShapeConvertor.log(function() {
+			return "EdgeDataConvertor.convert(1) fillContours =\n\t" + fillContours.map(function(fc) {
+				return StringTools.rpad(Std.string(fc.fill)," ",35) + " / " + fc.contour.getClockwiseProduct() + " / " + Std.string(fc.contour);
+			}).join("\n\t");
+		},{ fileName : "ShapeConvertor.hx", lineNumber : 34, className : "flashimport.ShapeConvertor", methodName : "convert"});
+		return { edges : strokeAndFillEdges.strokeEdges, polygons : this.polygonsFromFillContours(fillContours)};
+	}
+	,parseEdges: function() {
+		var strokeEdges = [];
+		var fillEdges = [];
+		var posX = 0.0;
+		var posY = 0.0;
+		var _g = 0;
+		var _g1 = this.edgeDatas;
+		while(_g < _g1.length) {
+			var edgeData = _g1[_g];
+			++_g;
+			var stroke;
+			if(edgeData.strokeStyle != 0) stroke = this.stokes[edgeData.strokeStyle - 1]; else stroke = null;
+			var fill0;
+			if(edgeData.fillStyle0 != 0) fill0 = this.fills[edgeData.fillStyle0 - 1]; else fill0 = null;
+			var fill1;
+			if(edgeData.fillStyle1 != 0) fill1 = this.fills[edgeData.fillStyle1 - 1]; else fill1 = null;
+			var _g2 = 0;
+			var _g3 = edgeData.drawOps;
+			while(_g2 < _g3.length) {
+				var drawOp = _g3[_g2];
+				++_g2;
+				switch(drawOp[1]) {
+				case 0:
+					var y = drawOp[3];
+					var x = drawOp[2];
+					posX = x;
+					posY = y;
+					break;
+				case 1:
+					var y1 = drawOp[3];
+					var x1 = drawOp[2];
+					var edge = new nanofl.engine.geom.Edge(posX,posY,x1,y1);
+					if(stroke != null) strokeEdges.push(nanofl.engine.geom.StrokeEdge.fromEdge(edge,stroke));
+					if(fill0 != null || fill1 != null) {
+						fillEdges.push({ edge : edge, fill : fill0});
+						fillEdges.push({ edge : edge.clone().reverse(), fill : fill1});
+					}
+					posX = x1;
+					posY = y1;
+					break;
+				case 2:
+					var y2 = drawOp[5];
+					var x2 = drawOp[4];
+					var y11 = drawOp[3];
+					var x11 = drawOp[2];
+					var edge1 = new nanofl.engine.geom.Edge(posX,posY,x11,y11,x2,y2);
+					if(stroke != null) strokeEdges.push(nanofl.engine.geom.StrokeEdge.fromEdge(edge1,stroke));
+					if(fill0 != null || fill1 != null) {
+						fillEdges.push({ edge : edge1, fill : fill0});
+						fillEdges.push({ edge : edge1.clone().reverse(), fill : fill1});
+					}
+					posX = x2;
+					posY = y2;
+					break;
+				}
+			}
+		}
+		flashimport_ShapeConvertor.log(function() {
+			return "EdgeDataConvertor.parseEdges fillEdges =\n\t" + fillEdges.map(function(fe) {
+				return StringTools.rpad(Std.string(fe.fill)," ",35) + " / " + Std.string(fe.edge);
+			}).join("\n\t");
+		},{ fileName : "ShapeConvertor.hx", lineNumber : 95, className : "flashimport.ShapeConvertor", methodName : "parseEdges"});
+		return { strokeEdges : strokeEdges, fillEdges : fillEdges};
+	}
+	,findFillContours: function(fillEdges) {
+		var r = [];
+		while(fillEdges.length > 0) {
+			var base = fillEdges.shift();
+			var edges = [base.edge];
+			var i = 0;
+			while(i < fillEdges.length) if(fillEdges[i].fill == base.fill) {
+				edges.push(fillEdges[i].edge);
+				fillEdges.splice(i,1);
+			} else i++;
+			var contours = nanofl.engine.geom.Contours.fromVectors(edges);
+			var _g = 0;
+			while(_g < contours.length) {
+				var contour = [contours[_g]];
+				++_g;
+				var c1 = Lambda.find(r,(function(contour) {
+					return function(c) {
+						return c.contour.equ(contour[0]);
+					};
+				})(contour));
+				if(c1 == null) r.push({ fill : base.fill, contour : contour[0]}); else if(c1.fill == null) c1.fill = base.fill;
+			}
+		}
+		return r;
+	}
+	,polygonsFromFillContours: function(fillContours) {
+		this.assertFillContoursCorrect(fillContours);
+		var _g = 0;
+		while(_g < fillContours.length) {
+			var fc = fillContours[_g];
+			++_g;
+			if(fc.contour.getClockwiseProduct() < 0) fc.contour.reverse();
+		}
+		this.assertFillContoursCorrect(fillContours);
+		var r = [];
+		var _g1 = 0;
+		while(_g1 < fillContours.length) {
+			var outer = fillContours[_g1];
+			++_g1;
+			if(outer.fill == null) continue;
+			var inners = [];
+			var _g11 = 0;
+			while(_g11 < fillContours.length) {
+				var inner = fillContours[_g11];
+				++_g11;
+				if(inner != outer && inner.contour.isNestedTo(outer.contour)) {
+					stdlib_Debug.assert(inner.contour != outer.contour,null,{ fileName : "ShapeConvertor.hx", lineNumber : 154, className : "flashimport.ShapeConvertor", methodName : "polygonsFromFillContours"});
+					stdlib_Debug.assert(!inner.contour.equ(outer.contour),null,{ fileName : "ShapeConvertor.hx", lineNumber : 155, className : "flashimport.ShapeConvertor", methodName : "polygonsFromFillContours"});
+					inners.push(inner.contour.clone().reverse());
+				}
+			}
+			nanofl.engine.geom.Contours.removeNested(inners);
+			nanofl.engine.geom.Contours.mergeByCommonEdges(inners,true);
+			var polygon = new nanofl.engine.geom.Polygon(outer.fill,[outer.contour].concat(inners));
+			polygon.assertCorrect();
+			r.push(polygon);
+		}
+		return r;
+	}
+	,assertFillContoursCorrect: function(fillContours) {
+		var _g = 0;
+		while(_g < fillContours.length) {
+			var fc = fillContours[_g];
+			++_g;
+			fc.contour.assertCorrect();
+		}
+		var i = 0;
+		while(i < fillContours.length) {
+			var j = i + 1;
+			while(j < fillContours.length) {
+				if(fillContours[i].contour.equ(fillContours[j].contour)) console.log("Equ contours:\n\tfill[i] = " + Std.string(fillContours[i].fill) + "\n\tfill[j] = " + Std.string(fillContours[j].fill) + "\n\tcontour = " + Std.string(fillContours[i].contour));
+				j++;
+			}
+			i++;
+		}
+	}
+	,__class__: flashimport_ShapeConvertor
 };
 var flashimport_SymbolLoader = function(fileApi,doc,srcLibDir,library,fonts,log) {
 	this.morphingNotSupported = [];
@@ -1031,23 +840,24 @@ flashimport_SymbolLoader.prototype = {
 		var fills = element.find(">fills>FillStyle>*").map(function(fill) {
 			return _g.loadShapeFill(fill).fill;
 		});
-		var contours = [];
-		var _g1 = 0;
-		var _g11 = element.find(">edges>Edge");
-		while(_g1 < _g11.length) {
-			var edge = _g11[_g1];
-			++_g1;
-			var contour = new flashimport_ContourParser(edge);
-			if((contour.fillStyle0 != null || contour.fillStyle1 != null || contour.strokeStyle != null) && contour.drawOps.length > 0) contours.push(contour);
-		}
-		var contoursExporter = new flashimport_ContoursExporter(strokes,fills);
-		new flashimport_ContoursParser(contours).parse(contoursExporter);
-		var p = contoursExporter["export"]();
+		var p = new flashimport_ShapeConvertor(strokes,fills,this.loadEdgeDatas(element)).convert();
 		var shape = new nanofl.engine.elements.ShapeElement(p.edges,p.polygons);
 		shape.matrix = flashimport_MatrixParser.load(htmlparser.HtmlParserTools.findOne(element,">matrix>Matrix")).prependMatrix(parentMatrix);
 		this.loadRegPoint(shape,htmlparser.HtmlParserTools.findOne(element,">transformationPoint>Point"));
 		shape.ensureNoTransform();
 		return shape;
+	}
+	,loadEdgeDatas: function(element) {
+		var r = [];
+		var _g = 0;
+		var _g1 = element.find(">edges>Edge");
+		while(_g < _g1.length) {
+			var edge = _g1[_g];
+			++_g;
+			var edgeData = new flashimport_EdgeData(edge);
+			if((edgeData.fillStyle0 != null || edgeData.fillStyle1 != null || edgeData.strokeStyle != null) && edgeData.drawOps.length > 0) r.push(edgeData);
+		}
+		return r;
 	}
 	,loadShapeFill: function(fill) {
 		var _g = fill.name;
@@ -1326,10 +1136,7 @@ var haxe_ds_IntMap = function() {
 haxe_ds_IntMap.__name__ = ["haxe","ds","IntMap"];
 haxe_ds_IntMap.__interfaces__ = [haxe_IMap];
 haxe_ds_IntMap.prototype = {
-	set: function(key,value) {
-		this.h[key] = value;
-	}
-	,get: function(key) {
+	get: function(key) {
 		return this.h[key];
 	}
 	,keys: function() {
@@ -1368,18 +1175,6 @@ haxe_ds_StringMap.prototype = {
 	,existsReserved: function(key) {
 		if(this.rh == null) return false;
 		return this.rh.hasOwnProperty("$" + key);
-	}
-	,remove: function(key) {
-		if(__map_reserved[key] != null) {
-			key = "$" + key;
-			if(this.rh == null || !this.rh.hasOwnProperty(key)) return false;
-			delete(this.rh[key]);
-			return true;
-		} else {
-			if(!this.h.hasOwnProperty(key)) return false;
-			delete(this.h[key]);
-			return true;
-		}
 	}
 	,keys: function() {
 		var _this = this.arrayKeys();
@@ -2428,9 +2223,6 @@ stdlib_Uuid.newUuid = function() {
 function $iterator(o) { if( o instanceof Array ) return function() { return HxOverrides.iter(o); }; return typeof(o.iterator) == 'function' ? $bind(o,o.iterator) : o.iterator; }
 var $_, $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }
-if(Array.prototype.indexOf) HxOverrides.indexOf = function(a,o,i) {
-	return Array.prototype.indexOf.call(a,o,i);
-};
 String.prototype.__class__ = String;
 String.__name__ = ["String"];
 Array.__name__ = ["Array"];
@@ -2461,8 +2253,6 @@ var DataView = (Function("return typeof DataView != 'undefined' ? DataView : nul
 var Uint8Array = (Function("return typeof Uint8Array != 'undefined' ? Uint8Array : null"))() || js_html_compat_Uint8Array._new;
 FlashImporterPlugin.embeddedIcon = "iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAACXBIWXMAAAsSAAALEgHS3X78AAACNUlEQVQoz21Qz0uUURQ997033zhjZvhjapps1RAkqYt0U1O4MAiLwUWEhEEQtKl2LdoEIkR/gFsX1S4iZgjbJiFEizSwTCgoYhgtSUTnm5nP+d47LWZGgzxwuffCORzOEZKYm5szw8PDvel0+nilUqEAAhIAAKUoIiYMwz/FYnEhl8v52WxWQBL5fB4jIyOTJFmtVnf4D6y1liQLhcLP0dHR6wAi+XweBgBmZ2fR0tIiALDt+64WBI5fv8FqjSB1FFok7O7u7pmenn5sjGE2m81hdXVVAODGxMQUSW5tbOxUnzzjzoP7LN+5xw3f59bmJq21oXOO6+vrhVQqdd6ICACA1tb38xeQd2/haiHcwQ5EvAjCIIDv+7pSqYSJRCKltT5k2ChB2tqAtd9QS4tgZxfkyhi8k2lY60BjEIYhrLUKAEjWDwBgtQosfEC4tAz2n4EaGoRKJqGVQiQSQTQaRSwWa9KVYq2mAcB8/uKwsgxvsI/hzAyCh5OAtVBKQWsNrTWMMU0hjBMJz7W2tt+OxQf4aQnOiWJnArrnWJ3R6EBEoJTaEyYXP2beDAxdCFKHLweVCvXYNR29OgZXKoEk6NyucLdIEsafevQyTCQ6zHZJSV8/vEsXQRFgL8++jspVgy7v+w8XP5Isyfg42HbA2XLZ0dVB0pHNr2EPULW/fnX2/a2bQ3d/rT2Nne4Fg8B68biKeJ7y9pmGO4Uk5ufnJZPJnEqn0yfK5bKVZpj/QRFhsVhc+QuQDi4zdLU6egAAAABJRU5ErkJggg==";
 FlashImporterPlugin.IMPORT_MEDIA_SCRIPT_TEMPLATE = "(function (console) { \"use strict\";\nvar FlashMediaImporter = function() { };\nFlashMediaImporter.__name__ = true;\nFlashMediaImporter.main = function() {\n\tvar srcFilePath = \"file:///\" + StringTools.replace(FlashMediaImporter.SRC_FILE,\"\\\\\",\"/\");\n\tvar destLibraryDir = \"file:///\" + haxe_io_Path.addTrailingSlash(StringTools.replace(FlashMediaImporter.DEST_DIR,\"\\\\\",\"/\")) + \"library\";\n\tFlashMediaImporter.log(\"Import media from '\" + srcFilePath + \"' to '\" + destLibraryDir + \"' directory:\");\n\tvar doc = fl.openDocument(srcFilePath);\n\tfl.setActiveWindow(doc);\n\tFLfile.createFolder(destLibraryDir);\n\tvar _g1 = 0;\n\tvar _g = fl.getDocumentDOM().library.items.length;\n\twhile(_g1 < _g) {\n\t\tvar i = _g1++;\n\t\tvar item = fl.getDocumentDOM().library.items[i];\n\t\tif(item != null) {\n\t\t\tvar _g2 = item.itemType;\n\t\t\tswitch(_g2) {\n\t\t\tcase \"bitmap\":\n\t\t\t\tFlashMediaImporter.log(\"  Import: \" + item.name + \" / \" + item.itemType + \" / \" + item.originalCompressionType);\n\t\t\t\tFlashMediaImporter.importBitmap(destLibraryDir,item);\n\t\t\t\tbreak;\n\t\t\tcase \"movie clip\":case \"graphic\":case \"button\":case \"folder\":\n\t\t\t\tbreak;\n\t\t\tcase \"sound\":\n\t\t\t\tFlashMediaImporter.log(\"  Import: \" + item.name + \" / \" + item.itemType + \" / \" + item.originalCompressionType);\n\t\t\t\tFlashMediaImporter.importSound(destLibraryDir,item);\n\t\t\t\tbreak;\n\t\t\tdefault:\n\t\t\t\tFlashMediaImporter.log(\"    Skip: \" + item.name + \" / \" + item.itemType);\n\t\t\t}\n\t\t}\n\t}\n\tdoc.close(false);\n\tFlashMediaImporter.log(\"Done.\");\n\tFLfile.write(\"file:///\" + StringTools.replace(FlashMediaImporter.DEST_DIR,\"\\\\\",\"/\") + \"/.done-import-media\",\"\");\n};\nFlashMediaImporter.importBitmap = function(destLibraryDir,item) {\n\tvar savePath = destLibraryDir + \"/\" + item.name + \".png\";\n\tif(!FLfile.exists(savePath)) {\n\t\tFLfile.createFolder(haxe_io_Path.directory(savePath));\n\t\titem.exportToFile(savePath);\n\t}\n\treturn true;\n};\nFlashMediaImporter.importSound = function(destLibraryDir,item) {\n\tvar savePath;\n\tsavePath = destLibraryDir + \"/\" + haxe_io_Path.withoutExtension(item.name) + (item.originalCompressionType == \"RAW\"?\".wav\":\".mp3\");\n\tif(!FLfile.exists(savePath)) {\n\t\tFLfile.createFolder(haxe_io_Path.directory(savePath));\n\t\titem.exportToFile(savePath);\n\t}\n\treturn true;\n};\nFlashMediaImporter.log = function(s) {\n\tfl.trace(s);\n};\nvar HxOverrides = function() { };\nHxOverrides.__name__ = true;\nHxOverrides.substr = function(s,pos,len) {\n\tif(pos != null && pos != 0 && len != null && len < 0) return \"\";\n\tif(len == null) len = s.length;\n\tif(pos < 0) {\n\t\tpos = s.length + pos;\n\t\tif(pos < 0) pos = 0;\n\t} else if(len < 0) len = s.length + len - pos;\n\treturn s.substr(pos,len);\n};\nMath.__name__ = true;\nvar StringTools = function() { };\nStringTools.__name__ = true;\nStringTools.replace = function(s,sub,by) {\n\treturn s.split(sub).join(by);\n};\nvar haxe_Log = function() { };\nhaxe_Log.__name__ = true;\nhaxe_Log.trace = function(v,infos) {\n\tjs_Boot.__trace(v,infos);\n};\nvar haxe_io_Path = function(path) {\n\tswitch(path) {\n\tcase \".\":case \"..\":\n\t\tthis.dir = path;\n\t\tthis.file = \"\";\n\t\treturn;\n\t}\n\tvar c1 = path.lastIndexOf(\"/\");\n\tvar c2 = path.lastIndexOf(\"\\\\\");\n\tif(c1 < c2) {\n\t\tthis.dir = HxOverrides.substr(path,0,c2);\n\t\tpath = HxOverrides.substr(path,c2 + 1,null);\n\t\tthis.backslash = true;\n\t} else if(c2 < c1) {\n\t\tthis.dir = HxOverrides.substr(path,0,c1);\n\t\tpath = HxOverrides.substr(path,c1 + 1,null);\n\t} else this.dir = null;\n\tvar cp = path.lastIndexOf(\".\");\n\tif(cp != -1) {\n\t\tthis.ext = HxOverrides.substr(path,cp + 1,null);\n\t\tthis.file = HxOverrides.substr(path,0,cp);\n\t} else {\n\t\tthis.ext = null;\n\t\tthis.file = path;\n\t}\n};\nhaxe_io_Path.__name__ = true;\nhaxe_io_Path.withoutExtension = function(path) {\n\tvar s = new haxe_io_Path(path);\n\ts.ext = null;\n\treturn s.toString();\n};\nhaxe_io_Path.directory = function(path) {\n\tvar s = new haxe_io_Path(path);\n\tif(s.dir == null) return \"\";\n\treturn s.dir;\n};\nhaxe_io_Path.addTrailingSlash = function(path) {\n\tif(path.length == 0) return \"/\";\n\tvar c1 = path.lastIndexOf(\"/\");\n\tvar c2 = path.lastIndexOf(\"\\\\\");\n\tif(c1 < c2) {\n\t\tif(c2 != path.length - 1) return path + \"\\\\\"; else return path;\n\t} else if(c1 != path.length - 1) return path + \"/\"; else return path;\n};\nhaxe_io_Path.prototype = {\n\ttoString: function() {\n\t\treturn (this.dir == null?\"\":this.dir + (this.backslash?\"\\\\\":\"/\")) + this.file + (this.ext == null?\"\":\".\" + this.ext);\n\t}\n};\nvar js_Boot = function() { };\njs_Boot.__name__ = true;\njs_Boot.__trace = function(v,i) {\n\tvar msg;\n\tif(i != null) msg = i.fileName + \":\" + i.lineNumber + \": \"; else msg = \"\";\n\tmsg += js_Boot.__string_rec(v,\"\");\n\tfl.trace(msg);\n};\njs_Boot.__string_rec = function(o,s) {\n\tif(o == null) return \"null\";\n\tif(s.length >= 5) return \"<...>\";\n\tvar t = typeof(o);\n\tif(t == \"function\" && (o.__name__ || o.__ename__)) t = \"object\";\n\tswitch(t) {\n\tcase \"object\":\n\t\tif(o instanceof Array) {\n\t\t\tif(o.__enum__) {\n\t\t\t\tif(o.length == 2) return o[0];\n\t\t\t\tvar str2 = o[0] + \"(\";\n\t\t\t\ts += \"\\t\";\n\t\t\t\tvar _g1 = 2;\n\t\t\t\tvar _g = o.length;\n\t\t\t\twhile(_g1 < _g) {\n\t\t\t\t\tvar i1 = _g1++;\n\t\t\t\t\tif(i1 != 2) str2 += \",\" + js_Boot.__string_rec(o[i1],s); else str2 += js_Boot.__string_rec(o[i1],s);\n\t\t\t\t}\n\t\t\t\treturn str2 + \")\";\n\t\t\t}\n\t\t\tvar l = o.length;\n\t\t\tvar i;\n\t\t\tvar str1 = \"[\";\n\t\t\ts += \"\\t\";\n\t\t\tvar _g2 = 0;\n\t\t\twhile(_g2 < l) {\n\t\t\t\tvar i2 = _g2++;\n\t\t\t\tstr1 += (i2 > 0?\",\":\"\") + js_Boot.__string_rec(o[i2],s);\n\t\t\t}\n\t\t\tstr1 += \"]\";\n\t\t\treturn str1;\n\t\t}\n\t\tvar tostr;\n\t\ttry {\n\t\t\ttostr = o.toString;\n\t\t} catch( e ) {\n\t\t\treturn \"???\";\n\t\t}\n\t\tif(tostr != null && tostr != Object.toString && typeof(tostr) == \"function\") {\n\t\t\tvar s2 = o.toString();\n\t\t\tif(s2 != \"[object Object]\") return s2;\n\t\t}\n\t\tvar k = null;\n\t\tvar str = \"{\\n\";\n\t\ts += \"\\t\";\n\t\tvar hasp = o.hasOwnProperty != null;\n\t\tfor( var k in o ) {\n\t\tif(hasp && !o.hasOwnProperty(k)) {\n\t\t\tcontinue;\n\t\t}\n\t\tif(k == \"prototype\" || k == \"__class__\" || k == \"__super__\" || k == \"__interfaces__\" || k == \"__properties__\") {\n\t\t\tcontinue;\n\t\t}\n\t\tif(str.length != 2) str += \", \\n\";\n\t\tstr += s + k + \" : \" + js_Boot.__string_rec(o[k],s);\n\t\t}\n\t\ts = s.substring(1);\n\t\tstr += \"\\n\" + s + \"}\";\n\t\treturn str;\n\tcase \"function\":\n\t\treturn \"<function>\";\n\tcase \"string\":\n\t\treturn o;\n\tdefault:\n\t\treturn String(o);\n\t}\n};\nString.__name__ = true;\nArray.__name__ = true;\nhaxe_Log.trace = function(v,infos) {\n\tfl.trace(v);\n};\nFlashMediaImporter.SRC_FILE = \"{SRC_FILE}\";\nFlashMediaImporter.DEST_DIR = \"{DEST_DIR}\";\nFlashMediaImporter.TEMP_MC_NAME = \"__temp_fme\";\nFlashMediaImporter.main();\n})(typeof console != \"undefined\" ? console : {log:function(){}});\n";
-flashimport_ContoursParser.INT_MAX_VALUE = 2000000000;
-flashimport_ContoursParser.FLOAT_MAX_VALUE = 1e10;
 flashimport_SymbolLoader.EPS = 1e-10;
 haxe_io_FPHelper.i64tmp = (function($this) {
 	var $r;
