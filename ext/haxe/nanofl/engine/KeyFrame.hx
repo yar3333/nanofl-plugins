@@ -2,11 +2,11 @@ package nanofl.engine;
 
 extern class KeyFrame implements nanofl.engine.IElementsContainer
 {
-	function new(?label:String, ?duration:Int, ?motionTween:nanofl.engine.tweens.MotionTween, ?elements:Array<nanofl.engine.elements.Element>) : Void;
+	function new(?label:String, ?duration:Int, ?motionTween:nanofl.engine.MotionTween, ?elements:Array<nanofl.engine.elements.Element>) : Void;
 	var layer : nanofl.engine.Layer;
 	var label : String;
 	var duration : Int;
-	var motionTween : nanofl.engine.tweens.MotionTween;
+	var motionTween : nanofl.engine.MotionTween;
 	var elements(default, never) : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
 	function addElement(element:nanofl.engine.elements.Element, ?index:Int) : Void;
 	function removeElementAt(n:Int) : Void;

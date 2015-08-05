@@ -31,7 +31,7 @@ import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.engine.libraryitems.MovieClipItem;
 import nanofl.engine.strokes.IStroke;
 import nanofl.engine.strokes.SolidStroke;
-import nanofl.engine.tweens.MotionTween;
+import nanofl.engine.MotionTween;
 import nanofl.TextRun;
 import stdlib.Std;
 import stdlib.Utf8;

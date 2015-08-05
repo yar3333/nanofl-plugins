@@ -8455,11 +8455,11 @@ declare module nanofl.engine
 	
 	export class KeyFrame implements nanofl.engine.IElementsContainer
 	{
-		constructor(label?:string, duration?:number, motionTween?:nanofl.engine.tweens.MotionTween, elements?:nanofl.engine.elements.Element[]);
+		constructor(label?:string, duration?:number, motionTween?:nanofl.engine.MotionTween, elements?:nanofl.engine.elements.Element[]);
 		layer : nanofl.engine.Layer;
 		label : string;
 		duration : number;
-		motionTween : nanofl.engine.tweens.MotionTween;
+		motionTween : nanofl.engine.MotionTween;
 		elements : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
 		addElement(element:nanofl.engine.elements.Element, index?:number) : void;
 		removeElementAt(n:number) : void;
@@ -8603,6 +8603,20 @@ declare module nanofl.engine
 	}
 	
 	type MapRO<K, T> = Map<K, T>;
+	
+	export class MotionTween
+	{
+		constructor(easing:number, rotateCount:number, orientToPath:boolean);
+		easing : number;
+		rotateCount : number;
+		orientToPath : boolean;
+		save(out:htmlparser.XmlBuilder) : void;
+		apply(frameSubIndex:number) : nanofl.engine.TweenedElement[];
+		clone() : nanofl.engine.MotionTween;
+		isGood() : boolean;
+		equ(motionTween:nanofl.engine.MotionTween) : boolean;
+		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.MotionTween;
+	}
 	
 	export class MovieClipItemTools
 	{
@@ -9066,23 +9080,6 @@ declare module nanofl.engine.libraryitems
 		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
 		getDisplayObjectClassName() : string;
 		toString() : string;
-	}
-}
-
-declare module nanofl.engine.tweens
-{
-	export class MotionTween
-	{
-		constructor(easing:number, rotateCount:number, orientToPath:boolean);
-		easing : number;
-		rotateCount : number;
-		orientToPath : boolean;
-		save(out:htmlparser.XmlBuilder) : void;
-		apply(frameSubIndex:number) : nanofl.engine.TweenedElement[];
-		clone() : nanofl.engine.tweens.MotionTween;
-		isGood() : boolean;
-		equ(motionTween:nanofl.engine.tweens.MotionTween) : boolean;
-		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.tweens.MotionTween;
 	}
 }
 
