@@ -17,6 +17,7 @@ extern class Contour
 	function clone() : nanofl.engine.geom.Contour;
 	function isClockwise() : Bool;
 	function isCounterClockwise() : Bool;
+	function getClockwiseProduct() : Float;
 	function normalize() : Void;
 	function reverse() : nanofl.engine.geom.Contour;
 	function indexIn(contours:Array<nanofl.engine.geom.Contour>) : Int;

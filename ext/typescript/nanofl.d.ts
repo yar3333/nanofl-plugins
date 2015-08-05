@@ -6661,6 +6661,7 @@ declare module nanofl.engine.geom
 		clone() : nanofl.engine.geom.Contour;
 		isClockwise() : boolean;
 		isCounterClockwise() : boolean;
+		getClockwiseProduct() : number;
 		normalize() : void;
 		reverse() : nanofl.engine.geom.Contour;
 		indexIn(contours:nanofl.engine.geom.Contour[]) : number;
@@ -6672,7 +6673,8 @@ declare module nanofl.engine.geom
 	
 	export class Contours
 	{
-		static find(edges:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Contour[];
+		static fromEdges(edges:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Contour[];
+		static fromVectors(vectors:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Contour[];
 		static mergeByCommonEdges(contours:nanofl.engine.geom.Contour[], counterClockwise:boolean) : void;
 		static removeNested(contours:nanofl.engine.geom.Contour[]) : void;
 		static removeTailEdges(edges:nanofl.engine.geom.Edge[]) : void;
@@ -6749,7 +6751,6 @@ declare module nanofl.engine.geom
 		static roundPoints<T>(edges:T[]) : T[];
 		static removeDegenerated<T>(edges:T[], removeAlsoCurvesWithStartAndEndEquals?:boolean) : T[];
 		static isPointInside(edges:nanofl.engine.geom.Edge[], x:number, y:number, fillEvenOdd:boolean) : boolean;
-		static getSequences(edges:nanofl.engine.geom.Edge[]) : { equEdge : nanofl.engine.geom.Edge; edges : nanofl.engine.geom.Edge[]; }[];
 		static isSequence<T>(edges:T[]) : boolean;
 		static hasDegenerated<T>(edges:T[]) : boolean;
 		static getPointUseCount<T>(edges:T[], x:number, y:number) : number;
