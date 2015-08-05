@@ -1,5 +1,6 @@
 package flashimport;
 
+import haxe.ds.ObjectMap;
 import htmlparser.HtmlNodeElement;
 import htmlparser.XmlDocument;
 import nanofl.engine.coloreffects.ColorEffect;
@@ -35,9 +36,10 @@ import nanofl.engine.strokes.SolidStroke;
 import nanofl.TextRun;
 import stdlib.Std;
 import stdlib.Utf8;
+import stdlib.Uuid;
 using htmlparser.HtmlParserTools;
 using StringTools;
-using Lambda;
+using stdlib.Lambda;
 
 class SymbolLoader
 {
@@ -194,11 +196,11 @@ class SymbolLoader
 				case "DOMShape":
 					if (!element.getAttr("isDrawingObject", false))
 					{
-						r.push(loadShape(element, parentMatrix));
+						r = r.concat(loadShape(element, parentMatrix));
 					}
 					else
 					{
-						r.push(new GroupElement([ loadShape(element, parentMatrix) ]));
+						r.push(new GroupElement(loadShape(element, parentMatrix)));
 					}
 					
 				case "DOMStaticText", "DOMDynamicText", "DOMInputText":
@@ -221,19 +223,65 @@ class SymbolLoader
 		return r;
 	}
 	
-	function loadShape(element:HtmlNodeElement, parentMatrix:Matrix) : ShapeElement
+	function loadShape(element:HtmlNodeElement, parentMatrix:Matrix) : Array<Element>
 	{
-		var strokes = element.find(">strokes>StrokeStyle>*").map(function(stroke) return loadShapeStroke(stroke));
-		var fills = element.find(">fills>FillStyle>*").map(function(fill) return loadShapeFill(fill).fill);
+		var transformedStrokes = element.find(">strokes>StrokeStyle>*").map(loadShapeStroke);
+		var transformedFills = element.find(">fills>FillStyle>*").map(loadShapeFill);
 		
-		var p = new ShapeConvertor(strokes, fills, loadEdgeDatas(element)).convert();
+		var matrixBy = new ObjectMap<Dynamic, Matrix>();
+		var byMatrix = new MatrixMap<Array<Dynamic>>();
+		for (z in transformedStrokes)
+		{
+			matrixBy.set(z.stroke, z.matrix);
+			if (!byMatrix.exists(z.matrix)) byMatrix.set(z.matrix, []);
+			byMatrix.get(z.matrix).push(z.stroke);
+		}
+		for (z in transformedFills)
+		{
+			matrixBy.set(z.fill, z.matrix);
+			if (!byMatrix.exists(z.matrix)) byMatrix.set(z.matrix, []);
+			byMatrix.get(z.matrix).push(z.fill);
+		}
 		
-		var shape = new ShapeElement(p.edges, p.polygons);
+		var shapeData = new ShapeConvertor(transformedStrokes.map(function(z) return z.stroke), transformedFills.map(function(z) return z.fill), loadEdgeDatas(element)).convert();
+		
+		var shape = new ShapeElement
+		(
+			shapeData.edges.extract(function(edge) return matrixBy.get(edge.stroke).isIdentity()),
+			shapeData.polygons.extract(function(polygon) return matrixBy.get(polygon.fill).isIdentity())
+		);
 		shape.matrix = MatrixParser.load(element.findOne(">matrix>Matrix")).prependMatrix(parentMatrix);
 		loadRegPoint(shape, element.findOne(">transformationPoint>Point"));
-		shape.ensureNoTransform();
+		shape.ensureNoTransform(false);
 		
-		return shape;
+		var r : Array<Element> = [ shape ];
+		
+		for (matrix in byMatrix.keys())
+		{
+			if (matrix.isIdentity()) continue;
+			
+			var shape = new ShapeElement
+			(
+				shapeData.edges.extract(function(edge) return matrixBy.get(edge.stroke).equ(matrix)),
+				shapeData.polygons.extract(function(polygon) return matrixBy.get(polygon.fill).equ(matrix))
+			);
+			shape.matrix = matrix.clone().invert();
+			shape.ensureNoTransform(false);
+			
+			r.push(wrapElements([ shape ], matrix.clone()));
+		}
+		
+		return r;
+	}
+	
+	function wrapElements(elements:Array<Element>, ?matrix:Matrix) : Instance
+	{
+		var mcItem = library.addItem(new MovieClipItem(Uuid.newUuid()));
+		mcItem.addLayer(new Layer("auto"));
+		mcItem.layers[0].addKeyFrame(new KeyFrame(elements));
+		var r = mcItem.newInstance();
+		if (matrix != null) r.matrix = matrix;
+		return r;
 	}
 	
 	function loadEdgeDatas(element:HtmlNodeElement) : Array<EdgeData>
@@ -351,26 +399,34 @@ class SymbolLoader
 		
 	}
 	
-	function loadShapeStroke(stroke:HtmlNodeElement) : IStroke
+	function loadShapeStroke(stroke:HtmlNodeElement) : { stroke:IStroke, matrix:Matrix }
 	{
 		var isHairline = stroke.getAttr("solidStyle") == "hairline";
 		var colorElem = stroke.findOne(">fill>SolidColor");
 		switch (stroke.name)
 		{
 			case "SolidStroke":
-				return new SolidStroke
-				(
-					ColorTools.colorToString(colorElem.getAttr("color", "#000000"), colorElem.getAttr("alpha", 1.0)),
-					!isHairline ? stroke.getAttr("weight", 1.0) : 1.0,
-					stroke.getAttr("caps", "round"),
-					stroke.getAttr("joins", "round"),
-					stroke.getAttr("miterLimit", 3.0),
-					isHairline
-				);
+				return
+				{
+					stroke: new SolidStroke
+					(
+						ColorTools.colorToString(colorElem.getAttr("color", "#000000"), colorElem.getAttr("alpha", 1.0)),
+						!isHairline ? stroke.getAttr("weight", 1.0) : 1.0,
+						stroke.getAttr("caps", "round"),
+						stroke.getAttr("joins", "round"),
+						stroke.getAttr("miterLimit", 3.0),
+						isHairline
+					),
+					matrix: new Matrix()
+				};
 			
 			case _:
 				log("WARNING: unknow stroke type '" + stroke.name + "'.");
-				return new SolidStroke("#000000");
+				return 
+				{
+					stroke: new SolidStroke("#000000"),
+					matrix: new Matrix()
+				}
 		}
 	}
 	

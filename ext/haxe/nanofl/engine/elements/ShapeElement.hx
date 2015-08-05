@@ -7,7 +7,7 @@ extern class ShapeElement extends nanofl.engine.elements.Element
 	var polygons(default, null) : Array<nanofl.engine.geom.Polygon>;
 	override function getType() : String;
 	override function save(out:htmlparser.XmlBuilder) : Void;
-	function ensureNoTransform() : Void;
+	function ensureNoTransform(?applyToStrokeAndFill:Bool) : Void;
 	function draw(g:nanofl.engine.Render, scaleSelection:Float) : Void;
 	override function createDisplayObject(frameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.Shape;
 	override function updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.Shape;

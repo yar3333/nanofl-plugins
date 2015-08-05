@@ -7736,7 +7736,7 @@ declare module nanofl.engine.elements
 		polygons : nanofl.engine.geom.Polygon[];
 		getType() : string;
 		save(out:htmlparser.XmlBuilder) : void;
-		ensureNoTransform() : void;
+		ensureNoTransform(applyToStrokeAndFill?:boolean) : void;
 		draw(g:nanofl.engine.Render, scaleSelection:number) : void;
 		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.Shape;
 		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.Shape;

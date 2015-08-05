@@ -121,6 +121,43 @@ HxOverrides.iter = function(a) {
 };
 var Lambda = function() { };
 Lambda.__name__ = ["Lambda"];
+Lambda.array = function(it) {
+	var a = [];
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var i = $it0.next();
+		a.push(i);
+	}
+	return a;
+};
+Lambda.list = function(it) {
+	var l = new List();
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var i = $it0.next();
+		l.add(i);
+	}
+	return l;
+};
+Lambda.map = function(it,f) {
+	var l = new List();
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		l.add(f(x));
+	}
+	return l;
+};
+Lambda.mapi = function(it,f) {
+	var l = new List();
+	var i = 0;
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		l.add(f(i++,x));
+	}
+	return l;
+};
 Lambda.has = function(it,elt) {
 	var $it0 = $iterator(it)();
 	while( $it0.hasNext() ) {
@@ -128,6 +165,46 @@ Lambda.has = function(it,elt) {
 		if(x == elt) return true;
 	}
 	return false;
+};
+Lambda.exists = function(it,f) {
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		if(f(x)) return true;
+	}
+	return false;
+};
+Lambda.foreach = function(it,f) {
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		if(!f(x)) return false;
+	}
+	return true;
+};
+Lambda.iter = function(it,f) {
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		f(x);
+	}
+};
+Lambda.filter = function(it,f) {
+	var l = new List();
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		if(f(x)) l.add(x);
+	}
+	return l;
+};
+Lambda.fold = function(it,f,first) {
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		first = f(x,first);
+	}
+	return first;
 };
 Lambda.count = function(it,pred) {
 	var n = 0;
@@ -146,6 +223,19 @@ Lambda.count = function(it,pred) {
 	}
 	return n;
 };
+Lambda.empty = function(it) {
+	return !$iterator(it)().hasNext();
+};
+Lambda.indexOf = function(it,v) {
+	var i = 0;
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var v2 = $it0.next();
+		if(v == v2) return i;
+		i++;
+	}
+	return -1;
+};
 Lambda.find = function(it,f) {
 	var $it0 = $iterator(it)();
 	while( $it0.hasNext() ) {
@@ -154,10 +244,32 @@ Lambda.find = function(it,f) {
 	}
 	return null;
 };
-var List = function() { };
+Lambda.concat = function(a,b) {
+	var l = new List();
+	var $it0 = $iterator(a)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		l.add(x);
+	}
+	var $it1 = $iterator(b)();
+	while( $it1.hasNext() ) {
+		var x1 = $it1.next();
+		l.add(x1);
+	}
+	return l;
+};
+var List = function() {
+	this.length = 0;
+};
 List.__name__ = ["List"];
 List.prototype = {
-	iterator: function() {
+	add: function(item) {
+		var x = [item];
+		if(this.h == null) this.h = x; else this.q[1] = x;
+		this.q = x;
+		this.length++;
+	}
+	,iterator: function() {
 		return new _$List_ListIterator(this.h);
 	}
 	,__class__: List
@@ -541,6 +653,49 @@ flashimport_FontConvertor.prototype = {
 };
 var flashimport_Macro = function() { };
 flashimport_Macro.__name__ = ["flashimport","Macro"];
+var flashimport_MatrixMap = function() {
+	this.values = [];
+	this.kk = [];
+};
+flashimport_MatrixMap.__name__ = ["flashimport","MatrixMap"];
+flashimport_MatrixMap.prototype = {
+	exists: function(key) {
+		var _g = 0;
+		var _g1 = this.kk;
+		while(_g < _g1.length) {
+			var k = _g1[_g];
+			++_g;
+			if(k.equ(key)) return true;
+		}
+		return false;
+	}
+	,set: function(key,value) {
+		var _g1 = 0;
+		var _g = this.kk.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(this.kk[i].equ(key)) {
+				this.values[i] = value;
+				return;
+			}
+		}
+		this.kk.push(key);
+		this.values.push(value);
+	}
+	,get: function(key) {
+		var _g1 = 0;
+		var _g = this.kk.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(this.kk[i].equ(key)) return this.values[i];
+		}
+		return null;
+	}
+	,keys: function() {
+		return HxOverrides.iter(this.kk);
+	}
+	,__class__: flashimport_MatrixMap
+};
 var flashimport_MatrixParser = function() { };
 flashimport_MatrixParser.__name__ = ["flashimport","MatrixParser"];
 flashimport_MatrixParser.load = function(node,divider,dx,dy) {
@@ -812,7 +967,7 @@ flashimport_SymbolLoader.prototype = {
 				r.push(instance);
 				break;
 			case "DOMShape":
-				if(!htmlparser.HtmlParserTools.getAttr(element,"isDrawingObject",false)) r.push(this.loadShape(element,parentMatrix)); else r.push(new nanofl.engine.elements.GroupElement([this.loadShape(element,parentMatrix)]));
+				if(!htmlparser.HtmlParserTools.getAttr(element,"isDrawingObject",false)) r = r.concat(this.loadShape(element,parentMatrix)); else r.push(new nanofl.engine.elements.GroupElement(this.loadShape(element,parentMatrix)));
 				break;
 			case "DOMStaticText":case "DOMDynamicText":case "DOMInputText":
 				r.push(this.loadText(element,parentMatrix));
@@ -833,19 +988,67 @@ flashimport_SymbolLoader.prototype = {
 		return r;
 	}
 	,loadShape: function(element,parentMatrix) {
-		var _g = this;
-		var strokes = element.find(">strokes>StrokeStyle>*").map(function(stroke) {
-			return _g.loadShapeStroke(stroke);
-		});
-		var fills = element.find(">fills>FillStyle>*").map(function(fill) {
-			return _g.loadShapeFill(fill).fill;
-		});
-		var p = new flashimport_ShapeConvertor(strokes,fills,this.loadEdgeDatas(element)).convert();
-		var shape = new nanofl.engine.elements.ShapeElement(p.edges,p.polygons);
+		var transformedStrokes = element.find(">strokes>StrokeStyle>*").map($bind(this,this.loadShapeStroke));
+		var transformedFills = element.find(">fills>FillStyle>*").map($bind(this,this.loadShapeFill));
+		var matrixBy = new haxe_ds_ObjectMap();
+		var byMatrix = new flashimport_MatrixMap();
+		var _g = 0;
+		while(_g < transformedStrokes.length) {
+			var z2 = transformedStrokes[_g];
+			++_g;
+			matrixBy.set(z2.stroke,z2.matrix);
+			if(!byMatrix.exists(z2.matrix)) byMatrix.set(z2.matrix,[]);
+			byMatrix.get(z2.matrix).push(z2.stroke);
+		}
+		var _g1 = 0;
+		while(_g1 < transformedFills.length) {
+			var z3 = transformedFills[_g1];
+			++_g1;
+			matrixBy.set(z3.fill,z3.matrix);
+			if(!byMatrix.exists(z3.matrix)) byMatrix.set(z3.matrix,[]);
+			byMatrix.get(z3.matrix).push(z3.fill);
+		}
+		var shapeData = new flashimport_ShapeConvertor(transformedStrokes.map(function(z) {
+			return z.stroke;
+		}),transformedFills.map(function(z1) {
+			return z1.fill;
+		}),this.loadEdgeDatas(element)).convert();
+		var shape = new nanofl.engine.elements.ShapeElement(stdlib_Lambda.extract(shapeData.edges,function(edge) {
+			return matrixBy.h[edge.stroke.__id__].isIdentity();
+		}),stdlib_Lambda.extract(shapeData.polygons,function(polygon) {
+			return matrixBy.h[polygon.fill.__id__].isIdentity();
+		}));
 		shape.matrix = flashimport_MatrixParser.load(htmlparser.HtmlParserTools.findOne(element,">matrix>Matrix")).prependMatrix(parentMatrix);
 		this.loadRegPoint(shape,htmlparser.HtmlParserTools.findOne(element,">transformationPoint>Point"));
-		shape.ensureNoTransform();
-		return shape;
+		shape.ensureNoTransform(false);
+		var r = [shape];
+		var $it0 = byMatrix.keys();
+		while( $it0.hasNext() ) {
+			var matrix = $it0.next();
+			var matrix1 = [matrix];
+			if(matrix1[0].isIdentity()) continue;
+			var shape1 = new nanofl.engine.elements.ShapeElement(stdlib_Lambda.extract(shapeData.edges,(function(matrix1) {
+				return function(edge1) {
+					return matrixBy.h[edge1.stroke.__id__].equ(matrix1[0]);
+				};
+			})(matrix1)),stdlib_Lambda.extract(shapeData.polygons,(function(matrix1) {
+				return function(polygon1) {
+					return matrixBy.h[polygon1.fill.__id__].equ(matrix1[0]);
+				};
+			})(matrix1)));
+			shape1.matrix = matrix1[0].clone().invert();
+			shape1.ensureNoTransform(false);
+			r.push(this.wrapElements([shape1],matrix1[0].clone()));
+		}
+		return r;
+	}
+	,wrapElements: function(elements,matrix) {
+		var mcItem = this.library.addItem(new nanofl.engine.libraryitems.MovieClipItem(stdlib_Uuid.newUuid()));
+		mcItem.addLayer(new nanofl.engine.Layer("auto"));
+		mcItem.layers[0].addKeyFrame(new nanofl.engine.KeyFrame(null,null,null,elements));
+		var r = mcItem.newInstance();
+		if(matrix != null) r.matrix = matrix;
+		return r;
 	}
 	,loadEdgeDatas: function(element) {
 		var r = [];
@@ -904,10 +1107,10 @@ flashimport_SymbolLoader.prototype = {
 		var _g = stroke.name;
 		switch(_g) {
 		case "SolidStroke":
-			return new nanofl.engine.strokes.SolidStroke(nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(colorElem,"color","#000000"),htmlparser.HtmlParserTools.getAttr(colorElem,"alpha",1.0)),!isHairline?htmlparser.HtmlParserTools.getAttr(stroke,"weight",1.0):1.0,htmlparser.HtmlParserTools.getAttr(stroke,"caps","round"),htmlparser.HtmlParserTools.getAttr(stroke,"joins","round"),htmlparser.HtmlParserTools.getAttr(stroke,"miterLimit",3.0),isHairline);
+			return { stroke : new nanofl.engine.strokes.SolidStroke(nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(colorElem,"color","#000000"),htmlparser.HtmlParserTools.getAttr(colorElem,"alpha",1.0)),!isHairline?htmlparser.HtmlParserTools.getAttr(stroke,"weight",1.0):1.0,htmlparser.HtmlParserTools.getAttr(stroke,"caps","round"),htmlparser.HtmlParserTools.getAttr(stroke,"joins","round"),htmlparser.HtmlParserTools.getAttr(stroke,"miterLimit",3.0),isHairline), matrix : new nanofl.engine.geom.Matrix()};
 		default:
 			this.log("WARNING: unknow stroke type '" + stroke.name + "'.");
-			return new nanofl.engine.strokes.SolidStroke("#000000");
+			return { stroke : new nanofl.engine.strokes.SolidStroke("#000000"), matrix : new nanofl.engine.geom.Matrix()};
 		}
 	}
 	,loadRegPoint: function(dest,point) {
@@ -1147,6 +1350,30 @@ haxe_ds_IntMap.prototype = {
 		return HxOverrides.iter(a);
 	}
 	,__class__: haxe_ds_IntMap
+};
+var haxe_ds_ObjectMap = function() {
+	this.h = { };
+	this.h.__keys__ = { };
+};
+haxe_ds_ObjectMap.__name__ = ["haxe","ds","ObjectMap"];
+haxe_ds_ObjectMap.__interfaces__ = [haxe_IMap];
+haxe_ds_ObjectMap.prototype = {
+	set: function(key,value) {
+		var id = key.__id__ || (key.__id__ = ++haxe_ds_ObjectMap.count);
+		this.h[id] = value;
+		this.h.__keys__[id] = key;
+	}
+	,get: function(key) {
+		return this.h[key.__id__];
+	}
+	,keys: function() {
+		var a = [];
+		for( var key in this.h.__keys__ ) {
+		if(this.h.hasOwnProperty(key)) a.push(this.h.__keys__[key]);
+		}
+		return HxOverrides.iter(a);
+	}
+	,__class__: haxe_ds_ObjectMap
 };
 var haxe_ds_StringMap = function() {
 	this.h = { };
@@ -1756,6 +1983,82 @@ stdlib_Exception.prototype = {
 	}
 	,__class__: stdlib_Exception
 };
+var stdlib_Lambda = function() { };
+stdlib_Lambda.__name__ = ["stdlib","Lambda"];
+stdlib_Lambda.findIndex = function(it,f) {
+	var n = 0;
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		if(f(x)) return n;
+		n++;
+	}
+	return -1;
+};
+stdlib_Lambda.insertRange = function(arr,pos,range) {
+	var _g = 0;
+	while(_g < range.length) {
+		var e = range[_g];
+		++_g;
+		var pos1 = pos++;
+		arr.splice(pos1,0,e);
+	}
+};
+stdlib_Lambda.extract = function(arr,f) {
+	var r = [];
+	var i = 0;
+	while(i < arr.length) if(f(arr[i])) {
+		r.push(arr[i]);
+		arr.splice(i,1);
+	} else i++;
+	return r;
+};
+stdlib_Lambda.array = function(it) {
+	return Lambda.array(it);
+};
+stdlib_Lambda.list = function(it) {
+	return Lambda.list(it);
+};
+stdlib_Lambda.map = function(it,f) {
+	return Lambda.map(it,f);
+};
+stdlib_Lambda.mapi = function(it,f) {
+	return Lambda.mapi(it,f);
+};
+stdlib_Lambda.has = function(it,elt) {
+	return Lambda.has(it,elt);
+};
+stdlib_Lambda.exists = function(it,f) {
+	return Lambda.exists(it,f);
+};
+stdlib_Lambda.foreach = function(it,f) {
+	return Lambda.foreach(it,f);
+};
+stdlib_Lambda.iter = function(it,f) {
+	Lambda.iter(it,f);
+	return;
+};
+stdlib_Lambda.filter = function(it,f) {
+	return Lambda.filter(it,f);
+};
+stdlib_Lambda.fold = function(it,f,first) {
+	return Lambda.fold(it,f,first);
+};
+stdlib_Lambda.count = function(it,pred) {
+	return Lambda.count(it,pred);
+};
+stdlib_Lambda.empty = function(it) {
+	return Lambda.empty(it);
+};
+stdlib_Lambda.indexOf = function(it,v) {
+	return Lambda.indexOf(it,v);
+};
+stdlib_Lambda.find = function(it,f) {
+	return Lambda.find(it,f);
+};
+stdlib_Lambda.concat = function(a,b) {
+	return Lambda.concat(a,b);
+};
 var stdlib_Std = function() { };
 stdlib_Std.__name__ = ["stdlib","Std"];
 stdlib_Std.parseInt = function(x,defaultValue) {
@@ -2254,6 +2557,7 @@ var Uint8Array = (Function("return typeof Uint8Array != 'undefined' ? Uint8Array
 FlashImporterPlugin.embeddedIcon = "iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAACXBIWXMAAAsSAAALEgHS3X78AAACNUlEQVQoz21Qz0uUURQ997033zhjZvhjapps1RAkqYt0U1O4MAiLwUWEhEEQtKl2LdoEIkR/gFsX1S4iZgjbJiFEizSwTCgoYhgtSUTnm5nP+d47LWZGgzxwuffCORzOEZKYm5szw8PDvel0+nilUqEAAhIAAKUoIiYMwz/FYnEhl8v52WxWQBL5fB4jIyOTJFmtVnf4D6y1liQLhcLP0dHR6wAi+XweBgBmZ2fR0tIiALDt+64WBI5fv8FqjSB1FFok7O7u7pmenn5sjGE2m81hdXVVAODGxMQUSW5tbOxUnzzjzoP7LN+5xw3f59bmJq21oXOO6+vrhVQqdd6ICACA1tb38xeQd2/haiHcwQ5EvAjCIIDv+7pSqYSJRCKltT5k2ChB2tqAtd9QS4tgZxfkyhi8k2lY60BjEIYhrLUKAEjWDwBgtQosfEC4tAz2n4EaGoRKJqGVQiQSQTQaRSwWa9KVYq2mAcB8/uKwsgxvsI/hzAyCh5OAtVBKQWsNrTWMMU0hjBMJz7W2tt+OxQf4aQnOiWJnArrnWJ3R6EBEoJTaEyYXP2beDAxdCFKHLweVCvXYNR29OgZXKoEk6NyucLdIEsafevQyTCQ6zHZJSV8/vEsXQRFgL8++jspVgy7v+w8XP5Isyfg42HbA2XLZ0dVB0pHNr2EPULW/fnX2/a2bQ3d/rT2Nne4Fg8B68biKeJ7y9pmGO4Uk5ufnJZPJnEqn0yfK5bKVZpj/QRFhsVhc+QuQDi4zdLU6egAAAABJRU5ErkJggg==";
 FlashImporterPlugin.IMPORT_MEDIA_SCRIPT_TEMPLATE = "(function (console) { \"use strict\";\nvar FlashMediaImporter = function() { };\nFlashMediaImporter.__name__ = true;\nFlashMediaImporter.main = function() {\n\tvar srcFilePath = \"file:///\" + StringTools.replace(FlashMediaImporter.SRC_FILE,\"\\\\\",\"/\");\n\tvar destLibraryDir = \"file:///\" + haxe_io_Path.addTrailingSlash(StringTools.replace(FlashMediaImporter.DEST_DIR,\"\\\\\",\"/\")) + \"library\";\n\tFlashMediaImporter.log(\"Import media from '\" + srcFilePath + \"' to '\" + destLibraryDir + \"' directory:\");\n\tvar doc = fl.openDocument(srcFilePath);\n\tfl.setActiveWindow(doc);\n\tFLfile.createFolder(destLibraryDir);\n\tvar _g1 = 0;\n\tvar _g = fl.getDocumentDOM().library.items.length;\n\twhile(_g1 < _g) {\n\t\tvar i = _g1++;\n\t\tvar item = fl.getDocumentDOM().library.items[i];\n\t\tif(item != null) {\n\t\t\tvar _g2 = item.itemType;\n\t\t\tswitch(_g2) {\n\t\t\tcase \"bitmap\":\n\t\t\t\tFlashMediaImporter.log(\"  Import: \" + item.name + \" / \" + item.itemType + \" / \" + item.originalCompressionType);\n\t\t\t\tFlashMediaImporter.importBitmap(destLibraryDir,item);\n\t\t\t\tbreak;\n\t\t\tcase \"movie clip\":case \"graphic\":case \"button\":case \"folder\":\n\t\t\t\tbreak;\n\t\t\tcase \"sound\":\n\t\t\t\tFlashMediaImporter.log(\"  Import: \" + item.name + \" / \" + item.itemType + \" / \" + item.originalCompressionType);\n\t\t\t\tFlashMediaImporter.importSound(destLibraryDir,item);\n\t\t\t\tbreak;\n\t\t\tdefault:\n\t\t\t\tFlashMediaImporter.log(\"    Skip: \" + item.name + \" / \" + item.itemType);\n\t\t\t}\n\t\t}\n\t}\n\tdoc.close(false);\n\tFlashMediaImporter.log(\"Done.\");\n\tFLfile.write(\"file:///\" + StringTools.replace(FlashMediaImporter.DEST_DIR,\"\\\\\",\"/\") + \"/.done-import-media\",\"\");\n};\nFlashMediaImporter.importBitmap = function(destLibraryDir,item) {\n\tvar savePath = destLibraryDir + \"/\" + item.name + \".png\";\n\tif(!FLfile.exists(savePath)) {\n\t\tFLfile.createFolder(haxe_io_Path.directory(savePath));\n\t\titem.exportToFile(savePath);\n\t}\n\treturn true;\n};\nFlashMediaImporter.importSound = function(destLibraryDir,item) {\n\tvar savePath;\n\tsavePath = destLibraryDir + \"/\" + haxe_io_Path.withoutExtension(item.name) + (item.originalCompressionType == \"RAW\"?\".wav\":\".mp3\");\n\tif(!FLfile.exists(savePath)) {\n\t\tFLfile.createFolder(haxe_io_Path.directory(savePath));\n\t\titem.exportToFile(savePath);\n\t}\n\treturn true;\n};\nFlashMediaImporter.log = function(s) {\n\tfl.trace(s);\n};\nvar HxOverrides = function() { };\nHxOverrides.__name__ = true;\nHxOverrides.substr = function(s,pos,len) {\n\tif(pos != null && pos != 0 && len != null && len < 0) return \"\";\n\tif(len == null) len = s.length;\n\tif(pos < 0) {\n\t\tpos = s.length + pos;\n\t\tif(pos < 0) pos = 0;\n\t} else if(len < 0) len = s.length + len - pos;\n\treturn s.substr(pos,len);\n};\nMath.__name__ = true;\nvar StringTools = function() { };\nStringTools.__name__ = true;\nStringTools.replace = function(s,sub,by) {\n\treturn s.split(sub).join(by);\n};\nvar haxe_Log = function() { };\nhaxe_Log.__name__ = true;\nhaxe_Log.trace = function(v,infos) {\n\tjs_Boot.__trace(v,infos);\n};\nvar haxe_io_Path = function(path) {\n\tswitch(path) {\n\tcase \".\":case \"..\":\n\t\tthis.dir = path;\n\t\tthis.file = \"\";\n\t\treturn;\n\t}\n\tvar c1 = path.lastIndexOf(\"/\");\n\tvar c2 = path.lastIndexOf(\"\\\\\");\n\tif(c1 < c2) {\n\t\tthis.dir = HxOverrides.substr(path,0,c2);\n\t\tpath = HxOverrides.substr(path,c2 + 1,null);\n\t\tthis.backslash = true;\n\t} else if(c2 < c1) {\n\t\tthis.dir = HxOverrides.substr(path,0,c1);\n\t\tpath = HxOverrides.substr(path,c1 + 1,null);\n\t} else this.dir = null;\n\tvar cp = path.lastIndexOf(\".\");\n\tif(cp != -1) {\n\t\tthis.ext = HxOverrides.substr(path,cp + 1,null);\n\t\tthis.file = HxOverrides.substr(path,0,cp);\n\t} else {\n\t\tthis.ext = null;\n\t\tthis.file = path;\n\t}\n};\nhaxe_io_Path.__name__ = true;\nhaxe_io_Path.withoutExtension = function(path) {\n\tvar s = new haxe_io_Path(path);\n\ts.ext = null;\n\treturn s.toString();\n};\nhaxe_io_Path.directory = function(path) {\n\tvar s = new haxe_io_Path(path);\n\tif(s.dir == null) return \"\";\n\treturn s.dir;\n};\nhaxe_io_Path.addTrailingSlash = function(path) {\n\tif(path.length == 0) return \"/\";\n\tvar c1 = path.lastIndexOf(\"/\");\n\tvar c2 = path.lastIndexOf(\"\\\\\");\n\tif(c1 < c2) {\n\t\tif(c2 != path.length - 1) return path + \"\\\\\"; else return path;\n\t} else if(c1 != path.length - 1) return path + \"/\"; else return path;\n};\nhaxe_io_Path.prototype = {\n\ttoString: function() {\n\t\treturn (this.dir == null?\"\":this.dir + (this.backslash?\"\\\\\":\"/\")) + this.file + (this.ext == null?\"\":\".\" + this.ext);\n\t}\n};\nvar js_Boot = function() { };\njs_Boot.__name__ = true;\njs_Boot.__trace = function(v,i) {\n\tvar msg;\n\tif(i != null) msg = i.fileName + \":\" + i.lineNumber + \": \"; else msg = \"\";\n\tmsg += js_Boot.__string_rec(v,\"\");\n\tfl.trace(msg);\n};\njs_Boot.__string_rec = function(o,s) {\n\tif(o == null) return \"null\";\n\tif(s.length >= 5) return \"<...>\";\n\tvar t = typeof(o);\n\tif(t == \"function\" && (o.__name__ || o.__ename__)) t = \"object\";\n\tswitch(t) {\n\tcase \"object\":\n\t\tif(o instanceof Array) {\n\t\t\tif(o.__enum__) {\n\t\t\t\tif(o.length == 2) return o[0];\n\t\t\t\tvar str2 = o[0] + \"(\";\n\t\t\t\ts += \"\\t\";\n\t\t\t\tvar _g1 = 2;\n\t\t\t\tvar _g = o.length;\n\t\t\t\twhile(_g1 < _g) {\n\t\t\t\t\tvar i1 = _g1++;\n\t\t\t\t\tif(i1 != 2) str2 += \",\" + js_Boot.__string_rec(o[i1],s); else str2 += js_Boot.__string_rec(o[i1],s);\n\t\t\t\t}\n\t\t\t\treturn str2 + \")\";\n\t\t\t}\n\t\t\tvar l = o.length;\n\t\t\tvar i;\n\t\t\tvar str1 = \"[\";\n\t\t\ts += \"\\t\";\n\t\t\tvar _g2 = 0;\n\t\t\twhile(_g2 < l) {\n\t\t\t\tvar i2 = _g2++;\n\t\t\t\tstr1 += (i2 > 0?\",\":\"\") + js_Boot.__string_rec(o[i2],s);\n\t\t\t}\n\t\t\tstr1 += \"]\";\n\t\t\treturn str1;\n\t\t}\n\t\tvar tostr;\n\t\ttry {\n\t\t\ttostr = o.toString;\n\t\t} catch( e ) {\n\t\t\treturn \"???\";\n\t\t}\n\t\tif(tostr != null && tostr != Object.toString && typeof(tostr) == \"function\") {\n\t\t\tvar s2 = o.toString();\n\t\t\tif(s2 != \"[object Object]\") return s2;\n\t\t}\n\t\tvar k = null;\n\t\tvar str = \"{\\n\";\n\t\ts += \"\\t\";\n\t\tvar hasp = o.hasOwnProperty != null;\n\t\tfor( var k in o ) {\n\t\tif(hasp && !o.hasOwnProperty(k)) {\n\t\t\tcontinue;\n\t\t}\n\t\tif(k == \"prototype\" || k == \"__class__\" || k == \"__super__\" || k == \"__interfaces__\" || k == \"__properties__\") {\n\t\t\tcontinue;\n\t\t}\n\t\tif(str.length != 2) str += \", \\n\";\n\t\tstr += s + k + \" : \" + js_Boot.__string_rec(o[k],s);\n\t\t}\n\t\ts = s.substring(1);\n\t\tstr += \"\\n\" + s + \"}\";\n\t\treturn str;\n\tcase \"function\":\n\t\treturn \"<function>\";\n\tcase \"string\":\n\t\treturn o;\n\tdefault:\n\t\treturn String(o);\n\t}\n};\nString.__name__ = true;\nArray.__name__ = true;\nhaxe_Log.trace = function(v,infos) {\n\tfl.trace(v);\n};\nFlashMediaImporter.SRC_FILE = \"{SRC_FILE}\";\nFlashMediaImporter.DEST_DIR = \"{DEST_DIR}\";\nFlashMediaImporter.TEMP_MC_NAME = \"__temp_fme\";\nFlashMediaImporter.main();\n})(typeof console != \"undefined\" ? console : {log:function(){}});\n";
 flashimport_SymbolLoader.EPS = 1e-10;
+haxe_ds_ObjectMap.count = 0;
 haxe_io_FPHelper.i64tmp = (function($this) {
 	var $r;
 	var x = new haxe__$Int64__$_$_$Int64(0,0);

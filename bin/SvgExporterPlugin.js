@@ -644,6 +644,15 @@ stdlib_Lambda.insertRange = function(arr,pos,range) {
 		arr.splice(pos1,0,e);
 	}
 };
+stdlib_Lambda.extract = function(arr,f) {
+	var r = [];
+	var i = 0;
+	while(i < arr.length) if(f(arr[i])) {
+		r.push(arr[i]);
+		arr.splice(i,1);
+	} else i++;
+	return r;
+};
 stdlib_Lambda.array = function(it) {
 	return Lambda.array(it);
 };
