@@ -782,7 +782,7 @@ flashimport_SymbolLoader.prototype = {
 		case "none":
 			return null;
 		case "motion":
-			return new nanofl.engine.MotionTween(htmlparser.HtmlParserTools.getAttr(frame,"acceleration",0),this.parseMotionTweenRotate(htmlparser.HtmlParserTools.getAttr(frame,"motionTweenRotate"),htmlparser.HtmlParserTools.getAttr(frame,"motionTweenRotateTimes",1)),htmlparser.HtmlParserTools.getAttr(frame,"motionTweenOrientToPath",false));
+			return new nanofl.engine.MotionTween(-htmlparser.HtmlParserTools.getAttrInt(frame,"acceleration",0),this.parseMotionTweenRotate(htmlparser.HtmlParserTools.getAttr(frame,"motionTweenRotate"),htmlparser.HtmlParserTools.getAttr(frame,"motionTweenRotateTimes",1)),htmlparser.HtmlParserTools.getAttr(frame,"motionTweenOrientToPath",false));
 		case "shape":
 			if(!Lambda.has(this.morphingNotSupported,namePathForLog)) {
 				this.morphingNotSupported.push(namePathForLog);

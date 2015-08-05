@@ -29,9 +29,9 @@ import nanofl.engine.libraryitems.BitmapItem;
 import nanofl.engine.libraryitems.InstancableItem;
 import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.engine.libraryitems.MovieClipItem;
+import nanofl.engine.MotionTween;
 import nanofl.engine.strokes.IStroke;
 import nanofl.engine.strokes.SolidStroke;
-import nanofl.engine.MotionTween;
 import nanofl.TextRun;
 import stdlib.Std;
 import stdlib.Utf8;
@@ -153,7 +153,7 @@ class SymbolLoader
 			case "motion":
 				return new MotionTween
 				(
-					frame.getAttr("acceleration", 0),
+					- frame.getAttrInt("acceleration", 0),
 					parseMotionTweenRotate(frame.getAttr("motionTweenRotate"), frame.getAttr("motionTweenRotateTimes", 1)),
 					frame.getAttr("motionTweenOrientToPath", false)
 				);
