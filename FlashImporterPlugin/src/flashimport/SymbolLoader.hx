@@ -36,7 +36,6 @@ import nanofl.engine.strokes.SolidStroke;
 import nanofl.TextRun;
 import stdlib.Std;
 import stdlib.Utf8;
-import stdlib.Uuid;
 using htmlparser.HtmlParserTools;
 using StringTools;
 using stdlib.Lambda;
@@ -54,6 +53,8 @@ class SymbolLoader
 	var fontMap = new Map<String, { face:String, style:String }>();
 	var morphingNotSupported = new Array<String>();
 	var fontConvertor : FontConvertor;
+	
+	var generatedAutoIDs = new Array<String>();
 	
 	public function new(fileApi:FileApi, doc:XmlDocument, srcLibDir:String, library:Library, fonts:Array<String>, ?log:Dynamic->Void)
 	{
@@ -95,7 +96,7 @@ class SymbolLoader
 		loadLinkage(r, symbolItemXml);
 		for (layer in symbolItemXml.find(">timeline>DOMTimeline>layers>DOMLayer").concat(symbolItemXml.find(">timelines>DOMTimeline>layers>DOMLayer")))
 		{
-			r.addLayer(loadLayer(layer, namePath));
+			r.addLayer(loadLayer(namePath, layer));
 		}
 		library.addItem(r);
 		
@@ -116,7 +117,7 @@ class SymbolLoader
 		return r;
 	}
 	
-	function loadLayer(layer:HtmlNodeElement, namePathForLog:String) : Layer
+	function loadLayer(namePath:String, layer:HtmlNodeElement) : Layer
 	{
 		var r = new Layer
 		(
@@ -128,23 +129,23 @@ class SymbolLoader
 		);
 		for (frame in layer.find(">frames>DOMFrame"))
 		{
-			r.addKeyFrame(loadFrame(frame, namePathForLog));
+			r.addKeyFrame(loadFrame(namePath, frame));
 		}
 		return r;
 	}
 	
-	function loadFrame(frame:HtmlNodeElement, namePathForLog:String)
+	function loadFrame(namePath:String, frame:HtmlNodeElement)
 	{
 		return new KeyFrame
 		(
 			frame.getAttr("name", ""),
 			Std.int(frame.getAttr("duration", 1)),
-			loadMotionTween(frame, namePathForLog),
-			loadElements(frame.find(">elements>*"), new Matrix())
+			loadMotionTween(namePath, frame),
+			loadElements(namePath, frame.find(">elements>*"), new Matrix())
 		);
 	}
 	
-	function loadMotionTween(frame:HtmlNodeElement, namePathForLog:String) : MotionTween
+	function loadMotionTween(namePath:String, frame:HtmlNodeElement) : MotionTween
 	{
 		var type = frame.getAttr("tweenType", "none");
 		switch (type)
@@ -161,20 +162,20 @@ class SymbolLoader
 				);
 				
 			case "shape":
-				if (!morphingNotSupported.has(namePathForLog))
+				if (!morphingNotSupported.has(namePath))
 				{
-					morphingNotSupported.push(namePathForLog);
-					log("WARNING: shape morphing tween is not supported (symbol '" + namePathForLog + "').");
+					morphingNotSupported.push(namePath);
+					log("WARNING: shape morphing tween is not supported (symbol '" + namePath + "').");
 				}
 				return null;
 				
 			case _:
-				log("WARNING: unknow tween type '" + type + "' (symbol '" + namePathForLog + "').");
+				log("WARNING: unknow tween type '" + type + "' (symbol '" + namePath + "').");
 				return null;
 		}
 	}
 	
-	function loadElements(elements:Array<HtmlNodeElement>, parentMatrix:Matrix)
+	function loadElements(namePath:String, elements:Array<HtmlNodeElement>, parentMatrix:Matrix)
 	{
 		var r = new Array<Element>();
 		for (element in elements)
@@ -196,11 +197,11 @@ class SymbolLoader
 				case "DOMShape":
 					if (!element.getAttr("isDrawingObject", false))
 					{
-						r = r.concat(loadShape(element, parentMatrix));
+						r = r.concat(loadShape(namePath, element, parentMatrix));
 					}
 					else
 					{
-						r.push(new GroupElement(loadShape(element, parentMatrix)));
+						r.push(new GroupElement(loadShape(namePath, element, parentMatrix)));
 					}
 					
 				case "DOMStaticText", "DOMDynamicText", "DOMInputText":
@@ -211,7 +212,7 @@ class SymbolLoader
 					if (elements.length > 0)
 					{
 						var m = MatrixParser.load(element.findOne(">matrix>Matrix"));
-						var group = new GroupElement(loadElements(elements, m.clone().invert().prependMatrix(parentMatrix)));
+						var group = new GroupElement(loadElements(namePath, elements, m.clone().invert().prependMatrix(parentMatrix)));
 						group.matrix = m;
 						r.push(group);
 					}
@@ -223,7 +224,7 @@ class SymbolLoader
 		return r;
 	}
 	
-	function loadShape(element:HtmlNodeElement, parentMatrix:Matrix) : Array<Element>
+	function loadShape(namePath:String, element:HtmlNodeElement, parentMatrix:Matrix) : Array<Element>
 	{
 		var transformedStrokes = element.find(">strokes>StrokeStyle>*").map(loadShapeStroke);
 		var transformedFills = element.find(">fills>FillStyle>*").map(loadShapeFill);
@@ -250,9 +251,8 @@ class SymbolLoader
 			shapeData.edges.extract(function(edge) return matrixBy.get(edge.stroke).isIdentity()),
 			shapeData.polygons.extract(function(polygon) return matrixBy.get(polygon.fill).isIdentity())
 		);
-		shape.matrix = MatrixParser.load(element.findOne(">matrix>Matrix")).prependMatrix(parentMatrix);
 		loadRegPoint(shape, element.findOne(">transformationPoint>Point"));
-		shape.ensureNoTransform(false);
+		shape.transform(MatrixParser.load(element.findOne(">matrix>Matrix")).prependMatrix(parentMatrix), false);
 		
 		var r : Array<Element> = [ shape ];
 		
@@ -265,18 +265,17 @@ class SymbolLoader
 				shapeData.edges.extract(function(edge) return matrixBy.get(edge.stroke).equ(matrix)),
 				shapeData.polygons.extract(function(polygon) return matrixBy.get(polygon.fill).equ(matrix))
 			);
-			shape.matrix = matrix.clone().invert();
-			shape.ensureNoTransform(false);
+			shape.transform(matrix.clone().invert(), false);
 			
-			r.push(wrapElements([ shape ], matrix.clone()));
+			r.push(wrapElements(namePath, [ shape ], matrix.clone()));
 		}
 		
 		return r;
 	}
 	
-	function wrapElements(elements:Array<Element>, ?matrix:Matrix) : Instance
+	function wrapElements(autoPrefixID:String, elements:Array<Element>, ?matrix:Matrix) : Instance
 	{
-		var mcItem = library.addItem(new MovieClipItem(Uuid.newUuid()));
+		var mcItem = library.addItem(new MovieClipItem(generateNewID(autoPrefixID)));
 		mcItem.addLayer(new Layer("auto"));
 		mcItem.layers[0].addKeyFrame(new KeyFrame(elements));
 		var r = mcItem.newInstance();
@@ -338,7 +337,16 @@ class SymbolLoader
 				var p1 = m.transformPoint(1, 0);
 				var p2 = m.transformPoint(0, 1);
 				
-				if (Math.abs(PointTools.getDist(p0.x, p0.y, p2.x, p2.y) - PointTools.getDist(p0.x, p0.y, p1.x, p1.y)) < EPS)
+				trace("p0 = " + PointTools.toString(p0));
+				trace("p1 = " + PointTools.toString(p1));
+				trace("p2 = " + PointTools.toString(p2));
+				
+				trace("scaleX = " + Math.sqrt(m.a * m.a + m.c * m.c));
+				trace("scaleY = " + Math.sqrt(m.b * m.b + m.d * m.d));
+				
+				var k = Math.abs(PointTools.getDist(p0.x, p0.y, p2.x, p2.y) - PointTools.getDist(p0.x, p0.y, p1.x, p1.y));
+				trace("k = " + k);
+				if (k < EPS)
 				{
 					return
 					{
@@ -580,5 +588,20 @@ class SymbolLoader
 			name,
 			Reflect.hasField(params, name) ? f(Std.parseFloat(Reflect.field(params, name))) : defValue
 		);
+	}
+	
+	function generateNewID(autoPrefixID="auto") : String
+	{
+		var i = 1;
+		while (true)
+		{
+			var r = autoPrefixID + "_" + i;
+			if (!library.hasItem(r) && generatedAutoIDs.indexOf(r) < 0)
+			{
+				generatedAutoIDs.push(r);
+				return r;
+			}
+			i++;
+		}
 	}
 }

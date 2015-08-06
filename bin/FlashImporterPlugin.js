@@ -112,6 +112,18 @@ HxOverrides.substr = function(s,pos,len) {
 	} else if(len < 0) len = s.length + len - pos;
 	return s.substr(pos,len);
 };
+HxOverrides.indexOf = function(a,obj,i) {
+	var len = a.length;
+	if(i < 0) {
+		i += len;
+		if(i < 0) i = 0;
+	}
+	while(i < len) {
+		if(a[i] === obj) return i;
+		i++;
+	}
+	return -1;
+};
 HxOverrides.iter = function(a) {
 	return { cur : 0, arr : a, hasNext : function() {
 		return this.cur < this.arr.length;
@@ -121,43 +133,6 @@ HxOverrides.iter = function(a) {
 };
 var Lambda = function() { };
 Lambda.__name__ = ["Lambda"];
-Lambda.array = function(it) {
-	var a = [];
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var i = $it0.next();
-		a.push(i);
-	}
-	return a;
-};
-Lambda.list = function(it) {
-	var l = new List();
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var i = $it0.next();
-		l.add(i);
-	}
-	return l;
-};
-Lambda.map = function(it,f) {
-	var l = new List();
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		l.add(f(x));
-	}
-	return l;
-};
-Lambda.mapi = function(it,f) {
-	var l = new List();
-	var i = 0;
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		l.add(f(i++,x));
-	}
-	return l;
-};
 Lambda.has = function(it,elt) {
 	var $it0 = $iterator(it)();
 	while( $it0.hasNext() ) {
@@ -165,46 +140,6 @@ Lambda.has = function(it,elt) {
 		if(x == elt) return true;
 	}
 	return false;
-};
-Lambda.exists = function(it,f) {
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		if(f(x)) return true;
-	}
-	return false;
-};
-Lambda.foreach = function(it,f) {
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		if(!f(x)) return false;
-	}
-	return true;
-};
-Lambda.iter = function(it,f) {
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		f(x);
-	}
-};
-Lambda.filter = function(it,f) {
-	var l = new List();
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		if(f(x)) l.add(x);
-	}
-	return l;
-};
-Lambda.fold = function(it,f,first) {
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		first = f(x,first);
-	}
-	return first;
 };
 Lambda.count = function(it,pred) {
 	var n = 0;
@@ -223,19 +158,6 @@ Lambda.count = function(it,pred) {
 	}
 	return n;
 };
-Lambda.empty = function(it) {
-	return !$iterator(it)().hasNext();
-};
-Lambda.indexOf = function(it,v) {
-	var i = 0;
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var v2 = $it0.next();
-		if(v == v2) return i;
-		i++;
-	}
-	return -1;
-};
 Lambda.find = function(it,f) {
 	var $it0 = $iterator(it)();
 	while( $it0.hasNext() ) {
@@ -244,32 +166,10 @@ Lambda.find = function(it,f) {
 	}
 	return null;
 };
-Lambda.concat = function(a,b) {
-	var l = new List();
-	var $it0 = $iterator(a)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		l.add(x);
-	}
-	var $it1 = $iterator(b)();
-	while( $it1.hasNext() ) {
-		var x1 = $it1.next();
-		l.add(x1);
-	}
-	return l;
-};
-var List = function() {
-	this.length = 0;
-};
+var List = function() { };
 List.__name__ = ["List"];
 List.prototype = {
-	add: function(item) {
-		var x = [item];
-		if(this.h == null) this.h = x; else this.q[1] = x;
-		this.q = x;
-		this.length++;
-	}
-	,iterator: function() {
+	iterator: function() {
 		return new _$List_ListIterator(this.h);
 	}
 	,__class__: List
@@ -867,6 +767,7 @@ flashimport_ShapeConvertor.prototype = {
 	,__class__: flashimport_ShapeConvertor
 };
 var flashimport_SymbolLoader = function(fileApi,doc,srcLibDir,library,fonts,log) {
+	this.generatedAutoIDs = [];
 	this.morphingNotSupported = [];
 	this.fontMap = new haxe_ds_StringMap();
 	this.fileApi = fileApi;
@@ -898,7 +799,7 @@ flashimport_SymbolLoader.prototype = {
 		while(_g < _g1.length) {
 			var layer = _g1[_g];
 			++_g;
-			r.addLayer(this.loadLayer(layer,namePath));
+			r.addLayer(this.loadLayer(namePath,layer));
 		}
 		this.library.addItem(r);
 		return r;
@@ -917,21 +818,21 @@ flashimport_SymbolLoader.prototype = {
 		}
 		return r;
 	}
-	,loadLayer: function(layer,namePathForLog) {
+	,loadLayer: function(namePath,layer) {
 		var r = new nanofl.engine.Layer(htmlparser.HtmlParserTools.getAttr(layer,"name"),htmlparser.HtmlParserTools.getAttr(layer,"layerType","normal"),htmlparser.HtmlParserTools.getAttr(layer,"visible",true),htmlparser.HtmlParserTools.getAttr(layer,"locked",false),htmlparser.HtmlParserTools.getAttrInt(layer,"parentLayerIndex"));
 		var _g = 0;
 		var _g1 = layer.find(">frames>DOMFrame");
 		while(_g < _g1.length) {
 			var frame = _g1[_g];
 			++_g;
-			r.addKeyFrame(this.loadFrame(frame,namePathForLog));
+			r.addKeyFrame(this.loadFrame(namePath,frame));
 		}
 		return r;
 	}
-	,loadFrame: function(frame,namePathForLog) {
-		return new nanofl.engine.KeyFrame(htmlparser.HtmlParserTools.getAttr(frame,"name",""),stdlib_Std["int"](htmlparser.HtmlParserTools.getAttr(frame,"duration",1)),this.loadMotionTween(frame,namePathForLog),this.loadElements(frame.find(">elements>*"),new nanofl.engine.geom.Matrix()));
+	,loadFrame: function(namePath,frame) {
+		return new nanofl.engine.KeyFrame(htmlparser.HtmlParserTools.getAttr(frame,"name",""),stdlib_Std["int"](htmlparser.HtmlParserTools.getAttr(frame,"duration",1)),this.loadMotionTween(namePath,frame),this.loadElements(namePath,frame.find(">elements>*"),new nanofl.engine.geom.Matrix()));
 	}
-	,loadMotionTween: function(frame,namePathForLog) {
+	,loadMotionTween: function(namePath,frame) {
 		var type = htmlparser.HtmlParserTools.getAttr(frame,"tweenType","none");
 		switch(type) {
 		case "none":
@@ -939,17 +840,17 @@ flashimport_SymbolLoader.prototype = {
 		case "motion":
 			return new nanofl.engine.MotionTween(-htmlparser.HtmlParserTools.getAttrInt(frame,"acceleration",0),this.parseMotionTweenRotate(htmlparser.HtmlParserTools.getAttr(frame,"motionTweenRotate"),htmlparser.HtmlParserTools.getAttr(frame,"motionTweenRotateTimes",1)),htmlparser.HtmlParserTools.getAttr(frame,"motionTweenOrientToPath",false));
 		case "shape":
-			if(!Lambda.has(this.morphingNotSupported,namePathForLog)) {
-				this.morphingNotSupported.push(namePathForLog);
-				this.log("WARNING: shape morphing tween is not supported (symbol '" + namePathForLog + "').");
+			if(!Lambda.has(this.morphingNotSupported,namePath)) {
+				this.morphingNotSupported.push(namePath);
+				this.log("WARNING: shape morphing tween is not supported (symbol '" + namePath + "').");
 			}
 			return null;
 		default:
-			this.log("WARNING: unknow tween type '" + type + "' (symbol '" + namePathForLog + "').");
+			this.log("WARNING: unknow tween type '" + type + "' (symbol '" + namePath + "').");
 			return null;
 		}
 	}
-	,loadElements: function(elements,parentMatrix) {
+	,loadElements: function(namePath,elements,parentMatrix) {
 		var _g2 = this;
 		var r = [];
 		var _g = 0;
@@ -967,7 +868,7 @@ flashimport_SymbolLoader.prototype = {
 				r.push(instance);
 				break;
 			case "DOMShape":
-				if(!htmlparser.HtmlParserTools.getAttr(element,"isDrawingObject",false)) r = r.concat(this.loadShape(element,parentMatrix)); else r.push(new nanofl.engine.elements.GroupElement(this.loadShape(element,parentMatrix)));
+				if(!htmlparser.HtmlParserTools.getAttr(element,"isDrawingObject",false)) r = r.concat(this.loadShape(namePath,element,parentMatrix)); else r.push(new nanofl.engine.elements.GroupElement(this.loadShape(namePath,element,parentMatrix)));
 				break;
 			case "DOMStaticText":case "DOMDynamicText":case "DOMInputText":
 				r.push(this.loadText(element,parentMatrix));
@@ -976,7 +877,7 @@ flashimport_SymbolLoader.prototype = {
 				var elements1 = element.find(">members>*");
 				if(elements1.length > 0) {
 					var m = flashimport_MatrixParser.load(htmlparser.HtmlParserTools.findOne(element,">matrix>Matrix"));
-					var group = new nanofl.engine.elements.GroupElement(this.loadElements(elements1,m.clone().invert().prependMatrix(parentMatrix)));
+					var group = new nanofl.engine.elements.GroupElement(this.loadElements(namePath,elements1,m.clone().invert().prependMatrix(parentMatrix)));
 					group.matrix = m;
 					r.push(group);
 				}
@@ -987,7 +888,7 @@ flashimport_SymbolLoader.prototype = {
 		}
 		return r;
 	}
-	,loadShape: function(element,parentMatrix) {
+	,loadShape: function(namePath,element,parentMatrix) {
 		var transformedStrokes = element.find(">strokes>StrokeStyle>*").map($bind(this,this.loadShapeStroke));
 		var transformedFills = element.find(">fills>FillStyle>*").map($bind(this,this.loadShapeFill));
 		var matrixBy = new haxe_ds_ObjectMap();
@@ -1013,37 +914,35 @@ flashimport_SymbolLoader.prototype = {
 		}),transformedFills.map(function(z1) {
 			return z1.fill;
 		}),this.loadEdgeDatas(element)).convert();
-		var shape = new nanofl.engine.elements.ShapeElement(stdlib_Lambda.extract(shapeData.edges,function(edge) {
+		var shape = new nanofl.engine.elements.ShapeElement(stdlib_LambdaEx.extract(shapeData.edges,function(edge) {
 			return matrixBy.h[edge.stroke.__id__].isIdentity();
-		}),stdlib_Lambda.extract(shapeData.polygons,function(polygon) {
+		}),stdlib_LambdaEx.extract(shapeData.polygons,function(polygon) {
 			return matrixBy.h[polygon.fill.__id__].isIdentity();
 		}));
-		shape.matrix = flashimport_MatrixParser.load(htmlparser.HtmlParserTools.findOne(element,">matrix>Matrix")).prependMatrix(parentMatrix);
 		this.loadRegPoint(shape,htmlparser.HtmlParserTools.findOne(element,">transformationPoint>Point"));
-		shape.ensureNoTransform(false);
+		shape.transform(flashimport_MatrixParser.load(htmlparser.HtmlParserTools.findOne(element,">matrix>Matrix")).prependMatrix(parentMatrix),false);
 		var r = [shape];
 		var $it0 = byMatrix.keys();
 		while( $it0.hasNext() ) {
 			var matrix = $it0.next();
 			var matrix1 = [matrix];
 			if(matrix1[0].isIdentity()) continue;
-			var shape1 = new nanofl.engine.elements.ShapeElement(stdlib_Lambda.extract(shapeData.edges,(function(matrix1) {
+			var shape1 = new nanofl.engine.elements.ShapeElement(stdlib_LambdaEx.extract(shapeData.edges,(function(matrix1) {
 				return function(edge1) {
 					return matrixBy.h[edge1.stroke.__id__].equ(matrix1[0]);
 				};
-			})(matrix1)),stdlib_Lambda.extract(shapeData.polygons,(function(matrix1) {
+			})(matrix1)),stdlib_LambdaEx.extract(shapeData.polygons,(function(matrix1) {
 				return function(polygon1) {
 					return matrixBy.h[polygon1.fill.__id__].equ(matrix1[0]);
 				};
 			})(matrix1)));
-			shape1.matrix = matrix1[0].clone().invert();
-			shape1.ensureNoTransform(false);
-			r.push(this.wrapElements([shape1],matrix1[0].clone()));
+			shape1.transform(matrix1[0].clone().invert(),false);
+			r.push(this.wrapElements(namePath,[shape1],matrix1[0].clone()));
 		}
 		return r;
 	}
-	,wrapElements: function(elements,matrix) {
-		var mcItem = this.library.addItem(new nanofl.engine.libraryitems.MovieClipItem(stdlib_Uuid.newUuid()));
+	,wrapElements: function(autoPrefixID,elements,matrix) {
+		var mcItem = this.library.addItem(new nanofl.engine.libraryitems.MovieClipItem(this.generateNewID(autoPrefixID)));
 		mcItem.addLayer(new nanofl.engine.Layer("auto"));
 		mcItem.layers[0].addKeyFrame(new nanofl.engine.KeyFrame(null,null,null,elements));
 		var r = mcItem.newInstance();
@@ -1084,7 +983,14 @@ flashimport_SymbolLoader.prototype = {
 			var p01 = m1.transformPoint(0,0);
 			var p11 = m1.transformPoint(1,0);
 			var p2 = m1.transformPoint(0,1);
-			if(Math.abs(nanofl.engine.geom.PointTools.getDist(p01.x,p01.y,p2.x,p2.y) - nanofl.engine.geom.PointTools.getDist(p01.x,p01.y,p11.x,p11.y)) < flashimport_SymbolLoader.EPS) return { fill : new nanofl.engine.fills.RadialFill(gradients1.map(function(g2) {
+			console.log("p0 = " + nanofl.engine.geom.PointTools.toString(p01));
+			console.log("p1 = " + nanofl.engine.geom.PointTools.toString(p11));
+			console.log("p2 = " + nanofl.engine.geom.PointTools.toString(p2));
+			console.log("scaleX = " + Math.sqrt(m1.a * m1.a + m1.c * m1.c));
+			console.log("scaleY = " + Math.sqrt(m1.b * m1.b + m1.d * m1.d));
+			var k = Math.abs(nanofl.engine.geom.PointTools.getDist(p01.x,p01.y,p2.x,p2.y) - nanofl.engine.geom.PointTools.getDist(p01.x,p01.y,p11.x,p11.y));
+			console.log("k = " + k);
+			if(k < flashimport_SymbolLoader.EPS) return { fill : new nanofl.engine.fills.RadialFill(gradients1.map(function(g2) {
 				return nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(g2,"color","#000000"),htmlparser.HtmlParserTools.getAttr(g2,"alpha",1.0));
 			}),gradients1.map(function(g3) {
 				return htmlparser.HtmlParserTools.getAttr(g3,"ratio");
@@ -1200,6 +1106,18 @@ flashimport_SymbolLoader.prototype = {
 	}
 	,fixFilterParamFloat: function(params,name,defValue,f) {
 		Reflect.setField(params,name,Object.prototype.hasOwnProperty.call(params,name)?f(stdlib_Std.parseFloat(Reflect.field(params,name))):defValue);
+	}
+	,generateNewID: function(autoPrefixID) {
+		if(autoPrefixID == null) autoPrefixID = "auto";
+		var i = 1;
+		while(true) {
+			var r = autoPrefixID + "_" + i;
+			if(!this.library.hasItem(r) && HxOverrides.indexOf(this.generatedAutoIDs,r,0) < 0) {
+				this.generatedAutoIDs.push(r);
+				return r;
+			}
+			i++;
+		}
 	}
 	,__class__: flashimport_SymbolLoader
 };
@@ -1983,9 +1901,9 @@ stdlib_Exception.prototype = {
 	}
 	,__class__: stdlib_Exception
 };
-var stdlib_Lambda = function() { };
-stdlib_Lambda.__name__ = ["stdlib","Lambda"];
-stdlib_Lambda.findIndex = function(it,f) {
+var stdlib_LambdaEx = function() { };
+stdlib_LambdaEx.__name__ = ["stdlib","LambdaEx"];
+stdlib_LambdaEx.findIndex = function(it,f) {
 	var n = 0;
 	var $it0 = $iterator(it)();
 	while( $it0.hasNext() ) {
@@ -1995,7 +1913,7 @@ stdlib_Lambda.findIndex = function(it,f) {
 	}
 	return -1;
 };
-stdlib_Lambda.insertRange = function(arr,pos,range) {
+stdlib_LambdaEx.insertRange = function(arr,pos,range) {
 	var _g = 0;
 	while(_g < range.length) {
 		var e = range[_g];
@@ -2004,7 +1922,7 @@ stdlib_Lambda.insertRange = function(arr,pos,range) {
 		arr.splice(pos1,0,e);
 	}
 };
-stdlib_Lambda.extract = function(arr,f) {
+stdlib_LambdaEx.extract = function(arr,f) {
 	var r = [];
 	var i = 0;
 	while(i < arr.length) if(f(arr[i])) {
@@ -2012,52 +1930,6 @@ stdlib_Lambda.extract = function(arr,f) {
 		arr.splice(i,1);
 	} else i++;
 	return r;
-};
-stdlib_Lambda.array = function(it) {
-	return Lambda.array(it);
-};
-stdlib_Lambda.list = function(it) {
-	return Lambda.list(it);
-};
-stdlib_Lambda.map = function(it,f) {
-	return Lambda.map(it,f);
-};
-stdlib_Lambda.mapi = function(it,f) {
-	return Lambda.mapi(it,f);
-};
-stdlib_Lambda.has = function(it,elt) {
-	return Lambda.has(it,elt);
-};
-stdlib_Lambda.exists = function(it,f) {
-	return Lambda.exists(it,f);
-};
-stdlib_Lambda.foreach = function(it,f) {
-	return Lambda.foreach(it,f);
-};
-stdlib_Lambda.iter = function(it,f) {
-	Lambda.iter(it,f);
-	return;
-};
-stdlib_Lambda.filter = function(it,f) {
-	return Lambda.filter(it,f);
-};
-stdlib_Lambda.fold = function(it,f,first) {
-	return Lambda.fold(it,f,first);
-};
-stdlib_Lambda.count = function(it,pred) {
-	return Lambda.count(it,pred);
-};
-stdlib_Lambda.empty = function(it) {
-	return Lambda.empty(it);
-};
-stdlib_Lambda.indexOf = function(it,v) {
-	return Lambda.indexOf(it,v);
-};
-stdlib_Lambda.find = function(it,f) {
-	return Lambda.find(it,f);
-};
-stdlib_Lambda.concat = function(a,b) {
-	return Lambda.concat(a,b);
 };
 var stdlib_Std = function() { };
 stdlib_Std.__name__ = ["stdlib","Std"];
@@ -2526,6 +2398,9 @@ stdlib_Uuid.newUuid = function() {
 function $iterator(o) { if( o instanceof Array ) return function() { return HxOverrides.iter(o); }; return typeof(o.iterator) == 'function' ? $bind(o,o.iterator) : o.iterator; }
 var $_, $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }
+if(Array.prototype.indexOf) HxOverrides.indexOf = function(a,o,i) {
+	return Array.prototype.indexOf.call(a,o,i);
+};
 String.prototype.__class__ = String;
 String.__name__ = ["String"];
 Array.__name__ = ["Array"];

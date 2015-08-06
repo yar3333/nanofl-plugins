@@ -17,51 +17,6 @@ HxOverrides.iter = function(a) {
 };
 var Lambda = function() { };
 Lambda.__name__ = true;
-Lambda.array = function(it) {
-	var a = [];
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var i = $it0.next();
-		a.push(i);
-	}
-	return a;
-};
-Lambda.list = function(it) {
-	var l = new List();
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var i = $it0.next();
-		l.add(i);
-	}
-	return l;
-};
-Lambda.map = function(it,f) {
-	var l = new List();
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		l.add(f(x));
-	}
-	return l;
-};
-Lambda.mapi = function(it,f) {
-	var l = new List();
-	var i = 0;
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		l.add(f(i++,x));
-	}
-	return l;
-};
-Lambda.has = function(it,elt) {
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		if(x == elt) return true;
-	}
-	return false;
-};
 Lambda.exists = function(it,f) {
 	var $it0 = $iterator(it)();
 	while( $it0.hasNext() ) {
@@ -69,103 +24,6 @@ Lambda.exists = function(it,f) {
 		if(f(x)) return true;
 	}
 	return false;
-};
-Lambda.foreach = function(it,f) {
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		if(!f(x)) return false;
-	}
-	return true;
-};
-Lambda.iter = function(it,f) {
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		f(x);
-	}
-};
-Lambda.filter = function(it,f) {
-	var l = new List();
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		if(f(x)) l.add(x);
-	}
-	return l;
-};
-Lambda.fold = function(it,f,first) {
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		first = f(x,first);
-	}
-	return first;
-};
-Lambda.count = function(it,pred) {
-	var n = 0;
-	if(pred == null) {
-		var $it0 = $iterator(it)();
-		while( $it0.hasNext() ) {
-			var _ = $it0.next();
-			n++;
-		}
-	} else {
-		var $it1 = $iterator(it)();
-		while( $it1.hasNext() ) {
-			var x = $it1.next();
-			if(pred(x)) n++;
-		}
-	}
-	return n;
-};
-Lambda.empty = function(it) {
-	return !$iterator(it)().hasNext();
-};
-Lambda.indexOf = function(it,v) {
-	var i = 0;
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var v2 = $it0.next();
-		if(v == v2) return i;
-		i++;
-	}
-	return -1;
-};
-Lambda.find = function(it,f) {
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var v = $it0.next();
-		if(f(v)) return v;
-	}
-	return null;
-};
-Lambda.concat = function(a,b) {
-	var l = new List();
-	var $it0 = $iterator(a)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		l.add(x);
-	}
-	var $it1 = $iterator(b)();
-	while( $it1.hasNext() ) {
-		var x1 = $it1.next();
-		l.add(x1);
-	}
-	return l;
-};
-var List = function() {
-	this.length = 0;
-};
-List.__name__ = true;
-List.prototype = {
-	add: function(item) {
-		var x = [item];
-		if(this.h == null) this.h = x; else this.q[1] = x;
-		this.q = x;
-		this.length++;
-	}
-	,__class__: List
 };
 Math.__name__ = true;
 var Slambda = function() { };
@@ -623,9 +481,9 @@ js_html_compat_Uint8Array._subarray = function(start,end) {
 	a.byteOffset = start;
 	return a;
 };
-var stdlib_Lambda = function() { };
-stdlib_Lambda.__name__ = true;
-stdlib_Lambda.findIndex = function(it,f) {
+var stdlib_LambdaEx = function() { };
+stdlib_LambdaEx.__name__ = true;
+stdlib_LambdaEx.findIndex = function(it,f) {
 	var n = 0;
 	var $it0 = $iterator(it)();
 	while( $it0.hasNext() ) {
@@ -635,7 +493,7 @@ stdlib_Lambda.findIndex = function(it,f) {
 	}
 	return -1;
 };
-stdlib_Lambda.insertRange = function(arr,pos,range) {
+stdlib_LambdaEx.insertRange = function(arr,pos,range) {
 	var _g = 0;
 	while(_g < range.length) {
 		var e = range[_g];
@@ -644,7 +502,7 @@ stdlib_Lambda.insertRange = function(arr,pos,range) {
 		arr.splice(pos1,0,e);
 	}
 };
-stdlib_Lambda.extract = function(arr,f) {
+stdlib_LambdaEx.extract = function(arr,f) {
 	var r = [];
 	var i = 0;
 	while(i < arr.length) if(f(arr[i])) {
@@ -652,52 +510,6 @@ stdlib_Lambda.extract = function(arr,f) {
 		arr.splice(i,1);
 	} else i++;
 	return r;
-};
-stdlib_Lambda.array = function(it) {
-	return Lambda.array(it);
-};
-stdlib_Lambda.list = function(it) {
-	return Lambda.list(it);
-};
-stdlib_Lambda.map = function(it,f) {
-	return Lambda.map(it,f);
-};
-stdlib_Lambda.mapi = function(it,f) {
-	return Lambda.mapi(it,f);
-};
-stdlib_Lambda.has = function(it,elt) {
-	return Lambda.has(it,elt);
-};
-stdlib_Lambda.exists = function(it,f) {
-	return Lambda.exists(it,f);
-};
-stdlib_Lambda.foreach = function(it,f) {
-	return Lambda.foreach(it,f);
-};
-stdlib_Lambda.iter = function(it,f) {
-	Lambda.iter(it,f);
-	return;
-};
-stdlib_Lambda.filter = function(it,f) {
-	return Lambda.filter(it,f);
-};
-stdlib_Lambda.fold = function(it,f,first) {
-	return Lambda.fold(it,f,first);
-};
-stdlib_Lambda.count = function(it,pred) {
-	return Lambda.count(it,pred);
-};
-stdlib_Lambda.empty = function(it) {
-	return Lambda.empty(it);
-};
-stdlib_Lambda.indexOf = function(it,v) {
-	return Lambda.indexOf(it,v);
-};
-stdlib_Lambda.find = function(it,f) {
-	return Lambda.find(it,f);
-};
-stdlib_Lambda.concat = function(a,b) {
-	return Lambda.concat(a,b);
 };
 var svgexporter_Gradient = function(tag,colors,ratios,attributes) {
 	this.tag = tag;
@@ -907,7 +719,7 @@ svgexporter_ShapePathsRender.prototype = {
 		var g = svgexporter_Gradient.createLinear(colors,ratios,x0,y0,x1,y1);
 		this.attr("stroke","url(#grad" + ((function(_e) {
 			return function(f) {
-				return stdlib_Lambda.findIndex(_e,f);
+				return stdlib_LambdaEx.findIndex(_e,f);
 			};
 		})(this.gradients))(function(_) {
 			return _.equ(g);
@@ -919,7 +731,7 @@ svgexporter_ShapePathsRender.prototype = {
 		var g = svgexporter_Gradient.createRadial(colors,ratios,cx,cy,cr,fx,fy);
 		this.attributes.push({ name : "stroke", value : "url(#grad" + ((function(_e) {
 			return function(f) {
-				return stdlib_Lambda.findIndex(_e,f);
+				return stdlib_LambdaEx.findIndex(_e,f);
 			};
 		})(this.gradients))(function(_) {
 			return _.equ(g);
@@ -950,7 +762,7 @@ svgexporter_ShapePathsRender.prototype = {
 		var g = svgexporter_Gradient.createLinear(colors,ratios,x0,y0,x1,y1);
 		this.attr("fill","url(#grad" + ((function(_e) {
 			return function(f) {
-				return stdlib_Lambda.findIndex(_e,f);
+				return stdlib_LambdaEx.findIndex(_e,f);
 			};
 		})(this.gradients))(function(_) {
 			return _.equ(g);
@@ -961,7 +773,7 @@ svgexporter_ShapePathsRender.prototype = {
 		var g = svgexporter_Gradient.createRadial(colors,ratios,cx,cy,cr,fx,fy);
 		this.attr("fill","url(#grad" + ((function(_e) {
 			return function(f) {
-				return stdlib_Lambda.findIndex(_e,f);
+				return stdlib_LambdaEx.findIndex(_e,f);
 			};
 		})(this.gradients))(function(_) {
 			return _.equ(g);
