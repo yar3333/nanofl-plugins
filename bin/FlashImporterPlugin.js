@@ -983,13 +983,7 @@ flashimport_SymbolLoader.prototype = {
 			var p01 = m1.transformPoint(0,0);
 			var p11 = m1.transformPoint(1,0);
 			var p2 = m1.transformPoint(0,1);
-			console.log("p0 = " + nanofl.engine.geom.PointTools.toString(p01));
-			console.log("p1 = " + nanofl.engine.geom.PointTools.toString(p11));
-			console.log("p2 = " + nanofl.engine.geom.PointTools.toString(p2));
-			console.log("scaleX = " + Math.sqrt(m1.a * m1.a + m1.c * m1.c));
-			console.log("scaleY = " + Math.sqrt(m1.b * m1.b + m1.d * m1.d));
 			var k = Math.abs(nanofl.engine.geom.PointTools.getDist(p01.x,p01.y,p2.x,p2.y) - nanofl.engine.geom.PointTools.getDist(p01.x,p01.y,p11.x,p11.y));
-			console.log("k = " + k);
 			if(k < flashimport_SymbolLoader.EPS) return { fill : new nanofl.engine.fills.RadialFill(gradients1.map(function(g2) {
 				return nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(g2,"color","#000000"),htmlparser.HtmlParserTools.getAttr(g2,"alpha",1.0));
 			}),gradients1.map(function(g3) {

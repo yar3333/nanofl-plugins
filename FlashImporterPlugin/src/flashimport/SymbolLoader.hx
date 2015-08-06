@@ -337,15 +337,7 @@ class SymbolLoader
 				var p1 = m.transformPoint(1, 0);
 				var p2 = m.transformPoint(0, 1);
 				
-				trace("p0 = " + PointTools.toString(p0));
-				trace("p1 = " + PointTools.toString(p1));
-				trace("p2 = " + PointTools.toString(p2));
-				
-				trace("scaleX = " + Math.sqrt(m.a * m.a + m.c * m.c));
-				trace("scaleY = " + Math.sqrt(m.b * m.b + m.d * m.d));
-				
 				var k = Math.abs(PointTools.getDist(p0.x, p0.y, p2.x, p2.y) - PointTools.getDist(p0.x, p0.y, p1.x, p1.y));
-				trace("k = " + k);
 				if (k < EPS)
 				{
 					return
