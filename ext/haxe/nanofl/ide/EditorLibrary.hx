@@ -21,7 +21,7 @@ extern class EditorLibrary
 	function pasteFromXml(data:String) : Bool;
 	function hasSelected() : Bool;
 	function removeSelected() : Void;
-	function renameByUser(namePath:String) : Bool;
+	function renameByUser(namePath:String, ?callb:Bool -> Void) : Void;
 	function deselectAll() : Void;
 	function update() : Void;
 	function getSelectedItems() : Array<nanofl.engine.libraryitems.LibraryItem>;

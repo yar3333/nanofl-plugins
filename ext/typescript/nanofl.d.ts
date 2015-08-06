@@ -7485,7 +7485,7 @@ declare module nanofl.ide
 		pasteFromXml(data:string) : boolean;
 		hasSelected() : boolean;
 		removeSelected() : void;
-		renameByUser(namePath:string) : boolean;
+		renameByUser(namePath:string, callb?:(arg:boolean) => void) : void;
 		deselectAll() : void;
 		update() : void;
 		getSelectedItems() : nanofl.engine.libraryitems.LibraryItem[];
