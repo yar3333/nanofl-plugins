@@ -6,7 +6,7 @@ class HaxeGenerator extends CodeGenerator
 	{
 		fileApi.remove(dir + "/gen/*");
 		
-		generateLibrary(dir, name);
+		generateLibraryAndFilters(dir, name);
 		generateHtml(dir, name);
 		generateClasses(dir, name);
 		generateSoundsClass(dir, name);
@@ -17,11 +17,6 @@ class HaxeGenerator extends CodeGenerator
 	{
 		return super.getScriptUrls(dir, name)
 			.concat([ "bin/" + name + ".js" ]);
-	}
-	
-	function generateLibrary(dir:String, name:String)
-	{
-		fileApi.saveContent(dir + "/bin/library.js", library.compile("library"));
 	}
 	
 	function generateClasses(dir:String, name:String)

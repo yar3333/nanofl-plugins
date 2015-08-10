@@ -154,6 +154,17 @@ HxOverrides.iter = function(a) {
 		return this.arr[this.cur++];
 	}};
 };
+var Lambda = function() { };
+Lambda.__name__ = true;
+Lambda.array = function(it) {
+	var a = [];
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var i = $it0.next();
+		a.push(i);
+	}
+	return a;
+};
 Math.__name__ = true;
 var Reflect = function() { };
 Reflect.__name__ = true;
@@ -746,29 +757,26 @@ languages_TextureAtlasGenerator.prototype = $extend(languages_BaseGenerator.prot
 		this.generateTextureAtlases(dir);
 	}
 	,generateTextureAtlases: function(dir) {
-		var jsonFilePath = dir + "/bin/textureatlases.js";
-		if(this.textureAtlases.iterator().hasNext()) {
-			var textureAtlasesJson = "";
-			var $it0 = this.textureAtlases.keys();
-			while( $it0.hasNext() ) {
-				var textureAtlasName = $it0.next();
-				var textureAtlas = this.textureAtlases.get(textureAtlasName);
-				var imageUrl = "bin/" + textureAtlasName + ".png";
-				this.fileApi.saveBinary(dir + "/" + imageUrl,textureAtlas.imagePng);
-				textureAtlasesJson += "(function() {\n";
-				textureAtlasesJson += "\tvar images = [ '" + imageUrl + "' ];\n";
-				var namePaths = Reflect.fields(textureAtlas.itemFrames);
-				namePaths.sort(Reflect.compare);
-				var _g = 0;
-				while(_g < namePaths.length) {
-					var namePath = namePaths[_g];
-					++_g;
-					textureAtlasesJson += "\tnanofl.Player.spriteSheets['" + namePath + "'] = new createjs.SpriteSheet({ images:images, frames:[ " + this.getSpriteSheetFrames(textureAtlas,namePath).join(", ") + " ] });\n";
-				}
-				textureAtlasesJson += "})();\n\n";
+		var $it0 = this.textureAtlases.keys();
+		while( $it0.hasNext() ) {
+			var textureAtlasName = $it0.next();
+			var textureAtlas = this.textureAtlases.get(textureAtlasName);
+			var imageUrl = "bin/" + textureAtlasName + ".png";
+			this.fileApi.saveBinary(dir + "/" + imageUrl,textureAtlas.imagePng);
+			var spriteSheetJsons = [];
+			var namePaths = Reflect.fields(textureAtlas.itemFrames);
+			namePaths.sort(Reflect.compare);
+			var _g = 0;
+			while(_g < namePaths.length) {
+				var namePath = namePaths[_g];
+				++_g;
+				spriteSheetJsons.push("\t'" + namePath + "': { 'images':[ \"" + imageUrl + "\" ], 'frames':[ " + this.getSpriteSheetFrames(textureAtlas,namePath).join(", ") + " ] }");
 			}
-			this.fileApi.saveContent(jsonFilePath,textureAtlasesJson);
-		} else this.fileApi.remove(jsonFilePath);
+			this.fileApi.saveContent(dir + "/" + this.getTextureAtlasJsonUrl(textureAtlasName),"{\n" + spriteSheetJsons.join(",\n") + "\n}");
+		}
+	}
+	,getTextureAtlasJsonUrl: function(textureAtlasName) {
+		return "bin/" + textureAtlasName + ".json";
 	}
 	,getSpriteSheetFrames: function(textureAtlas,namePath) {
 		var r = [];
@@ -788,6 +796,9 @@ languages_TextureAtlasGenerator.prototype = $extend(languages_BaseGenerator.prot
 });
 var languages_HtmlGenerator = function(fileApi,documentProperties,library,textureAtlases,supportDir) {
 	languages_TextureAtlasGenerator.call(this,fileApi,documentProperties,library,textureAtlases,supportDir);
+	var data = library.compile("library");
+	this.serializedLibrary = data.serializedLibrary;
+	this.filterCodes = data.filterCodes;
 };
 languages_HtmlGenerator.__name__ = true;
 languages_HtmlGenerator.__super__ = languages_TextureAtlasGenerator;
@@ -805,8 +816,8 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 		} else defines.push("ALLOW_REGENERATION");
 		if(HxOverrides.indexOf(defines,"ALLOW_REGENERATION",0) >= 0) {
 			var template = this.fileApi.getContent(this.supportDir + "/languages/project.html");
-			template = template.split("{defines}").join(defines.map(function(s) {
-				return "<!--" + s + "-->\n";
+			template = template.split("{defines}").join(defines.map(function(s3) {
+				return "<!--" + s3 + "-->\n";
 			}).join(""));
 			template = template.split("{title}").join(this.documentProperties.title != ""?this.documentProperties.title:name);
 			template = template.split("{width}").join(this.documentProperties.width);
@@ -814,23 +825,61 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 			template = template.split("{backgroundColor}").join(this.documentProperties.backgroundColor);
 			template = template.split("{createjsUrl}").join(nanofl.engine.VersionInfo.createjsUrl);
 			template = template.split("{playerUrl}").join(nanofl.engine.VersionInfo.playerUrl);
-			template = template.split("{framerate}").join(this.documentProperties.framerate);
-			template = template.split("{scaleMode}").join(this.documentProperties.scaleMode);
-			template = template.split("{scripts}").join("\t\t\t" + this.getScriptInlineBlocks().filter(function(s1) {
+			var scriptUrls = this.getScriptUrls(dir,name).map(function(s) {
+				return "<script src=\"" + s + "\"></script>";
+			}).join("\n\t\t");
+			template = template.split("{scriptUrls}").join(scriptUrls + (scriptUrls != ""?"\n\t\t":""));
+			var inlineScripts = this.getInlineScripts().filter(function(s1) {
 				return s1 != null && s1 != "";
 			}).map(function(s2) {
-				return "\t\t<script>\n" + s2.split("\n").join("\n\t\t") + "\n\t\t</script>";
-			}).concat(this.getScriptUrls(dir,name).map(function(s3) {
-				return "\t\t<script src=\"" + s3 + "\"></script>";
-			})).join("\n"));
+				return s2.split("\n").join("\n\t\t\t");
+			}).join("\n\t\t\t\n\t\t\t");
+			template = template.split("{inlineScripts}").join(inlineScripts + (inlineScripts != ""?"\n\t\t\t\n\t\t\t":"") + this.getPlayerInitCode().split("\n").join("\n\t\t\t"));
 			this.fileApi.saveContent(file,template);
 		}
 	}
-	,getScriptInlineBlocks: function() {
-		return [this.library.compile("library")];
+	,getInlineScripts: function() {
+		var r = [];
+		r.push("var serializedLibrary = '" + this.serializedLibrary + "';");
+		var $it0 = this.filterCodes.iterator();
+		while( $it0.hasNext() ) {
+			var filterCode = $it0.next();
+			r.push(filterCode);
+		}
+		return r;
+	}
+	,getPlayerInitCode: function() {
+		var r = [];
+		if(this.documentProperties.useTextureAtlases && this.textureAtlases.iterator().hasNext()) {
+			var textureAtlasJsonUrls = [];
+			var $it0 = this.textureAtlases.keys();
+			while( $it0.hasNext() ) {
+				var textureAltasName = $it0.next();
+				textureAtlasJsonUrls.push(this.getTextureAtlasJsonUrl(textureAltasName));
+			}
+			r.push("var loader = new createjs.LoadQueue(true);");
+			r.push("loader.on('complete', run, this);");
+			var $it1 = this.textureAtlases.keys();
+			while( $it1.hasNext() ) {
+				var textureAltasName1 = $it1.next();
+				r.push("loader.loadFile('" + this.getTextureAtlasJsonUrl(textureAltasName1) + "', false);");
+			}
+			r.push("loader.load();");
+			r.push("");
+			r.push("function run()");
+			r.push("{");
+			r.push("\t" + this.getBasePlayerInitCode("[ " + textureAtlasJsonUrls.map(function(url) {
+				return "loader.getResult('" + url + "')";
+			}).join(", ") + " ]"));
+			r.push("}");
+		} else r.push(this.getBasePlayerInitCode(null));
+		return r.join("\n");
+	}
+	,getBasePlayerInitCode: function(textureAtlases) {
+		return "nanofl.Player.init" + "(" + "document.getElementById(\"mainCanvas\")" + ", nanofl.DataTools.unserialize(serializedLibrary)" + ", " + this.documentProperties.framerate + ", '" + this.documentProperties.scaleMode + "'" + (textureAtlases != null?", " + textureAtlases:"") + ");";
 	}
 	,getScriptUrls: function(dir,name) {
-		if(this.documentProperties.useTextureAtlases) return ["bin/textureatlases.js"]; else return [];
+		return [];
 	}
 	,__class__: languages_HtmlGenerator
 });
@@ -840,18 +889,25 @@ var languages_CodeGenerator = function(fileApi,documentProperties,library,textur
 languages_CodeGenerator.__name__ = true;
 languages_CodeGenerator.__super__ = languages_HtmlGenerator;
 languages_CodeGenerator.prototype = $extend(languages_HtmlGenerator.prototype,{
-	capitalizeClassName: function(fullClassName) {
+	generateLibraryAndFilters: function(dir,name) {
+		this.fileApi.saveContent(dir + "/bin/library.js","var serializedLibrary = '" + this.serializedLibrary + "';");
+		if(this.filterCodes.iterator().hasNext()) this.fileApi.saveContent(dir + "/bin/filters.js",Lambda.array(this.filterCodes).join("\n\n")); else this.fileApi.remove(dir + "/bin/filters.js");
+	}
+	,capitalizeClassName: function(fullClassName) {
 		var n = fullClassName.lastIndexOf(".");
 		if(n < 0) return this.capitalize(fullClassName); else return fullClassName.substring(0,n + 1) + this.capitalize(fullClassName.substring(n + 1));
 	}
 	,capitalize: function(s) {
 		return s.substring(0,1).toUpperCase() + s.substring(1);
 	}
-	,getScriptInlineBlocks: function() {
+	,getInlineScripts: function() {
 		return [];
 	}
 	,getScriptUrls: function(dir,name) {
-		return languages_HtmlGenerator.prototype.getScriptUrls.call(this,dir,name).concat(["bin/library.js"]);
+		var r = languages_HtmlGenerator.prototype.getScriptUrls.call(this,dir,name);
+		r.push("bin/library.js");
+		if(this.filterCodes.iterator().hasNext()) r.push("bin/filters.js");
+		return r;
 	}
 	,__class__: languages_CodeGenerator
 });
@@ -863,7 +919,7 @@ languages_HaxeGenerator.__super__ = languages_CodeGenerator;
 languages_HaxeGenerator.prototype = $extend(languages_CodeGenerator.prototype,{
 	generate: function(dir,name) {
 		this.fileApi.remove(dir + "/gen/*");
-		this.generateLibrary(dir,name);
+		this.generateLibraryAndFilters(dir,name);
 		this.generateHtml(dir,name);
 		this.generateClasses(dir,name);
 		this.generateSoundsClass(dir,name);
@@ -871,9 +927,6 @@ languages_HaxeGenerator.prototype = $extend(languages_CodeGenerator.prototype,{
 	}
 	,getScriptUrls: function(dir,name) {
 		return languages_CodeGenerator.prototype.getScriptUrls.call(this,dir,name).concat(["bin/" + name + ".js"]);
-	}
-	,generateLibrary: function(dir,name) {
-		this.fileApi.saveContent(dir + "/bin/library.js",this.library.compile("library"));
 	}
 	,generateClasses: function(dir,name) {
 		var linkedItems = this.library.getInstancableItems().filter(function(item) {
@@ -929,7 +982,7 @@ languages_JavaScriptGenerator.__name__ = true;
 languages_JavaScriptGenerator.__super__ = languages_CodeGenerator;
 languages_JavaScriptGenerator.prototype = $extend(languages_CodeGenerator.prototype,{
 	generate: function(dir,name) {
-		this.generateLibrary(dir,name);
+		this.generateLibraryAndFilters(dir,name);
 		this.generateClasses(dir,name);
 		this.generateSoundsClass(dir,name);
 		this.generateHtml(dir,name);
@@ -937,9 +990,6 @@ languages_JavaScriptGenerator.prototype = $extend(languages_CodeGenerator.protot
 	}
 	,getScriptUrls: function(dir,name) {
 		return languages_CodeGenerator.prototype.getScriptUrls.call(this,dir,name).concat(this.findFiles(dir + "/gen",".js")).concat(this.findFiles(dir + "/src",".js"));
-	}
-	,generateLibrary: function(dir,name) {
-		this.fileApi.saveContent(dir + "/bin/library.js",this.library.compile("library"));
 	}
 	,generateClasses: function(dir,name) {
 		this.fileApi.remove(dir + "/gen/base.js");
@@ -1022,7 +1072,7 @@ languages_TypeScriptGenerator.__name__ = true;
 languages_TypeScriptGenerator.__super__ = languages_CodeGenerator;
 languages_TypeScriptGenerator.prototype = $extend(languages_CodeGenerator.prototype,{
 	generate: function(dir,name) {
-		this.generateLibrary(dir,name);
+		this.generateLibraryAndFilters(dir,name);
 		this.generateHtml(dir,name);
 		this.generateClasses(dir,name);
 		this.generateSoundsClass(dir,name);
@@ -1030,9 +1080,6 @@ languages_TypeScriptGenerator.prototype = $extend(languages_CodeGenerator.protot
 	}
 	,getScriptUrls: function(dir,name) {
 		return languages_CodeGenerator.prototype.getScriptUrls.call(this,dir,name).concat(["bin/" + name + ".js"]);
-	}
-	,generateLibrary: function(dir,name) {
-		this.fileApi.saveContent(dir + "/bin/library.js",this.library.compile("library"));
 	}
 	,generateClasses: function(dir,name) {
 		var linkedItems = this.library.getInstancableItems().filter(function(item) {
@@ -1088,6 +1135,9 @@ languages_TypeScriptGenerator.prototype = $extend(languages_CodeGenerator.protot
 	}
 	,__class__: languages_TypeScriptGenerator
 });
+function $iterator(o) { if( o instanceof Array ) return function() { return HxOverrides.iter(o); }; return typeof(o.iterator) == 'function' ? $bind(o,o.iterator) : o.iterator; }
+var $_, $fid = 0;
+function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }
 if(Array.prototype.indexOf) HxOverrides.indexOf = function(a,o,i) {
 	return Array.prototype.indexOf.call(a,o,i);
 };

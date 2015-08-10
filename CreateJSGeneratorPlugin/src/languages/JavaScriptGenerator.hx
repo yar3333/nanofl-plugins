@@ -4,7 +4,7 @@ class JavaScriptGenerator extends CodeGenerator
 {
 	override public function generate(dir:String, name:String)
 	{
-		generateLibrary(dir, name);
+		generateLibraryAndFilters(dir, name);
 		generateClasses(dir, name);
 		generateSoundsClass(dir, name);
 		generateHtml(dir, name);
@@ -16,11 +16,6 @@ class JavaScriptGenerator extends CodeGenerator
 		return super.getScriptUrls(dir, name)
 			.concat(findFiles(dir + "/gen", ".js"))
 			.concat(findFiles(dir + "/src", ".js"));
-	}
-	
-	function generateLibrary(dir:String, name:String)
-	{
-		fileApi.saveContent(dir + "/bin/library.js", library.compile("library"));
 	}
 	
 	function generateClasses(dir:String, name:String)

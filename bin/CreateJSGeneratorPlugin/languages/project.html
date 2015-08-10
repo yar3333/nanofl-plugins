@@ -8,9 +8,8 @@
 		<canvas id="mainCanvas" width="{width}" height="{height}" style="background-color:{backgroundColor}"></canvas>
 		<script src="{createjsUrl}"></script>
 		<script src="{playerUrl}"></script>
-{scripts}
-		<script>
-			nanofl.Player.init(document.getElementById("mainCanvas"), {framerate}, "{scaleMode}");
+		{scriptUrls}<script>
+			{inlineScripts}
 		</script>
     </body>
 </html>

@@ -11,37 +11,25 @@ class TextureAtlasGenerator extends BaseGenerator
 	
 	function generateTextureAtlases(dir:String)
 	{
-		var jsonFilePath = dir + "/bin/textureatlases.js";
-		
-		if (textureAtlases.iterator().hasNext())
+		for (textureAtlasName in textureAtlases.keys())
 		{
-			var textureAtlasesJson = "";
+			var textureAtlas = textureAtlases.get(textureAtlasName);
 			
-			for (textureAtlasName in textureAtlases.keys())
+			var imageUrl = "bin/" + textureAtlasName + ".png";
+			fileApi.saveBinary(dir + "/" + imageUrl, textureAtlas.imagePng);
+			
+			var spriteSheetJsons = [];
+			var namePaths = Reflect.fields(textureAtlas.itemFrames);
+			namePaths.sort(Reflect.compare);
+			for (namePath in namePaths)
 			{
-				var textureAtlas = textureAtlases.get(textureAtlasName);
-				
-				var imageUrl = "bin/" + textureAtlasName + ".png";
-				fileApi.saveBinary(dir + "/" + imageUrl, textureAtlas.imagePng);
-				
-				textureAtlasesJson += "(function() {\n";
-				textureAtlasesJson += "\tvar images = [ '" + imageUrl + "' ];\n";
-				var namePaths = Reflect.fields(textureAtlas.itemFrames);
-				namePaths.sort(Reflect.compare);
-				for (namePath in namePaths)
-				{
-					textureAtlasesJson += "\tnanofl.Player.spriteSheets['" + namePath + "'] = new createjs.SpriteSheet({ images:images, frames:[ " + getSpriteSheetFrames(textureAtlas, namePath).join(", ") + " ] });\n";
-				}
-				textureAtlasesJson += "})();\n\n";
+				spriteSheetJsons.push("\t'" + namePath + "': { 'images':[ \"" + imageUrl + "\" ], 'frames':[ " + getSpriteSheetFrames(textureAtlas, namePath).join(", ") + " ] }");
 			}
-			
-			fileApi.saveContent(jsonFilePath, textureAtlasesJson);
-		}
-		else
-		{
-			fileApi.remove(jsonFilePath);
+			fileApi.saveContent(dir + "/" + getTextureAtlasJsonUrl(textureAtlasName), "{\n" + spriteSheetJsons.join(",\n") + "\n}");
 		}
 	}
+	
+	function getTextureAtlasJsonUrl(textureAtlasName:String) return "bin/" + textureAtlasName + ".json";
 	
 	function getSpriteSheetFrames(textureAtlas:TextureAtlas, namePath:String) : Array<Array<Float>>
 	{

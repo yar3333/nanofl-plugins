@@ -8580,7 +8580,7 @@ declare module nanofl.engine
 		parseItems(base:htmlparser.HtmlNodeElement) : void;
 		addFont(family:string, variants:nanofl.engine.FontVariant[]) : void;
 		renameItem(oldNamePath:string, newNamePath:string) : void;
-		compile(libraryDir:string) : string;
+		compile(libraryDir:string) : { filterCodes : Map<string, string>; serializedLibrary : string; };
 		removeUnusedItems() : void;
 		optimize() : void;
 		addItem<T>(item:T) : T;

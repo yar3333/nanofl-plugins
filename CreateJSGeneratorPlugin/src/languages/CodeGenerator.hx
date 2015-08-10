@@ -1,7 +1,23 @@
 package languages;
 
+using Lambda;
+
 class CodeGenerator extends HtmlGenerator
 {
+	function generateLibraryAndFilters(dir:String, name:String)
+	{
+		fileApi.saveContent(dir + "/bin/library.js", "var serializedLibrary = '" + serializedLibrary + "';");
+		
+		if (filterCodes.iterator().hasNext())
+		{
+			fileApi.saveContent(dir + "/bin/filters.js", filterCodes.array().join("\n\n"));
+		}
+		else
+		{
+			fileApi.remove(dir + "/bin/filters.js");
+		}
+	}
+	
 	function capitalizeClassName(fullClassName:String) : String
 	{
 		var n = fullClassName.lastIndexOf(".");
@@ -15,11 +31,16 @@ class CodeGenerator extends HtmlGenerator
 		return s.substring(0, 1).toUpperCase() + s.substring(1);
 	}
 	
-	override function getScriptInlineBlocks() return [];
+	override function getInlineScripts() return [];
 	
 	override function getScriptUrls(dir:String, name:String) : Array<String> 
 	{
-		return super.getScriptUrls(dir, name)
-			.concat([ "bin/library.js" ]);
+		var r = super.getScriptUrls(dir, name);
+		r.push("bin/library.js");
+		if (filterCodes.iterator().hasNext())
+		{
+			r.push("bin/filters.js");
+		}
+		return r;
 	}
 }

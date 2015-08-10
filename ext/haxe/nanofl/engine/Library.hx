@@ -9,7 +9,7 @@ extern class Library
 	function parseItems(base:htmlparser.HtmlNodeElement) : Void;
 	function addFont(family:String, variants:Array<nanofl.engine.FontVariant>) : Void;
 	function renameItem(oldNamePath:String, newNamePath:String) : Void;
-	function compile(libraryDir:String) : String;
+	function compile(libraryDir:String) : { var filterCodes : Map<String, String>; var serializedLibrary : String; };
 	function removeUnusedItems() : Void;
 	function optimize() : Void;
 	function addItem<T>(item:T) : T;
