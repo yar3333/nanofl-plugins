@@ -822,7 +822,10 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 			template = template.split("{title}").join(this.documentProperties.title != ""?this.documentProperties.title:name);
 			template = template.split("{width}").join(this.documentProperties.width);
 			template = template.split("{height}").join(this.documentProperties.height);
-			template = template.split("{backgroundColor}").join(this.documentProperties.backgroundColor);
+			var cssStyles = this.getCssStyleForScaleMode();
+			template = template.split("{htmlAttributes}").join(cssStyles.html != ""?" style=\"" + cssStyles.html + "\"":"");
+			template = template.split("{bodyStyle}").join("margin:0; padding:0; font-size:0; background-color:" + this.documentProperties.backgroundColor + (cssStyles.body != ""?"; " + cssStyles.body:""));
+			template = template.split("{canvasAttributes}").join(cssStyles.canvas != ""?" style=\"" + cssStyles.canvas + "\"":"");
 			template = template.split("{createjsUrl}").join(nanofl.engine.VersionInfo.createjsUrl);
 			template = template.split("{playerUrl}").join(nanofl.engine.VersionInfo.playerUrl);
 			var scriptUrls = this.getScriptUrls(dir,name).map(function(s) {
@@ -836,6 +839,21 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 			}).join("\n\t\t\t\n\t\t\t");
 			template = template.split("{inlineScripts}").join(inlineScripts + (inlineScripts != ""?"\n\t\t\t\n\t\t\t":"") + this.getPlayerInitCode().split("\n").join("\n\t\t\t"));
 			this.fileApi.saveContent(file,template);
+		}
+	}
+	,getCssStyleForScaleMode: function() {
+		var _g = this.documentProperties.scaleMode;
+		switch(_g) {
+		case nanofl.engine.ScaleMode.noScale:
+			return { html : "height:100%", body : "height:100%; text-align:center; overflow:hidden", canvas : "position:relative; top:50%; margin-top:-" + (this.documentProperties.height / 2 | 0) + "px"};
+		case nanofl.engine.ScaleMode.fit:
+			return { html : "width:100%; height:100%; display:table", body : "width:100%; height:100%; display:table-cell; vertical-align:middle; text-align:center; overflow:hidden", canvas : ""};
+		case nanofl.engine.ScaleMode.fill:
+			return { html : "height:100%", body : "height:100%; overflow:hidden", canvas : "position:absolute"};
+		case nanofl.engine.ScaleMode.stretch:
+			return { html : "height:100%", body : "height:100%", canvas : ""};
+		default:
+			return { html : "", body : "", canvas : ""};
 		}
 	}
 	,getInlineScripts: function() {

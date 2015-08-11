@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-{defines}<html>
+{defines}<html{htmlAttributes}>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>{title}</title>
 	</head>
-	<body style="margin:0; padding:0; font-size:0">
-		<canvas id="mainCanvas" width="{width}" height="{height}" style="background-color:{backgroundColor}"></canvas>
+	<body style="{bodyStyle}">
+		<canvas id="mainCanvas" width="{width}" height="{height}"{canvasAttributes}></canvas>
 		<script src="{createjsUrl}"></script>
 		<script src="{playerUrl}"></script>
 		{scriptUrls}<script>

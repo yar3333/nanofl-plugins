@@ -3,6 +3,7 @@ package languages;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
+import nanofl.engine.ScaleMode;
 import nanofl.engine.VersionInfo;
 import nanofl.ide.textureatlas.TextureAtlas;
 import Lambda;
@@ -49,7 +50,12 @@ class HtmlGenerator extends TextureAtlasGenerator
 			template = template.split("{title}").join(documentProperties.title != "" ? documentProperties.title : name);
 			template = template.split("{width}").join(untyped documentProperties.width);
 			template = template.split("{height}").join(untyped documentProperties.height);
-			template = template.split("{backgroundColor}").join(documentProperties.backgroundColor);
+			
+			var cssStyles = getCssStyleForScaleMode();
+			template = template.split("{htmlAttributes}").join(cssStyles.html != "" ? " style=\"" + cssStyles.html + "\"" : "");
+			template = template.split("{bodyStyle}").join("margin:0; padding:0; font-size:0; background-color:" + documentProperties.backgroundColor + (cssStyles.body != "" ? "; " + cssStyles.body : ""));
+			template = template.split("{canvasAttributes}").join(cssStyles.canvas != "" ? " style=\"" + cssStyles.canvas + "\"" : "");
+			
 			template = template.split("{createjsUrl}").join(VersionInfo.createjsUrl);
 			template = template.split("{playerUrl}").join(VersionInfo.playerUrl);
 			
@@ -68,6 +74,47 @@ class HtmlGenerator extends TextureAtlasGenerator
 			
 			fileApi.saveContent(file, template);
 		}
+	}
+	
+	function getCssStyleForScaleMode() : { html:String, body:String, canvas:String }
+	{
+		return switch (documentProperties.scaleMode)
+		{
+			case ScaleMode.noScale:
+				{
+					html: "height:100%",
+					body: "height:100%; text-align:center; overflow:hidden",
+					canvas: "position:relative; top:50%; margin-top:-" + Std.int(documentProperties.height / 2) + "px"
+				};
+				
+			case ScaleMode.fit:
+				{
+					html: "width:100%; height:100%; display:table",
+					body: "width:100%; height:100%; display:table-cell; vertical-align:middle; text-align:center; overflow:hidden",
+					canvas: ""
+				};
+				
+			case ScaleMode.fill:
+				{
+					html: "height:100%",
+					body: "height:100%; overflow:hidden",
+					canvas: "position:absolute"
+				};
+				
+			case ScaleMode.stretch:
+				{
+					html: "height:100%",
+					body: "height:100%",
+					canvas: ""
+				};
+				
+			case _:
+				{
+					html: "",
+					body: "",
+					canvas: ""
+				};
+		};
 	}
 	
 	function getInlineScripts() : Array<String>
