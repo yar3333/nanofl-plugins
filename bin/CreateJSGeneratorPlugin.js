@@ -989,7 +989,7 @@ languages_JavaScriptGenerator.prototype = $extend(languages_CodeGenerator.protot
 		this.generateTextureAtlases(dir);
 	}
 	,getScriptUrls: function(dir,name) {
-		return languages_CodeGenerator.prototype.getScriptUrls.call(this,dir,name).concat(this.findFiles(dir + "/gen",".js")).concat(this.findFiles(dir + "/src",".js"));
+		return languages_CodeGenerator.prototype.getScriptUrls.call(this,dir,name).concat(this.findFiles(dir,"gen",".js")).concat(this.findFiles(dir,"src",".js"));
 	}
 	,generateClasses: function(dir,name) {
 		this.fileApi.remove(dir + "/gen/base.js");
@@ -1005,21 +1005,35 @@ languages_JavaScriptGenerator.prototype = $extend(languages_CodeGenerator.protot
 				var linkedClass = this.capitalizeClassName(item1.linkedClass);
 				var text = [];
 				this.generatePack("base." + linkedClass,text);
-				text.push("base." + linkedClass + " = function() {");
-				text.push("\t" + item1.getDisplayObjectClassName() + ".call(this, nanofl.Player.library.getItem(\"" + item1.namePath + "\"));");
-				text.push("}");
+				text.push("base." + linkedClass + " = function() { " + item1.getDisplayObjectClassName() + ".call(this, nanofl.Player.library.getItem(\"" + item1.namePath + "\")); }");
 				text.push("base." + linkedClass + ".prototype = $extend(" + item1.getDisplayObjectClassName() + ".prototype, {});");
 				classes.push(text.join("\n"));
 				var classFile = dir + "/src/" + linkedClass.split(".").join("/") + ".js";
 				if(!this.fileApi.exists(classFile)) {
 					var text1 = [];
 					this.generatePack(linkedClass,text1);
-					text1.push("function " + linkedClass + "() {");
+					text1.push("function " + linkedClass + "()");
+					text1.push("{");
 					text1.push("\tbase." + linkedClass + ".call(this);");
 					text1.push("\t// add init code here");
 					text1.push("}");
-					text1.push(linkedClass + ".prototype = $extend(base." + linkedClass + ".prototype, {");
-					text1.push("\t// add your class members here");
+					text1.push("");
+					text1.push(linkedClass + ".prototype = $extend(base." + linkedClass + ".prototype,");
+					text1.push("{");
+					text1.push("\tinit: function()");
+					text1.push("\t{");
+					text1.push("\t\t// your initialization code");
+					text1.push("\t},");
+					text1.push("");
+					text1.push("\tonEnterFrame: function()");
+					text1.push("\t{");
+					text1.push("\t\t//your code for tick");
+					text1.push("\t},");
+					text1.push("");
+					text1.push("\tonMouseDown: function(e)");
+					text1.push("\t{");
+					text1.push("\t\t// your code for mouse down");
+					text1.push("\t}");
 					text1.push("});");
 					this.fileApi.saveContent(classFile,text1.join("\n"));
 				}
@@ -1033,7 +1047,8 @@ languages_JavaScriptGenerator.prototype = $extend(languages_CodeGenerator.protot
 		if(sounds.length > 0) {
 			var text = [];
 			text.push("function Sounds() {};");
-			text.push("Sounds.prototype = {");
+			text.push("Sounds.prototype =");
+			text.push("{");
 			text.push(sounds.filter(function(sound) {
 				return sound.linkage != "" && sound.linkage != null;
 			}).map(function(sound1) {
@@ -1043,13 +1058,13 @@ languages_JavaScriptGenerator.prototype = $extend(languages_CodeGenerator.protot
 			this.fileApi.saveContent(dir + "/gen/Sounds.js",text.join("\n"));
 		}
 	}
-	,findFiles: function(dir,ext) {
+	,findFiles: function(baseDir,relativePath,ext) {
 		var r = [];
-		this.fileApi.findFiles(dir,function(s) {
+		this.fileApi.findFiles(baseDir + "/" + relativePath,function(s) {
 			if(s.length > ext.length && s.substring(s.length - ext.length) == ext) r.push(s);
 		});
 		return r.map(function(s1) {
-			return s1.substring(dir.length + 1);
+			return s1.substring(baseDir.length + 1);
 		});
 	}
 	,generatePack: function(fullClassName,lines) {

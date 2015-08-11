@@ -14,8 +14,8 @@ class JavaScriptGenerator extends CodeGenerator
 	override function getScriptUrls(dir:String, name:String) : Array<String> 
 	{
 		return super.getScriptUrls(dir, name)
-			.concat(findFiles(dir + "/gen", ".js"))
-			.concat(findFiles(dir + "/src", ".js"));
+			.concat(findFiles(dir, "gen", ".js"))
+			.concat(findFiles(dir, "src", ".js"));
 	}
 	
 	function generateClasses(dir:String, name:String)
@@ -33,9 +33,7 @@ class JavaScriptGenerator extends CodeGenerator
 				
 				var text = [];
 				generatePack("base." + linkedClass, text);
-				text.push("base." + linkedClass + " = function() {");
-				text.push("\t" + item.getDisplayObjectClassName() + ".call(this, nanofl.Player.library.getItem(\"" + item.namePath + "\"));");
-				text.push("}");
+				text.push("base." + linkedClass + " = function() { " + item.getDisplayObjectClassName() + ".call(this, nanofl.Player.library.getItem(\"" + item.namePath + "\")); }");
 				text.push("base." + linkedClass + ".prototype = $extend(" + item.getDisplayObjectClassName() + ".prototype, {});");
 				classes.push(text.join("\n"));
 				
@@ -44,12 +42,28 @@ class JavaScriptGenerator extends CodeGenerator
 				{
 					var text = [];
 					generatePack(linkedClass, text);
-					text.push("function " + linkedClass + "() {");
+					text.push("function " + linkedClass + "()");
+					text.push("{");
 					text.push("\tbase." + linkedClass + ".call(this);");
 					text.push("\t// add init code here");
 					text.push("}");
-					text.push(linkedClass + ".prototype = $extend(base." + linkedClass + ".prototype, {");
-					text.push("\t// add your class members here");
+					text.push("");
+					text.push(linkedClass + ".prototype = $extend(base." + linkedClass + ".prototype,");
+					text.push("{");
+					text.push("\tinit: function()");
+					text.push("\t{");
+					text.push("\t\t// your initialization code");
+					text.push("\t},");
+					text.push("");
+					text.push("\tonEnterFrame: function()");
+					text.push("\t{");
+					text.push("\t\t//your code for tick");
+					text.push("\t},");
+					text.push("");
+					text.push("\tonMouseDown: function(e)");
+					text.push("\t{");
+					text.push("\t\t// your code for mouse down");
+					text.push("\t}");
 					text.push("});");
 					fileApi.saveContent(classFile, text.join("\n"));
 				}
@@ -68,7 +82,8 @@ class JavaScriptGenerator extends CodeGenerator
 		{
 			var text = [];
 			text.push("function Sounds() {};");
-			text.push("Sounds.prototype = {");
+			text.push("Sounds.prototype =");
+			text.push("{");
 			text.push
 			(
 				sounds
@@ -81,11 +96,11 @@ class JavaScriptGenerator extends CodeGenerator
 		}
 	}
 	
-	function findFiles(dir:String, ext:String) : Array<String>
+	function findFiles(baseDir, relativePath:String, ext:String) : Array<String>
 	{
 		var r = [];
-		fileApi.findFiles(dir, function(s) if (s.length > ext.length && s.substring(s.length - ext.length) == ext) r.push(s));
-		return r.map(function(s) return s.substring(dir.length + 1));
+		fileApi.findFiles(baseDir + "/" + relativePath, function(s) if (s.length > ext.length && s.substring(s.length - ext.length) == ext) r.push(s));
+		return r.map(function(s) return s.substring(baseDir.length + 1));
 	}
 	
 	function generatePack(fullClassName:String, lines:Array<String>)
