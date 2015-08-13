@@ -1,3 +1,4 @@
+import nanofl.engine.CustomProperty;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
@@ -15,7 +16,12 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 	public function new() { }
 	
 	public var name = "CreateJS";
-	public var modes =
+	
+	public var properties : Array<CustomProperty> =
+	[
+		{
+			type:"list", name:"mode", label:"Mode", defaultValue:"HTML",
+			values:
 	[
 		"HTML",
 		"JavaScript",
@@ -26,13 +32,18 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 		"Haxe",
 		"Haxe/FlashDevelop",
 		"TextureAtlas"
+			] 
+		},
+		{
+			type:"bool", name:"graphicsAcceleration", label:"Graphics acceleration", defaultValue:false
+		}
 	];
 	
-	public function generateFiles(mode:String, fileApi:FileApi, filePath:String, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>) : Void
+	public function generate(fileApi:FileApi, filePath:String, params:Dynamic, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>) : Void
 	{
 		var supportDir = fileApi.getPluginsDirectory() + "/CreateJSGeneratorPlugin";
 		
-		var languageAndIde = mode.split("/");
+		var languageAndIde = params.mode.split("/");
 		
 		var pathParts = filePath.split("/");
 		var dir = pathParts.slice(0, pathParts.length - 1).join("/");

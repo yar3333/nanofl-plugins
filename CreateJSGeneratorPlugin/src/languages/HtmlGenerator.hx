@@ -86,7 +86,7 @@ class HtmlGenerator extends TextureAtlasGenerator
 	{
 		var r = [];
 		
-		if (documentProperties.useTextureAtlases && textureAtlases.iterator().hasNext())
+		if (documentProperties.textureAtlases.use && textureAtlases.iterator().hasNext())
 		{
 			var textureAtlasJsonUrls = [];
 			for (textureAltasName in textureAtlases.keys())

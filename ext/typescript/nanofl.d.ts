@@ -7158,16 +7158,19 @@ declare module nanofl.ide.plugins
 		 */
 		name : string;
 		/**
-		 * In regular case this is a language name ("HTML", "JavaScript", "TypeScript", "Haxe", "C#", "C++").
-		 * Must be null or empty array if no modes supported.
+		 * Custom generator properties. Can be null (or empty array) if you have no customizable params.
 		 */
-		modes : string[];
+		properties : nanofl.engine.CustomProperty[];
 		/**
-		 * Called to generate source code files (usually, base classes for symbols used in code)
-		 * and sealized library to load in application.
-		 * "filePath" argument is a path to *.nfl file.
+		 * Called to generate files (usually, base classes for symbols and serialized library to load in your application).
+		 * @param	fileApi
+		 * @param	filePath			Path to `*.nfl` file.
+		 * @param	params				Custom parameters specified by user (produced from `properties`).
+		 * @param	documentProperties
+		 * @param	library
+		 * @param	textureAtlases		Generated texture atlases.
 		 */
-		generateFiles(mode:string, fileApi:nanofl.engine.FileApi, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : void;
+		generate(fileApi:nanofl.engine.FileApi, filePath:string, params:any, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : void;
 	}
 	
 	export interface IImporterPlugin
@@ -8337,33 +8340,34 @@ declare module nanofl.engine
 		 */
 		neutralValue : any;
 		/**
-		 * int / float / string / color / bool
+		 * int / float / string / color / bool / list
 		 */
 		type : string;
 		/**
 		 * Units to display ("px", "%").
 		 */
 		units : string;
+		/**
+		 * List options. Used for list only.
+		 */
+		values : string[];
 	}
 	
 	export class DocumentProperties
 	{
-		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, scaleMode?:string, generator?:string, generatorMode?:string, useTextureAtlases?:boolean, textureAtlasWidth?:number, textureAtlasHeight?:number, textureAtlasPadding?:number, graphicsAcceleration?:boolean);
+		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, scaleMode?:string, generator?:{ params : any; name : string; }, textureAtlases?:{ width : number; use : boolean; padding : number; height : number; });
 		title : string;
 		width : number;
 		height : number;
 		backgroundColor : string;
 		framerate : number;
 		scaleMode : string;
-		generator : string;
-		generatorMode : string;
-		useTextureAtlases : boolean;
-		textureAtlasWidth : number;
-		textureAtlasHeight : number;
-		textureAtlasPadding : number;
-		graphicsAcceleration : boolean;
+		generator : { name : string; params : any; };
+		textureAtlases : { height : number; padding : number; use : boolean; width : number; };
 		save(fileApi:nanofl.engine.FileApi, filePath:string) : void;
 		static load(filePath:string, fileApi:nanofl.engine.FileApi) : nanofl.engine.DocumentProperties;
+		static parseGenerator(s:string) : { name : string; params : any; };
+		static generatorToString(generator:{ name : string; params : any; }) : string;
 	}
 	
 	export interface FileApi

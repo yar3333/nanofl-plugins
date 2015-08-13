@@ -33,7 +33,7 @@ typedef CustomProperty =
 	@:optional
 	var neutralValue : Dynamic;
 	/**
-	 * int / float / string / color / bool
+	 * int / float / string / color / bool / list
 	 */
 	var type : String;
 	/**
@@ -41,4 +41,9 @@ typedef CustomProperty =
 	 */
 	@:optional
 	var units : String;
+	/**
+	 * List options. Used for list only.
+	 */
+	@:optional
+	var values : Array<String>;
 };

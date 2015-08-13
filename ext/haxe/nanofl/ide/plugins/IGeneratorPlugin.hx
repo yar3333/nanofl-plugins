@@ -8,14 +8,17 @@ extern interface IGeneratorPlugin
 	 */
 	var name : String;
 	/**
-	 * In regular case this is a language name ("HTML", "JavaScript", "TypeScript", "Haxe", "C#", "C++").
-	 * Must be null or empty array if no modes supported.
+	 * Custom generator properties. Can be null (or empty array) if you have no customizable params.
 	 */
-	var modes : Array<String>;
+	var properties : Array<nanofl.engine.CustomProperty>;
 	/**
-	 * Called to generate source code files (usually, base classes for symbols used in code)
-	 * and sealized library to load in application.
-	 * "filePath" argument is a path to *.nfl file.
+	 * Called to generate files (usually, base classes for symbols and serialized library to load in your application).
+	 * @param	fileApi
+	 * @param	filePath			Path to `*.nfl` file.
+	 * @param	params				Custom parameters specified by user (produced from `properties`).
+	 * @param	documentProperties
+	 * @param	library
+	 * @param	textureAtlases		Generated texture atlases.
 	 */
-	function generateFiles(mode:String, fileApi:nanofl.engine.FileApi, filePath:String, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<String, nanofl.ide.textureatlas.TextureAtlas>) : Void;
+	function generate(fileApi:nanofl.engine.FileApi, filePath:String, params:Dynamic, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<String, nanofl.ide.textureatlas.TextureAtlas>) : Void;
 }

@@ -7,7 +7,7 @@ function $extend(from, fields) {
 	return proto;
 }
 var CreateJSGeneratorPlugin = function() {
-	this.modes = ["HTML","JavaScript","JavaScript/FlashDevelop","JavaScript/MsVisualStudio2013","TypeScript","TypeScript/MsVisualStudio2013","Haxe","Haxe/FlashDevelop","TextureAtlas"];
+	this.properties = [{ type : "list", name : "mode", label : "Mode", defaultValue : "HTML", values : ["HTML","JavaScript","JavaScript/FlashDevelop","JavaScript/MsVisualStudio2013","TypeScript","TypeScript/MsVisualStudio2013","Haxe","Haxe/FlashDevelop","TextureAtlas"]},{ type : "bool", name : "graphicsAcceleration", label : "Graphics acceleration", defaultValue : false}];
 	this.name = "CreateJS";
 };
 CreateJSGeneratorPlugin.__name__ = true;
@@ -16,9 +16,9 @@ CreateJSGeneratorPlugin.main = function() {
 	nanofl.engine.Plugins.registerGenerator(new CreateJSGeneratorPlugin());
 };
 CreateJSGeneratorPlugin.prototype = {
-	generateFiles: function(mode,fileApi,filePath,documentProperties,library,textureAtlases) {
+	generate: function(fileApi,filePath,params,documentProperties,library,textureAtlases) {
 		var supportDir = fileApi.getPluginsDirectory() + "/CreateJSGeneratorPlugin";
-		var languageAndIde = mode.split("/");
+		var languageAndIde = params.mode.split("/");
 		var pathParts = filePath.split("/");
 		var dir = pathParts.slice(0,pathParts.length - 1).join("/");
 		var nameExt = pathParts[pathParts.length - 1];
@@ -850,7 +850,7 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 	}
 	,getPlayerInitCode: function() {
 		var r = [];
-		if(this.documentProperties.useTextureAtlases && this.textureAtlases.iterator().hasNext()) {
+		if(this.documentProperties.textureAtlases["use"] && this.textureAtlases.iterator().hasNext()) {
 			var textureAtlasJsonUrls = [];
 			var $it0 = this.textureAtlases.keys();
 			while( $it0.hasNext() ) {
