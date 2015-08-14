@@ -4,12 +4,15 @@ import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
 import nanofl.engine.ScaleMode;
-import nanofl.engine.VersionInfo;
+import nanofl.engine.Version;
 import nanofl.ide.textureatlas.TextureAtlas;
 import Lambda;
 
 class HtmlGenerator extends TextureAtlasGenerator
 {
+	static var createjsUrl = "http://code.createjs.com/createjs-2014.12.12.combined.js";
+	static var playerUrl = "http://player.nanofl.com/nanofl-" + Version.player + ".js";
+	
 	var serializedLibrary : String;
 	var filterCodes : Map<String, String>;
 	
@@ -51,8 +54,8 @@ class HtmlGenerator extends TextureAtlasGenerator
 			template = template.split("{width}").join(untyped documentProperties.width);
 			template = template.split("{height}").join(untyped documentProperties.height);
 			template = template.split("{bodyStyle}").join("background-color:" + documentProperties.backgroundColor + "; margin:0; padding:0; font-size:0; overflow:hidden");
-			template = template.split("{createjsUrl}").join(VersionInfo.createjsUrl);
-			template = template.split("{playerUrl}").join(VersionInfo.playerUrl);
+			template = template.split("{createjsUrl}").join(createjsUrl);
+			template = template.split("{playerUrl}").join(playerUrl);
 			
 			var scriptUrls = getScriptUrls(dir, name).map(function(s) return "<script src=\"" + s + "\"></script>").join("\n\t\t");
 			template = template.split("{scriptUrls}").join(scriptUrls + (scriptUrls != "" ? "\n\t\t" : ""));
@@ -86,7 +89,7 @@ class HtmlGenerator extends TextureAtlasGenerator
 	{
 		var r = [];
 		
-		if (documentProperties.textureAtlases.use && textureAtlases.iterator().hasNext())
+		if (documentProperties.useTextureAtlases && textureAtlases.iterator().hasNext())
 		{
 			var textureAtlasJsonUrls = [];
 			for (textureAltasName in textureAtlases.keys())

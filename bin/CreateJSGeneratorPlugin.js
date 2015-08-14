@@ -823,8 +823,8 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 			template = template.split("{width}").join(this.documentProperties.width);
 			template = template.split("{height}").join(this.documentProperties.height);
 			template = template.split("{bodyStyle}").join("background-color:" + this.documentProperties.backgroundColor + "; margin:0; padding:0; font-size:0; overflow:hidden");
-			template = template.split("{createjsUrl}").join(nanofl.engine.VersionInfo.createjsUrl);
-			template = template.split("{playerUrl}").join(nanofl.engine.VersionInfo.playerUrl);
+			template = template.split("{createjsUrl}").join(languages_HtmlGenerator.createjsUrl);
+			template = template.split("{playerUrl}").join(languages_HtmlGenerator.playerUrl);
 			var scriptUrls = this.getScriptUrls(dir,name).map(function(s) {
 				return "<script src=\"" + s + "\"></script>";
 			}).join("\n\t\t");
@@ -850,7 +850,7 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 	}
 	,getPlayerInitCode: function() {
 		var r = [];
-		if(this.documentProperties.textureAtlases["use"] && this.textureAtlases.iterator().hasNext()) {
+		if(this.documentProperties.useTextureAtlases && this.textureAtlases.iterator().hasNext()) {
 			var textureAtlasJsonUrls = [];
 			var $it0 = this.textureAtlases.keys();
 			while( $it0.hasNext() ) {
@@ -1203,5 +1203,7 @@ haxe_io_FPHelper.i64tmp = (function($this) {
 }(this));
 js_Boot.__toStr = {}.toString;
 js_html_compat_Uint8Array.BYTES_PER_ELEMENT = 1;
+languages_HtmlGenerator.createjsUrl = "http://code.createjs.com/createjs-2014.12.12.combined.js";
+languages_HtmlGenerator.playerUrl = "http://player.nanofl.com/nanofl-" + nanofl.engine.Version.player + ".js";
 CreateJSGeneratorPlugin.main();
 })(typeof console != "undefined" ? console : {log:function(){}});

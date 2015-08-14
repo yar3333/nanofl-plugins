@@ -7211,8 +7211,8 @@ declare module nanofl.ide.plugins
 		 */
 		priority : number;
 		/**
-		 * Method must detect loadable files and returns created LibraryItems.
-		 * Successfully processed files must be marked with exclude() to prevent loading them by other loaders.
+		 * Method must detect loadable files and return created LibraryItems.
+		 * Use file.exclude() for processed files (to prevent loading them from other loaders).
 		 */
 		load(files:nanofl.engine.MapRO<string, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.LibraryItem[];
 	}
@@ -7256,6 +7256,13 @@ declare module nanofl.ide.textureatlas
 		width : number;
 		x : number;
 		y : number;
+	}
+	
+	type TextureAtlasParams =
+	{
+		height : number;
+		padding : number;
+		width : number;
 	}
 }
 
@@ -7499,7 +7506,7 @@ declare module nanofl.ide
 		createFolder() : void;
 		importFromPaths(paths:string[], folderPath?:string, ready?:() => void) : void;
 		importFromFiles(files:File[], folderPath?:string, callb?:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
-		generateTextureAtlases(width:number, height:number, padding:number) : Map<string, nanofl.ide.textureatlas.TextureAtlas>;
+		generateTextureAtlases(textureAtlasesParams:Map<string, nanofl.ide.textureatlas.TextureAtlasParams>) : Map<string, nanofl.ide.textureatlas.TextureAtlas>;
 		selectUnusedItems() : void;
 		removeUnusedItems() : void;
 		optimize() : void;
@@ -8355,19 +8362,22 @@ declare module nanofl.engine
 	
 	export class DocumentProperties
 	{
-		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, scaleMode?:string, generator?:{ params : any; name : string; }, textureAtlases?:{ width : number; use : boolean; padding : number; height : number; });
+		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, scaleMode?:string, generatorName?:string, generatorParams?:any, useTextureAtlases?:boolean, textureAtlases?:Map<string, { width : number; padding : number; height : number; }>);
 		title : string;
 		width : number;
 		height : number;
 		backgroundColor : string;
 		framerate : number;
 		scaleMode : string;
-		generator : { name : string; params : any; };
-		textureAtlases : { height : number; padding : number; use : boolean; width : number; };
+		generatorName : string;
+		generatorParams : any;
+		useTextureAtlases : boolean;
+		textureAtlases : Map<string, { width : number; padding : number; height : number; }>;
 		save(fileApi:nanofl.engine.FileApi, filePath:string) : void;
+		getGeneratorAsString() : string;
 		static load(filePath:string, fileApi:nanofl.engine.FileApi) : nanofl.engine.DocumentProperties;
 		static parseGenerator(s:string) : { name : string; params : any; };
-		static generatorToString(generator:{ name : string; params : any; }) : string;
+		static newTextureAtlasParams() : nanofl.ide.textureatlas.TextureAtlasParams;
 	}
 	
 	export interface FileApi
@@ -8691,13 +8701,11 @@ declare module nanofl.engine
 		original : nanofl.engine.elements.Element;
 	}
 	
-	export class VersionInfo
+	export class Version
 	{
-		static ideVersion : string;
-		static playerVersion : string;
-		static fileFormatVersion : string;
-		static createjsUrl : string;
-		static playerUrl : string;
+		static ide : string;
+		static player : string;
+		static document : string;
 		static compare(v1:string, v2:string) : number;
 	}
 }
@@ -8871,8 +8879,6 @@ declare module nanofl.ide.undo.states
 		filters : nanofl.engine.FilterDef[];
 		equ(_state:nanofl.ide.undo.states.ElementState) : boolean;
 	}
-	
-	type LibraryItemState = nanofl.engine.libraryitems.LibraryItem;
 	
 	type LibraryState = nanofl.engine.libraryitems.LibraryItem[];
 	

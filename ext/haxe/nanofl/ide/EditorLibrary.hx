@@ -32,7 +32,7 @@ extern class EditorLibrary
 	function createFolder() : Void;
 	function importFromPaths(paths:Array<String>, ?folderPath:String, ?ready:Void -> Void) : Void;
 	function importFromFiles(files:Array<js.html.File>, ?folderPath:String, ?callb:Array<nanofl.engine.libraryitems.LibraryItem> -> Void) : Void;
-	function generateTextureAtlases(width:Int, height:Int, padding:Int) : Map<String, nanofl.ide.textureatlas.TextureAtlas>;
+	function generateTextureAtlases(textureAtlasesParams:Map<String, nanofl.ide.textureatlas.TextureAtlasParams>) : Map<String, nanofl.ide.textureatlas.TextureAtlas>;
 	function selectUnusedItems() : Void;
 	function removeUnusedItems() : Void;
 	function optimize() : Void;
