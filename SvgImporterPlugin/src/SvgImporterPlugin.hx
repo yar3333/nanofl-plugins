@@ -1,11 +1,7 @@
 import htmlparser.XmlDocument;
 import nanofl.engine.DocumentProperties;
-import nanofl.engine.elements.Instance;
 import nanofl.engine.FileApi;
-import nanofl.engine.KeyFrame;
-import nanofl.engine.Layer;
 import nanofl.engine.Library;
-import nanofl.engine.libraryitems.MovieClipItem;
 import nanofl.engine.Plugins;
 import nanofl.ide.LibraryTools;
 import nanofl.ide.plugins.IImporterPlugin;

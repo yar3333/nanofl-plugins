@@ -22,16 +22,16 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 		{
 			type:"list", name:"mode", label:"Mode", defaultValue:"HTML",
 			values:
-	[
-		"HTML",
-		"JavaScript",
-		"JavaScript/FlashDevelop",
-		"JavaScript/MsVisualStudio2013",
-		"TypeScript",
-		"TypeScript/MsVisualStudio2013", 
-		"Haxe",
-		"Haxe/FlashDevelop",
-		"TextureAtlas"
+			[
+				"HTML",
+				"JavaScript",
+				"JavaScript/FlashDevelop",
+				"JavaScript/MsVisualStudio2013",
+				"TypeScript",
+				"TypeScript/MsVisualStudio2013", 
+				"Haxe",
+				"Haxe/FlashDevelop",
+				"TextureAtlas"
 			] 
 		},
 		{

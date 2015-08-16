@@ -3,10 +3,8 @@ package languages;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
-import nanofl.engine.ScaleMode;
 import nanofl.engine.Version;
 import nanofl.ide.textureatlas.TextureAtlas;
-import Lambda;
 
 class HtmlGenerator extends TextureAtlasGenerator
 {
