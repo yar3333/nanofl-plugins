@@ -2155,7 +2155,7 @@ svgimport_SvgGroupExporter.prototype = $extend(svgimport_BaseExporter.prototype,
 				if(!this.library.hasItem(g.id)) item = new svgimport_SvgGroupExporter(this.svg,this.library,g).exportToLibrary(); else item = this.library.getItem(g.id);
 				if(item != null) {
 					var instance = new nanofl.engine.elements.Instance(item.namePath);
-					instance.matrix = g.matrix;
+					instance.matrix = g.matrix.clone();
 					this.addElement(instance,g.visible);
 				}
 				break;

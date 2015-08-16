@@ -41,7 +41,7 @@ class SvgGroupExporter extends BaseExporter
 					if (item != null)
 					{
 						var instance = new Instance(item.namePath);
-						instance.matrix = g.matrix;
+						instance.matrix = g.matrix.clone();
 						addElement(instance, g.visible);
 					}
 					
