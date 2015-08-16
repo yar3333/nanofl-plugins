@@ -9,7 +9,7 @@ import nanofl.ide.textureatlas.TextureAtlas;
 class HtmlGenerator extends TextureAtlasGenerator
 {
 	static var createjsUrl = "http://code.createjs.com/createjs-2014.12.12.combined.js";
-	static var playerUrl = "http://player.nanofl.com/nanofl-" + Version.player + ".js";
+	static var playerUrl = "http://player.nanofl.com/nanofl-{version}.js";
 	
 	var serializedLibrary : String;
 	var filterCodes : Map<String, String>;
@@ -53,7 +53,7 @@ class HtmlGenerator extends TextureAtlasGenerator
 			template = template.split("{height}").join(untyped documentProperties.height);
 			template = template.split("{bodyStyle}").join("background-color:" + documentProperties.backgroundColor + "; margin:0; padding:0; font-size:0; overflow:hidden");
 			template = template.split("{createjsUrl}").join(createjsUrl);
-			template = template.split("{playerUrl}").join(playerUrl);
+			template = template.split("{playerUrl}").join(playerUrl.split("{version}").join(Version.player));
 			
 			var scriptUrls = getScriptUrls(dir, name).map(function(s) return "<script src=\"" + s + "\"></script>").join("\n\t\t");
 			template = template.split("{scriptUrls}").join(scriptUrls + (scriptUrls != "" ? "\n\t\t" : ""));

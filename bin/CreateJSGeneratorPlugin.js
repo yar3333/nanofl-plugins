@@ -824,7 +824,7 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 			template = template.split("{height}").join(this.documentProperties.height);
 			template = template.split("{bodyStyle}").join("background-color:" + this.documentProperties.backgroundColor + "; margin:0; padding:0; font-size:0; overflow:hidden");
 			template = template.split("{createjsUrl}").join(languages_HtmlGenerator.createjsUrl);
-			template = template.split("{playerUrl}").join(languages_HtmlGenerator.playerUrl);
+			template = template.split("{playerUrl}").join(languages_HtmlGenerator.playerUrl.split("{version}").join(nanofl.engine.Version.player));
 			var scriptUrls = this.getScriptUrls(dir,name).map(function(s) {
 				return "<script src=\"" + s + "\"></script>";
 			}).join("\n\t\t");
@@ -1204,6 +1204,6 @@ haxe_io_FPHelper.i64tmp = (function($this) {
 js_Boot.__toStr = {}.toString;
 js_html_compat_Uint8Array.BYTES_PER_ELEMENT = 1;
 languages_HtmlGenerator.createjsUrl = "http://code.createjs.com/createjs-2014.12.12.combined.js";
-languages_HtmlGenerator.playerUrl = "http://player.nanofl.com/nanofl-" + nanofl.engine.Version.player + ".js";
+languages_HtmlGenerator.playerUrl = "http://player.nanofl.com/nanofl-{version}.js";
 CreateJSGeneratorPlugin.main();
 })(typeof console != "undefined" ? console : {log:function(){}});
