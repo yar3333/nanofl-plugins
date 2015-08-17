@@ -39,7 +39,7 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 		}
 	];
 	
-	public function generate(fileApi:FileApi, filePath:String, params:Dynamic, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>) : Void
+	public function generate(fileApi:FileApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>) : Void
 	{
 		var supportDir = fileApi.getPluginsDirectory() + "/CreateJSGeneratorPlugin";
 		

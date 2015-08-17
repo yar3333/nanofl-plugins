@@ -46,6 +46,7 @@ ImageSequenceExporter.run = function(type,fileApi,destFilePath,documentPropertie
 	return true;
 };
 var JpegImageSequenceExporterPlugin = function() {
+	this.properties = null;
 	this.fileDefaultExtension = "jpg";
 	this.fileFilterExtensions = ["jpg","jpeg"];
 	this.fileFilterDescription = "JPEG Images Sequence (*.jpg)";
@@ -56,7 +57,7 @@ var JpegImageSequenceExporterPlugin = function() {
 JpegImageSequenceExporterPlugin.__name__ = true;
 JpegImageSequenceExporterPlugin.__interfaces__ = [nanofl.ide.plugins.IExporterPlugin];
 JpegImageSequenceExporterPlugin.prototype = {
-	exportDocument: function(fileApi,srcFilePath,destFilePath,documentProperties,library) {
+	exportDocument: function(fileApi,params,srcFilePath,destFilePath,documentProperties,library) {
 		ImageSequenceExporter.run("image/jpeg",fileApi,destFilePath,documentProperties,library);
 		return true;
 	}
@@ -70,6 +71,7 @@ Main.main = function() {
 };
 Math.__name__ = true;
 var PngImageSequenceExporterPlugin = function() {
+	this.properties = null;
 	this.fileDefaultExtension = "png";
 	this.fileFilterExtensions = ["png"];
 	this.fileFilterDescription = "PNG Images Sequence (*.png)";
@@ -80,7 +82,7 @@ var PngImageSequenceExporterPlugin = function() {
 PngImageSequenceExporterPlugin.__name__ = true;
 PngImageSequenceExporterPlugin.__interfaces__ = [nanofl.ide.plugins.IExporterPlugin];
 PngImageSequenceExporterPlugin.prototype = {
-	exportDocument: function(fileApi,srcFilePath,destFilePath,documentProperties,library) {
+	exportDocument: function(fileApi,params,srcFilePath,destFilePath,documentProperties,library) {
 		ImageSequenceExporter.run("image/png",fileApi,destFilePath,documentProperties,library);
 		return true;
 	}

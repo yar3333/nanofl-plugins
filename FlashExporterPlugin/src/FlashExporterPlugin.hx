@@ -1,4 +1,5 @@
 import htmlparser.XmlBuilder;
+import nanofl.engine.CustomProperty;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
@@ -21,7 +22,9 @@ class FlashExporterPlugin implements IExporterPlugin
 	public var fileFilterDescription = "Adobe Flash Document (*.fla;*.xfl)";
 	public var fileFilterExtensions = [ "fla", "xfl" ];
 	
-	public function exportDocument(fileApi:FileApi, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
+	public var properties : Array<CustomProperty> = null;
+	
+	public function exportDocument(fileApi:FileApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
 	{
 		trace("Plugin.exportDocument " + srcFilePath + " => " + destFilePath);
 		var scene = library.getSceneItem();

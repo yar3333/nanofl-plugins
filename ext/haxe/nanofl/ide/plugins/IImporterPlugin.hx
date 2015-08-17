@@ -3,7 +3,7 @@ package nanofl.ide.plugins;
 extern interface IImporterPlugin
 {
 	/**
-	 * Internal name (for example: "XflImporter", "SvgImporter").
+	 * Internal name (for example: "FlashImporter", "SvgImporter").
 	 */
 	var name : String;
 	/**
@@ -22,5 +22,20 @@ extern interface IImporterPlugin
 	 * Like [ "fla", "xfl" ].
 	 */
 	var fileFilterExtensions : Array<String>;
-	function importDocument(fileApi:nanofl.engine.FileApi, srcFilePath:String, destFilePath:String, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, fonts:Array<String>, callb:Bool -> Void) : Void;
+	/**
+	 * Custom properties for tune by user. Can be null or empty array if you have no customizable parameters.
+	 */
+	var properties : Array<nanofl.engine.CustomProperty>;
+	/**
+	 * This method must import document.
+	 * @param	fileApi				Use this object to work with file system.
+	 * @param	params				Custom parameters specified by user (produced from `properties`).
+	 * @param	srcFilePath			Path to supported file (one of the `fileFilterExtensions`).
+	 * @param	destFilePath		Path to `*.nfl` file.
+	 * @param	documentProperties	Properties of the document.
+	 * @param	library				Document's library.
+	 * @param	fonts				Known font names.
+	 * @param	callb				Call this after importing with a success bool flag.
+	 */
+	function importDocument(fileApi:nanofl.engine.FileApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, fonts:Array<String>, callb:Bool -> Void) : Void;
 }

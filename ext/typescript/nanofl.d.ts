@@ -6977,7 +6977,7 @@ declare module nanofl.engine.plugins
 		 */
 		label : string;
 		/**
-		 * Custom filter properties.
+		 * Custom properties for tune by user. Can be null or empty array if you have no customizable parameters.
 		 */
 		properties : nanofl.engine.CustomProperty[];
 		getFilter(params:any) : createjs.Filter;
@@ -7128,7 +7128,7 @@ declare module nanofl.ide.plugins
 	export interface IExporterPlugin
 	{
 		/**
-		 * Internal name (for example: "XflExporter", "SvgExporter").
+		 * Internal name (for example: "FlashExporter", "SvgExporter").
 		 */
 		name : string;
 		/**
@@ -7147,7 +7147,21 @@ declare module nanofl.ide.plugins
 		 * Like [ "fla", "xfl" ].
 		 */
 		fileFilterExtensions : string[];
-		exportDocument(fileApi:nanofl.engine.FileApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library) : boolean;
+		/**
+		 * Custom properties for tune by user. Can be null or empty array if you have no customizable parameters.
+		 */
+		properties : nanofl.engine.CustomProperty[];
+		/**
+		 * This method must export document.
+		 * @param	fileApi				Use this object to work with file system.
+		 * @param	params				Custom parameters specified by user (produced from `properties`).
+		 * @param	srcFilePath			Path to `*.nfl` file.
+		 * @param	destFilePath		Path to supported file (one of the `fileFilterExtensions`).
+		 * @param	documentProperties	Properties of the document.
+		 * @param	library				Document's library.
+		 * @return	Success flag.
+		 */
+		exportDocument(fileApi:nanofl.engine.FileApi, params:any, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library) : boolean;
 	}
 	
 	export interface IGeneratorPlugin
@@ -7158,25 +7172,25 @@ declare module nanofl.ide.plugins
 		 */
 		name : string;
 		/**
-		 * Custom generator properties. Can be null (or empty array) if you have no customizable params.
+		 * Custom properties for tune by user. Can be null or empty array if you have no customizable parameters.
 		 */
 		properties : nanofl.engine.CustomProperty[];
 		/**
-		 * Called to generate files (usually, base classes for symbols and serialized library to load in your application).
-		 * @param	fileApi
-		 * @param	filePath			Path to `*.nfl` file.
+		 * Called to generate files (usually, base classes for symbols and serialized library to load in the user application).
+		 * @param	fileApi				Use this object to work with file system.
 		 * @param	params				Custom parameters specified by user (produced from `properties`).
-		 * @param	documentProperties
-		 * @param	library
+		 * @param	filePath			Path to `*.nfl` file.
+		 * @param	documentProperties	Properties of the document.
+		 * @param	library				Document's library.
 		 * @param	textureAtlases		Generated texture atlases.
 		 */
-		generate(fileApi:nanofl.engine.FileApi, filePath:string, params:any, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : void;
+		generate(fileApi:nanofl.engine.FileApi, params:any, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : void;
 	}
 	
 	export interface IImporterPlugin
 	{
 		/**
-		 * Internal name (for example: "XflImporter", "SvgImporter").
+		 * Internal name (for example: "FlashImporter", "SvgImporter").
 		 */
 		name : string;
 		/**
@@ -7195,7 +7209,22 @@ declare module nanofl.ide.plugins
 		 * Like [ "fla", "xfl" ].
 		 */
 		fileFilterExtensions : string[];
-		importDocument(fileApi:nanofl.engine.FileApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, fonts:string[], callb:(arg:boolean) => void) : void;
+		/**
+		 * Custom properties for tune by user. Can be null or empty array if you have no customizable parameters.
+		 */
+		properties : nanofl.engine.CustomProperty[];
+		/**
+		 * This method must import document.
+		 * @param	fileApi				Use this object to work with file system.
+		 * @param	params				Custom parameters specified by user (produced from `properties`).
+		 * @param	srcFilePath			Path to supported file (one of the `fileFilterExtensions`).
+		 * @param	destFilePath		Path to `*.nfl` file.
+		 * @param	documentProperties	Properties of the document.
+		 * @param	library				Document's library.
+		 * @param	fonts				Known font names.
+		 * @param	callb				Call this after importing with a success bool flag.
+		 */
+		importDocument(fileApi:nanofl.engine.FileApi, params:any, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, fonts:string[], callb:(arg:boolean) => void) : void;
 	}
 	
 	export interface ILoaderPlugin
@@ -7360,14 +7389,14 @@ declare module nanofl.ide
 		updateTitle() : void;
 		save(callb?:(arg:boolean) => void) : void;
 		saveAs(newPath?:string, callb?:(arg:boolean) => void) : void;
-		export(destPath:string, exporter?:nanofl.ide.plugins.IExporterPlugin, callb?:(arg:boolean) => void) : void;
+		export(destPath:string, exporter?:nanofl.ide.Exporter, callb?:(arg:boolean) => void) : void;
 		reload(events:{ add : (arg:string) => void; begin : () => void; end : () => void; remove : (arg:string) => void; }) : void;
 		test() : void;
 		resize(width:number, height:number) : void;
 		canBeSaved() : boolean;
 		static createTemporary(app:nanofl.ide.Application) : nanofl.ide.Document;
 		static load(app:nanofl.ide.Application, path:string, callb:(arg:nanofl.ide.Document) => void) : void;
-		static import_(app:nanofl.ide.Application, path:string, importer?:nanofl.ide.plugins.IImporterPlugin, callb?:(arg:nanofl.ide.Document) => void) : void;
+		static import_(app:nanofl.ide.Application, path:string, importer?:nanofl.ide.Importer, callb?:(arg:nanofl.ide.Document) => void) : void;
 	}
 	
 	export class Editor
@@ -8324,6 +8353,10 @@ declare module nanofl.engine
 		 * Like 123, 10.3, "myStr", true, "#00aaff", "rgb(1,2,3)" or "rgba(12,32,255,128)".
 		 */
 		defaultValue : any;
+		/**
+		 * Long description. Used for tooltip.
+		 */
+		description : string;
 		/**
 		 * Used to display in form. If not specified then name will be used.
 		 */

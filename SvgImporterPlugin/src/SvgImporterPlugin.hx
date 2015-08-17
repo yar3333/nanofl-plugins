@@ -1,4 +1,5 @@
 import htmlparser.XmlDocument;
+import nanofl.engine.CustomProperty;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
@@ -43,7 +44,17 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 	public var fileFilterDescription = "Scalable Vector Graphics (*.svg)";
 	public var fileFilterExtensions = [ "svg" ];
 	
-	public function importDocument(fileApi:FileApi, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, fonts:Array<String>, callb:Bool->Void)
+	public var properties : Array<CustomProperty> =
+	[
+		{
+			type: "bool",
+			name: "optimize",
+			label: "Optimize (remove unused items and simplificate document after loading).",
+			defaultValue: true
+		}
+	];
+	
+	public function importDocument(fileApi:FileApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, fonts:Array<String>, callb:Bool->Void)
 	{
 		trace("Load");
 		
@@ -84,7 +95,10 @@ ue+ALxPHGYEAAAAASUVORK5CYII=
 			}
 		}
 		
-		LibraryTools.optimize(library);
+		if (params.optimize)
+		{
+			LibraryTools.optimize(library);
+		}
 		
 		callb(true);
 	}

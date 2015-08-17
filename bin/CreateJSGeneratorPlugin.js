@@ -16,7 +16,7 @@ CreateJSGeneratorPlugin.main = function() {
 	nanofl.engine.Plugins.registerGenerator(new CreateJSGeneratorPlugin());
 };
 CreateJSGeneratorPlugin.prototype = {
-	generate: function(fileApi,filePath,params,documentProperties,library,textureAtlases) {
+	generate: function(fileApi,params,filePath,documentProperties,library,textureAtlases) {
 		var supportDir = fileApi.getPluginsDirectory() + "/CreateJSGeneratorPlugin";
 		var languageAndIde = params.mode.split("/");
 		var pathParts = filePath.split("/");

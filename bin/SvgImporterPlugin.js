@@ -289,6 +289,7 @@ StringTools.hex = function(n,digits) {
 	return s;
 };
 var SvgImporterPlugin = function() {
+	this.properties = [{ type : "bool", name : "optimize", label : "Optimize (remove unused items and simplificate document after loading).", defaultValue : true}];
 	this.fileFilterExtensions = ["svg"];
 	this.fileFilterDescription = "Scalable Vector Graphics (*.svg)";
 	this.menuItemIcon = "url(data:image/png;base64," + StringTools.replace(StringTools.replace(SvgImporterPlugin.embeddedIcon,"\r",""),"\n","") + ")";
@@ -301,7 +302,7 @@ SvgImporterPlugin.main = function() {
 	nanofl.engine.Plugins.registerImporter(new SvgImporterPlugin());
 };
 SvgImporterPlugin.prototype = {
-	importDocument: function(fileApi,srcFilePath,destFilePath,documentProperties,library,fonts,callb) {
+	importDocument: function(fileApi,params,srcFilePath,destFilePath,documentProperties,library,fonts,callb) {
 		console.log("Load");
 		var xml = new htmlparser.XmlDocument(fileApi.getContent(srcFilePath));
 		console.log("Parse");
@@ -309,7 +310,7 @@ SvgImporterPlugin.prototype = {
 		documentProperties.width = Math.round(svg.width);
 		documentProperties.height = Math.round(svg.height);
 		if(svg.id != nanofl.engine.Library.SCENE_NAME_PATH) {
-			stdlib_Debug.assert(svg.id == "" || svg.elements.exists(svg.id),null,{ fileName : "SvgImporterPlugin.hx", lineNumber : 61, className : "SvgImporterPlugin", methodName : "importDocument"});
+			stdlib_Debug.assert(svg.id == "" || svg.elements.exists(svg.id),null,{ fileName : "SvgImporterPlugin.hx", lineNumber : 72, className : "SvgImporterPlugin", methodName : "importDocument"});
 			svg.elements.remove(svg.id);
 			svg.id = nanofl.engine.Library.SCENE_NAME_PATH;
 			var value = svgimport_SvgElement.DisplayGroup(svg);
@@ -345,7 +346,7 @@ SvgImporterPlugin.prototype = {
 				}(this)) + "' is not supported.");
 			}
 		}
-		nanofl.ide.LibraryTools.optimize(library);
+		if(params.optimize) nanofl.ide.LibraryTools.optimize(library);
 		callb(true);
 	}
 	,__class__: SvgImporterPlugin
@@ -1151,14 +1152,6 @@ stdlib_Std.max = function(a,b) {
 };
 stdlib_Std.sign = function(n) {
 	if(n > 0) return 1; else if(n < 0) return -1; else return 0;
-};
-stdlib_Std.array = function(it) {
-	var r = [];
-	while( it.hasNext() ) {
-		var e = it.next();
-		r.push(e);
-	}
-	return r;
 };
 stdlib_Std["is"] = function(v,t) {
 	return js_Boot.__instanceof(v,t);

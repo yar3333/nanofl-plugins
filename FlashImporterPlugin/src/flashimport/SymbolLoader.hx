@@ -504,8 +504,7 @@ class SymbolLoader
 			"alphaMultiplier", "redMultiplier", "greenMultiplier", "blueMultiplier",
 			"alphaOffset", "redOffset", "greenOffset", "blueOffset"
 		];
-		var attrs = Std.array(color.getAttributesAssoc().keys());
-		var propCount = attrs.count(function(s) return props.has(s));
+		var propCount = color.getAttributesAssoc().keys().count(function(s) return props.has(s));
 		if (color.hasAttribute("alphaMultiplier") && propCount == 1)
 		{
 			return new ColorEffectAlpha(color.getAttr("alphaMultiplier", 1.0));

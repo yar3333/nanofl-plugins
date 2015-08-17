@@ -17,6 +17,15 @@ HxOverrides.iter = function(a) {
 };
 var Lambda = function() { };
 Lambda.__name__ = true;
+Lambda.array = function(it) {
+	var a = [];
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var i = $it0.next();
+		a.push(i);
+	}
+	return a;
+};
 Lambda.exists = function(it,f) {
 	var $it0 = $iterator(it)();
 	while( $it0.hasNext() ) {
@@ -26,6 +35,11 @@ Lambda.exists = function(it,f) {
 	return false;
 };
 Math.__name__ = true;
+var Reflect = function() { };
+Reflect.__name__ = true;
+Reflect.compare = function(a,b) {
+	if(a == b) return 0; else if(a > b) return 1; else return -1;
+};
 var Slambda = function() { };
 Slambda.__name__ = true;
 var Slambda1 = function() { };
@@ -47,6 +61,7 @@ StringTools.replace = function(s,sub,by) {
 	return s.split(sub).join(by);
 };
 var SvgExporterPlugin = function() {
+	this.properties = null;
 	this.fileFilterExtensions = ["svg"];
 	this.fileFilterDescription = "Scalable Vector Graphics (*.svg)";
 	this.menuItemIcon = "url(data:image/png;base64," + StringTools.replace(StringTools.replace(SvgExporterPlugin.embeddedIcon,"\r",""),"\n","") + ")";
@@ -59,7 +74,7 @@ SvgExporterPlugin.main = function() {
 	nanofl.engine.Plugins.registerExporter(new SvgExporterPlugin());
 };
 SvgExporterPlugin.prototype = {
-	exportDocument: function(fileApi,srcFilePath,destFilePath,documentProperties,library) {
+	exportDocument: function(fileApi,params,srcFilePath,destFilePath,documentProperties,library) {
 		console.log("Plugin.exportDocument " + srcFilePath + " => " + destFilePath);
 		var xml = new htmlparser.XmlBuilder();
 		xml.begin("svg").attr("xmlns","http://www.w3.org/2000/svg").attr("width",documentProperties.width).attr("height",documentProperties.height).attr("xmlns:xlink","http://www.w3.org/1999/xlink");
@@ -481,9 +496,29 @@ js_html_compat_Uint8Array._subarray = function(start,end) {
 	a.byteOffset = start;
 	return a;
 };
-var stdlib_LambdaEx = function() { };
-stdlib_LambdaEx.__name__ = true;
-stdlib_LambdaEx.findIndex = function(it,f) {
+var stdlib_LambdaArray = function() { };
+stdlib_LambdaArray.__name__ = true;
+stdlib_LambdaArray.insertRange = function(arr,pos,range) {
+	var _g = 0;
+	while(_g < range.length) {
+		var e = range[_g];
+		++_g;
+		var pos1 = pos++;
+		arr.splice(pos1,0,e);
+	}
+};
+stdlib_LambdaArray.extract = function(arr,f) {
+	var r = [];
+	var i = 0;
+	while(i < arr.length) if(f(arr[i])) {
+		r.push(arr[i]);
+		arr.splice(i,1);
+	} else i++;
+	return r;
+};
+var stdlib_LambdaIterable = function() { };
+stdlib_LambdaIterable.__name__ = true;
+stdlib_LambdaIterable.findIndex = function(it,f) {
 	var n = 0;
 	var $it0 = $iterator(it)();
 	while( $it0.hasNext() ) {
@@ -493,22 +528,64 @@ stdlib_LambdaEx.findIndex = function(it,f) {
 	}
 	return -1;
 };
-stdlib_LambdaEx.insertRange = function(arr,pos,range) {
-	var _g = 0;
-	while(_g < range.length) {
-		var e = range[_g];
-		++_g;
-		var pos1 = pos++;
-		arr.splice(pos1,0,e);
-	}
+stdlib_LambdaIterable.sorted = function(it,cmp) {
+	var r = Lambda.array(it);
+	r.sort(cmp != null?cmp:Reflect.compare);
+	return r;
 };
-stdlib_LambdaEx.extract = function(arr,f) {
+var stdlib_LambdaIterator = function() { };
+stdlib_LambdaIterator.__name__ = true;
+stdlib_LambdaIterator.array = function(it) {
 	var r = [];
-	var i = 0;
-	while(i < arr.length) if(f(arr[i])) {
-		r.push(arr[i]);
-		arr.splice(i,1);
-	} else i++;
+	while( it.hasNext() ) {
+		var e = it.next();
+		r.push(e);
+	}
+	return r;
+};
+stdlib_LambdaIterator.map = function(it,conv) {
+	var r = [];
+	while( it.hasNext() ) {
+		var e = it.next();
+		r.push(conv(e));
+	}
+	return r;
+};
+stdlib_LambdaIterator.filter = function(it,pred) {
+	var r = [];
+	while( it.hasNext() ) {
+		var e = it.next();
+		if(pred(e)) r.push(e);
+	}
+	return r;
+};
+stdlib_LambdaIterator.count = function(it,pred) {
+	var n = 0;
+	if(pred == null) {
+		while( it.hasNext() ) {
+			var _ = it.next();
+			n++;
+		}
+	} else {
+		while( it.hasNext() ) {
+			var x = it.next();
+			if(pred(x)) n++;
+		}
+	}
+	return n;
+};
+stdlib_LambdaIterator.findIndex = function(it,f) {
+	var n = 0;
+	while( it.hasNext() ) {
+		var x = it.next();
+		if(f(x)) return n;
+		n++;
+	}
+	return -1;
+};
+stdlib_LambdaIterator.sorted = function(it,cmp) {
+	var r = stdlib_LambdaIterator.array(it);
+	r.sort(cmp != null?cmp:Reflect.compare);
 	return r;
 };
 var svgexporter_Gradient = function(tag,colors,ratios,attributes) {
@@ -719,7 +796,7 @@ svgexporter_ShapePathsRender.prototype = {
 		var g = svgexporter_Gradient.createLinear(colors,ratios,x0,y0,x1,y1);
 		this.attr("stroke","url(#grad" + ((function(_e) {
 			return function(f) {
-				return stdlib_LambdaEx.findIndex(_e,f);
+				return stdlib_LambdaIterable.findIndex(_e,f);
 			};
 		})(this.gradients))(function(_) {
 			return _.equ(g);
@@ -731,7 +808,7 @@ svgexporter_ShapePathsRender.prototype = {
 		var g = svgexporter_Gradient.createRadial(colors,ratios,cx,cy,cr,fx,fy);
 		this.attributes.push({ name : "stroke", value : "url(#grad" + ((function(_e) {
 			return function(f) {
-				return stdlib_LambdaEx.findIndex(_e,f);
+				return stdlib_LambdaIterable.findIndex(_e,f);
 			};
 		})(this.gradients))(function(_) {
 			return _.equ(g);
@@ -762,7 +839,7 @@ svgexporter_ShapePathsRender.prototype = {
 		var g = svgexporter_Gradient.createLinear(colors,ratios,x0,y0,x1,y1);
 		this.attr("fill","url(#grad" + ((function(_e) {
 			return function(f) {
-				return stdlib_LambdaEx.findIndex(_e,f);
+				return stdlib_LambdaIterable.findIndex(_e,f);
 			};
 		})(this.gradients))(function(_) {
 			return _.equ(g);
@@ -773,7 +850,7 @@ svgexporter_ShapePathsRender.prototype = {
 		var g = svgexporter_Gradient.createRadial(colors,ratios,cx,cy,cr,fx,fy);
 		this.attr("fill","url(#grad" + ((function(_e) {
 			return function(f) {
-				return stdlib_LambdaEx.findIndex(_e,f);
+				return stdlib_LambdaIterable.findIndex(_e,f);
 			};
 		})(this.gradients))(function(_) {
 			return _.equ(g);

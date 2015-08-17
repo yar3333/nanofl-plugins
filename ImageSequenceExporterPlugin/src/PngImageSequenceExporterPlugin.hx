@@ -1,3 +1,4 @@
+import nanofl.engine.CustomProperty;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
@@ -14,8 +15,9 @@ class PngImageSequenceExporterPlugin implements IExporterPlugin
 	public var fileFilterDescription = "PNG Images Sequence (*.png)";
 	public var fileFilterExtensions = [ "png" ];
 	public var fileDefaultExtension = "png";
+	public var properties : Array<CustomProperty> = null;
 	
-	public function exportDocument(fileApi:FileApi, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
+	public function exportDocument(fileApi:FileApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
 	{
 		ImageSequenceExporter.run("image/png", fileApi, destFilePath, documentProperties, library);
 		return true;

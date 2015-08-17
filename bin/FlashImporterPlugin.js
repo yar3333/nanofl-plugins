@@ -72,6 +72,7 @@ EReg.prototype = {
 	,__class__: EReg
 };
 var FlashImporterPlugin = function() {
+	this.properties = null;
 	this.fileFilterExtensions = ["fla","xfl"];
 	this.fileFilterDescription = "Adobe Flash Document (*.fla;*.xfl)";
 	this.menuItemIcon = "url(data:image/png;base64," + StringTools.replace(StringTools.replace(FlashImporterPlugin.embeddedIcon,"\r",""),"\n","") + ")";
@@ -84,7 +85,7 @@ FlashImporterPlugin.main = function() {
 	nanofl.engine.Plugins.registerImporter(new FlashImporterPlugin());
 };
 FlashImporterPlugin.prototype = {
-	importDocument: function(fileApi,srcFilePath,destFilePath,documentProperties,library,fonts,callb) {
+	importDocument: function(fileApi,params,srcFilePath,destFilePath,documentProperties,library,fonts,callb) {
 		if(haxe_io_Path.extension(srcFilePath) == "fla") {
 			var dir = fileApi.getTempDirectory() + "/unsaved/" + stdlib_Uuid.newUuid();
 			fileApi.unzip(srcFilePath,dir);
@@ -133,6 +134,15 @@ HxOverrides.iter = function(a) {
 };
 var Lambda = function() { };
 Lambda.__name__ = ["Lambda"];
+Lambda.array = function(it) {
+	var a = [];
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var i = $it0.next();
+		a.push(i);
+	}
+	return a;
+};
 Lambda.has = function(it,elt) {
 	var $it0 = $iterator(it)();
 	while( $it0.hasNext() ) {
@@ -214,6 +224,9 @@ Reflect.fields = function(o) {
 		}
 	}
 	return a;
+};
+Reflect.compare = function(a,b) {
+	if(a == b) return 0; else if(a > b) return 1; else return -1;
 };
 var Std = function() { };
 Std.__name__ = ["Std"];
@@ -914,9 +927,9 @@ flashimport_SymbolLoader.prototype = {
 		}),transformedFills.map(function(z1) {
 			return z1.fill;
 		}),this.loadEdgeDatas(element)).convert();
-		var shape = new nanofl.engine.elements.ShapeElement(stdlib_LambdaEx.extract(shapeData.edges,function(edge) {
+		var shape = new nanofl.engine.elements.ShapeElement(stdlib_LambdaArray.extract(shapeData.edges,function(edge) {
 			return matrixBy.h[edge.stroke.__id__].isIdentity();
-		}),stdlib_LambdaEx.extract(shapeData.polygons,function(polygon) {
+		}),stdlib_LambdaArray.extract(shapeData.polygons,function(polygon) {
 			return matrixBy.h[polygon.fill.__id__].isIdentity();
 		}));
 		this.loadRegPoint(shape,htmlparser.HtmlParserTools.findOne(element,">transformationPoint>Point"));
@@ -927,11 +940,11 @@ flashimport_SymbolLoader.prototype = {
 			var matrix = $it0.next();
 			var matrix1 = [matrix];
 			if(matrix1[0].isIdentity()) continue;
-			var shape1 = new nanofl.engine.elements.ShapeElement(stdlib_LambdaEx.extract(shapeData.edges,(function(matrix1) {
+			var shape1 = new nanofl.engine.elements.ShapeElement(stdlib_LambdaArray.extract(shapeData.edges,(function(matrix1) {
 				return function(edge1) {
 					return matrixBy.h[edge1.stroke.__id__].equ(matrix1[0]);
 				};
-			})(matrix1)),stdlib_LambdaEx.extract(shapeData.polygons,(function(matrix1) {
+			})(matrix1)),stdlib_LambdaArray.extract(shapeData.polygons,(function(matrix1) {
 				return function(polygon1) {
 					return matrixBy.h[polygon1.fill.__id__].equ(matrix1[0]);
 				};
@@ -1044,13 +1057,12 @@ flashimport_SymbolLoader.prototype = {
 		if(color.hasAttribute("brightness")) return new nanofl.engine.coloreffects.ColorEffectBrightness(htmlparser.HtmlParserTools.getAttr(color,"brightness",1.0));
 		if(color.hasAttribute("tintMultiplier")) return new nanofl.engine.coloreffects.ColorEffectTint(htmlparser.HtmlParserTools.getAttr(color,"tintColor"),htmlparser.HtmlParserTools.getAttr(color,"tintMultiplier",1.0));
 		var props = ["alphaMultiplier","redMultiplier","greenMultiplier","blueMultiplier","alphaOffset","redOffset","greenOffset","blueOffset"];
-		var attrs = stdlib_Std.array((function($this) {
+		var propCount = stdlib_LambdaIterator.count((function($this) {
 			var $r;
 			var this1 = color.getAttributesAssoc();
 			$r = this1.keys();
 			return $r;
-		}(this)));
-		var propCount = Lambda.count(attrs,function(s) {
+		}(this)),function(s) {
 			return Lambda.has(props,s);
 		});
 		if(color.hasAttribute("alphaMultiplier") && propCount == 1) return new nanofl.engine.coloreffects.ColorEffectAlpha(htmlparser.HtmlParserTools.getAttr(color,"alphaMultiplier",1.0)); else if(propCount > 0) return new nanofl.engine.coloreffects.ColorEffectAdvanced(htmlparser.HtmlParserTools.getAttr(color,"alphaMultiplier",1.0),htmlparser.HtmlParserTools.getAttr(color,"redMultiplier",1.0),htmlparser.HtmlParserTools.getAttr(color,"greenMultiplier",1.0),htmlparser.HtmlParserTools.getAttr(color,"blueMultiplier",1.0),htmlparser.HtmlParserTools.getAttr(color,"alphaOffset",0.0),htmlparser.HtmlParserTools.getAttr(color,"redOffset",0.0),htmlparser.HtmlParserTools.getAttr(color,"greenOffset",0.0),htmlparser.HtmlParserTools.getAttr(color,"blueOffset",0.0));
@@ -1895,9 +1907,29 @@ stdlib_Exception.prototype = {
 	}
 	,__class__: stdlib_Exception
 };
-var stdlib_LambdaEx = function() { };
-stdlib_LambdaEx.__name__ = ["stdlib","LambdaEx"];
-stdlib_LambdaEx.findIndex = function(it,f) {
+var stdlib_LambdaArray = function() { };
+stdlib_LambdaArray.__name__ = ["stdlib","LambdaArray"];
+stdlib_LambdaArray.insertRange = function(arr,pos,range) {
+	var _g = 0;
+	while(_g < range.length) {
+		var e = range[_g];
+		++_g;
+		var pos1 = pos++;
+		arr.splice(pos1,0,e);
+	}
+};
+stdlib_LambdaArray.extract = function(arr,f) {
+	var r = [];
+	var i = 0;
+	while(i < arr.length) if(f(arr[i])) {
+		r.push(arr[i]);
+		arr.splice(i,1);
+	} else i++;
+	return r;
+};
+var stdlib_LambdaIterable = function() { };
+stdlib_LambdaIterable.__name__ = ["stdlib","LambdaIterable"];
+stdlib_LambdaIterable.findIndex = function(it,f) {
 	var n = 0;
 	var $it0 = $iterator(it)();
 	while( $it0.hasNext() ) {
@@ -1907,22 +1939,64 @@ stdlib_LambdaEx.findIndex = function(it,f) {
 	}
 	return -1;
 };
-stdlib_LambdaEx.insertRange = function(arr,pos,range) {
-	var _g = 0;
-	while(_g < range.length) {
-		var e = range[_g];
-		++_g;
-		var pos1 = pos++;
-		arr.splice(pos1,0,e);
-	}
+stdlib_LambdaIterable.sorted = function(it,cmp) {
+	var r = Lambda.array(it);
+	r.sort(cmp != null?cmp:Reflect.compare);
+	return r;
 };
-stdlib_LambdaEx.extract = function(arr,f) {
+var stdlib_LambdaIterator = function() { };
+stdlib_LambdaIterator.__name__ = ["stdlib","LambdaIterator"];
+stdlib_LambdaIterator.array = function(it) {
 	var r = [];
-	var i = 0;
-	while(i < arr.length) if(f(arr[i])) {
-		r.push(arr[i]);
-		arr.splice(i,1);
-	} else i++;
+	while( it.hasNext() ) {
+		var e = it.next();
+		r.push(e);
+	}
+	return r;
+};
+stdlib_LambdaIterator.map = function(it,conv) {
+	var r = [];
+	while( it.hasNext() ) {
+		var e = it.next();
+		r.push(conv(e));
+	}
+	return r;
+};
+stdlib_LambdaIterator.filter = function(it,pred) {
+	var r = [];
+	while( it.hasNext() ) {
+		var e = it.next();
+		if(pred(e)) r.push(e);
+	}
+	return r;
+};
+stdlib_LambdaIterator.count = function(it,pred) {
+	var n = 0;
+	if(pred == null) {
+		while( it.hasNext() ) {
+			var _ = it.next();
+			n++;
+		}
+	} else {
+		while( it.hasNext() ) {
+			var x = it.next();
+			if(pred(x)) n++;
+		}
+	}
+	return n;
+};
+stdlib_LambdaIterator.findIndex = function(it,f) {
+	var n = 0;
+	while( it.hasNext() ) {
+		var x = it.next();
+		if(f(x)) return n;
+		n++;
+	}
+	return -1;
+};
+stdlib_LambdaIterator.sorted = function(it,cmp) {
+	var r = stdlib_LambdaIterator.array(it);
+	r.sort(cmp != null?cmp:Reflect.compare);
 	return r;
 };
 var stdlib_Std = function() { };
@@ -1968,14 +2042,6 @@ stdlib_Std.max = function(a,b) {
 };
 stdlib_Std.sign = function(n) {
 	if(n > 0) return 1; else if(n < 0) return -1; else return 0;
-};
-stdlib_Std.array = function(it) {
-	var r = [];
-	while( it.hasNext() ) {
-		var e = it.next();
-		r.push(e);
-	}
-	return r;
 };
 stdlib_Std["is"] = function(v,t) {
 	return js_Boot.__instanceof(v,t);

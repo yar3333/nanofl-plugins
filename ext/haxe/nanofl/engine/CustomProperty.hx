@@ -7,6 +7,11 @@ typedef CustomProperty =
 	 */
 	var defaultValue : Dynamic;
 	/**
+	 * Long description. Used for tooltip.
+	 */
+	@:optional
+	var description : String;
+	/**
 	 * Used to display in form. If not specified then name will be used.
 	 */
 	@:optional

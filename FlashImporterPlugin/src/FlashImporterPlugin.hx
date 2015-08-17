@@ -2,6 +2,7 @@ import stdlib.Uuid;
 import flashimport.DocumentImporter;
 import flashimport.Macro;
 import haxe.io.Path;
+import nanofl.engine.CustomProperty;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
@@ -30,7 +31,9 @@ class FlashImporterPlugin implements IImporterPlugin
 	public var fileFilterDescription = "Adobe Flash Document (*.fla;*.xfl)";
 	public var fileFilterExtensions = [ "fla", "xfl" ];
 	
-	public function importDocument(fileApi:FileApi, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, fonts:Array<String>, callb:Bool->Void)
+	public var properties : Array<CustomProperty> = null;
+	
+	public function importDocument(fileApi:FileApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, fonts:Array<String>, callb:Bool->Void)
 	{
 		if (Path.extension(srcFilePath) == "fla")
 		{

@@ -8,17 +8,17 @@ extern interface IGeneratorPlugin
 	 */
 	var name : String;
 	/**
-	 * Custom generator properties. Can be null (or empty array) if you have no customizable params.
+	 * Custom properties for tune by user. Can be null or empty array if you have no customizable parameters.
 	 */
 	var properties : Array<nanofl.engine.CustomProperty>;
 	/**
-	 * Called to generate files (usually, base classes for symbols and serialized library to load in your application).
-	 * @param	fileApi
-	 * @param	filePath			Path to `*.nfl` file.
+	 * Called to generate files (usually, base classes for symbols and serialized library to load in the user application).
+	 * @param	fileApi				Use this object to work with file system.
 	 * @param	params				Custom parameters specified by user (produced from `properties`).
-	 * @param	documentProperties
-	 * @param	library
+	 * @param	filePath			Path to `*.nfl` file.
+	 * @param	documentProperties	Properties of the document.
+	 * @param	library				Document's library.
 	 * @param	textureAtlases		Generated texture atlases.
 	 */
-	function generate(fileApi:nanofl.engine.FileApi, filePath:String, params:Dynamic, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<String, nanofl.ide.textureatlas.TextureAtlas>) : Void;
+	function generate(fileApi:nanofl.engine.FileApi, params:Dynamic, filePath:String, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<String, nanofl.ide.textureatlas.TextureAtlas>) : Void;
 }
