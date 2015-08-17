@@ -8347,6 +8347,13 @@ declare module nanofl.engine
 		static normalize(s:string) : string;
 	}
 	
+	export class CustomPropertiesTools
+	{
+		static equ(params1:any, params2:any) : boolean;
+		static tween(start:any, t:number, finish:any, properties:nanofl.engine.CustomProperty[]) : void;
+		static fix(params:any, properties:nanofl.engine.CustomProperty[]) : any;
+	}
+	
 	type CustomProperty =
 	{
 		/**
