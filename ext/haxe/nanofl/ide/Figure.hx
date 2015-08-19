@@ -5,8 +5,8 @@ extern class Figure
 	function new(layers:Array<nanofl.ide.EditorLayer>) : Void;
 	function getVertexAtPos(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 	function getSameEdgeWithLayers(edge:nanofl.engine.geom.Edge) : Array<{ var layerIndex : Int; var edge : nanofl.engine.geom.Edge; }>;
-	function getEdgeAtPos(pt:nanofl.engine.geom.Point) : { var dist : Float; var edge : nanofl.engine.geom.Edge; var layerIndex : Int; var t : Float; };
-	function getStrokeEdgeAtPos(pt:nanofl.engine.geom.Point) : { var dist : Float; var edge : nanofl.engine.geom.StrokeEdge; var layerIndex : Int; var t : Float; };
+	function getEdgeAtPos(pt:nanofl.engine.geom.Point, zoomLevel:Float) : { var dist : Float; var edge : nanofl.engine.geom.Edge; var layerIndex : Int; var t : Float; };
+	function getStrokeEdgeAtPos(pt:nanofl.engine.geom.Point, zoomLevel:Float) : { var dist : Float; var edge : nanofl.engine.geom.StrokeEdge; var layerIndex : Int; var t : Float; };
 	function getPolygonEdgeAtPos(pt:nanofl.engine.geom.Point) : { var dist : Float; var edge : nanofl.engine.geom.Edge; var layerIndex : Int; var t : Float; };
 	function getPolygonAtPos(pt:nanofl.engine.geom.Point) : { var layerIndex : Int; var polygon : nanofl.engine.geom.Polygon; };
 	function translateVertex(point:nanofl.engine.geom.Point, dx:Float, dy:Float) : Void;

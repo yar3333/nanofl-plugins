@@ -7546,8 +7546,8 @@ declare module nanofl.ide
 		constructor(layers:nanofl.ide.EditorLayer[]);
 		getVertexAtPos(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 		getSameEdgeWithLayers(edge:nanofl.engine.geom.Edge) : { layerIndex : number; edge : nanofl.engine.geom.Edge; }[];
-		getEdgeAtPos(pt:nanofl.engine.geom.Point) : { dist : number; edge : nanofl.engine.geom.Edge; layerIndex : number; t : number; };
-		getStrokeEdgeAtPos(pt:nanofl.engine.geom.Point) : { dist : number; edge : nanofl.engine.geom.StrokeEdge; layerIndex : number; t : number; };
+		getEdgeAtPos(pt:nanofl.engine.geom.Point, zoomLevel:number) : { dist : number; edge : nanofl.engine.geom.Edge; layerIndex : number; t : number; };
+		getStrokeEdgeAtPos(pt:nanofl.engine.geom.Point, zoomLevel:number) : { dist : number; edge : nanofl.engine.geom.StrokeEdge; layerIndex : number; t : number; };
 		getPolygonEdgeAtPos(pt:nanofl.engine.geom.Point) : { dist : number; edge : nanofl.engine.geom.Edge; layerIndex : number; t : number; };
 		getPolygonAtPos(pt:nanofl.engine.geom.Point) : { layerIndex : number; polygon : nanofl.engine.geom.Polygon; };
 		translateVertex(point:nanofl.engine.geom.Point, dx:number, dy:number) : void;
