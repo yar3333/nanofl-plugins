@@ -434,10 +434,20 @@ flashimport_DocumentImporter.importXmlFiles = function(fileApi,srcFilePath,destD
 			if(htmlparser.HtmlParserTools.getAttr(node,"linkageExportForAS",false)) soundItem.linkage = htmlparser.HtmlParserTools.getAttr(node,"linkageIdentifier");
 		}
 	}
+	var _g2 = 0;
+	var _g11 = docPropNode.find(">folders>DOMFolderItem");
+	while(_g2 < _g11.length) {
+		var node1 = _g11[_g2];
+		++_g2;
+		if(node1.hasAttribute("name")) {
+			var namePath = htmlparser.HtmlParserTools.getAttr(node1,"name","");
+			if(namePath != "") destLibrary.addItem(new nanofl.engine.libraryitems.FolderItem(namePath));
+		}
+	}
 	symbolLoader.loadFromXml(nanofl.engine.Library.SCENE_NAME_PATH,srcDoc);
 	fileApi.findFiles(srcLibDir,function(file) {
-		var namePath = haxe_io_Path.withoutExtension(HxOverrides.substr(file,srcLibDir.length + 1,null));
-		symbolLoader.loadFromLibrary(namePath);
+		var namePath1 = haxe_io_Path.withoutExtension(HxOverrides.substr(file,srcLibDir.length + 1,null));
+		symbolLoader.loadFromLibrary(namePath1);
 	});
 };
 flashimport_DocumentImporter.waitFor = function(maxSeconds,condition,finish) {

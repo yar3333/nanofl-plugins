@@ -5,6 +5,7 @@ import htmlparser.XmlDocument;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
+import nanofl.engine.libraryitems.FolderItem;
 import nanofl.engine.libraryitems.SoundItem;
 using htmlparser.HtmlParserTools;
 using StringTools;
@@ -91,6 +92,18 @@ class DocumentImporter
 				if (node.getAttr("linkageExportForAS", false))
 				{
 					(cast soundItem:SoundItem).linkage = node.getAttr("linkageIdentifier");
+				}
+			}
+		}
+		
+		for (node in docPropNode.find(">folders>DOMFolderItem"))
+		{
+			if (node.hasAttribute("name"))
+			{
+				var namePath = node.getAttr("name", "");
+				if (namePath != "")
+				{
+					destLibrary.addItem(new FolderItem(namePath));
 				}
 			}
 		}
