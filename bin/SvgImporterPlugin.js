@@ -1095,13 +1095,13 @@ stdlib_Exception.string = function(e) {
 stdlib_Exception.rethrow = function(exception) {
 	throw new js__$Boot_HaxeError(stdlib_Exception.wrap(exception));
 };
-stdlib_Exception.wrap = function(exception) {
-	if(!js_Boot.__instanceof(exception,stdlib_Exception)) {
-		var r = new stdlib_Exception(Std.string(exception));
+stdlib_Exception.wrap = function(e) {
+	if(!js_Boot.__instanceof(e,stdlib_Exception)) {
+		var r = new stdlib_Exception(Std.string(e));
 		r.stack = haxe_CallStack.exceptionStack();
 		return r;
 	}
-	return exception;
+	return e;
 };
 stdlib_Exception.prototype = {
 	toString: function() {

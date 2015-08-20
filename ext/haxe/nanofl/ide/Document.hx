@@ -16,6 +16,7 @@ extern class Document
 	var navigator(default, null) : nanofl.ide.Navigator;
 	var editor(default, null) : nanofl.ide.Editor;
 	var undoQueue(default, null) : nanofl.ide.undo.UndoQueue;
+	var reloading(default, null) : Bool;
 	function activate(isCenterView:Bool) : Void;
 	function setProperties(properties:nanofl.engine.DocumentProperties) : Void;
 	function updateTitle() : Void;

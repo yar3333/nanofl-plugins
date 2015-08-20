@@ -7384,6 +7384,7 @@ declare module nanofl.ide
 		navigator : nanofl.ide.Navigator;
 		editor : nanofl.ide.Editor;
 		undoQueue : nanofl.ide.undo.UndoQueue;
+		reloading : boolean;
 		activate(isCenterView:boolean) : void;
 		setProperties(properties:nanofl.engine.DocumentProperties) : void;
 		updateTitle() : void;
@@ -7587,6 +7588,7 @@ declare module nanofl.ide
 		static optimize(library:nanofl.engine.Library) : void;
 		static getUnusedItems(library:nanofl.engine.Library) : string[];
 		static getItemsContainInstances(library:nanofl.engine.Library, namePaths:string[]) : nanofl.engine.libraryitems.LibraryItem[];
+		static fixFolders(library:nanofl.engine.Library) : void;
 	}
 	
 	export class Navigator
