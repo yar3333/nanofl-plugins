@@ -1,13 +1,12 @@
 package nanofl.ide;
 
-extern class Clipboard
+typedef Clipboard =
 {
-	function new(app:nanofl.ide.Application) : Void;
-	function copy(?isCut:Bool) : Bool;
-	function canCut() : Bool;
 	function canCopy() : Bool;
+	function canCut() : Bool;
 	function canPaste() : Bool;
+	function copy() : Bool;
 	function cut() : Bool;
 	function paste() : Bool;
 	function restoreFocus() : Void;
-}
+};

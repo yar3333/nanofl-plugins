@@ -11,6 +11,7 @@ extern class LibraryItem
 	function saveToXml(out:htmlparser.XmlBuilder) : Void;
 	function getFilePathTemplate() : String;
 	function getFilePathToRunWithEditor() : String;
+	function getLibraryFilePaths() : Array<String>;
 	function preload(ready:Void -> Void) : Void;
 	function duplicate(newNamePath:String) : nanofl.engine.libraryitems.LibraryItem;
 	function remove() : Void;

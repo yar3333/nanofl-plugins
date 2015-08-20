@@ -7356,13 +7356,12 @@ declare module nanofl.ide
 		getJson() : any;
 	}
 	
-	export class Clipboard
+	type Clipboard =
 	{
-		constructor(app:nanofl.ide.Application);
-		copy(isCut?:boolean) : boolean;
-		canCut() : boolean;
 		canCopy() : boolean;
+		canCut() : boolean;
 		canPaste() : boolean;
+		copy() : boolean;
 		cut() : boolean;
 		paste() : boolean;
 		restoreFocus() : void;
@@ -7453,8 +7452,8 @@ declare module nanofl.ide
 		moveSelectedBackwards() : void;
 		moveSelectedBack() : void;
 		swapInstance(instance:nanofl.engine.elements.Instance, newNamePath:string) : void;
-		getForClipboard() : string;
-		pasteFromXml(data:string) : boolean;
+		saveSelectedToXml(out:htmlparser.XmlBuilder) : nanofl.engine.libraryitems.LibraryItem[];
+		pasteFromXml(xml:htmlparser.XmlNodeElement) : boolean;
 		duplicateSelected() : void;
 		getObjectsInRectangle(x:number, y:number, width:number, height:number) : nanofl.engine.ISelectable[];
 		cutToClipboard() : void;
@@ -7521,8 +7520,7 @@ declare module nanofl.ide
 		getSceneItem() : nanofl.engine.libraryitems.MovieClipItem;
 		getItems(includeScene?:boolean) : nanofl.engine.libraryitems.LibraryItem[];
 		getRawLibrary() : nanofl.engine.Library;
-		getForClipboard() : string;
-		pasteFromXml(data:string) : boolean;
+		getSelectedItemsWithDependencies() : nanofl.engine.libraryitems.LibraryItem[];
 		hasSelected() : boolean;
 		removeSelected() : void;
 		renameByUser(namePath:string, callb?:(arg:boolean) => void) : void;
@@ -7588,7 +7586,6 @@ declare module nanofl.ide
 		static optimize(library:nanofl.engine.Library) : void;
 		static getUnusedItems(library:nanofl.engine.Library) : string[];
 		static getItemsContainInstances(library:nanofl.engine.Library, namePaths:string[]) : nanofl.engine.libraryitems.LibraryItem[];
-		static fixFolders(library:nanofl.engine.Library) : void;
 	}
 	
 	export class Navigator
@@ -7641,6 +7638,7 @@ declare module nanofl.ide
 	{
 		getTempDirectory() : string;
 		copyDir(src:string, dest:string, overwrite?:boolean, callb:() => void) : void;
+		copyFiles(files:{ src : string; dest : string; }[], callb:() => void) : void;
 		requestUrl(url:string, callb:(arg:string) => void) : void;
 		openInBrowser(url:string) : void;
 		uploadFilesAsLibraryItems(library:nanofl.engine.Library, folderPath:string, files:File[], callb:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
@@ -7676,7 +7674,7 @@ declare module nanofl.ide
 		isDirectory(path:string) : boolean;
 		run(filePath:string, args:string[], blocking:boolean) : number;
 		copy(srcPath:string, destPath:string) : void;
-		rename(oldName:string, newName:string) : void;
+		rename(srcPath:string, destPath:string) : void;
 		remove(path:string) : void;
 		findFiles(dirPath:string, onFile?:(arg:string) => void, onDir?:(arg:string) => boolean) : void;
 		getPluginPaths() : string[];
@@ -7684,8 +7682,6 @@ declare module nanofl.ide
 		getLastModified(path:string) : Date;
 		zip(srcDir:string, destZip:string) : boolean;
 		unzip(srcZip:string, destDir:string) : boolean;
-		basicRemove(path:string) : void;
-		basicRename(oldPath:string, newPath:string) : void;
 		getEnvironmentVariable(name:string) : string;
 	}
 }
@@ -7718,7 +7714,7 @@ declare module nanofl.engine.elements
 		static parse(base:htmlparser.HtmlNodeElement) : nanofl.engine.elements.Element[];
 		static save(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>, out:htmlparser.XmlBuilder) : void;
 		static expandGroups(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>) : nanofl.engine.elements.Element[];
-		static findSymbols(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>, callb:(arg:nanofl.engine.libraryitems.InstancableItem) => void) : void;
+		static getUsedSymbols(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>) : nanofl.engine.libraryitems.LibraryItem[];
 	}
 	
 	export class GroupElement extends nanofl.engine.elements.Element implements nanofl.engine.IElementsContainer, nanofl.engine.IPathElement
@@ -7868,7 +7864,7 @@ declare module nanofl.ide.undo
 		/**
 		 * This method may be called several times with different operations.
 		 */
-		beginTransaction(operations:{ document : boolean; element : nanofl.engine.elements.Element; elements : boolean; figure : boolean; libraryAddItem : string; libraryChangeItems : string[]; libraryRemoveItems : string[]; libraryRenameItem : { oldNamePath : string; newNamePath : string; }; timeline : boolean; transformations : boolean; }) : void;
+		beginTransaction(operations:{ document : boolean; element : nanofl.engine.elements.Element; elements : boolean; figure : boolean; libraryAddItems : boolean; libraryChangeItems : string[]; libraryRemoveItems : string[]; libraryRenameItem : { oldNamePath : string; newNamePath : string; }; timeline : boolean; transformations : boolean; }) : void;
 		cancelTransaction() : void;
 		revertTransaction() : void;
 		forgetTransaction() : void;
@@ -8995,6 +8991,7 @@ declare module nanofl.engine.libraryitems
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		getFilePathTemplate() : string;
 		getFilePathToRunWithEditor() : string;
+		getLibraryFilePaths() : string[];
 		preload(ready:() => void) : void;
 		duplicate(newNamePath:string) : nanofl.engine.libraryitems.LibraryItem;
 		remove() : void;
@@ -9031,6 +9028,7 @@ declare module nanofl.engine.libraryitems
 		getDisplayObjectClassName() : string;
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 		getFilePathToRunWithEditor() : string;
+		getLibraryFilePaths() : string[];
 		toString() : string;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.BitmapItem;
 	}

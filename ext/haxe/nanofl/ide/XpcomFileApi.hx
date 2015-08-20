@@ -14,7 +14,7 @@ extern class XpcomFileApi implements nanofl.engine.FileApi
 	function isDirectory(path:String) : Bool;
 	function run(filePath:String, args:Array<String>, blocking:Bool) : Int;
 	function copy(srcPath:String, destPath:String) : Void;
-	function rename(oldName:String, newName:String) : Void;
+	function rename(srcPath:String, destPath:String) : Void;
 	function remove(path:String) : Void;
 	function findFiles(dirPath:String, ?onFile:String -> Void, ?onDir:String -> Bool) : Void;
 	function getPluginPaths() : Array<String>;
@@ -22,7 +22,5 @@ extern class XpcomFileApi implements nanofl.engine.FileApi
 	function getLastModified(path:String) : Date;
 	function zip(srcDir:String, destZip:String) : Bool;
 	function unzip(srcZip:String, destDir:String) : Bool;
-	function basicRemove(path:String) : Void;
-	function basicRename(oldPath:String, newPath:String) : Void;
 	function getEnvironmentVariable(name:String) : String;
 }
