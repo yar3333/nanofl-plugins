@@ -16,7 +16,7 @@ class HaxeGenerator extends CodeGenerator
 	override function getScriptUrls(dir:String, name:String) : Array<String> 
 	{
 		return super.getScriptUrls(dir, name)
-			.concat([ "bin/" + name + ".js" ]);
+			.concat([ "bin/application.js" ]);
 	}
 	
 	function generateClasses(dir:String, name:String)

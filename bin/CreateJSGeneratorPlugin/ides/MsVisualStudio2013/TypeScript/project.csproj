@@ -6,7 +6,7 @@
     <ProjectGuid>{guid}</ProjectGuid>
     <TypeScriptToolsVersion>1.4</TypeScriptToolsVersion>
     <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
-    <TypeScriptOutFile>bin\$(MSBuildProjectName).js</TypeScriptOutFile>
+    <TypeScriptOutFile>bin\application.js</TypeScriptOutFile>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <OutputPath>$(TEMP)\{guid}</OutputPath>
 	<IntermediateOutputPath>$(TEMP)</IntermediateOutputPath>

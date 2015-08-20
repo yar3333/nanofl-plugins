@@ -926,7 +926,7 @@ languages_HaxeGenerator.prototype = $extend(languages_CodeGenerator.prototype,{
 		this.generateTextureAtlases(dir);
 	}
 	,getScriptUrls: function(dir,name) {
-		return languages_CodeGenerator.prototype.getScriptUrls.call(this,dir,name).concat(["bin/" + name + ".js"]);
+		return languages_CodeGenerator.prototype.getScriptUrls.call(this,dir,name).concat(["bin/application.js"]);
 	}
 	,generateClasses: function(dir,name) {
 		var linkedItems = this.library.getInstancableItems().filter(function(item) {
@@ -1094,7 +1094,7 @@ languages_TypeScriptGenerator.prototype = $extend(languages_CodeGenerator.protot
 		this.generateTextureAtlases(dir);
 	}
 	,getScriptUrls: function(dir,name) {
-		return languages_CodeGenerator.prototype.getScriptUrls.call(this,dir,name).concat(["bin/" + name + ".js"]);
+		return languages_CodeGenerator.prototype.getScriptUrls.call(this,dir,name).concat(["bin/application.js"]);
 	}
 	,generateClasses: function(dir,name) {
 		var linkedItems = this.library.getInstancableItems().filter(function(item) {
