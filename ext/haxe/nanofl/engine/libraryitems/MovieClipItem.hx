@@ -34,5 +34,5 @@ extern class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem im
 	function transform(m:nanofl.engine.geom.Matrix) : Void;
 	override function equ(item:nanofl.engine.libraryitems.LibraryItem) : Bool;
 	override function toString() : String;
-	static function parse(namePath:String, movieClipNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MovieClipItem;
+	static function parse(namePath:String, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MovieClipItem;
 }

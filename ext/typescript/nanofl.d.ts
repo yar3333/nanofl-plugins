@@ -8095,7 +8095,7 @@ declare module htmlparser
 	
 	export class XmlBuilder
 	{
-		constructor(indent?:string);
+		constructor(indent?:string, newLine?:string);
 		xml : htmlparser.XmlDocument;
 		begin(tag:string, attrs?:{ value : any; name : string; }[]) : htmlparser.XmlBuilder;
 		end() : htmlparser.XmlBuilder;
@@ -9050,9 +9050,12 @@ declare module nanofl.engine.libraryitems
 		opened : boolean;
 		clone() : nanofl.engine.libraryitems.FolderItem;
 		save(fileApi:nanofl.engine.FileApi) : void;
+		hasXmlToSave() : boolean;
+		saveToXml(out:htmlparser.XmlBuilder) : void;
 		getIcon() : string;
 		toString() : string;
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
+		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.FolderItem;
 	}
 	
 	export class FontItem extends nanofl.engine.libraryitems.LibraryItem
@@ -9106,7 +9109,7 @@ declare module nanofl.engine.libraryitems
 		transform(m:nanofl.engine.geom.Matrix) : void;
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 		toString() : string;
-		static parse(namePath:string, movieClipNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MovieClipItem;
+		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MovieClipItem;
 	}
 	
 	export class SoundItem extends nanofl.engine.libraryitems.LibraryItem
