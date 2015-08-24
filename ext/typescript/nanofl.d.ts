@@ -7383,17 +7383,19 @@ declare module nanofl.ide
 		navigator : nanofl.ide.Navigator;
 		editor : nanofl.ide.Editor;
 		undoQueue : nanofl.ide.undo.UndoQueue;
-		reloading : boolean;
+		get_busy() : boolean
+	 	set_busy(v:boolean) : boolean;
 		activate(isCenterView:boolean) : void;
 		setProperties(properties:nanofl.engine.DocumentProperties) : void;
 		updateTitle() : void;
 		save(callb?:(arg:boolean) => void) : void;
 		saveAs(newPath?:string, callb?:(arg:boolean) => void) : void;
 		export(destPath:string, exporter?:nanofl.ide.Exporter, callb?:(arg:boolean) => void) : void;
-		reload(events:{ add : (arg:string) => void; begin : () => void; end : () => void; remove : (arg:string) => void; }) : void;
+		reload(progress:(arg:{ added : string[]; }) => void, finish:(arg:boolean) => void) : void;
 		test() : void;
 		resize(width:number, height:number) : void;
 		canBeSaved() : boolean;
+		processLibraryFiles(callb:(arg:() => void) => void) : void;
 		static createTemporary(app:nanofl.ide.Application) : nanofl.ide.Document;
 		static load(app:nanofl.ide.Application, path:string, callb:(arg:nanofl.ide.Document) => void) : void;
 		static import_(app:nanofl.ide.Application, path:string, importer?:nanofl.ide.Importer, callb?:(arg:nanofl.ide.Document) => void) : void;
@@ -7506,6 +7508,7 @@ declare module nanofl.ide
 	export class EditorLibrary
 	{
 		constructor(app:nanofl.ide.Application, library:nanofl.engine.Library);
+		libraryDir : string;
 		activeItem : nanofl.engine.libraryitems.LibraryItem;
 		renameItem(namePath:string, newNamePath:string) : boolean;
 		removeItems(namePaths:string[]) : void;
@@ -7637,8 +7640,9 @@ declare module nanofl.ide
 	export interface ServerApi
 	{
 		getTempDirectory() : string;
-		copyDir(src:string, dest:string, overwrite?:boolean, callb:() => void) : void;
+		copyDir(src:string, dest:string, overwrite?:boolean, callb:(arg:boolean) => void) : void;
 		copyFiles(files:{ src : string; dest : string; }[], callb:() => void) : void;
+		remove(paths:string[], callb:() => void) : void;
 		requestUrl(url:string, callb:(arg:string) => void) : void;
 		openInBrowser(url:string) : void;
 		uploadFilesAsLibraryItems(library:nanofl.engine.Library, folderPath:string, files:File[], callb:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
@@ -7666,10 +7670,12 @@ declare module nanofl.ide
 		getTempDirectory() : string;
 		getToolsDirectory() : string;
 		getPluginsDirectory() : string;
+		createDirectory(path:string) : void;
 		readDirectory(path:string) : string[];
 		exists(path:string) : boolean;
 		getContent(filePath:string) : string;
 		saveContent(filePath:string, text:string, append?:boolean) : void;
+		getBinary(filePath:string) : nanofl.engine.Bytes;
 		saveBinary(filePath:string, data:nanofl.engine.Bytes) : void;
 		isDirectory(path:string) : boolean;
 		run(filePath:string, args:string[], blocking:boolean) : number;
@@ -8423,9 +8429,11 @@ declare module nanofl.engine
 		getTempDirectory() : string;
 		getPluginsDirectory() : string;
 		getToolsDirectory() : string;
+		createDirectory(path:string) : void;
 		readDirectory(dir:string) : string[];
 		getContent(filePath:string) : string;
 		saveContent(filePath:string, text:string, append?:boolean) : void;
+		getBinary(filePath:string) : nanofl.engine.Bytes;
 		saveBinary(filePath:string, data:nanofl.engine.Bytes) : void;
 		exists(path:string) : boolean;
 		isDirectory(path:string) : boolean;
@@ -8988,6 +8996,7 @@ declare module nanofl.engine.libraryitems
 		clone() : nanofl.engine.libraryitems.LibraryItem;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		save(fileApi:nanofl.engine.FileApi) : void;
+		hasXmlToSave() : boolean;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		getFilePathTemplate() : string;
 		getFilePathToRunWithEditor() : string;
@@ -9003,6 +9012,7 @@ declare module nanofl.engine.libraryitems
 	export class InstancableItem extends nanofl.engine.libraryitems.LibraryItem
 	{
 		linkedClass : string;
+		hasXmlToSave() : boolean;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		newInstance() : nanofl.engine.elements.Instance;
 		getDisplayObjectClassName() : string;
@@ -9019,6 +9029,7 @@ declare module nanofl.engine.libraryitems
 		clone() : nanofl.engine.libraryitems.BitmapItem;
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;
+		hasXmlToSave() : boolean;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		getUrl() : string;
@@ -9038,6 +9049,7 @@ declare module nanofl.engine.libraryitems
 		constructor(namePath:string);
 		opened : boolean;
 		clone() : nanofl.engine.libraryitems.FolderItem;
+		save(fileApi:nanofl.engine.FileApi) : void;
 		getIcon() : string;
 		toString() : string;
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
@@ -9051,6 +9063,7 @@ declare module nanofl.engine.libraryitems
 		clone() : nanofl.engine.libraryitems.FontItem;
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;
+		hasXmlToSave() : boolean;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		toFont() : nanofl.engine.Font;
 		preload(ready:() => void) : void;
@@ -9082,6 +9095,7 @@ declare module nanofl.engine.libraryitems
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
+		hasXmlToSave() : boolean;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		getTotalFrames() : number;
 		getTimelineState() : nanofl.ide.undo.states.TimelineState;
@@ -9103,6 +9117,7 @@ declare module nanofl.engine.libraryitems
 		clone() : nanofl.engine.libraryitems.SoundItem;
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;
+		hasXmlToSave() : boolean;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		getUrl() : string;
@@ -9124,6 +9139,7 @@ declare module nanofl.engine.libraryitems
 		clone() : nanofl.engine.libraryitems.SpriteItem;
 		getIcon() : string;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
+		hasXmlToSave() : boolean;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		preload(ready:() => void) : void;
 		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;

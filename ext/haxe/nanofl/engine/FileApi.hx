@@ -5,9 +5,11 @@ extern interface FileApi
 	function getTempDirectory() : String;
 	function getPluginsDirectory() : String;
 	function getToolsDirectory() : String;
+	function createDirectory(path:String) : Void;
 	function readDirectory(dir:String) : Array<String>;
 	function getContent(filePath:String) : String;
 	function saveContent(filePath:String, text:String, ?append:Bool) : Void;
+	function getBinary(filePath:String) : nanofl.engine.Bytes;
 	function saveBinary(filePath:String, data:nanofl.engine.Bytes) : Void;
 	function exists(path:String) : Bool;
 	function isDirectory(path:String) : Bool;

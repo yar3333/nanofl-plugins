@@ -6,10 +6,12 @@ extern class XpcomFileApi implements nanofl.engine.FileApi
 	function getTempDirectory() : String;
 	function getToolsDirectory() : String;
 	function getPluginsDirectory() : String;
+	function createDirectory(path:String) : Void;
 	function readDirectory(path:String) : Array<String>;
 	function exists(path:String) : Bool;
 	function getContent(filePath:String) : String;
 	function saveContent(filePath:String, text:String, ?append:Bool) : Void;
+	function getBinary(filePath:String) : nanofl.engine.Bytes;
 	function saveBinary(filePath:String, data:nanofl.engine.Bytes) : Void;
 	function isDirectory(path:String) : Bool;
 	function run(filePath:String, args:Array<String>, blocking:Bool) : Int;

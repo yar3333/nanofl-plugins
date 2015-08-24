@@ -13,6 +13,7 @@ extern class SpriteItem extends nanofl.engine.libraryitems.InstancableItem imple
 	override function clone() : nanofl.engine.libraryitems.SpriteItem;
 	override function getIcon() : String;
 	override function loadProperties(xml:htmlparser.HtmlNodeElement) : Void;
+	override function hasXmlToSave() : Bool;
 	override function saveToXml(out:htmlparser.XmlBuilder) : Void;
 	override function preload(ready:Void -> Void) : Void;
 	override function createDisplayObject(initFrameIndex:Int, childFrameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.DisplayObject;
