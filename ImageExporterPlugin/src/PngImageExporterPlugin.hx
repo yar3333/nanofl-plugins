@@ -11,7 +11,7 @@ class PngImageExporterPlugin implements IExporterPlugin
 	public var name = "PngImageExporter";
 	
 	public var menuItemName = "PNG Image (*.png)";
-	public var menuItemIcon = "icon-picture";
+	public var menuItemIcon = "custom-icon-picture";
 	public var fileFilterDescription = "PNG Image (*.png)";
 	public var fileFilterExtensions = [ "png" ];
 	public var fileDefaultExtension = "png";
