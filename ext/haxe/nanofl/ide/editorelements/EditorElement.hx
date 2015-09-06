@@ -14,5 +14,5 @@ extern class EditorElement implements nanofl.engine.ISelectable
 	function rebind() : Void;
 	function getBounds() : createjs.Rectangle;
 	function getTransformedBounds() : createjs.Rectangle;
-	function hitTest(x:Float, y:Float) : Bool;
+	function hitTest(pos:nanofl.engine.geom.Point) : Bool;
 }

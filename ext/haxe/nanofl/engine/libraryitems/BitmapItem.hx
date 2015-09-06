@@ -20,6 +20,7 @@ extern class BitmapItem extends nanofl.engine.libraryitems.InstancableItem imple
 	override function equ(item:nanofl.engine.libraryitems.LibraryItem) : Bool;
 	override function getFilePathToRunWithEditor() : String;
 	override function getLibraryFilePaths() : Array<String>;
+	override function getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 	override function toString() : String;
 	static function parse(namePath:String, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.BitmapItem;
 }

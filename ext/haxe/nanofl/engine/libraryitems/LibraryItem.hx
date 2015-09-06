@@ -10,7 +10,6 @@ extern class LibraryItem
 	function save(fileApi:nanofl.engine.FileApi) : Void;
 	function hasXmlToSave() : Bool;
 	function saveToXml(out:htmlparser.XmlBuilder) : Void;
-	function getFilePathTemplate() : String;
 	function getFilePathToRunWithEditor() : String;
 	function getLibraryFilePaths() : Array<String>;
 	function preload(ready:Void -> Void) : Void;

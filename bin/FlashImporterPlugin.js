@@ -225,6 +225,9 @@ Reflect.fields = function(o) {
 	}
 	return a;
 };
+Reflect.isFunction = function(f) {
+	return typeof(f) == "function" && !(f.__name__ || f.__ename__);
+};
 Reflect.compare = function(a,b) {
 	if(a == b) return 0; else if(a > b) return 1; else return -1;
 };
@@ -781,7 +784,7 @@ flashimport_ShapeConvertor.prototype = {
 		while(i < fillContours.length) {
 			var j = i + 1;
 			while(j < fillContours.length) {
-				if(fillContours[i].contour.equ(fillContours[j].contour)) console.log("Equ contours:\n\tfill[i] = " + Std.string(fillContours[i].fill) + "\n\tfill[j] = " + Std.string(fillContours[j].fill) + "\n\tcontour = " + Std.string(fillContours[i].contour));
+				if(fillContours[i].contour.equ(fillContours[j].contour)) haxe_Log.trace("Equ contours:\n\tfill[i] = " + Std.string(fillContours[i].fill) + "\n\tfill[j] = " + Std.string(fillContours[j].fill) + "\n\tcontour = " + Std.string(fillContours[i].contour),{ fileName : "ShapeConvertor.hx", lineNumber : 180, className : "flashimport.ShapeConvertor", methodName : "assertFillContoursCorrect"});
 				j++;
 			}
 			i++;
@@ -1189,6 +1192,54 @@ haxe_CallStack.callStack = function() {
 haxe_CallStack.exceptionStack = function() {
 	return haxe_CallStack.getStack(haxe_CallStack.lastException);
 };
+haxe_CallStack.toString = function(stack) {
+	var b = new StringBuf();
+	var _g = 0;
+	while(_g < stack.length) {
+		var s = stack[_g];
+		++_g;
+		b.b += "\nCalled from ";
+		haxe_CallStack.itemToString(b,s);
+	}
+	return b.b;
+};
+haxe_CallStack.itemToString = function(b,s) {
+	switch(s[1]) {
+	case 0:
+		b.b += "a C function";
+		break;
+	case 1:
+		var m = s[2];
+		b.b += "module ";
+		if(m == null) b.b += "null"; else b.b += "" + m;
+		break;
+	case 2:
+		var line = s[4];
+		var file = s[3];
+		var s1 = s[2];
+		if(s1 != null) {
+			haxe_CallStack.itemToString(b,s1);
+			b.b += " (";
+		}
+		if(file == null) b.b += "null"; else b.b += "" + file;
+		b.b += " line ";
+		if(line == null) b.b += "null"; else b.b += "" + line;
+		if(s1 != null) b.b += ")";
+		break;
+	case 3:
+		var meth = s[3];
+		var cname = s[2];
+		if(cname == null) b.b += "null"; else b.b += "" + cname;
+		b.b += ".";
+		if(meth == null) b.b += "null"; else b.b += "" + meth;
+		break;
+	case 4:
+		var n = s[2];
+		b.b += "local function #";
+		if(n == null) b.b += "null"; else b.b += "" + n;
+		break;
+	}
+};
 haxe_CallStack.makeStack = function(s) {
 	if(s == null) return []; else if(typeof(s) == "string") {
 		var stack = s.split("\n");
@@ -1222,6 +1273,11 @@ var haxe__$Int64__$_$_$Int64 = function(high,low) {
 haxe__$Int64__$_$_$Int64.__name__ = ["haxe","_Int64","___Int64"];
 haxe__$Int64__$_$_$Int64.prototype = {
 	__class__: haxe__$Int64__$_$_$Int64
+};
+var haxe_Log = function() { };
+haxe_Log.__name__ = ["haxe","Log"];
+haxe_Log.trace = function(v,infos) {
+	js_Boot.__trace(v,infos);
 };
 var haxe_Timer = function(time_ms) {
 	var me = this;
@@ -1478,6 +1534,25 @@ js__$Boot_HaxeError.prototype = $extend(Error.prototype,{
 });
 var js_Boot = function() { };
 js_Boot.__name__ = ["js","Boot"];
+js_Boot.__unhtml = function(s) {
+	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+};
+js_Boot.__trace = function(v,i) {
+	var msg;
+	if(i != null) msg = i.fileName + ":" + i.lineNumber + ": "; else msg = "";
+	msg += js_Boot.__string_rec(v,"");
+	if(i != null && i.customParams != null) {
+		var _g = 0;
+		var _g1 = i.customParams;
+		while(_g < _g1.length) {
+			var v1 = _g1[_g];
+			++_g;
+			msg += "," + js_Boot.__string_rec(v1,"");
+		}
+	}
+	var d;
+	if(typeof(document) != "undefined" && (d = document.getElementById("haxe:trace")) != null) d.innerHTML += js_Boot.__unhtml(msg) + "<br/>"; else if(typeof console != "undefined" && console.log != null) console.log(msg);
+};
 js_Boot.getClass = function(o) {
 	if((o instanceof Array) && o.__enum__ == null) return Array; else {
 		var cl = o.__class__;
@@ -1879,8 +1954,36 @@ stdlib_Debug.getObjectDump = function(obj,limit,level,prefix) {
 	return s;
 };
 stdlib_Debug.assert = function(e,message,pos) {
+	if(!e) {
+		if(message == null) message = "error"; else if(Reflect.isFunction(message)) message = message();
+		var s = "ASSERT " + Std.string(message) + " in " + pos.fileName + " at line " + pos.lineNumber;
+		var r = new stdlib_Exception(s);
+		r.stack.shift();
+		throw new js__$Boot_HaxeError(r);
+	}
 };
 stdlib_Debug.traceStack = function(v,pos) {
+	var stack = stdlib_StringTools.trim(stdlib_StringTools.replace(haxe_CallStack.toString(haxe_CallStack.callStack()),"prototype<.",""));
+	var lines = stack.split("\n").filter(function(s) {
+		return s != "Called from module";
+	}).map(function(s1) {
+		return s1.split("@").map(function(ss) {
+			return stdlib_StringTools.rtrim(ss,"</");
+		}).join("@");
+	});
+	var len = 0;
+	var _g = 0;
+	while(_g < lines.length) {
+		var line = lines[_g];
+		++_g;
+		len = stdlib_Std.max(len,line.indexOf("@"));
+	}
+	lines = lines.map(function(line1) {
+		var ss1 = line1.split("@");
+		return ss1[0] + StringTools.rpad(""," ",len - ss1[0].length + 1) + ss1[1];
+	});
+	stack = lines.slice(1).join("\n");
+	haxe_Log.trace("TRACE " + (typeof(v) == "string"?v:stdlib_StringTools.trim(stdlib_Debug.getDump(v))) + "\nStack trace:\n" + stack,{ fileName : "Debug.hx", lineNumber : 136, className : "stdlib.Debug", methodName : "traceStack", customParams : [pos]});
 };
 stdlib_Debug.methodMustBeOverriden = function(_this,pos) {
 	throw new js__$Boot_HaxeError(new stdlib_Exception("Method " + pos.methodName + "() must be overriden in class " + Type.getClassName(Type.getClass(_this)) + "."));
@@ -2298,7 +2401,7 @@ stdlib_Utf8.htmlUnescapeChar = function(escape) {
 		r = this1.get(escape);
 		if(r != null) return r;
 	}
-	console.log("Unknow escape sequence: " + escape);
+	haxe_Log.trace("Unknow escape sequence: " + escape,{ fileName : "Utf8.hx", lineNumber : 129, className : "stdlib.Utf8", methodName : "htmlUnescapeChar"});
 	return null;
 };
 stdlib_Utf8.get_htmlEscapeMap = function() {
@@ -2493,6 +2596,17 @@ if(Array.prototype.map == null) Array.prototype.map = function(f) {
 		a[i] = f(this[i]);
 	}
 	return a;
+};
+if(Array.prototype.filter == null) Array.prototype.filter = function(f1) {
+	var a1 = [];
+	var _g11 = 0;
+	var _g2 = this.length;
+	while(_g11 < _g2) {
+		var i1 = _g11++;
+		var e = this[i1];
+		if(f1(e)) a1.push(e);
+	}
+	return a1;
 };
 var __map_reserved = {}
 var ArrayBuffer = (Function("return typeof ArrayBuffer != 'undefined' ? ArrayBuffer : null"))() || js_html_compat_ArrayBuffer;

@@ -2,7 +2,7 @@ package nanofl.ide;
 
 extern class Figure
 {
-	function new(layers:Array<nanofl.ide.EditorLayer>) : Void;
+	function new(editor:nanofl.ide.Editor, layers:Array<nanofl.ide.EditorLayer>) : Void;
 	function getVertexAtPos(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 	function getSameEdgeWithLayers(edge:nanofl.engine.geom.Edge) : Array<{ var layerIndex : Int; var edge : nanofl.engine.geom.Edge; }>;
 	function getEdgeAtPos(pt:nanofl.engine.geom.Point, zoomLevel:Float) : { var dist : Float; var edge : nanofl.engine.geom.Edge; var layerIndex : Int; var t : Float; };

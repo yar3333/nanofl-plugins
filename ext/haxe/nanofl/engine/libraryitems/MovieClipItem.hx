@@ -30,6 +30,7 @@ extern class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem im
 	function setTimelineState(state:nanofl.ide.undo.states.TimelineState) : Void;
 	override function createDisplayObject(initFrameIndex:Int, childFrameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : nanofl.MovieClip;
 	override function updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : Void;
+	override function getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 	override function getDisplayObjectClassName() : String;
 	function transform(m:nanofl.engine.geom.Matrix) : Void;
 	override function equ(item:nanofl.engine.libraryitems.LibraryItem) : Bool;

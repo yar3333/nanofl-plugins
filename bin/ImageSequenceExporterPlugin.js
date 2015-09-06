@@ -50,7 +50,7 @@ var JpegImageSequenceExporterPlugin = function() {
 	this.fileDefaultExtension = "jpg";
 	this.fileFilterExtensions = ["jpg","jpeg"];
 	this.fileFilterDescription = "JPEG Images Sequence (*.jpg)";
-	this.menuItemIcon = "icon-film";
+	this.menuItemIcon = "custom-icon-film";
 	this.menuItemName = "Sequence of JPEG Images (*.jpg)";
 	this.name = "JpegImageSequenceExporter";
 };
@@ -75,7 +75,7 @@ var PngImageSequenceExporterPlugin = function() {
 	this.fileDefaultExtension = "png";
 	this.fileFilterExtensions = ["png"];
 	this.fileFilterDescription = "PNG Images Sequence (*.png)";
-	this.menuItemIcon = "icon-film";
+	this.menuItemIcon = "custom-icon-film";
 	this.menuItemName = "Sequence of PNG Images (*.png)";
 	this.name = "PngImageSequenceExporter";
 };

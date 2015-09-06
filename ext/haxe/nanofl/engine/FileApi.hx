@@ -15,6 +15,7 @@ extern interface FileApi
 	function isDirectory(path:String) : Bool;
 	function run(filePath:String, args:Array<String>, blocking:Bool) : Int;
 	function copy(srcPath:String, destPath:String) : Void;
+	function copyDir(src:String, dest:String, ?overwrite:Bool) : Bool;
 	function rename(oldPath:String, newPath:String) : Void;
 	function remove(path:String) : Void;
 	function findFiles(dirPath:String, ?onFile:String -> Void, ?onDir:String -> Bool) : Void;

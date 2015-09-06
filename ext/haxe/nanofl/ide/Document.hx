@@ -3,6 +3,10 @@ package nanofl.ide;
 extern class Document
 {
 	/**
+	 * Document UUID (generated on every document object create).
+	 */
+	var id(default, null) : String;
+	/**
 	 * Used when document was opened directly from none-NanoFL format. In other cases is null.
 	 */
 	var originalPath(default, null) : String;
@@ -24,12 +28,15 @@ extern class Document
 	function save(?callb:Bool -> Void) : Void;
 	function saveAs(?newPath:String, ?callb:Bool -> Void) : Void;
 	function export(destPath:String, ?exporter:nanofl.ide.Exporter, ?callb:Bool -> Void) : Void;
-	function reload(progress:{ var added : Array<String>; } -> Void, finish:Bool -> Void) : Void;
+	function reload(callb:Array<nanofl.engine.libraryitems.LibraryItem> -> Void) : Void;
+	function reloadWoTransactionForced(callb:Array<nanofl.engine.libraryitems.LibraryItem> -> Void) : Void;
 	function test() : Void;
 	function resize(width:Int, height:Int) : Void;
 	function canBeSaved() : Bool;
-	function processLibraryFiles(callb:Void -> Void -> Void) : Void;
+	function dispose() : Void;
+	function isTemporary() : Bool;
 	static function createTemporary(app:nanofl.ide.Application) : nanofl.ide.Document;
 	static function load(app:nanofl.ide.Application, path:String, callb:nanofl.ide.Document -> Void) : Void;
 	static function import_(app:nanofl.ide.Application, path:String, ?importer:nanofl.ide.Importer, ?callb:nanofl.ide.Document -> Void) : Void;
+	static function disposeAll() : Void;
 }

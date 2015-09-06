@@ -11,5 +11,6 @@ extern class FolderItem extends nanofl.engine.libraryitems.LibraryItem
 	override function getIcon() : String;
 	override function toString() : String;
 	override function equ(item:nanofl.engine.libraryitems.LibraryItem) : Bool;
+	override function getLibraryFilePaths() : Array<String>;
 	static function parse(namePath:String, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.FolderItem;
 }

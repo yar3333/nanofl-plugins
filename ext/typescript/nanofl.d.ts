@@ -6639,7 +6639,10 @@ declare module nanofl.engine.geom
 		static extend(bounds:nanofl.engine.geom.Bounds, b:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 		static isIntersect(a:nanofl.engine.geom.Bounds, b:nanofl.engine.geom.Bounds, gap?:number) : boolean;
 		static isPointInside(bounds:nanofl.engine.geom.Bounds, x:number, y:number, gap?:number) : boolean;
+		static isPointInsideP(bounds:nanofl.engine.geom.Bounds, pt:nanofl.engine.geom.Point, gap?:number) : boolean;
+		static getNearestPoint(bounds:nanofl.engine.geom.Bounds, pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 		static clone(bounds:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
+		static toBounds(rect:{ height : number; width : number; x : number; y : number; }) : nanofl.engine.geom.Bounds;
 		static toString(bounds:nanofl.engine.geom.Bounds) : string;
 		static toRectangle(bounds:nanofl.engine.geom.Bounds) : createjs.Rectangle;
 	}
@@ -6783,6 +6786,7 @@ declare module nanofl.engine.geom
 		isIdentity() : boolean;
 		invert() : nanofl.engine.geom.Matrix;
 		transformPoint(x:number, y:number) : nanofl.engine.geom.Point;
+		transformPointP(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 		clone() : nanofl.engine.geom.Matrix;
 		translate(tx:number, ty:number) : nanofl.engine.geom.Matrix;
 		equ(m:nanofl.engine.geom.Matrix) : boolean;
@@ -7333,6 +7337,7 @@ declare module nanofl.ide
 		clipboard : nanofl.ide.Clipboard;
 		createNewEmptyDocument(callb?:(arg:nanofl.ide.Document) => void) : void;
 		document : nanofl.ide.Document;
+		dragAndDrop : nanofl.ide.draganddrop.DragAndDrop;
 		exportDocument(exporter:nanofl.ide.plugins.IExporterPlugin, callb?:(arg:boolean) => void) : void;
 		fileApi : nanofl.ide.XpcomFileApi;
 		helpers : nanofl.ide.Helpers;
@@ -7348,7 +7353,13 @@ declare module nanofl.ide
 	export class CachedFile
 	{
 		constructor(fileApi:nanofl.engine.FileApi, libraryDir:string, path:string);
+		/**
+		 * Relative file path.
+		 */
 		path : string;
+		/**
+		 * If true - skip this file.
+		 */
 		excluded : boolean;
 		exclude() : void;
 		getText() : string;
@@ -7369,6 +7380,10 @@ declare module nanofl.ide
 	
 	export class Document
 	{
+		/**
+		 * Document UUID (generated on every document object create).
+		 */
+		id : string;
 		/**
 		 * Used when document was opened directly from none-NanoFL format. In other cases is null.
 		 */
@@ -7391,14 +7406,17 @@ declare module nanofl.ide
 		save(callb?:(arg:boolean) => void) : void;
 		saveAs(newPath?:string, callb?:(arg:boolean) => void) : void;
 		export(destPath:string, exporter?:nanofl.ide.Exporter, callb?:(arg:boolean) => void) : void;
-		reload(progress:(arg:{ added : string[]; }) => void, finish:(arg:boolean) => void) : void;
+		reload(callb:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
+		reloadWoTransactionForced(callb:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
 		test() : void;
 		resize(width:number, height:number) : void;
 		canBeSaved() : boolean;
-		processLibraryFiles(callb:(arg:() => void) => void) : void;
+		dispose() : void;
+		isTemporary() : boolean;
 		static createTemporary(app:nanofl.ide.Application) : nanofl.ide.Document;
 		static load(app:nanofl.ide.Application, path:string, callb:(arg:nanofl.ide.Document) => void) : void;
 		static import_(app:nanofl.ide.Application, path:string, importer?:nanofl.ide.Importer, callb?:(arg:nanofl.ide.Document) => void) : void;
+		static disposeAll() : void;
 	}
 	
 	export class Editor
@@ -7464,6 +7482,7 @@ declare module nanofl.ide
 		flipSelectedHorizontal() : void;
 		flipSelectedVertical() : void;
 		getSelectedBounds() : { height : number; width : number; x : number; y : number; };
+		getHitTestGap() : number;
 	}
 	
 	export class EditorLayer
@@ -7507,15 +7526,16 @@ declare module nanofl.ide
 	
 	export class EditorLibrary
 	{
-		constructor(app:nanofl.ide.Application, library:nanofl.engine.Library);
+		constructor(app:nanofl.ide.Application, library:nanofl.engine.Library, document:nanofl.ide.Document);
 		libraryDir : string;
 		activeItem : nanofl.engine.libraryitems.LibraryItem;
-		renameItem(namePath:string, newNamePath:string) : boolean;
-		removeItems(namePaths:string[]) : void;
+		addItems(items:nanofl.engine.libraryitems.LibraryItem[], addUndoTransaction?:boolean) : void;
+		canRenameItem(oldNamePath:string, newNamePath:string) : boolean;
+		renameItems(itemRenames:{ oldNamePath : string; newNamePath : string; }[]) : void;
+		removeItems(namePaths:string[], filesRemoved?:() => void) : void;
 		copyAndChangeDir(libraryDir:string, callb:() => void) : void;
 		getNextItemName() : string;
 		hasItem(namePath:string) : boolean;
-		addItem(item:nanofl.engine.libraryitems.LibraryItem) : void;
 		addFont(family:string, variants:nanofl.engine.FontVariant[]) : void;
 		preload(ready:() => void) : void;
 		getItem(namePath:string) : nanofl.engine.libraryitems.LibraryItem;
@@ -7526,7 +7546,7 @@ declare module nanofl.ide
 		getSelectedItemsWithDependencies() : nanofl.engine.libraryitems.LibraryItem[];
 		hasSelected() : boolean;
 		removeSelected() : void;
-		renameByUser(namePath:string, callb?:(arg:boolean) => void) : void;
+		renameByUser(namePath:string) : void;
 		deselectAll() : void;
 		update() : void;
 		getSelectedItems() : nanofl.engine.libraryitems.LibraryItem[];
@@ -7535,17 +7555,21 @@ declare module nanofl.ide
 		showPropertiesPopup() : void;
 		createEmptySymbol() : void;
 		createFolder() : void;
-		importFromPaths(paths:string[], folderPath?:string, ready?:() => void) : void;
-		importFromFiles(files:File[], folderPath?:string, callb?:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
+		importFiles(paths:string[], folderPath?:string, ready?:() => void) : void;
+		uploadFiles(files:File[], folderPath?:string, callb?:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
+		loadFilesFromClipboard(callb:(arg:boolean) => void) : void;
+		copyFilesIntoLibrary(srcDir:string, relativePaths:string[], callb?:() => void) : void;
 		generateTextureAtlases(textureAtlasesParams:Map<string, nanofl.ide.textureatlas.TextureAtlasParams>) : Map<string, nanofl.ide.textureatlas.TextureAtlas>;
 		selectUnusedItems() : void;
 		removeUnusedItems() : void;
 		optimize() : void;
+		drop(dropEffect:nanofl.ide.draganddrop.DropEffect, data:htmlparser.HtmlNodeElement, folder:string, callb:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
+		getWithExandedFolders(items:nanofl.engine.libraryitems.LibraryItem[]) : nanofl.engine.libraryitems.LibraryItem[];
 	}
 	
 	export class Figure
 	{
-		constructor(layers:nanofl.ide.EditorLayer[]);
+		constructor(editor:nanofl.ide.Editor, layers:nanofl.ide.EditorLayer[]);
 		getVertexAtPos(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 		getSameEdgeWithLayers(edge:nanofl.engine.geom.Edge) : { layerIndex : number; edge : nanofl.engine.geom.Edge; }[];
 		getEdgeAtPos(pt:nanofl.engine.geom.Point, zoomLevel:number) : { dist : number; edge : nanofl.engine.geom.Edge; layerIndex : number; t : number; };
@@ -7589,6 +7613,7 @@ declare module nanofl.ide
 		static optimize(library:nanofl.engine.Library) : void;
 		static getUnusedItems(library:nanofl.engine.Library) : string[];
 		static getItemsContainInstances(library:nanofl.engine.Library, namePaths:string[]) : nanofl.engine.libraryitems.LibraryItem[];
+		static hasEquItems(library:nanofl.engine.Library, items:nanofl.engine.libraryitems.LibraryItem[]) : boolean;
 	}
 	
 	export class Navigator
@@ -7641,12 +7666,13 @@ declare module nanofl.ide
 	{
 		getTempDirectory() : string;
 		copyDir(src:string, dest:string, overwrite?:boolean, callb:(arg:boolean) => void) : void;
-		copyFiles(files:{ src : string; dest : string; }[], callb:() => void) : void;
-		remove(paths:string[], callb:() => void) : void;
+		copyLibraryFiles(srcLibraryDir:string, relativePaths:string[], destLibraryDir:string, callb:() => void) : void;
 		requestUrl(url:string, callb:(arg:string) => void) : void;
 		openInBrowser(url:string) : void;
-		uploadFilesAsLibraryItems(library:nanofl.engine.Library, folderPath:string, files:File[], callb:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
+		uploadFiles(files:File[], destDir:string, callb:() => void) : void;
 		getFonts() : string[];
+		loadFilesFromClipboard(destDir:string, callb:(arg:boolean) => void) : void;
+		saveFilesIntoClipboard(baseDir:string, relativePaths:string[], callb:() => void) : void;
 	}
 	
 	export class ShapePropertiesOptions
@@ -7680,6 +7706,7 @@ declare module nanofl.ide
 		isDirectory(path:string) : boolean;
 		run(filePath:string, args:string[], blocking:boolean) : number;
 		copy(srcPath:string, destPath:string) : void;
+		copyDir(src:string, dest:string, overwrite?:boolean) : boolean;
 		rename(srcPath:string, destPath:string) : void;
 		remove(path:string) : void;
 		findFiles(dirPath:string, onFile?:(arg:string) => void, onDir?:(arg:string) => boolean) : void;
@@ -7711,6 +7738,7 @@ declare module nanofl.engine.elements
 		setState(state:nanofl.ide.undo.states.ElementState) : void;
 		transform(m:nanofl.engine.geom.Matrix, applyToStrokeAndFill?:boolean) : void;
 		equ(element:nanofl.engine.elements.Element) : boolean;
+		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 		toString() : string;
 		static parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.elements.Element;
 	}
@@ -7870,7 +7898,7 @@ declare module nanofl.ide.undo
 		/**
 		 * This method may be called several times with different operations.
 		 */
-		beginTransaction(operations:{ document : boolean; element : nanofl.engine.elements.Element; elements : boolean; figure : boolean; libraryAddItems : boolean; libraryChangeItems : string[]; libraryRemoveItems : string[]; libraryRenameItem : { oldNamePath : string; newNamePath : string; }; timeline : boolean; transformations : boolean; }) : void;
+		beginTransaction(operations:{ document : boolean; element : nanofl.engine.elements.Element; elements : boolean; figure : boolean; libraryAddItems : boolean; libraryChangeItems : string[]; libraryRemoveItems : string[]; libraryRenameItems : { oldNamePath : string; newNamePath : string; }[]; timeline : boolean; transformations : boolean; }) : void;
 		cancelTransaction() : void;
 		revertTransaction() : void;
 		forgetTransaction() : void;
@@ -7881,6 +7909,7 @@ declare module nanofl.ide.undo
 		canRedo() : boolean;
 		documentSaved() : void;
 		isDocumentModified() : boolean;
+		isEquToEmpty() : boolean;
 		toString() : string;
 	}
 }
@@ -8439,6 +8468,7 @@ declare module nanofl.engine
 		isDirectory(path:string) : boolean;
 		run(filePath:string, args:string[], blocking:boolean) : number;
 		copy(srcPath:string, destPath:string) : void;
+		copyDir(src:string, dest:string, overwrite?:boolean) : boolean;
 		rename(oldPath:string, newPath:string) : void;
 		remove(path:string) : void;
 		findFiles(dirPath:string, onFile?:(arg:string) => void, onDir?:(arg:string) => boolean) : void;
@@ -8639,6 +8669,7 @@ declare module nanofl.engine
 		loadItems(fileApi:nanofl.engine.FileApi) : void;
 		parseItems(base:htmlparser.HtmlNodeElement) : void;
 		addFont(family:string, variants:nanofl.engine.FontVariant[]) : void;
+		canRenameItem(oldNamePath:string, newNamePath:string) : boolean;
 		renameItem(oldNamePath:string, newNamePath:string) : void;
 		compile(libraryDir:string) : { filterCodes : Map<string, string>; serializedLibrary : string; };
 		removeUnusedItems() : void;
@@ -8659,6 +8690,7 @@ declare module nanofl.engine
 		preload(ready:() => void) : void;
 		clone() : nanofl.engine.Library;
 		getItemCount() : number;
+		getItemsInFolder(folderNamePath:string) : nanofl.engine.libraryitems.LibraryItem[];
 		static SCENE_NAME_PATH : string;
 	}
 	
@@ -8701,6 +8733,8 @@ declare module nanofl.engine
 		static registerExporter(plugin:nanofl.ide.plugins.IExporterPlugin) : void;
 		static registerGenerator(plugin:nanofl.ide.plugins.IGeneratorPlugin) : void;
 		static registerLoader(plugin:nanofl.ide.plugins.ILoaderPlugin) : void;
+		static getImporterByExtension(ext:string) : nanofl.ide.plugins.IImporterPlugin;
+		static getExporterByExtension(ext:string) : nanofl.ide.plugins.IExporterPlugin;
 	}
 	
 	type Render =
@@ -8998,7 +9032,6 @@ declare module nanofl.engine.libraryitems
 		save(fileApi:nanofl.engine.FileApi) : void;
 		hasXmlToSave() : boolean;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
-		getFilePathTemplate() : string;
 		getFilePathToRunWithEditor() : string;
 		getLibraryFilePaths() : string[];
 		preload(ready:() => void) : void;
@@ -9018,6 +9051,7 @@ declare module nanofl.engine.libraryitems
 		getDisplayObjectClassName() : string;
 		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
 		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
+		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 	}
 	
 	export class BitmapItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem
@@ -9040,6 +9074,7 @@ declare module nanofl.engine.libraryitems
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 		getFilePathToRunWithEditor() : string;
 		getLibraryFilePaths() : string[];
+		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 		toString() : string;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.BitmapItem;
 	}
@@ -9055,6 +9090,7 @@ declare module nanofl.engine.libraryitems
 		getIcon() : string;
 		toString() : string;
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
+		getLibraryFilePaths() : string[];
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.FolderItem;
 	}
 	
@@ -9105,6 +9141,7 @@ declare module nanofl.engine.libraryitems
 		setTimelineState(state:nanofl.ide.undo.states.TimelineState) : void;
 		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : nanofl.MovieClip;
 		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
+		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 		getDisplayObjectClassName() : string;
 		transform(m:nanofl.engine.geom.Matrix) : void;
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
@@ -9147,6 +9184,7 @@ declare module nanofl.engine.libraryitems
 		preload(ready:() => void) : void;
 		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
 		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
+		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 		getDisplayObjectClassName() : string;
 		toString() : string;
 	}
@@ -9168,7 +9206,7 @@ declare module nanofl.ide.editorelements
 		rebind() : void;
 		getBounds() : createjs.Rectangle;
 		getTransformedBounds() : createjs.Rectangle;
-		hitTest(x:number, y:number) : boolean;
+		hitTest(pos:nanofl.engine.geom.Point) : boolean;
 	}
 	
 	export class EditorElementSelectBox extends nanofl.ide.editorelements.EditorElement
@@ -9200,7 +9238,6 @@ declare module nanofl.ide.editorelements
 	{
 		get_element() : nanofl.engine.elements.TextElement;
 		update() : void;
-		hitTest(x:number, y:number) : boolean;
 		beginEditing() : void;
 		endEditing() : void;
 		setSelectionFormat(format:nanofl.TextRun) : void;

@@ -44,7 +44,7 @@ var JpegImageExporterPlugin = function() {
 	this.fileDefaultExtension = "jpg";
 	this.fileFilterExtensions = ["jpg","jpeg"];
 	this.fileFilterDescription = "JPEG Image (*.jpg)";
-	this.menuItemIcon = "icon-picture";
+	this.menuItemIcon = "custom-icon-picture";
 	this.menuItemName = "JPEG Image (*.jpg)";
 	this.name = "JpegImageExporter";
 };
@@ -69,7 +69,7 @@ var PngImageExporterPlugin = function() {
 	this.fileDefaultExtension = "png";
 	this.fileFilterExtensions = ["png"];
 	this.fileFilterDescription = "PNG Image (*.png)";
-	this.menuItemIcon = "icon-picture";
+	this.menuItemIcon = "custom-icon-picture";
 	this.menuItemName = "PNG Image (*.png)";
 	this.name = "PngImageExporter";
 };

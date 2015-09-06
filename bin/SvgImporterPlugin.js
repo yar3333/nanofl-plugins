@@ -202,6 +202,9 @@ Reflect.fields = function(o) {
 	}
 	return a;
 };
+Reflect.isFunction = function(f) {
+	return typeof(f) == "function" && !(f.__name__ || f.__ename__);
+};
 var Std = function() { };
 Std.__name__ = ["Std"];
 Std.string = function(s) {
@@ -303,9 +306,9 @@ SvgImporterPlugin.main = function() {
 };
 SvgImporterPlugin.prototype = {
 	importDocument: function(fileApi,params,srcFilePath,destFilePath,documentProperties,library,fonts,callb) {
-		console.log("Load");
+		haxe_Log.trace("Load",{ fileName : "SvgImporterPlugin.hx", lineNumber : 59, className : "SvgImporterPlugin", methodName : "importDocument"});
 		var xml = new htmlparser.XmlDocument(fileApi.getContent(srcFilePath));
-		console.log("Parse");
+		haxe_Log.trace("Parse",{ fileName : "SvgImporterPlugin.hx", lineNumber : 63, className : "SvgImporterPlugin", methodName : "importDocument"});
 		var svg = new svgimport_Svg(xml);
 		documentProperties.width = Math.round(svg.width);
 		documentProperties.height = Math.round(svg.height);
@@ -316,7 +319,7 @@ SvgImporterPlugin.prototype = {
 			var value = svgimport_SvgElement.DisplayGroup(svg);
 			svg.elements.set(nanofl.engine.Library.SCENE_NAME_PATH,value);
 		}
-		console.log("Convert");
+		haxe_Log.trace("Convert",{ fileName : "SvgImporterPlugin.hx", lineNumber : 78, className : "SvgImporterPlugin", methodName : "importDocument"});
 		var $it0 = svg.elements.keys();
 		while( $it0.hasNext() ) {
 			var elementID = $it0.next();
@@ -332,18 +335,18 @@ SvgImporterPlugin.prototype = {
 					new svgimport_SvgPathExporter(svg,library,path).exportToLibrary();
 					break;
 				default:
-					console.log("ID for item type '" + (function($this) {
+					haxe_Log.trace("ID for item type '" + (function($this) {
 						var $r;
 						var e = svg.elements.get(elementID);
 						$r = e[0];
 						return $r;
-					}(this)) + "' is not supported.");
-				} else console.log("ID for item type '" + (function($this) {
+					}(this)) + "' is not supported.",{ fileName : "SvgImporterPlugin.hx", lineNumber : 93, className : "SvgImporterPlugin", methodName : "importDocument"});
+				} else haxe_Log.trace("ID for item type '" + (function($this) {
 					var $r;
 					var e = svg.elements.get(elementID);
 					$r = e[0];
 					return $r;
-				}(this)) + "' is not supported.");
+				}(this)) + "' is not supported.",{ fileName : "SvgImporterPlugin.hx", lineNumber : 93, className : "SvgImporterPlugin", methodName : "importDocument"});
 			}
 		}
 		if(params.optimize) nanofl.ide.LibraryTools.optimize(library);
@@ -470,6 +473,54 @@ haxe_CallStack.callStack = function() {
 haxe_CallStack.exceptionStack = function() {
 	return haxe_CallStack.getStack(haxe_CallStack.lastException);
 };
+haxe_CallStack.toString = function(stack) {
+	var b = new StringBuf();
+	var _g = 0;
+	while(_g < stack.length) {
+		var s = stack[_g];
+		++_g;
+		b.b += "\nCalled from ";
+		haxe_CallStack.itemToString(b,s);
+	}
+	return b.b;
+};
+haxe_CallStack.itemToString = function(b,s) {
+	switch(s[1]) {
+	case 0:
+		b.b += "a C function";
+		break;
+	case 1:
+		var m = s[2];
+		b.b += "module ";
+		if(m == null) b.b += "null"; else b.b += "" + m;
+		break;
+	case 2:
+		var line = s[4];
+		var file = s[3];
+		var s1 = s[2];
+		if(s1 != null) {
+			haxe_CallStack.itemToString(b,s1);
+			b.b += " (";
+		}
+		if(file == null) b.b += "null"; else b.b += "" + file;
+		b.b += " line ";
+		if(line == null) b.b += "null"; else b.b += "" + line;
+		if(s1 != null) b.b += ")";
+		break;
+	case 3:
+		var meth = s[3];
+		var cname = s[2];
+		if(cname == null) b.b += "null"; else b.b += "" + cname;
+		b.b += ".";
+		if(meth == null) b.b += "null"; else b.b += "" + meth;
+		break;
+	case 4:
+		var n = s[2];
+		b.b += "local function #";
+		if(n == null) b.b += "null"; else b.b += "" + n;
+		break;
+	}
+};
 haxe_CallStack.makeStack = function(s) {
 	if(s == null) return []; else if(typeof(s) == "string") {
 		var stack = s.split("\n");
@@ -503,6 +554,11 @@ var haxe__$Int64__$_$_$Int64 = function(high,low) {
 haxe__$Int64__$_$_$Int64.__name__ = ["haxe","_Int64","___Int64"];
 haxe__$Int64__$_$_$Int64.prototype = {
 	__class__: haxe__$Int64__$_$_$Int64
+};
+var haxe_Log = function() { };
+haxe_Log.__name__ = ["haxe","Log"];
+haxe_Log.trace = function(v,infos) {
+	js_Boot.__trace(v,infos);
 };
 var haxe_Utf8 = function(size) {
 	this.__b = "";
@@ -670,6 +726,25 @@ js__$Boot_HaxeError.prototype = $extend(Error.prototype,{
 });
 var js_Boot = function() { };
 js_Boot.__name__ = ["js","Boot"];
+js_Boot.__unhtml = function(s) {
+	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+};
+js_Boot.__trace = function(v,i) {
+	var msg;
+	if(i != null) msg = i.fileName + ":" + i.lineNumber + ": "; else msg = "";
+	msg += js_Boot.__string_rec(v,"");
+	if(i != null && i.customParams != null) {
+		var _g = 0;
+		var _g1 = i.customParams;
+		while(_g < _g1.length) {
+			var v1 = _g1[_g];
+			++_g;
+			msg += "," + js_Boot.__string_rec(v1,"");
+		}
+	}
+	var d;
+	if(typeof(document) != "undefined" && (d = document.getElementById("haxe:trace")) != null) d.innerHTML += js_Boot.__unhtml(msg) + "<br/>"; else if(typeof console != "undefined" && console.log != null) console.log(msg);
+};
 js_Boot.getClass = function(o) {
 	if((o instanceof Array) && o.__enum__ == null) return Array; else {
 		var cl = o.__class__;
@@ -1071,8 +1146,36 @@ stdlib_Debug.getObjectDump = function(obj,limit,level,prefix) {
 	return s;
 };
 stdlib_Debug.assert = function(e,message,pos) {
+	if(!e) {
+		if(message == null) message = "error"; else if(Reflect.isFunction(message)) message = message();
+		var s = "ASSERT " + Std.string(message) + " in " + pos.fileName + " at line " + pos.lineNumber;
+		var r = new stdlib_Exception(s);
+		r.stack.shift();
+		throw new js__$Boot_HaxeError(r);
+	}
 };
 stdlib_Debug.traceStack = function(v,pos) {
+	var stack = stdlib_StringTools.trim(stdlib_StringTools.replace(haxe_CallStack.toString(haxe_CallStack.callStack()),"prototype<.",""));
+	var lines = stack.split("\n").filter(function(s) {
+		return s != "Called from module";
+	}).map(function(s1) {
+		return s1.split("@").map(function(ss) {
+			return stdlib_StringTools.rtrim(ss,"</");
+		}).join("@");
+	});
+	var len = 0;
+	var _g = 0;
+	while(_g < lines.length) {
+		var line = lines[_g];
+		++_g;
+		len = stdlib_Std.max(len,line.indexOf("@"));
+	}
+	lines = lines.map(function(line1) {
+		var ss1 = line1.split("@");
+		return ss1[0] + StringTools.rpad(""," ",len - ss1[0].length + 1) + ss1[1];
+	});
+	stack = lines.slice(1).join("\n");
+	haxe_Log.trace("TRACE " + (typeof(v) == "string"?v:stdlib_StringTools.trim(stdlib_Debug.getDump(v))) + "\nStack trace:\n" + stack,{ fileName : "Debug.hx", lineNumber : 136, className : "stdlib.Debug", methodName : "traceStack", customParams : [pos]});
 };
 stdlib_Debug.methodMustBeOverriden = function(_this,pos) {
 	throw new js__$Boot_HaxeError(new stdlib_Exception("Method " + pos.methodName + "() must be overriden in class " + Type.getClassName(Type.getClass(_this)) + "."));
@@ -1398,7 +1501,7 @@ stdlib_Utf8.htmlUnescapeChar = function(escape) {
 		r = this1.get(escape);
 		if(r != null) return r;
 	}
-	console.log("Unknow escape sequence: " + escape);
+	haxe_Log.trace("Unknow escape sequence: " + escape,{ fileName : "Utf8.hx", lineNumber : 129, className : "stdlib.Utf8", methodName : "htmlUnescapeChar"});
 	return null;
 };
 stdlib_Utf8.get_htmlEscapeMap = function() {
@@ -1564,6 +1667,7 @@ var svgimport_BaseExporter = function(svg,library) {
 svgimport_BaseExporter.__name__ = ["svgimport","BaseExporter"];
 svgimport_BaseExporter.prototype = {
 	elementsToLibraryItem: function(elements,id) {
+		stdlib_Debug.assert(id != null && id != "","ID must not be empty (" + id + ").",{ fileName : "BaseExporter.hx", lineNumber : 31, className : "svgimport.BaseExporter", methodName : "elementsToLibraryItem"});
 		return this.library.addItem(nanofl.engine.MovieClipItemTools.create(id,elements,"auto"));
 	}
 	,applyMaskToElement: function(element,matrix,maskID,prefixID) {
@@ -1601,7 +1705,7 @@ svgimport_BaseExporter.prototype = {
 						}
 					}
 				}
-			} else console.log("Filter reference '" + filterID + "' is not found.");
+			} else haxe_Log.trace("Filter reference '" + filterID + "' is not found.",{ fileName : "BaseExporter.hx", lineNumber : 115, className : "svgimport.BaseExporter", methodName : "applyFilterToElement"});
 		}
 		return element;
 	}
@@ -1948,7 +2052,7 @@ svgimport_SvgGroup.prototype = $extend(svgimport_SvgDisplayObject.prototype,{
 				this.loadChildren(child,styles);
 				break;
 			default:
-				console.log("Unknown tag '" + child.name + "'.");
+				haxe_Log.trace("Unknown tag '" + child.name + "'.",{ fileName : "SvgGroup.hx", lineNumber : 57, className : "svgimport.SvgGroup", methodName : "loadChildren"});
 			}
 		}
 	}
@@ -1986,7 +2090,7 @@ svgimport_SvgGroup.prototype = $extend(svgimport_SvgDisplayObject.prototype,{
 				new svgimport_SvgFilter(this.svg,child);
 				break;
 			default:
-				console.log("Unknown tag '" + child.name + "'.");
+				haxe_Log.trace("Unknown tag '" + child.name + "'.",{ fileName : "SvgGroup.hx", lineNumber : 74, className : "svgimport.SvgGroup", methodName : "loadDefs"});
 			}
 		}
 		var _g4 = 0;
@@ -2087,28 +2191,28 @@ svgimport_SvgFilter.prototype = {
 		case "feGaussianBlur":
 			var input = htmlparser.HtmlParserTools.getAttr(node,"in","SourceGraphic");
 			if(input != "SourceGraphic") {
-				console.log("Filter '" + name + "': 'in' attribute value different to 'SourceGraphic' is not supported.");
+				haxe_Log.trace("Filter '" + name + "': 'in' attribute value different to 'SourceGraphic' is not supported.",{ fileName : "SvgFilter.hx", lineNumber : 67, className : "svgimport.SvgFilter", methodName : "exportChild"});
 				return null;
 			}
 			var stdDeviation = this.getFloatParams(htmlparser.HtmlParserTools.getAttr(node,"stdDeviation"),[0]);
 			return new nanofl.engine.FilterDef("GaussianBlurFilterPlugin",{ radius : (stdDeviation[0] + stdDeviation[stdDeviation.length > 1?1:0]) / 2 | 0});
 		case "feColorMatrix":
-			console.log("Filter '" + name + "' is unsupported.");
+			haxe_Log.trace("Filter '" + name + "' is unsupported.",{ fileName : "SvgFilter.hx", lineNumber : 82, className : "svgimport.SvgFilter", methodName : "exportChild"});
 			break;
 		case "feOffset":
-			console.log("Filter '" + name + "' is unsupported.");
+			haxe_Log.trace("Filter '" + name + "' is unsupported.",{ fileName : "SvgFilter.hx", lineNumber : 85, className : "svgimport.SvgFilter", methodName : "exportChild"});
 			break;
 		case "feMerge":
-			console.log("Filter '" + name + "' is unsupported.");
+			haxe_Log.trace("Filter '" + name + "' is unsupported.",{ fileName : "SvgFilter.hx", lineNumber : 88, className : "svgimport.SvgFilter", methodName : "exportChild"});
 			break;
 		case "feBlend":
-			console.log("Filter '" + name + "' is unsupported.");
+			haxe_Log.trace("Filter '" + name + "' is unsupported.",{ fileName : "SvgFilter.hx", lineNumber : 91, className : "svgimport.SvgFilter", methodName : "exportChild"});
 			break;
 		case "feComponentTransfer":case "feComposite":case "feConvolveMatrix":case "feDiffuseLighting":case "feDisplacementMap":case "feFlood":case "feImage":case "feMorphology":case "feSpecularLighting":case "feTile":case "feTurbulence":case "feDistantLight":case "fePointLight":case "feSpotLight":
-			console.log("Filter '" + name + "' is not supported.");
+			haxe_Log.trace("Filter '" + name + "' is not supported.",{ fileName : "SvgFilter.hx", lineNumber : 107, className : "svgimport.SvgFilter", methodName : "exportChild"});
 			break;
 		default:
-			console.log("Unknow filter '" + name + "'.");
+			haxe_Log.trace("Unknow filter '" + name + "'.",{ fileName : "SvgFilter.hx", lineNumber : 110, className : "svgimport.SvgFilter", methodName : "exportChild"});
 		}
 		return null;
 	}
@@ -2134,7 +2238,7 @@ svgimport_SvgGroupExporter.__name__ = ["svgimport","SvgGroupExporter"];
 svgimport_SvgGroupExporter.__super__ = svgimport_BaseExporter;
 svgimport_SvgGroupExporter.prototype = $extend(svgimport_BaseExporter.prototype,{
 	exportToLibrary: function() {
-		console.log("SvgGroupExporter.exportToLibrary " + this.group.id);
+		haxe_Log.trace("SvgGroupExporter.exportToLibrary " + this.group.id,{ fileName : "SvgGroupExporter.hx", lineNumber : 28, className : "svgimport.SvgGroupExporter", methodName : "exportToLibrary"});
 		this.layers = [];
 		var _g = 0;
 		var _g1 = this.group.children;
@@ -2324,7 +2428,7 @@ svgimport_SvgPathExporter.__name__ = ["svgimport","SvgPathExporter"];
 svgimport_SvgPathExporter.__super__ = svgimport_BaseExporter;
 svgimport_SvgPathExporter.prototype = $extend(svgimport_BaseExporter.prototype,{
 	exportAsElement: function() {
-		console.log("SvgPathExporter.exportAsElement " + this.path.id);
+		haxe_Log.trace("SvgPathExporter.exportAsElement " + this.path.id,{ fileName : "SvgPathExporter.hx", lineNumber : 28, className : "svgimport.SvgPathExporter", methodName : "exportAsElement"});
 		var r = this.exportAsElementInner();
 		r = this.applyFilterToElement(r,this.path.filterID,this.path.id);
 		r = this.applyMaskToElement(r,this.path.matrix,this.path.clipPathID,this.path.id);
@@ -2479,7 +2583,7 @@ svgimport_SvgPathToShapeConvertor.prototype = {
 						break;
 					case 1:
 						var grad1 = gradType[2];
-						if(grad1.spreadMethod != "" && grad1.spreadMethod != "pad") console.log("Radial spread method 'pad' is only supported ('" + grad1.spreadMethod + "').");
+						if(grad1.spreadMethod != "" && grad1.spreadMethod != "pad") haxe_Log.trace("Radial spread method 'pad' is only supported ('" + grad1.spreadMethod + "').",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 76, className : "svgimport.SvgPathToShapeConvertor", methodName : "endFill"});
 						var params1 = grad1.getAbsoluteParams(bounds);
 						polygon.fill = new nanofl.engine.fills.RadialFill(this.getGradientRgbaColors(grad1),grad1.ratios,params1.cx,params1.cy,params1.r,params1.fx,params1.fy);
 						break;
@@ -2574,7 +2678,7 @@ svgimport_SvgPathToShapeConvertor.prototype = {
 		while(_g3 < _g11.length) {
 			var e = _g11[_g3];
 			++_g3;
-			null;
+			stdlib_Debug.assert(e.stroke != null,"(1)",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 226, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
 		}
 		nanofl.engine.geom.Edges.normalize(this.edges);
 		var _g4 = 0;
@@ -2582,7 +2686,7 @@ svgimport_SvgPathToShapeConvertor.prototype = {
 		while(_g4 < _g12.length) {
 			var e1 = _g12[_g4];
 			++_g4;
-			null;
+			stdlib_Debug.assert(e1.stroke != null,"(2)",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 228, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
 		}
 		svgimport_SvgPathToShapeConvertor.log("normalize ^^^^^^^^^^^^^^",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 229, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
 		svgimport_SvgPathToShapeConvertor.log("intersectSelf vvvvvvvvvvvvvv",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 231, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
@@ -2591,7 +2695,7 @@ svgimport_SvgPathToShapeConvertor.prototype = {
 		while(_g5 < _g13.length) {
 			var e2 = _g13[_g5];
 			++_g5;
-			null;
+			stdlib_Debug.assert(e2.stroke != null,"(3)",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 232, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
 		}
 		nanofl.engine.geom.Edges.intersectSelf(this.edges);
 		var _g6 = 0;
@@ -2599,7 +2703,7 @@ svgimport_SvgPathToShapeConvertor.prototype = {
 		while(_g6 < _g14.length) {
 			var e3 = _g14[_g6];
 			++_g6;
-			null;
+			stdlib_Debug.assert(e3.stroke != null,"(4)",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 234, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
 		}
 		svgimport_SvgPathToShapeConvertor.log("intersectSelf ^^^^^^^^^^^^^^",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 235, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
 		svgimport_SvgPathToShapeConvertor.log("shape.combine stroke vvvvvvvvvvvvvv",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 237, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
@@ -2608,7 +2712,7 @@ svgimport_SvgPathToShapeConvertor.prototype = {
 		while(_g7 < _g15.length) {
 			var e4 = _g15[_g7];
 			++_g7;
-			null;
+			stdlib_Debug.assert(e4.stroke != null,"(5)",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 238, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
 		}
 		shape.combine(new nanofl.engine.elements.ShapeElement(this.edges));
 		var _g8 = 0;
@@ -2616,7 +2720,7 @@ svgimport_SvgPathToShapeConvertor.prototype = {
 		while(_g8 < _g16.length) {
 			var e5 = _g16[_g8];
 			++_g8;
-			null;
+			stdlib_Debug.assert(e5.stroke != null,"(6)",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 240, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
 		}
 		svgimport_SvgPathToShapeConvertor.log("shape.combine stroke ^^^^^^^^^^^^^^",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 241, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
 		svgimport_SvgPathToShapeConvertor.log("SvgPathExporter.export ^^^^^^^^^^^^^^^^^^^^^^^^^^^^",{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 243, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
@@ -2699,7 +2803,7 @@ svgimport_SvgTextExporter.prototype = $extend(svgimport_BaseExporter.prototype,{
 				break;
 			case 2:
 				var gradType = _g[2];
-				console.log("Text gradients is not supported.");
+				haxe_Log.trace("Text gradients is not supported.",{ fileName : "SvgTextExporter.hx", lineNumber : 26, className : "svgimport.SvgTextExporter", methodName : "exportAsElement"});
 				fillColor = "#000000";
 				break;
 			}
@@ -2744,7 +2848,7 @@ var svgimport_SvgUse = function(svg,node,baseStyles) {
 	svgimport_SvgDisplayObject.call(this,svg,node,baseStyles,this.id);
 	this.groupID = svgimport_XmlTools.getIdFromXlink(node);
 	if(this.groupID == null) {
-		console.log("Use: 'xlink:href' attribute must be specified.");
+		haxe_Log.trace("Use: 'xlink:href' attribute must be specified.",{ fileName : "SvgUse.hx", lineNumber : 20, className : "svgimport.SvgUse", methodName : "new"});
 		return;
 	}
 	var x = svgimport_XmlTools.getFloatValue(node,"x",0);
@@ -2785,7 +2889,7 @@ svgimport_SvgUseExporter.prototype = $extend(svgimport_BaseExporter.prototype,{
 				namePath = item.namePath;
 				break;
 			default:
-			} else console.log("WARNING: Element '" + this["use"].groupID + "' is not found.");
+			} else haxe_Log.trace("WARNING: Element '" + this["use"].groupID + "' is not found.",{ fileName : "SvgUseExporter.hx", lineNumber : 48, className : "svgimport.SvgUseExporter", methodName : "exportAsElementInner"});
 		}
 		var instance = new nanofl.engine.elements.Instance(namePath);
 		instance.matrix = this["use"].matrix.clone().appendMatrix(this.getSvgElementMatrix(this.svg.elements.get(this["use"].groupID)));
@@ -2817,10 +2921,10 @@ svgimport_Transform.load = function(trans) {
 		var _g = re.matched(1);
 		switch(_g) {
 		case "translate":
-			if(params.length == 2) matrix.appendTransform(params[0],params[1]); else if(params.length == 1) matrix.appendTransform(params[0],0); else console.log("Transform/translate: invalid params '" + re.matched(2) + "'.");
+			if(params.length == 2) matrix.appendTransform(params[0],params[1]); else if(params.length == 1) matrix.appendTransform(params[0],0); else haxe_Log.trace("Transform/translate: invalid params '" + re.matched(2) + "'.",{ fileName : "Transform.hx", lineNumber : 32, className : "svgimport.Transform", methodName : "load"});
 			break;
 		case "scale":
-			if(params.length == 2) matrix.appendTransform(0,0,params[0],params[1]); else if(params.length == 1) matrix.appendTransform(0,0,params[0],params[0]); else console.log("Transform/scale: invalid params '" + re.matched(2) + "'.");
+			if(params.length == 2) matrix.appendTransform(0,0,params[0],params[1]); else if(params.length == 1) matrix.appendTransform(0,0,params[0],params[0]); else haxe_Log.trace("Transform/scale: invalid params '" + re.matched(2) + "'.",{ fileName : "Transform.hx", lineNumber : 47, className : "svgimport.Transform", methodName : "load"});
 			break;
 		case "rotate":
 			if(params.length == 1) matrix.appendTransform(0,0,1,1,params[0]); else if(params.length == 2) {
@@ -2831,13 +2935,13 @@ svgimport_Transform.load = function(trans) {
 				matrix.appendTransform(params[1],params[2],1,1,0);
 				matrix.appendTransform(0,0,1,1,params[0]);
 				matrix.appendTransform(-params[1],-params[2]);
-			} else console.log("Transform/rotate: invalid params '" + re.matched(2) + "'.");
+			} else haxe_Log.trace("Transform/rotate: invalid params '" + re.matched(2) + "'.",{ fileName : "Transform.hx", lineNumber : 71, className : "svgimport.Transform", methodName : "load"});
 			break;
 		case "matrix":
 			if(params.length == 6) matrix.append(params[0],params[1],params[2],params[3],params[4],params[5]);
 			break;
 		default:
-			console.log("Unknow transform: '" + re.matched(1) + "'.");
+			haxe_Log.trace("Unknow transform: '" + re.matched(1) + "'.",{ fileName : "Transform.hx", lineNumber : 89, className : "svgimport.Transform", methodName : "load"});
 		}
 		trans = re.matchedRight();
 	}
@@ -2924,7 +3028,7 @@ svgimport_XmlTools.getFillStyle = function(node,key,styles,gradients) {
 	if(svgimport_XmlTools.reURLMatch.match(s)) {
 		var url = svgimport_XmlTools.reURLMatch.matched(1);
 		if(__map_reserved[url] != null?gradients.existsReserved(url):gradients.h.hasOwnProperty(url)) return svgimport_FillType.FillGrad(__map_reserved[url] != null?gradients.getReserved(url):gradients.h[url]);
-		console.log("WARNING: Unknown url('" + url + "').");
+		haxe_Log.trace("WARNING: Unknown url('" + url + "').",{ fileName : "XmlTools.hx", lineNumber : 104, className : "svgimport.XmlTools", methodName : "getFillStyle"});
 		return svgimport_FillType.FillNone;
 	}
 	return svgimport_FillType.FillSolid(s);
@@ -2935,7 +3039,7 @@ svgimport_XmlTools.getStrokeStyle = function(node,key,styles,gradients) {
 	if(svgimport_XmlTools.reURLMatch.match(s)) {
 		var url = svgimport_XmlTools.reURLMatch.matched(1);
 		if(__map_reserved[url] != null?gradients.existsReserved(url):gradients.h.hasOwnProperty(url)) return svgimport_StrokeType.StrokeGrad(__map_reserved[url] != null?gradients.getReserved(url):gradients.h[url]);
-		console.log("WARNING: Unknown url('" + url + "').");
+		haxe_Log.trace("WARNING: Unknown url('" + url + "').",{ fileName : "XmlTools.hx", lineNumber : 121, className : "svgimport.XmlTools", methodName : "getStrokeStyle"});
 		return svgimport_StrokeType.StrokeNone;
 	}
 	return svgimport_StrokeType.StrokeSolid(s);
@@ -2947,7 +3051,7 @@ svgimport_XmlTools.getIdFromXlink = function(node) {
 	var xlink = StringTools.trim(htmlparser.HtmlParserTools.getAttr(node,"xlink:href",""));
 	if(xlink == "") return null;
 	if(!StringTools.startsWith(xlink,"#")) {
-		console.log("WARNING: Unkown xlink syntax ('" + xlink + "').");
+		haxe_Log.trace("WARNING: Unkown xlink syntax ('" + xlink + "').",{ fileName : "XmlTools.hx", lineNumber : 139, className : "svgimport.XmlTools", methodName : "getIdFromXlink"});
 		return null;
 	}
 	return xlink.substring(1);
@@ -2957,7 +3061,7 @@ svgimport_XmlTools.getIdFromUrl = function(s) {
 	var s1 = StringTools.trim(s);
 	if(s1 == "") return null;
 	if(svgimport_XmlTools.reURLMatch.match(s1)) return svgimport_XmlTools.reURLMatch.matched(1);
-	console.log("WARNING: Unkown url syntax ('" + s1 + "').");
+	haxe_Log.trace("WARNING: Unkown url syntax ('" + s1 + "').",{ fileName : "XmlTools.hx", lineNumber : 151, className : "svgimport.XmlTools", methodName : "getIdFromUrl"});
 	return null;
 };
 var svgimport_gradients_Gradient = function(node,baseType) {

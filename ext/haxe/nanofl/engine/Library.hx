@@ -8,6 +8,7 @@ extern class Library
 	function loadItems(fileApi:nanofl.engine.FileApi) : Void;
 	function parseItems(base:htmlparser.HtmlNodeElement) : Void;
 	function addFont(family:String, variants:Array<nanofl.engine.FontVariant>) : Void;
+	function canRenameItem(oldNamePath:String, newNamePath:String) : Bool;
 	function renameItem(oldNamePath:String, newNamePath:String) : Void;
 	function compile(libraryDir:String) : { var filterCodes : Map<String, String>; var serializedLibrary : String; };
 	function removeUnusedItems() : Void;
@@ -28,5 +29,6 @@ extern class Library
 	function preload(ready:Void -> Void) : Void;
 	function clone() : nanofl.engine.Library;
 	function getItemCount() : Int;
+	function getItemsInFolder(folderNamePath:String) : Array<nanofl.engine.libraryitems.LibraryItem>;
 	static var SCENE_NAME_PATH(default, never) : String;
 }

@@ -18,6 +18,7 @@ extern class SpriteItem extends nanofl.engine.libraryitems.InstancableItem imple
 	override function preload(ready:Void -> Void) : Void;
 	override function createDisplayObject(initFrameIndex:Int, childFrameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : createjs.DisplayObject;
 	override function updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:Array<{ var frameIndex : Int; var element : nanofl.engine.IPathElement; }>) : Void;
+	override function getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 	override function getDisplayObjectClassName() : String;
 	override function toString() : String;
 }

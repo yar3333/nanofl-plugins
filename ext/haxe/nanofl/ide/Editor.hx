@@ -62,4 +62,5 @@ extern class Editor
 	function flipSelectedHorizontal() : Void;
 	function flipSelectedVertical() : Void;
 	function getSelectedBounds() : { var height : Float; var width : Float; var x : Float; var y : Float; };
+	function getHitTestGap() : Float;
 }

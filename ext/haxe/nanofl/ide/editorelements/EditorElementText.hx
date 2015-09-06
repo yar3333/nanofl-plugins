@@ -4,7 +4,6 @@ extern class EditorElementText extends nanofl.ide.editorelements.EditorElementSe
 {
 	var element(get, never) : nanofl.engine.elements.TextElement;
 	override function update() : Void;
-	override function hitTest(x:Float, y:Float) : Bool;
 	function beginEditing() : Void;
 	function endEditing() : Void;
 	function setSelectionFormat(format:nanofl.TextRun) : Void;

@@ -12,4 +12,6 @@ extern class Plugins
 	static function registerExporter(plugin:nanofl.ide.plugins.IExporterPlugin) : Void;
 	static function registerGenerator(plugin:nanofl.ide.plugins.IGeneratorPlugin) : Void;
 	static function registerLoader(plugin:nanofl.ide.plugins.ILoaderPlugin) : Void;
+	static function getImporterByExtension(ext:String) : nanofl.ide.plugins.IImporterPlugin;
+	static function getExporterByExtension(ext:String) : nanofl.ide.plugins.IExporterPlugin;
 }

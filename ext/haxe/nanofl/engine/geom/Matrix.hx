@@ -15,6 +15,7 @@ extern class Matrix
 	function isIdentity() : Bool;
 	function invert() : nanofl.engine.geom.Matrix;
 	function transformPoint(x:Float, y:Float) : nanofl.engine.geom.Point;
+	function transformPointP(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 	function clone() : nanofl.engine.geom.Matrix;
 	function translate(tx:Float, ty:Float) : nanofl.engine.geom.Matrix;
 	function equ(m:nanofl.engine.geom.Matrix) : Bool;

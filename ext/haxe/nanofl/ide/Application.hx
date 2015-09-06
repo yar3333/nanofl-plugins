@@ -6,6 +6,7 @@ typedef Application =
 	var clipboard : nanofl.ide.Clipboard;
 	function createNewEmptyDocument(?callb:nanofl.ide.Document -> Void) : Void;
 	var document : nanofl.ide.Document;
+	var dragAndDrop : nanofl.ide.draganddrop.DragAndDrop;
 	function exportDocument(exporter:nanofl.ide.plugins.IExporterPlugin, ?callb:Bool -> Void) : Void;
 	var fileApi : nanofl.ide.XpcomFileApi;
 	var helpers : nanofl.ide.Helpers;
