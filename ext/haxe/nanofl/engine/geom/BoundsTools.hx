@@ -12,4 +12,5 @@ extern class BoundsTools
 	static function toBounds(rect:{ var height : Float; var width : Float; var x : Float; var y : Float; }) : nanofl.engine.geom.Bounds;
 	static function toString(bounds:nanofl.engine.geom.Bounds) : String;
 	static function toRectangle(bounds:nanofl.engine.geom.Bounds) : createjs.Rectangle;
+	static function transform<R>(bounds:R, matrix:{ var a : Float; var b : Float; var c : Float; var d : Float; var tx : Float; var ty : Float; }) : R;
 }

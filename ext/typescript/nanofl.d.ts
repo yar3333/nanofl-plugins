@@ -6645,6 +6645,7 @@ declare module nanofl.engine.geom
 		static toBounds(rect:{ height : number; width : number; x : number; y : number; }) : nanofl.engine.geom.Bounds;
 		static toString(bounds:nanofl.engine.geom.Bounds) : string;
 		static toRectangle(bounds:nanofl.engine.geom.Bounds) : createjs.Rectangle;
+		static transform<R>(bounds:R, matrix:{ a : number; b : number; c : number; d : number; tx : number; ty : number; }) : R;
 	}
 	
 	export class Contour
@@ -8167,11 +8168,13 @@ declare module nanofl
 	
 	export class DisplayObjectTools
 	{
+		static autoHitArea : boolean;
 		static smartCache(obj:createjs.DisplayObject) : void;
 		static smartUncache(obj:createjs.DisplayObject) : void;
 		static getOuterBounds(obj:createjs.DisplayObject, ignoreSelf?:boolean) : createjs.Rectangle;
 		static getInnerBounds(obj:createjs.DisplayObject) : createjs.Rectangle;
 		static callMethod(parent:createjs.DisplayObject, name:string) : void;
+		static smartHitTest(obj:createjs.DisplayObject, x:number, y:number, minAlpha?:number) : boolean;
 		static dump(obj:createjs.DisplayObject, level?:number) : void;
 	}
 	
