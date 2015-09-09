@@ -166,6 +166,7 @@ SoundLoaderPlugin.prototype = {
 		while( $it0.hasNext() ) {
 			var file = $it0.next();
 			var ext = haxe_io_Path.extension(file.path);
+			console.log("SoundLoaderPlugin " + file.path + "  /  " + ext);
 			if(HxOverrides.indexOf(SoundLoaderPlugin.extensions,ext,0) >= 0) {
 				var namePath = [haxe_io_Path.withoutExtension(file.path)];
 				if(!Lambda.exists(r,(function(namePath) {
@@ -174,13 +175,9 @@ SoundLoaderPlugin.prototype = {
 					};
 				})(namePath))) {
 					var item1 = new nanofl.engine.libraryitems.SoundItem(namePath[0],ext);
-					var xmlFile;
-					var key = haxe_io_Path.join([haxe_io_Path.directory(file.path),namePath[0] + ".sound"]);
-					xmlFile = __map_reserved[key] != null?files.getReserved(key):files.h[key];
-					if(xmlFile != null && xmlFile.getXml() != null) {
-						item1.loadProperties(xmlFile.getXml().children[0]);
-						r.push(item1);
-					}
+					var xmlFile = files.get(namePath[0] + ".sound");
+					if(xmlFile != null && xmlFile.getXml() != null) item1.loadProperties(xmlFile.getXml().children[0]);
+					r.push(item1);
 				}
 				file.exclude();
 			}

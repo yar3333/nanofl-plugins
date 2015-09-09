@@ -29,12 +29,13 @@ class SoundLoaderPlugin implements ILoaderPlugin
 				{
 					var item = new SoundItem(namePath, ext);
 					
-					var xmlFile = files.get(Path.join([ Path.directory(file.path), namePath + ".sound" ]));
+					var xmlFile = files.get(namePath + ".sound");
 					if (xmlFile != null && xmlFile.getXml() != null)
 					{
 						item.loadProperties(xmlFile.getXml().children[0]);
-						r.push(item);
 					}
+					
+					r.push(item);
 				}
 				file.exclude();
 			}
