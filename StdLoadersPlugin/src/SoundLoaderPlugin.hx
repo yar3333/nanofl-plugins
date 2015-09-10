@@ -21,6 +21,8 @@ class SoundLoaderPlugin implements ILoaderPlugin
 		
 		for (file in files)
 		{
+			if (file.excluded) continue;
+			
 			var ext = Path.extension(file.path);
 			if (extensions.indexOf(ext) >= 0)
 			{
@@ -28,13 +30,12 @@ class SoundLoaderPlugin implements ILoaderPlugin
 				if (!r.exists(function(item) return item.namePath == namePath))
 				{
 					var item = new SoundItem(namePath, ext);
-					
-					var xmlFile = files.get(namePath + ".sound");
-					if (xmlFile != null && xmlFile.getXml() != null)
+					var xmlFile = files.get(namePath + ".xml");
+					if (xmlFile != null && xmlFile.xml != null && xmlFile.xml.name == "sound")
 					{
-						item.loadProperties(xmlFile.getXml().children[0]);
+						item.loadProperties(xmlFile.xml);
+						xmlFile.exclude();
 					}
-					
 					r.push(item);
 				}
 				file.exclude();

@@ -26,7 +26,7 @@ class SpriteLoaderPlugin implements ILoaderPlugin
 				var namePath = Path.withoutExtension(file.path);
 				if (!r.exists(function(item) return item.namePath == namePath))
 				{
-					var json : { framerate:Int, images:Array<String>, frames:Array<Array<Int>> } = file.getJson();
+					var json : { framerate:Int, images:Array<String>, frames:Array<Array<Int>> } = file.json;
 					if (json != null && json.frames != null && json.images != null)
 					{
 						r.push(new SpriteItem(namePath, json.frames.map(function(frame) return

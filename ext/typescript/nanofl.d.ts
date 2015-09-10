@@ -7354,6 +7354,9 @@ declare module nanofl.ide
 	export class CachedFile
 	{
 		constructor(fileApi:nanofl.engine.FileApi, libraryDir:string, path:string);
+		text : string;
+		xml : htmlparser.HtmlNodeElement;
+		json : any;
 		/**
 		 * Relative file path.
 		 */
@@ -7363,9 +7366,6 @@ declare module nanofl.ide
 		 */
 		excluded : boolean;
 		exclude() : void;
-		getText() : string;
-		getXml() : htmlparser.XmlDocument;
-		getJson() : any;
 	}
 	
 	type Clipboard =

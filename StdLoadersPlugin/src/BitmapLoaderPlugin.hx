@@ -21,6 +21,8 @@ class BitmapLoaderPlugin implements ILoaderPlugin
 		
 		for (file in files)
 		{
+			if (file.excluded) continue;
+			
 			var ext = Path.extension(file.path);
 			if (extensions.indexOf(ext) >= 0)
 			{
@@ -28,10 +30,11 @@ class BitmapLoaderPlugin implements ILoaderPlugin
 				if (!r.exists(function(item) return item.namePath == namePath))
 				{
 					var item = new BitmapItem(namePath, ext);
-					var xmlFile = files.get(namePath + ".bitmap");
-					if (xmlFile != null && xmlFile.getXml() != null)
+					var xmlFile = files.get(namePath + ".xml");
+					if (xmlFile != null && xmlFile.xml != null && xmlFile.xml.name == "bitmap")
 					{
-						item.loadProperties(xmlFile.getXml().children[0]);
+						item.loadProperties(xmlFile.xml);
+						xmlFile.exclude();
 					}
 					r.push(item);
 				}

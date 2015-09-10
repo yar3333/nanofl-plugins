@@ -19,18 +19,23 @@ class MovieClipLoaderPlugin implements ILoaderPlugin
 		
 		for (file in files)
 		{
-			if (Path.extension(file.path) == "movieclip")
+			if (file.excluded) continue;
+			
+			if (Path.extension(file.path) == "xml")
 			{
 				var namePath = Path.withoutExtension(file.path);
 				if (!r.exists(function(item) return item.namePath == namePath))
 				{
-					var xml = file.getXml();
-					if (xml != null)
+					if (file.xml != null)
 					{
-						r.push(MovieClipItem.parse(namePath, xml.children[0]));
+						var mc = MovieClipItem.parse(namePath, file.xml);
+						if (mc != null)
+						{
+							r.push(mc);
+							file.exclude();
+						}
 					}
 				}
-				file.exclude();
 			}
 		}
 		

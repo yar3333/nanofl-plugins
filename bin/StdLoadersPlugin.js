@@ -18,6 +18,7 @@ BitmapLoaderPlugin.prototype = {
 		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
 		while( $it0.hasNext() ) {
 			var file = $it0.next();
+			if(file.excluded) continue;
 			var ext = haxe_io_Path.extension(file.path);
 			if(HxOverrides.indexOf(BitmapLoaderPlugin.extensions,ext,0) >= 0) {
 				var namePath = [haxe_io_Path.withoutExtension(file.path)];
@@ -27,8 +28,11 @@ BitmapLoaderPlugin.prototype = {
 					};
 				})(namePath))) {
 					var item1 = new nanofl.engine.libraryitems.BitmapItem(namePath[0],ext);
-					var xmlFile = files.get(namePath[0] + ".bitmap");
-					if(xmlFile != null && xmlFile.getXml() != null) item1.loadProperties(xmlFile.getXml().children[0]);
+					var xmlFile = files.get(namePath[0] + ".xml");
+					if(xmlFile != null && xmlFile.xml != null && xmlFile.xml.name == "bitmap") {
+						item1.loadProperties(xmlFile.xml);
+						xmlFile.exclude();
+					}
 					r.push(item1);
 				}
 				file.exclude();
@@ -61,17 +65,22 @@ FontLoaderPlugin.prototype = {
 		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
 		while( $it0.hasNext() ) {
 			var file = $it0.next();
-			if(haxe_io_Path.extension(file.path) == "font") {
+			if(file.excluded) continue;
+			if(haxe_io_Path.extension(file.path) == "xml") {
 				var namePath = [haxe_io_Path.withoutExtension(file.path)];
 				if(!Lambda.exists(r,(function(namePath) {
 					return function(item) {
 						return item.namePath == namePath[0];
 					};
 				})(namePath))) {
-					var xml = file.getXml();
-					if(xml != null) r.push(nanofl.engine.libraryitems.FontItem.parse(namePath[0],xml.children[0]));
+					if(file.xml != null) {
+						var font = nanofl.engine.libraryitems.FontItem.parse(namePath[0],file.xml);
+						if(font != null) {
+							r.push(font);
+							file.exclude();
+						}
+					}
 				}
-				file.exclude();
 			}
 		}
 		return r;
@@ -136,17 +145,22 @@ MovieClipLoaderPlugin.prototype = {
 		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
 		while( $it0.hasNext() ) {
 			var file = $it0.next();
-			if(haxe_io_Path.extension(file.path) == "movieclip") {
+			if(file.excluded) continue;
+			if(haxe_io_Path.extension(file.path) == "xml") {
 				var namePath = [haxe_io_Path.withoutExtension(file.path)];
 				if(!Lambda.exists(r,(function(namePath) {
 					return function(item) {
 						return item.namePath == namePath[0];
 					};
 				})(namePath))) {
-					var xml = file.getXml();
-					if(xml != null) r.push(nanofl.engine.libraryitems.MovieClipItem.parse(namePath[0],xml.children[0]));
+					if(file.xml != null) {
+						var mc = nanofl.engine.libraryitems.MovieClipItem.parse(namePath[0],file.xml);
+						if(mc != null) {
+							r.push(mc);
+							file.exclude();
+						}
+					}
 				}
-				file.exclude();
 			}
 		}
 		return r;
@@ -165,8 +179,8 @@ SoundLoaderPlugin.prototype = {
 		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
 		while( $it0.hasNext() ) {
 			var file = $it0.next();
+			if(file.excluded) continue;
 			var ext = haxe_io_Path.extension(file.path);
-			console.log("SoundLoaderPlugin " + file.path + "  /  " + ext);
 			if(HxOverrides.indexOf(SoundLoaderPlugin.extensions,ext,0) >= 0) {
 				var namePath = [haxe_io_Path.withoutExtension(file.path)];
 				if(!Lambda.exists(r,(function(namePath) {
@@ -175,8 +189,11 @@ SoundLoaderPlugin.prototype = {
 					};
 				})(namePath))) {
 					var item1 = new nanofl.engine.libraryitems.SoundItem(namePath[0],ext);
-					var xmlFile = files.get(namePath[0] + ".sound");
-					if(xmlFile != null && xmlFile.getXml() != null) item1.loadProperties(xmlFile.getXml().children[0]);
+					var xmlFile = files.get(namePath[0] + ".xml");
+					if(xmlFile != null && xmlFile.xml != null && xmlFile.xml.name == "sound") {
+						item1.loadProperties(xmlFile.xml);
+						xmlFile.exclude();
+					}
 					r.push(item1);
 				}
 				file.exclude();
@@ -206,7 +223,7 @@ SpriteLoaderPlugin.prototype = {
 						return item.namePath == namePath[0];
 					};
 				})(namePath))) {
-					var json = [file.getJson()];
+					var json = [file.json];
 					if(json[0] != null && json[0].frames != null && json[0].images != null) {
 						r.push(new nanofl.engine.libraryitems.SpriteItem(namePath[0],json[0].frames.map((function(json) {
 							return function(frame) {
