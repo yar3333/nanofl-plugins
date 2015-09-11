@@ -295,7 +295,7 @@ var SvgImporterPlugin = function() {
 	this.properties = [{ type : "bool", name : "optimize", label : "Optimize (remove unused items and simplificate document after loading).", defaultValue : true}];
 	this.fileFilterExtensions = ["svg"];
 	this.fileFilterDescription = "Scalable Vector Graphics (*.svg)";
-	this.menuItemIcon = "url(data:image/png;base64," + StringTools.replace(StringTools.replace(SvgImporterPlugin.embeddedIcon,"\r",""),"\n","") + ")";
+	this.menuItemIcon = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAC5ElEQVQozz2LbUxbZQBGn7ctLVDpZQKi4KJjAYTGLBIEYU2gxTlKhAhZ0MQxZupMNoPBBbP5gX/QaKIGTDSaiM5snciHwB0lHTKENWxZMAxi1LBunSKDNh2jwAps7e199kPnv5Occ0ASqqoKkiIWi2lIoqev356akhJ4cFty8JSz6wWSuO/+a/E/THgmnz7cfLx1QB62PZmf+/tIaxbPt2XTnLvD2z/oqjjy5tvvjY5NlNyfQRKeyYuFaQ8I5WhlAh/dplVMRr0S6itVNwd3q6lSvJJu0igt9kSmGcGfz43vJgkNAJwZGrXWW5O0n31ftfXlG3lifSOi9c1viL9ubInltTvaz1/PFZ+csG81ViVDPjNSAeDfsbj4qdne8XW4v5qLr9mbLj4++DiUGBGJqmjb/xherH5EnPvGa3CeXcUzxQUzAIDu3p+qzE/s9D6UbFABsOPQTvK8jVHZwqhsIT02fn0kmwCYJhnU/JwdvpOnfqgVGRmZvvaXdFkFWYkcuxwQkiTBkmeEMcEAIQQ2Nu/g4pVN3AqFUL4rnVeWIuK1724vaQXUD2eurug12ytF7aEP8OPZWQSTrHBOLGPwchSRjGpc+OMmDhz9AkPTW6Ld6WFg5W68ABC2WCzGru5eDMgu7LFasBlew6h7COHwbdTVvwytzoBL07/heftzeNXxCtxut6IF8K61vDyupKQYDfvsmByToY1LQEFhISSThLsRBaYkI/bvq8HUr1NY8gcQDAYJvT4uLIRgT3cXSbLj049oNpu5eOMfeuf+ZMtbx3jpgofvNDtIkgcaGwkgCiFEODMzkznZ2Xw41US/389nK2y8dtVLv3+J9sq9vO7zEQBH3MNsbX2fACIA4CstLWUoFFI7O7/lwsICkyWJ47+McXZmhvEGPf+en6fz9Gn6/QHVZrMRwCI0Gs1BAKt1dXUxl8sVLSsrUwAoDodDaWpqUgAoRUVFiizL0YaGhhiAdZ1O57gHue+ALxPHGYEAAAAASUVORK5CYII=)";
 	this.menuItemName = "Scalable Vector Graphics (*.svg)";
 	this.name = "SvgImporter";
 };
@@ -306,20 +306,20 @@ SvgImporterPlugin.main = function() {
 };
 SvgImporterPlugin.prototype = {
 	importDocument: function(fileApi,params,srcFilePath,destFilePath,documentProperties,library,fonts,callb) {
-		haxe_Log.trace("Load",{ fileName : "SvgImporterPlugin.hx", lineNumber : 59, className : "SvgImporterPlugin", methodName : "importDocument"});
+		haxe_Log.trace("Load",{ fileName : "SvgImporterPlugin.hx", lineNumber : 40, className : "SvgImporterPlugin", methodName : "importDocument"});
 		var xml = new htmlparser.XmlDocument(fileApi.getContent(srcFilePath));
-		haxe_Log.trace("Parse",{ fileName : "SvgImporterPlugin.hx", lineNumber : 63, className : "SvgImporterPlugin", methodName : "importDocument"});
+		haxe_Log.trace("Parse",{ fileName : "SvgImporterPlugin.hx", lineNumber : 44, className : "SvgImporterPlugin", methodName : "importDocument"});
 		var svg = new svgimport_Svg(xml);
 		documentProperties.width = Math.round(svg.width);
 		documentProperties.height = Math.round(svg.height);
 		if(svg.id != nanofl.engine.Library.SCENE_NAME_PATH) {
-			stdlib_Debug.assert(svg.id == "" || svg.elements.exists(svg.id),null,{ fileName : "SvgImporterPlugin.hx", lineNumber : 72, className : "SvgImporterPlugin", methodName : "importDocument"});
+			stdlib_Debug.assert(svg.id == "" || svg.elements.exists(svg.id),null,{ fileName : "SvgImporterPlugin.hx", lineNumber : 53, className : "SvgImporterPlugin", methodName : "importDocument"});
 			svg.elements.remove(svg.id);
 			svg.id = nanofl.engine.Library.SCENE_NAME_PATH;
 			var value = svgimport_SvgElement.DisplayGroup(svg);
 			svg.elements.set(nanofl.engine.Library.SCENE_NAME_PATH,value);
 		}
-		haxe_Log.trace("Convert",{ fileName : "SvgImporterPlugin.hx", lineNumber : 78, className : "SvgImporterPlugin", methodName : "importDocument"});
+		haxe_Log.trace("Convert",{ fileName : "SvgImporterPlugin.hx", lineNumber : 59, className : "SvgImporterPlugin", methodName : "importDocument"});
 		var $it0 = svg.elements.keys();
 		while( $it0.hasNext() ) {
 			var elementID = $it0.next();
@@ -340,13 +340,13 @@ SvgImporterPlugin.prototype = {
 						var e = svg.elements.get(elementID);
 						$r = e[0];
 						return $r;
-					}(this)) + "' is not supported.",{ fileName : "SvgImporterPlugin.hx", lineNumber : 93, className : "SvgImporterPlugin", methodName : "importDocument"});
+					}(this)) + "' is not supported.",{ fileName : "SvgImporterPlugin.hx", lineNumber : 74, className : "SvgImporterPlugin", methodName : "importDocument"});
 				} else haxe_Log.trace("ID for item type '" + (function($this) {
 					var $r;
 					var e = svg.elements.get(elementID);
 					$r = e[0];
 					return $r;
-				}(this)) + "' is not supported.",{ fileName : "SvgImporterPlugin.hx", lineNumber : 93, className : "SvgImporterPlugin", methodName : "importDocument"});
+				}(this)) + "' is not supported.",{ fileName : "SvgImporterPlugin.hx", lineNumber : 74, className : "SvgImporterPlugin", methodName : "importDocument"});
 			}
 		}
 		if(params.optimize) nanofl.ide.LibraryTools.optimize(library);
@@ -3471,7 +3471,6 @@ var ArrayBuffer = (Function("return typeof ArrayBuffer != 'undefined' ? ArrayBuf
 if(ArrayBuffer.prototype.slice == null) ArrayBuffer.prototype.slice = js_html_compat_ArrayBuffer.sliceImpl;
 var DataView = (Function("return typeof DataView != 'undefined' ? DataView : null"))() || js_html_compat_DataView;
 var Uint8Array = (Function("return typeof Uint8Array != 'undefined' ? Uint8Array : null"))() || js_html_compat_Uint8Array._new;
-SvgImporterPlugin.embeddedIcon = "\r\niVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAC\r\n5ElEQVQozz2LbUxbZQBGn7ctLVDpZQKi4KJjAYTGLBIEYU2gxTlKhAhZ0MQxZupMNoPBBbP5gX/Q\r\naKIGTDSaiM5snciHwB0lHTKENWxZMAxi1LBunSKDNh2jwAps7e199kPnv5Occ0ASqqoKkiIWi2lI\r\noqev356akhJ4cFty8JSz6wWSuO/+a/E/THgmnz7cfLx1QB62PZmf+/tIaxbPt2XTnLvD2z/oqjjy\r\n5tvvjY5NlNyfQRKeyYuFaQ8I5WhlAh/dplVMRr0S6itVNwd3q6lSvJJu0igt9kSmGcGfz43vJgkN\r\nAJwZGrXWW5O0n31ftfXlG3lifSOi9c1viL9ubInltTvaz1/PFZ+csG81ViVDPjNSAeDfsbj4qdne\r\n8XW4v5qLr9mbLj4++DiUGBGJqmjb/xherH5EnPvGa3CeXcUzxQUzAIDu3p+qzE/s9D6UbFABsOPQ\r\nTvK8jVHZwqhsIT02fn0kmwCYJhnU/JwdvpOnfqgVGRmZvvaXdFkFWYkcuxwQkiTBkmeEMcEAIQQ2\r\nNu/g4pVN3AqFUL4rnVeWIuK1724vaQXUD2eurug12ytF7aEP8OPZWQSTrHBOLGPwchSRjGpc+OMm\r\nDhz9AkPTW6Ld6WFg5W68ABC2WCzGru5eDMgu7LFasBlew6h7COHwbdTVvwytzoBL07/heftzeNXx\r\nCtxut6IF8K61vDyupKQYDfvsmByToY1LQEFhISSThLsRBaYkI/bvq8HUr1NY8gcQDAYJvT4uLIRg\r\nT3cXSbLj049oNpu5eOMfeuf+ZMtbx3jpgofvNDtIkgcaGwkgCiFEODMzkznZ2Xw41US/389nK2y8\r\ndtVLv3+J9sq9vO7zEQBH3MNsbX2fACIA4CstLWUoFFI7O7/lwsICkyWJ47+McXZmhvEGPf+en6fz\r\n9Gn6/QHVZrMRwCI0Gs1BAKt1dXUxl8sVLSsrUwAoDodDaWpqUgAoRUVFiizL0YaGhhiAdZ1O57gH\r\nue+ALxPHGYEAAAAASUVORK5CYII=\r\n";
 haxe_io_FPHelper.i64tmp = (function($this) {
 	var $r;
 	var x = new haxe__$Int64__$_$_$Int64(0,0);
