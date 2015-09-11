@@ -7273,6 +7273,29 @@ declare module createjs.Sound
 	}
 }
 
+declare module nanofl.ide.draganddrop
+{
+	type AllowedDropEffect = string;
+	
+	type DragAndDrop =
+	{
+		/**
+		 * Specify selector if you want to delegate from parent element specified by `elem`. In other case, set `selector` to null.
+		 * If you use selector, then you must manualy add `draggable="true"` attribute to the draggable elements.
+		 */
+		draggable(elem:js.JQuery, selector:string, dragType:string, getData:(arg0:htmlparser.XmlBuilder, arg1:js.JQuery.JqEvent) => nanofl.ide.draganddrop.AllowedDropEffect, removeMoved?:(arg:htmlparser.HtmlNodeElement) => void) : void;
+		droppable(elem:js.JQuery, selector?:string, drops:Map<string, { getDragImageType : (arg:htmlparser.HtmlNodeElement) => nanofl.ide.draganddrop.DragImageType; drop : (arg0:nanofl.ide.draganddrop.DropEffect, arg1:htmlparser.HtmlNodeElement, arg2:js.JQuery.JqEvent) => void; }>, filesDrop?:(arg0:File[], arg1:js.JQuery.JqEvent) => void) : void;
+	}
+	
+	enum DragImageType
+	{
+		ICON_TEXT(icon:string, text:string),
+		RECTANGLE(width:number, height:number)
+	}
+	
+	type DropEffect = string;
+}
+
 declare module nanofl.ide.textureatlas
 {
 	type TextureAtlas =
@@ -7341,7 +7364,6 @@ declare module nanofl.ide
 		dragAndDrop : nanofl.ide.draganddrop.DragAndDrop;
 		exportDocument(exporter:nanofl.ide.plugins.IExporterPlugin, callb?:(arg:boolean) => void) : void;
 		fileApi : nanofl.ide.XpcomFileApi;
-		helpers : nanofl.ide.Helpers;
 		importDocument(importer:nanofl.ide.plugins.IImporterPlugin, callb?:(arg:nanofl.ide.Document) => void) : void;
 		newObjectParams : nanofl.ide.NewObjectParams;
 		openDocument(path?:string, callb?:(arg:nanofl.ide.Document) => void) : void;
@@ -7568,6 +7590,15 @@ declare module nanofl.ide
 		getWithExandedFolders(items:nanofl.engine.libraryitems.LibraryItem[]) : nanofl.engine.libraryitems.LibraryItem[];
 	}
 	
+	export class Exporter
+	{
+		constructor(pluginName:string, params?:any);
+		pluginName : string;
+		params : any;
+		run(fileApi:nanofl.engine.FileApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library) : boolean;
+		getPrefKey() : string;
+	}
+	
 	export class Figure
 	{
 		constructor(editor:nanofl.ide.Editor, layers:nanofl.ide.EditorLayer[]);
@@ -7604,9 +7635,30 @@ declare module nanofl.ide
 		getSelectedStrokeEdges() : nanofl.engine.geom.StrokeEdge[];
 	}
 	
+	enum FigureElement
+	{
+		STROKE_EDGE(edge:nanofl.engine.geom.StrokeEdge),
+		POLYGON(polygon:nanofl.engine.geom.Polygon)
+	}
+	
+	enum FileAction
+	{
+		RENAME_LIBRARY_ITEM(oldNamePath:string, newNamePath:string),
+		REMOVE_LIBRARY_ITEMS(namePaths:string[])
+	}
+	
 	type IPlugins =
 	{
 		reload(alertOnSuccess?:boolean) : boolean;
+	}
+	
+	export class Importer
+	{
+		constructor(pluginName:string, params?:any);
+		pluginName : string;
+		params : any;
+		run(fileApi:nanofl.engine.FileApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, fonts:string[], callb:(arg:boolean) => void) : void;
+		getPrefKey() : string;
 	}
 	
 	export class LibraryTools
@@ -7674,6 +7726,17 @@ declare module nanofl.ide
 		getFonts() : string[];
 		loadFilesFromClipboard(destDir:string, callb:(arg:boolean) => void) : void;
 		saveFilesIntoClipboard(baseDir:string, relativePaths:string[], callb:() => void) : void;
+	}
+	
+	export class ServerApiTools
+	{
+		static loadDocument(fileApi:nanofl.engine.FileApi, path:string, lastModified:Date) : { lastModified : Date; library : nanofl.engine.Library; properties : nanofl.engine.DocumentProperties; };
+		static saveDocument(fileApi:nanofl.engine.FileApi, path:string, properties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>, fileActions:nanofl.ide.FileAction[]) : { generatorError : string; lastModified : Date; };
+		static copyLibraryFiles(fileApi:nanofl.engine.FileApi, srcLibraryDir:string, relativePaths:string[], destLibraryDir:string) : void;
+		static renameFiles(fileApi:nanofl.engine.FileApi, files:{ src : string; dest : string; }[]) : void;
+		static remove(fileApi:nanofl.engine.FileApi, paths:string[]) : void;
+		static loadFilesFromClipboard(fileApi:nanofl.engine.FileApi, destDir:string) : boolean;
+		static saveFilesIntoClipboard(fileApi:nanofl.engine.FileApi, baseDir:string, relativePaths:string[]) : void;
 	}
 	
 	export class ShapePropertiesOptions
