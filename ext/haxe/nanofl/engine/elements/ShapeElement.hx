@@ -2,7 +2,7 @@ package nanofl.engine.elements;
 
 extern class ShapeElement extends nanofl.engine.elements.Element
 {
-	function new(?edges:Array<nanofl.engine.geom.StrokeEdge>, ?polygons:Array<nanofl.engine.geom.Polygon>) : Void;
+	function new(?edges:Array<nanofl.engine.geom.StrokeEdge>, ?polygons:Array<nanofl.engine.geom.Polygon>, ?isNormalize:Bool) : Void;
 	var edges(default, null) : Array<nanofl.engine.geom.StrokeEdge>;
 	var polygons(default, null) : Array<nanofl.engine.geom.Polygon>;
 	override function getType() : String;
@@ -41,7 +41,7 @@ extern class ShapeElement extends nanofl.engine.elements.Element
 	override function transform(m:nanofl.engine.geom.Matrix, ?applyToStrokeAndFill:Bool) : Void;
 	function transformSelected(m:nanofl.engine.geom.Matrix) : Void;
 	function combine(shape:nanofl.engine.elements.ShapeElement) : Void;
-	function combineSelf() : Void;
+	function combineSelf() : Bool;
 	function combineSelected() : Void;
 	function extractSelected() : nanofl.engine.elements.ShapeElement;
 	override function getState() : nanofl.ide.undo.states.ElementState;
@@ -52,5 +52,6 @@ extern class ShapeElement extends nanofl.engine.elements.Element
 	function applyFillAlpha(alpha:Float) : Void;
 	function getEdgeCount() : Int;
 	override function equ(element:nanofl.engine.elements.Element) : Bool;
+	function fixErrors() : Bool;
 	override function toString() : String;
 }

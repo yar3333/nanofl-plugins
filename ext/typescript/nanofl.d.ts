@@ -6764,6 +6764,7 @@ declare module nanofl.engine.geom
 		static getNearestVertex(edges:nanofl.engine.geom.Edge[], x:number, y:number) : nanofl.engine.geom.Point;
 		static getTailPoints(edges:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Point[];
 		static smoothStraightLineSequence<T>(edges:T[], power:number) : void;
+		static assertHasNoIntersections<T>(edges:T[]) : void;
 	}
 	
 	export class Equation
@@ -6909,9 +6910,11 @@ declare module nanofl.engine.geom
 		static mergeByCommonEdges(polygons:nanofl.engine.geom.Polygon[], edges:nanofl.engine.geom.StrokeEdge[]) : void;
 		static removeDublicates(polygons:nanofl.engine.geom.Polygon[]) : void;
 		static normalize(polygons:nanofl.engine.geom.Polygon[]) : void;
-		static getReconstructed(polygons:nanofl.engine.geom.Polygon[], additionalEdges:nanofl.engine.geom.Edge[], force?:boolean) : nanofl.engine.geom.Polygon[];
-		static fromContours(originalContours:nanofl.engine.geom.Contour[], fill:nanofl.engine.fills.IFill, fillEvenOdd:boolean) : nanofl.engine.geom.Polygon[];
-		static assertCorrect(polygons:nanofl.engine.geom.Polygon[], intergrityChecks:boolean) : void;
+		static getEdges(polygons:nanofl.engine.geom.Polygon[]) : nanofl.engine.geom.Edge[];
+		static getByPoint(polygons:nanofl.engine.geom.Polygon[], pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Polygon;
+		static fromEdges(edges:nanofl.engine.geom.Edge[], strokeEdges:nanofl.engine.geom.StrokeEdge[], polygonsToDetectFill:nanofl.engine.geom.Polygon[]) : nanofl.engine.geom.Polygon[];
+		static fromRawContours(originalContours:nanofl.engine.geom.Contour[], fill:nanofl.engine.fills.IFill, fillEvenOdd:boolean) : nanofl.engine.geom.Polygon[];
+		static assertCorrect(polygons:nanofl.engine.geom.Polygon[], intergrityChecks:boolean, message?:any) : void;
 		static removeErased(polygons:nanofl.engine.geom.Polygon[]) : void;
 	}
 	
@@ -6965,6 +6968,7 @@ declare module nanofl.engine.geom
 		static processStrokes(edges:nanofl.engine.geom.StrokeEdge[], callb:(arg:nanofl.engine.strokes.IStroke) => void) : void;
 		static drawSorted(edges:nanofl.engine.geom.StrokeEdge[], g:nanofl.engine.Render, scaleSelection:number) : void;
 		static fromEdges(edges:nanofl.engine.geom.Edge[], stroke:nanofl.engine.strokes.IStroke, selected?:boolean) : nanofl.engine.geom.StrokeEdge[];
+		static replace(edges:nanofl.engine.geom.StrokeEdge[], search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[]) : void;
 	}
 }
 
@@ -7866,7 +7870,7 @@ declare module nanofl.engine.elements
 	
 	export class ShapeElement extends nanofl.engine.elements.Element
 	{
-		constructor(edges?:nanofl.engine.geom.StrokeEdge[], polygons?:nanofl.engine.geom.Polygon[]);
+		constructor(edges?:nanofl.engine.geom.StrokeEdge[], polygons?:nanofl.engine.geom.Polygon[], isNormalize?:boolean);
 		edges : nanofl.engine.geom.StrokeEdge[];
 		polygons : nanofl.engine.geom.Polygon[];
 		getType() : string;
@@ -7905,7 +7909,7 @@ declare module nanofl.engine.elements
 		transform(m:nanofl.engine.geom.Matrix, applyToStrokeAndFill?:boolean) : void;
 		transformSelected(m:nanofl.engine.geom.Matrix) : void;
 		combine(shape:nanofl.engine.elements.ShapeElement) : void;
-		combineSelf() : void;
+		combineSelf() : boolean;
 		combineSelected() : void;
 		extractSelected() : nanofl.engine.elements.ShapeElement;
 		getState() : nanofl.ide.undo.states.ElementState;
@@ -7916,6 +7920,7 @@ declare module nanofl.engine.elements
 		applyFillAlpha(alpha:number) : void;
 		getEdgeCount() : number;
 		equ(element:nanofl.engine.elements.Element) : boolean;
+		fixErrors() : boolean;
 		toString() : string;
 	}
 	
@@ -8758,6 +8763,10 @@ declare module nanofl.engine
 		clone() : nanofl.engine.Library;
 		getItemCount() : number;
 		getItemsInFolder(folderNamePath:string) : nanofl.engine.libraryitems.LibraryItem[];
+		/**
+		 * Search & fix errors.
+		 */
+		fixErrors() : void;
 		static SCENE_NAME_PATH : string;
 	}
 	

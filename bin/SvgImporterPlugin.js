@@ -2659,7 +2659,7 @@ svgimport_SvgPathToShapeConvertor.prototype = {
 			++_g;
 			svgimport_SvgPathToShapeConvertor.log("Polygons.fromEdges vvvvvvvvvvvvvvv contours.edges = " + nanofl.engine.geom.Contours.getEdges(pf.polygon.contours).length + "; fill = " + Std.string(pf.polygon.fill) + "; fillRuleEvenOdd = " + (pf.fillRuleEvenOdd == null?"null":"" + pf.fillRuleEvenOdd),{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 209, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
 			if(nanofl.engine.geom.Contours.getEdges(pf.polygon.contours).length >= 0) svgimport_SvgPathToShapeConvertor.log("------------------- CONTOURS FOR Polygons.fromContours:\n" + pf.polygon.contours.join(",\n"),{ fileName : "SvgPathToShapeConvertor.hx", lineNumber : 212, className : "svgimport.SvgPathToShapeConvertor", methodName : "convert"});
-			var polygons = nanofl.engine.geom.Polygons.fromContours(pf.polygon.contours,pf.polygon.fill,pf.fillRuleEvenOdd);
+			var polygons = nanofl.engine.geom.Polygons.fromRawContours(pf.polygon.contours,pf.polygon.fill,pf.fillRuleEvenOdd);
 			var _g2 = 0;
 			while(_g2 < polygons.length) {
 				var p = polygons[_g2];

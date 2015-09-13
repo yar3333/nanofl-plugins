@@ -32,4 +32,5 @@ extern class Edges
 	static function getNearestVertex(edges:Array<nanofl.engine.geom.Edge>, x:Float, y:Float) : nanofl.engine.geom.Point;
 	static function getTailPoints(edges:Array<nanofl.engine.geom.Edge>) : Array<nanofl.engine.geom.Point>;
 	static function smoothStraightLineSequence<T>(edges:Array<T>, power:Float) : Void;
+	static function assertHasNoIntersections<T>(edges:Array<T>) : Void;
 }

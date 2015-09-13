@@ -211,7 +211,7 @@ class SvgPathToShapeConvertor
 			{
 				log("------------------- CONTOURS FOR Polygons.fromContours:\n" + pf.polygon.contours.join(",\n"));
 			}
-			var polygons = Polygons.fromContours(pf.polygon.contours, pf.polygon.fill, pf.fillRuleEvenOdd);
+			var polygons = Polygons.fromRawContours(pf.polygon.contours, pf.polygon.fill, pf.fillRuleEvenOdd);
 			for (p in polygons) p.assertCorrect();
 			log("Polygons.fromEdges ^^^^^^^^^^^^^^^ polygons = " + polygons.length);
 			

@@ -30,5 +30,9 @@ extern class Library
 	function clone() : nanofl.engine.Library;
 	function getItemCount() : Int;
 	function getItemsInFolder(folderNamePath:String) : Array<nanofl.engine.libraryitems.LibraryItem>;
+	/**
+	 * Search & fix errors.
+	 */
+	function fixErrors() : Void;
 	static var SCENE_NAME_PATH(default, never) : String;
 }
