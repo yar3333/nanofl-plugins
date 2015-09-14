@@ -68,15 +68,14 @@ ZippedNanoFLImporterPlugin.main = function() {
 };
 ZippedNanoFLImporterPlugin.prototype = {
 	importDocument: function(fileApi,params,srcFilePath,destFilePath,documentProperties,library,fonts,callb) {
-		fileApi.unzip(srcFilePath,haxe_io_Path.directory(destFilePath));
-		var docFiles = fileApi.readDirectory(haxe_io_Path.directory(destFilePath)).filter(function(s) {
-			return StringTools.endsWith(s,".nfl");
+		var destDir = haxe_io_Path.directory(destFilePath);
+		fileApi.unzip(srcFilePath,destDir);
+		var docFiles = fileApi.readDirectory(destDir).filter(function(s) {
+			return StringTools.endsWith(s,".nfl") && !fileApi.isDirectory(destDir + "/" + s);
 		});
 		if(docFiles.length > 0) {
-			docFiles = docFiles.filter(function(s1) {
-				return s1 != srcFilePath;
-			});
-			var e = nanofl.ide.ServerApiTools.loadDocument(fileApi,docFiles[0],null);
+			fileApi.rename(destDir + "/" + haxe_io_Path.withoutExtension(docFiles[0]) + ".*",haxe_io_Path.withoutExtension(destFilePath) + ".*");
+			var e = nanofl.ide.ServerApiTools.loadDocument(fileApi,destFilePath,null);
 			if(e != null) {
 				var _g = 0;
 				var _g1 = Reflect.fields(e.properties);
@@ -86,7 +85,7 @@ ZippedNanoFLImporterPlugin.prototype = {
 					Reflect.setField(documentProperties,field,Reflect.field(e.properties,field));
 				}
 				var _g2 = 0;
-				var _g11 = e.library.getItems();
+				var _g11 = e.library.getItems(true);
 				while(_g2 < _g11.length) {
 					var item = _g11[_g2];
 					++_g2;
@@ -195,13 +194,21 @@ var haxe_io_Path = function(path) {
 	}
 };
 haxe_io_Path.__name__ = true;
+haxe_io_Path.withoutExtension = function(path) {
+	var s = new haxe_io_Path(path);
+	s.ext = null;
+	return s.toString();
+};
 haxe_io_Path.directory = function(path) {
 	var s = new haxe_io_Path(path);
 	if(s.dir == null) return "";
 	return s.dir;
 };
 haxe_io_Path.prototype = {
-	__class__: haxe_io_Path
+	toString: function() {
+		return (this.dir == null?"":this.dir + (this.backslash?"\\":"/")) + this.file + (this.ext == null?"":"." + this.ext);
+	}
+	,__class__: haxe_io_Path
 };
 var js__$Boot_HaxeError = function(val) {
 	Error.call(this);

@@ -25,19 +25,24 @@ class ZippedNanoFLImporterPlugin implements IImporterPlugin
 	
 	public function importDocument(fileApi:FileApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, fonts:Array<String>, callb:Bool->Void)
 	{
-		fileApi.unzip(srcFilePath, Path.directory(destFilePath));
+		var destDir = Path.directory(destFilePath);
 		
-		var docFiles = fileApi.readDirectory(Path.directory(destFilePath)).filter(function(s) return s.endsWith(".nfl"));
+		fileApi.unzip(srcFilePath, destDir);
+		
+		var docFiles = fileApi.readDirectory(destDir).filter(function(s) return s.endsWith(".nfl") && !fileApi.isDirectory(destDir + "/" + s));
 		if (docFiles.length > 0)
 		{
-			docFiles = docFiles.filter(function(s) return s != srcFilePath);
+			fileApi.rename(destDir + "/" + Path.withoutExtension(docFiles[0]) + ".*", Path.withoutExtension(destFilePath) + ".*");
 			
-			var e = ServerApiTools.loadDocument(fileApi, docFiles[0], null);
+			var e = ServerApiTools.loadDocument(fileApi, destFilePath, null);
 			
 			if (e != null)
 			{
 				for (field in Reflect.fields(e.properties)) Reflect.setField(documentProperties, field, Reflect.field(e.properties, field));
-				for (item in e.library.getItems()) library.addItem(item);
+				for (item in e.library.getItems(true))
+				{
+					library.addItem(item);
+				}
 				callb(true);
 			}
 			else
