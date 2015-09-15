@@ -38,11 +38,16 @@ class ZippedNanoFLImporterPlugin implements IImporterPlugin
 			
 			if (e != null)
 			{
-				for (field in Reflect.fields(e.properties)) Reflect.setField(documentProperties, field, Reflect.field(e.properties, field));
+				for (field in Reflect.fields(e.properties))
+				{
+					Reflect.setField(documentProperties, field, Reflect.field(e.properties, field));
+				}
+				
 				for (item in e.library.getItems(true))
 				{
 					library.addItem(item);
 				}
+				
 				callb(true);
 			}
 			else
