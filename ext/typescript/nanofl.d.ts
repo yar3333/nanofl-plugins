@@ -6898,6 +6898,7 @@ declare module nanofl.engine.geom
 		isInRectangle(x:number, y:number, width:number, height:number) : boolean;
 		assertCorrect() : void;
 		isContourOutside(c:nanofl.engine.geom.Contour) : boolean;
+		fixErrors() : boolean;
 		toString() : string;
 		static showSelection : boolean;
 		static load(node:htmlparser.HtmlNodeElement, fills:nanofl.engine.fills.IFill[]) : nanofl.engine.geom.Polygon;
@@ -7416,6 +7417,10 @@ declare module nanofl.ide
 		 */
 		originalPath : string;
 		/**
+		 * Used when document was opened directly from none-NanoFL format. In other cases is null.
+		 */
+		originalLastModified : Date;
+		/**
 		 * Path to NanoFL document file (*.nfl).
 		 */
 		path : string;
@@ -7427,9 +7432,10 @@ declare module nanofl.ide
 		undoQueue : nanofl.ide.undo.UndoQueue;
 		get_busy() : boolean
 	 	set_busy(v:boolean) : boolean;
+		get_isModified() : boolean;
+		get_isTemporary() : boolean;
 		activate(isCenterView:boolean) : void;
 		setProperties(properties:nanofl.engine.DocumentProperties) : void;
-		updateTitle() : void;
 		save(callb?:(arg:boolean) => void) : void;
 		saveAs(newPath?:string, callb?:(arg:boolean) => void) : void;
 		export(destPath:string, exporter?:nanofl.ide.Exporter, callb?:(arg:boolean) => void) : void;
@@ -7439,7 +7445,6 @@ declare module nanofl.ide
 		resize(width:number, height:number) : void;
 		canBeSaved() : boolean;
 		dispose() : void;
-		isTemporary() : boolean;
 		static createTemporary(app:nanofl.ide.Application) : nanofl.ide.Document;
 		static load(app:nanofl.ide.Application, path:string, callb:(arg:nanofl.ide.Document) => void) : void;
 		static import_(app:nanofl.ide.Application, path:string, importer?:nanofl.ide.Importer, callb?:(arg:nanofl.ide.Document) => void) : void;
@@ -7592,6 +7597,7 @@ declare module nanofl.ide
 		optimize() : void;
 		drop(dropEffect:nanofl.ide.draganddrop.DropEffect, data:htmlparser.HtmlNodeElement, folder:string, callb:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
 		getWithExandedFolders(items:nanofl.engine.libraryitems.LibraryItem[]) : nanofl.engine.libraryitems.LibraryItem[];
+		fixErrors() : void;
 	}
 	
 	export class Exporter
@@ -7978,7 +7984,6 @@ declare module nanofl.ide.undo
 		canRedo() : boolean;
 		documentSaved() : void;
 		isDocumentModified() : boolean;
-		isEquToEmpty() : boolean;
 		toString() : string;
 	}
 }
@@ -8520,6 +8525,7 @@ declare module nanofl.engine
 		textureAtlases : Map<string, { width : number; padding : number; height : number; }>;
 		save(fileApi:nanofl.engine.FileApi, filePath:string) : void;
 		getGeneratorAsString() : string;
+		equ(p:nanofl.engine.DocumentProperties) : boolean;
 		static load(filePath:string, fileApi:nanofl.engine.FileApi) : nanofl.engine.DocumentProperties;
 		static parseGenerator(s:string) : { name : string; params : any; };
 		static newTextureAtlasParams() : nanofl.ide.textureatlas.TextureAtlasParams;
@@ -8737,7 +8743,7 @@ declare module nanofl.engine
 	{
 		constructor(libraryDir:string, items?:nanofl.engine.libraryitems.LibraryItem[]);
 		libraryDir : string;
-		addEmptyScene() : nanofl.engine.libraryitems.MovieClipItem;
+		addSceneWithFrame(elements?:nanofl.engine.elements.Element[], layerName?:string) : nanofl.engine.libraryitems.MovieClipItem;
 		loadItems(fileApi:nanofl.engine.FileApi) : void;
 		parseItems(base:htmlparser.HtmlNodeElement) : void;
 		addFont(family:string, variants:nanofl.engine.FontVariant[]) : void;
@@ -8763,11 +8769,9 @@ declare module nanofl.engine
 		clone() : nanofl.engine.Library;
 		getItemCount() : number;
 		getItemsInFolder(folderNamePath:string) : nanofl.engine.libraryitems.LibraryItem[];
-		/**
-		 * Search & fix errors.
-		 */
-		fixErrors() : void;
+		equ(library:nanofl.engine.Library) : boolean;
 		static SCENE_NAME_PATH : string;
+		static createWithScene(libraryDir?:string, elements?:nanofl.engine.elements.Element[], layerName?:string) : nanofl.engine.Library;
 	}
 	
 	type MapRO<K, T> = Map<K, T>;
@@ -8794,7 +8798,6 @@ declare module nanofl.engine
 		static iterateInstances(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, insideMask?:boolean, callb:(arg0:nanofl.engine.elements.Instance, arg1:{ layerIndex : number; keyFrameIndex : number; insideMask : boolean; }) => void) : void;
 		static iterateElements(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, insideMask?:boolean, callb:(arg0:nanofl.engine.elements.Element, arg1:{ layerIndex : number; keyFrameIndex : number; insideMask : boolean; }) => void) : void;
 		static hasInstance(item:nanofl.engine.libraryitems.MovieClipItem, namePath:string, deep:boolean) : boolean;
-		static create(namePath:string, elements?:nanofl.engine.elements.Element[], layerName?:string) : nanofl.engine.libraryitems.MovieClipItem;
 	}
 	
 	export class Plugins
@@ -9223,6 +9226,7 @@ declare module nanofl.engine.libraryitems
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 		toString() : string;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MovieClipItem;
+		static createWithFrame(namePath:string, elements?:nanofl.engine.elements.Element[], layerName?:string) : nanofl.engine.libraryitems.MovieClipItem;
 	}
 	
 	export class SoundItem extends nanofl.engine.libraryitems.LibraryItem

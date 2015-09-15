@@ -12,7 +12,6 @@ import nanofl.engine.KeyFrame;
 import nanofl.engine.Layer;
 import nanofl.engine.Library;
 import nanofl.engine.libraryitems.MovieClipItem;
-import nanofl.engine.MovieClipItemTools;
 import svgimport.SvgElement;
 
 class BaseExporter
@@ -29,7 +28,7 @@ class BaseExporter
 	function elementsToLibraryItem(elements:Array<Element>, id:String) : MovieClipItem
 	{
 		stdlib.Debug.assert(id != null && id != "", "ID must not be empty (" + id + ").");
-		return library.addItem(MovieClipItemTools.create(id, elements, "auto"));
+		return library.addItem(MovieClipItem.createWithFrame(id, elements, "auto"));
 	}
 	
 	function applyMaskToElement<T:Element>(element:T, matrix:Matrix, maskID:String, prefixID:String) : T

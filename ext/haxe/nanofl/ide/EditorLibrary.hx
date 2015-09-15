@@ -41,4 +41,5 @@ extern class EditorLibrary
 	function optimize() : Void;
 	function drop(dropEffect:nanofl.ide.draganddrop.DropEffect, data:htmlparser.HtmlNodeElement, folder:String, callb:Array<nanofl.engine.libraryitems.LibraryItem> -> Void) : Void;
 	function getWithExandedFolders(items:Array<nanofl.engine.libraryitems.LibraryItem>) : Array<nanofl.engine.libraryitems.LibraryItem>;
+	function fixErrors() : Void;
 }

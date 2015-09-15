@@ -1667,18 +1667,18 @@ var svgimport_BaseExporter = function(svg,library) {
 svgimport_BaseExporter.__name__ = ["svgimport","BaseExporter"];
 svgimport_BaseExporter.prototype = {
 	elementsToLibraryItem: function(elements,id) {
-		stdlib_Debug.assert(id != null && id != "","ID must not be empty (" + id + ").",{ fileName : "BaseExporter.hx", lineNumber : 31, className : "svgimport.BaseExporter", methodName : "elementsToLibraryItem"});
-		return this.library.addItem(nanofl.engine.MovieClipItemTools.create(id,elements,"auto"));
+		stdlib_Debug.assert(id != null && id != "","ID must not be empty (" + id + ").",{ fileName : "BaseExporter.hx", lineNumber : 30, className : "svgimport.BaseExporter", methodName : "elementsToLibraryItem"});
+		return this.library.addItem(nanofl.engine.libraryitems.MovieClipItem.createWithFrame(id,elements,"auto"));
 	}
 	,applyMaskToElement: function(element,matrix,maskID,prefixID) {
 		if(element == null) return null;
 		if(maskID != null) {
 			element = this.elementsToLibraryItem([element],this.getNextFreeID(prefixID)).newInstance();
-			stdlib_Debug.assert(js_Boot.__instanceof(element,nanofl.engine.elements.Instance),null,{ fileName : "BaseExporter.hx", lineNumber : 46, className : "svgimport.BaseExporter", methodName : "applyMaskToElement"});
-			stdlib_Debug.assert(this.library.getItem((js_Boot.__cast(element , nanofl.engine.elements.Instance)).namePath) != null,null,{ fileName : "BaseExporter.hx", lineNumber : 47, className : "svgimport.BaseExporter", methodName : "applyMaskToElement"});
+			stdlib_Debug.assert(js_Boot.__instanceof(element,nanofl.engine.elements.Instance),null,{ fileName : "BaseExporter.hx", lineNumber : 45, className : "svgimport.BaseExporter", methodName : "applyMaskToElement"});
+			stdlib_Debug.assert(this.library.getItem((js_Boot.__cast(element , nanofl.engine.elements.Instance)).namePath) != null,null,{ fileName : "BaseExporter.hx", lineNumber : 46, className : "svgimport.BaseExporter", methodName : "applyMaskToElement"});
 			var item;
 			item = js_Boot.__cast(this.library.getItem((js_Boot.__cast(element , nanofl.engine.elements.Instance)).namePath) , nanofl.engine.libraryitems.MovieClipItem);
-			stdlib_Debug.assert(item != null,null,{ fileName : "BaseExporter.hx", lineNumber : 50, className : "svgimport.BaseExporter", methodName : "applyMaskToElement"});
+			stdlib_Debug.assert(item != null,null,{ fileName : "BaseExporter.hx", lineNumber : 49, className : "svgimport.BaseExporter", methodName : "applyMaskToElement"});
 			this.addMaskItemLayerToMovieClipItem(item,matrix,maskID);
 		}
 		return element;
@@ -1705,7 +1705,7 @@ svgimport_BaseExporter.prototype = {
 						}
 					}
 				}
-			} else haxe_Log.trace("Filter reference '" + filterID + "' is not found.",{ fileName : "BaseExporter.hx", lineNumber : 115, className : "svgimport.BaseExporter", methodName : "applyFilterToElement"});
+			} else haxe_Log.trace("Filter reference '" + filterID + "' is not found.",{ fileName : "BaseExporter.hx", lineNumber : 114, className : "svgimport.BaseExporter", methodName : "applyFilterToElement"});
 		}
 		return element;
 	}
@@ -1731,10 +1731,10 @@ svgimport_BaseExporter.prototype = {
 		}
 	}
 	,addMaskElementLayerToMovieClipItem: function(item,mask) {
-		stdlib_Debug.assert(mask != null,null,{ fileName : "BaseExporter.hx", lineNumber : 159, className : "svgimport.BaseExporter", methodName : "addMaskElementLayerToMovieClipItem"});
+		stdlib_Debug.assert(mask != null,null,{ fileName : "BaseExporter.hx", lineNumber : 158, className : "svgimport.BaseExporter", methodName : "addMaskElementLayerToMovieClipItem"});
 		var maskLayer = new nanofl.engine.Layer("auto_clip-path","mask",true,true);
 		maskLayer.addKeyFrame(new nanofl.engine.KeyFrame(null,null,null,[mask]));
-		stdlib_Debug.assert(item.layers.length == 1,null,{ fileName : "BaseExporter.hx", lineNumber : 164, className : "svgimport.BaseExporter", methodName : "addMaskElementLayerToMovieClipItem"});
+		stdlib_Debug.assert(item.layers.length == 1,null,{ fileName : "BaseExporter.hx", lineNumber : 163, className : "svgimport.BaseExporter", methodName : "addMaskElementLayerToMovieClipItem"});
 		item.addLayersBlock([maskLayer],0);
 		item.layers[1].parentIndex = 0;
 		item.layers[1].locked = true;

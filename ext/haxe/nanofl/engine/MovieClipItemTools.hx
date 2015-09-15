@@ -8,5 +8,4 @@ extern class MovieClipItemTools
 	static function iterateInstances(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:Bool, ?insideMask:Bool, callb:nanofl.engine.elements.Instance -> { var layerIndex : Int; var keyFrameIndex : Int; var insideMask : Bool; } -> Void) : Void;
 	static function iterateElements(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:Bool, ?insideMask:Bool, callb:nanofl.engine.elements.Element -> { var layerIndex : Int; var keyFrameIndex : Int; var insideMask : Bool; } -> Void) : Void;
 	static function hasInstance(item:nanofl.engine.libraryitems.MovieClipItem, namePath:String, deep:Bool) : Bool;
-	static function create(namePath:String, ?elements:Array<nanofl.engine.elements.Element>, ?layerName:String) : nanofl.engine.libraryitems.MovieClipItem;
 }

@@ -11,6 +11,10 @@ extern class Document
 	 */
 	var originalPath(default, null) : String;
 	/**
+	 * Used when document was opened directly from none-NanoFL format. In other cases is null.
+	 */
+	var originalLastModified(default, null) : Date;
+	/**
 	 * Path to NanoFL document file (*.nfl).
 	 */
 	var path(default, null) : String;
@@ -22,9 +26,10 @@ extern class Document
 	var undoQueue(default, null) : nanofl.ide.undo.UndoQueue;
 	@:isVar
 	var busy(get, set) : Bool;
+	var isModified(get, never) : Bool;
+	var isTemporary(get, never) : Bool;
 	function activate(isCenterView:Bool) : Void;
 	function setProperties(properties:nanofl.engine.DocumentProperties) : Void;
-	function updateTitle() : Void;
 	function save(?callb:Bool -> Void) : Void;
 	function saveAs(?newPath:String, ?callb:Bool -> Void) : Void;
 	function export(destPath:String, ?exporter:nanofl.ide.Exporter, ?callb:Bool -> Void) : Void;
@@ -34,7 +39,6 @@ extern class Document
 	function resize(width:Int, height:Int) : Void;
 	function canBeSaved() : Bool;
 	function dispose() : Void;
-	function isTemporary() : Bool;
 	static function createTemporary(app:nanofl.ide.Application) : nanofl.ide.Document;
 	static function load(app:nanofl.ide.Application, path:String, callb:nanofl.ide.Document -> Void) : Void;
 	static function import_(app:nanofl.ide.Application, path:String, ?importer:nanofl.ide.Importer, ?callb:nanofl.ide.Document -> Void) : Void;

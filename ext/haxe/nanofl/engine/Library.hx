@@ -4,7 +4,7 @@ extern class Library
 {
 	function new(libraryDir:String, ?items:Array<nanofl.engine.libraryitems.LibraryItem>) : Void;
 	var libraryDir(default, null) : String;
-	function addEmptyScene() : nanofl.engine.libraryitems.MovieClipItem;
+	function addSceneWithFrame(?elements:Array<nanofl.engine.elements.Element>, ?layerName:String) : nanofl.engine.libraryitems.MovieClipItem;
 	function loadItems(fileApi:nanofl.engine.FileApi) : Void;
 	function parseItems(base:htmlparser.HtmlNodeElement) : Void;
 	function addFont(family:String, variants:Array<nanofl.engine.FontVariant>) : Void;
@@ -30,9 +30,7 @@ extern class Library
 	function clone() : nanofl.engine.Library;
 	function getItemCount() : Int;
 	function getItemsInFolder(folderNamePath:String) : Array<nanofl.engine.libraryitems.LibraryItem>;
-	/**
-	 * Search & fix errors.
-	 */
-	function fixErrors() : Void;
+	function equ(library:nanofl.engine.Library) : Bool;
 	static var SCENE_NAME_PATH(default, never) : String;
+	static function createWithScene(?libraryDir:String, ?elements:Array<nanofl.engine.elements.Element>, ?layerName:String) : nanofl.engine.Library;
 }

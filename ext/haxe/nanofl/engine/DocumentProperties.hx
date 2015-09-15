@@ -15,6 +15,7 @@ extern class DocumentProperties
 	var textureAtlases : Map<String, { var width : Int; var padding : Int; var height : Int; }>;
 	function save(fileApi:nanofl.engine.FileApi, filePath:String) : Void;
 	function getGeneratorAsString() : String;
+	function equ(p:nanofl.engine.DocumentProperties) : Bool;
 	static function load(filePath:String, fileApi:nanofl.engine.FileApi) : nanofl.engine.DocumentProperties;
 	static function parseGenerator(s:String) : { var name : String; var params : Dynamic; };
 	static function newTextureAtlasParams() : nanofl.ide.textureatlas.TextureAtlasParams;

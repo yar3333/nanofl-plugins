@@ -16,6 +16,5 @@ extern class UndoQueue
 	function canRedo() : Bool;
 	function documentSaved() : Void;
 	function isDocumentModified() : Bool;
-	function isEquToEmpty() : Bool;
 	function toString() : String;
 }
