@@ -24,6 +24,14 @@ class ZippedNanoFLExporterPlugin implements IExporterPlugin
 	public function exportDocument(fileApi:FileApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
 	{
 		trace("ZippedNanoFLExporter " + srcFilePath + " => " + destFilePath);
-		return fileApi.zip(Path.directory(srcFilePath), destFilePath);
+		
+		var renSrc  = Path.withoutExtension(srcFilePath) + ".*";
+		var renDest = Path.join([ Path.directory(srcFilePath), Path.withoutDirectory(Path.withoutExtension(destFilePath)) ]) + ".*";
+		
+		fileApi.rename(renSrc, renDest);
+		var success = fileApi.zip(Path.directory(srcFilePath), destFilePath);
+		fileApi.rename(renDest, renSrc);
+		
+		return success;
 	}
 }

@@ -6,8 +6,24 @@ function $extend(from, fields) {
 	if( fields.toString !== Object.prototype.toString ) proto.toString = fields.toString;
 	return proto;
 }
+var EReg = function(r,opt) {
+	opt = opt.split("u").join("");
+	this.r = new RegExp(r,opt);
+};
+EReg.__name__ = true;
+EReg.prototype = {
+	replace: function(s,by) {
+		return s.replace(this.r,by);
+	}
+	,__class__: EReg
+};
 var HxOverrides = function() { };
 HxOverrides.__name__ = true;
+HxOverrides.cca = function(s,index) {
+	var x = s.charCodeAt(index);
+	if(x != x) return undefined;
+	return x;
+};
 HxOverrides.substr = function(s,pos,len) {
 	if(pos != null && pos != 0 && len != null && len < 0) return "";
 	if(len == null) len = s.length;
@@ -22,6 +38,16 @@ var Std = function() { };
 Std.__name__ = true;
 Std.string = function(s) {
 	return js_Boot.__string_rec(s,"");
+};
+var StringBuf = function() {
+	this.b = "";
+};
+StringBuf.__name__ = true;
+StringBuf.prototype = {
+	add: function(x) {
+		this.b += Std.string(x);
+	}
+	,__class__: StringBuf
 };
 var ZippedNanoFLExporterPlugin = function() {
 	this.properties = null;
@@ -39,7 +65,12 @@ ZippedNanoFLExporterPlugin.main = function() {
 ZippedNanoFLExporterPlugin.prototype = {
 	exportDocument: function(fileApi,params,srcFilePath,destFilePath,documentProperties,library) {
 		console.log("ZippedNanoFLExporter " + srcFilePath + " => " + destFilePath);
-		return fileApi.zip(haxe_io_Path.directory(srcFilePath),destFilePath);
+		var renSrc = haxe_io_Path.withoutExtension(srcFilePath) + ".*";
+		var renDest = haxe_io_Path.join([haxe_io_Path.directory(srcFilePath),haxe_io_Path.withoutDirectory(haxe_io_Path.withoutExtension(destFilePath))]) + ".*";
+		fileApi.rename(renSrc,renDest);
+		var success = fileApi.zip(haxe_io_Path.directory(srcFilePath),destFilePath);
+		fileApi.rename(renDest,renSrc);
+		return success;
 	}
 	,__class__: ZippedNanoFLExporterPlugin
 };
@@ -140,13 +171,107 @@ var haxe_io_Path = function(path) {
 	}
 };
 haxe_io_Path.__name__ = true;
+haxe_io_Path.withoutExtension = function(path) {
+	var s = new haxe_io_Path(path);
+	s.ext = null;
+	return s.toString();
+};
+haxe_io_Path.withoutDirectory = function(path) {
+	var s = new haxe_io_Path(path);
+	s.dir = null;
+	return s.toString();
+};
 haxe_io_Path.directory = function(path) {
 	var s = new haxe_io_Path(path);
 	if(s.dir == null) return "";
 	return s.dir;
 };
+haxe_io_Path.join = function(paths) {
+	var paths1 = paths.filter(function(s) {
+		return s != null && s != "";
+	});
+	if(paths1.length == 0) return "";
+	var path = paths1[0];
+	var _g1 = 1;
+	var _g = paths1.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		path = haxe_io_Path.addTrailingSlash(path);
+		path += paths1[i];
+	}
+	return haxe_io_Path.normalize(path);
+};
+haxe_io_Path.normalize = function(path) {
+	var slash = "/";
+	path = path.split("\\").join("/");
+	if(path == null || path == slash) return slash;
+	var target = [];
+	var _g = 0;
+	var _g1 = path.split(slash);
+	while(_g < _g1.length) {
+		var token = _g1[_g];
+		++_g;
+		if(token == ".." && target.length > 0 && target[target.length - 1] != "..") target.pop(); else if(token != ".") target.push(token);
+	}
+	var tmp = target.join(slash);
+	var regex = new EReg("([^:])/+","g");
+	var result = regex.replace(tmp,"$1" + slash);
+	var acc = new StringBuf();
+	var colon = false;
+	var slashes = false;
+	var _g11 = 0;
+	var _g2 = tmp.length;
+	while(_g11 < _g2) {
+		var i = _g11++;
+		var _g21 = HxOverrides.cca(tmp,i);
+		var i1 = _g21;
+		if(_g21 != null) switch(_g21) {
+		case 58:
+			acc.b += ":";
+			colon = true;
+			break;
+		case 47:
+			if(colon == false) slashes = true; else {
+				colon = false;
+				if(slashes) {
+					acc.b += "/";
+					slashes = false;
+				}
+				acc.add(String.fromCharCode(i1));
+			}
+			break;
+		default:
+			colon = false;
+			if(slashes) {
+				acc.b += "/";
+				slashes = false;
+			}
+			acc.add(String.fromCharCode(i1));
+		} else {
+			colon = false;
+			if(slashes) {
+				acc.b += "/";
+				slashes = false;
+			}
+			acc.add(String.fromCharCode(i1));
+		}
+	}
+	var result1 = acc.b;
+	return result1;
+};
+haxe_io_Path.addTrailingSlash = function(path) {
+	if(path.length == 0) return "/";
+	var c1 = path.lastIndexOf("/");
+	var c2 = path.lastIndexOf("\\");
+	if(c1 < c2) {
+		if(c2 != path.length - 1) return path + "\\"; else return path;
+	} else if(c1 != path.length - 1) return path + "/"; else return path;
+};
 haxe_io_Path.prototype = {
-	__class__: haxe_io_Path
+	toString: function() {
+		return (this.dir == null?"":this.dir + (this.backslash?"\\":"/")) + this.file + (this.ext == null?"":"." + this.ext);
+	}
+	,__class__: haxe_io_Path
 };
 var js__$Boot_HaxeError = function(val) {
 	Error.call(this);
@@ -488,6 +613,17 @@ var Bool = Boolean;
 Bool.__ename__ = ["Bool"];
 var Class = { __name__ : ["Class"]};
 var Enum = { };
+if(Array.prototype.filter == null) Array.prototype.filter = function(f1) {
+	var a1 = [];
+	var _g11 = 0;
+	var _g2 = this.length;
+	while(_g11 < _g2) {
+		var i1 = _g11++;
+		var e = this[i1];
+		if(f1(e)) a1.push(e);
+	}
+	return a1;
+};
 var __map_reserved = {}
 var ArrayBuffer = (Function("return typeof ArrayBuffer != 'undefined' ? ArrayBuffer : null"))() || js_html_compat_ArrayBuffer;
 if(ArrayBuffer.prototype.slice == null) ArrayBuffer.prototype.slice = js_html_compat_ArrayBuffer.sliceImpl;
