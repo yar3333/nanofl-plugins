@@ -157,7 +157,7 @@ MovieClipLoaderPlugin.prototype = {
 				var x = haxe_io_Path.extension(file.path);
 				$r = HxOverrides.indexOf(["xml","movieclip"],x,0);
 				return $r;
-			}(this)) > 0) {
+			}(this)) >= 0) {
 				var namePath = [haxe_io_Path.withoutExtension(file.path)];
 				if(!Lambda.exists(r,(function(namePath) {
 					return function(item) {
