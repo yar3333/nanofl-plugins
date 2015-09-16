@@ -1,3 +1,6 @@
+import haxe.io.Path;
+import ides.*;
+import languages.*;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
@@ -5,9 +8,6 @@ import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IGeneratorPlugin;
 import nanofl.ide.textureatlas.TextureAtlas;
-
-import languages.*;
-import ides.*;
 
 class CreateJSGeneratorPlugin implements IGeneratorPlugin
 {
@@ -50,7 +50,7 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 		var nameExt = pathParts[pathParts.length - 1];
 		var name = nameExt.lastIndexOf(".") > 0 ? nameExt.substring(0, nameExt.lastIndexOf(".")) : nameExt;
 		
-		var generator : BaseGenerator = switch(languageAndIde[0])
+		var generator : BaseGenerator = switch (languageAndIde[0])
 		{
 			case "HTML":		new HtmlGenerator(fileApi, documentProperties, library, textureAtlases, supportDir);
 			case "JavaScript":	new JavaScriptGenerator(fileApi, documentProperties, library, textureAtlases, supportDir);
@@ -74,4 +74,14 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 		}
 		
 	}
+	
+	#if js
+	public function test(serverApi:nanofl.ide.ServerApi, fileApi:FileApi, params:Dynamic, filePath:String) : String
+	{
+		var htmlFilePath = Path.withoutExtension(filePath) + ".html";
+		if (fileApi != null && !fileApi.exists(htmlFilePath)) return "File \"" + htmlFilePath + "\" not found.";
+		serverApi.openInBrowser(htmlFilePath);
+		return null;
+	}
+	#end
 }

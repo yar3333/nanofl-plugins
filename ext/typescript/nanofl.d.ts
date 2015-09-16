@@ -7195,6 +7195,15 @@ declare module nanofl.ide.plugins
 		 * @param	textureAtlases		Generated texture atlases.
 		 */
 		generate(fileApi:nanofl.engine.FileApi, params:any, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : void;
+		/**
+		 * called to "run" saved document. Must return error message or null if no errors.
+		 * Use this method if you need direct access to file system and OS.
+		 * @param	serverApi	Use this object to open URLs in embedded web server.
+		 * @param	fileApi		Use this object to work with file system.
+		 * @param	params		Custom parameters specified by user (produced from `properties`).
+		 * @param	filePath	Path to `*.nfl` file.
+		 */
+		test(serverApi:nanofl.ide.ServerApi, fileApi:nanofl.engine.FileApi, params:any, filePath:string) : string;
 	}
 	
 	export interface IImporterPlugin

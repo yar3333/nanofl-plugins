@@ -65,6 +65,12 @@ CreateJSGeneratorPlugin.prototype = {
 			generator1.generate(languageAndIde[0],dir,name);
 		}
 	}
+	,test: function(serverApi,fileApi,params,filePath) {
+		var htmlFilePath = haxe_io_Path.withoutExtension(filePath) + ".html";
+		if(fileApi != null && !fileApi.exists(htmlFilePath)) return "File \"" + htmlFilePath + "\" not found.";
+		serverApi.openInBrowser(htmlFilePath);
+		return null;
+	}
 	,__class__: CreateJSGeneratorPlugin
 };
 var EReg = function(r,opt) {
@@ -333,6 +339,44 @@ haxe_io_FPHelper.doubleToI64 = function(v) {
 		i64.high = (v < 0?-2147483648:0) | exp + 1023 << 20 | sig_h;
 	}
 	return i64;
+};
+var haxe_io_Path = function(path) {
+	switch(path) {
+	case ".":case "..":
+		this.dir = path;
+		this.file = "";
+		return;
+	}
+	var c1 = path.lastIndexOf("/");
+	var c2 = path.lastIndexOf("\\");
+	if(c1 < c2) {
+		this.dir = HxOverrides.substr(path,0,c2);
+		path = HxOverrides.substr(path,c2 + 1,null);
+		this.backslash = true;
+	} else if(c2 < c1) {
+		this.dir = HxOverrides.substr(path,0,c1);
+		path = HxOverrides.substr(path,c1 + 1,null);
+	} else this.dir = null;
+	var cp = path.lastIndexOf(".");
+	if(cp != -1) {
+		this.ext = HxOverrides.substr(path,cp + 1,null);
+		this.file = HxOverrides.substr(path,0,cp);
+	} else {
+		this.ext = null;
+		this.file = path;
+	}
+};
+haxe_io_Path.__name__ = true;
+haxe_io_Path.withoutExtension = function(path) {
+	var s = new haxe_io_Path(path);
+	s.ext = null;
+	return s.toString();
+};
+haxe_io_Path.prototype = {
+	toString: function() {
+		return (this.dir == null?"":this.dir + (this.backslash?"\\":"/")) + this.file + (this.ext == null?"":"." + this.ext);
+	}
+	,__class__: haxe_io_Path
 };
 var ides_BaseIdeGenerator = function(fileApi,supportDir) {
 	this.fileApi = fileApi;
