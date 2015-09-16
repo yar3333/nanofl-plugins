@@ -12,5 +12,5 @@ extern class SolidFill extends nanofl.engine.fills.BaseFill implements nanofl.en
 	function equ(e:nanofl.engine.fills.IFill) : Bool;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	function toString() : String;
-	static function load(node:htmlparser.HtmlNodeElement) : nanofl.engine.fills.SolidFill;
+	static function load(node:htmlparser.HtmlNodeElement, version:String) : nanofl.engine.fills.SolidFill;
 }

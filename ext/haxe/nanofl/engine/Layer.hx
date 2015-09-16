@@ -28,5 +28,5 @@ extern class Layer
 	function getIndex() : Int;
 	function equ(layer:nanofl.engine.Layer) : Bool;
 	function toString() : String;
-	static function parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.Layer;
+	static function parse(node:htmlparser.HtmlNodeElement, version:String) : nanofl.engine.Layer;
 }

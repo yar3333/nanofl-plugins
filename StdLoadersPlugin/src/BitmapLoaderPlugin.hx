@@ -30,7 +30,8 @@ class BitmapLoaderPlugin implements ILoaderPlugin
 				if (!r.exists(function(item) return item.namePath == namePath))
 				{
 					var item = new BitmapItem(namePath, ext);
-					var xmlFile = files.get(namePath + ".xml");
+					var xmlFile = files.get(namePath + ".xml");                     // v2.0.0+
+					if (xmlFile == null) xmlFile = files.get(namePath + ".bitmap"); // v1.0.0
 					if (xmlFile != null && xmlFile.xml != null && xmlFile.xml.name == "bitmap")
 					{
 						item.loadProperties(xmlFile.xml);

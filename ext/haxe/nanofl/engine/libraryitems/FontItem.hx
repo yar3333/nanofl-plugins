@@ -14,5 +14,5 @@ extern class FontItem extends nanofl.engine.libraryitems.LibraryItem
 	override function preload(ready:Void -> Void) : Void;
 	override function equ(item:nanofl.engine.libraryitems.LibraryItem) : Bool;
 	override function toString() : String;
-	static function parse(namePath:String, fontNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.FontItem;
+	static function parse(namePath:String, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.FontItem;
 }

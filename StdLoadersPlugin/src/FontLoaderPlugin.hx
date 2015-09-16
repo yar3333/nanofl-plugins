@@ -21,7 +21,7 @@ class FontLoaderPlugin implements ILoaderPlugin
 		{
 			if (file.excluded) continue;
 			
-			if (Path.extension(file.path) == "xml")
+			if ([ "xml", "font" ].indexOf(Path.extension(file.path)) >= 0)
 			{
 				var namePath = Path.withoutExtension(file.path);
 				if (!r.exists(function(item) return item.namePath == namePath))

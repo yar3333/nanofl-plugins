@@ -6901,7 +6901,7 @@ declare module nanofl.engine.geom
 		fixErrors() : boolean;
 		toString() : string;
 		static showSelection : boolean;
-		static load(node:htmlparser.HtmlNodeElement, fills:nanofl.engine.fills.IFill[]) : nanofl.engine.geom.Polygon;
+		static load(node:htmlparser.HtmlNodeElement, fills:nanofl.engine.fills.IFill[], version:string) : nanofl.engine.geom.Polygon;
 	}
 	
 	export class Polygons
@@ -6963,7 +6963,7 @@ declare module nanofl.engine.geom
 	
 	export class StrokeEdges
 	{
-		static load(node:htmlparser.HtmlNodeElement, strokes:nanofl.engine.strokes.IStroke[]) : nanofl.engine.geom.StrokeEdge[];
+		static load(node:htmlparser.HtmlNodeElement, strokes:nanofl.engine.strokes.IStroke[], version:string) : nanofl.engine.geom.StrokeEdge[];
 		static save(edges:nanofl.engine.geom.StrokeEdge[], strokes:nanofl.engine.strokes.IStroke[], out:htmlparser.XmlBuilder) : void;
 		static getBounds(edges:nanofl.engine.geom.StrokeEdge[], bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
 		static processStrokes(edges:nanofl.engine.geom.StrokeEdge[], callb:(arg:nanofl.engine.strokes.IStroke) => void) : void;
@@ -7016,7 +7016,7 @@ declare module nanofl.engine.strokes
 		equ(e:nanofl.engine.strokes.IStroke) : boolean;
 		setLibrary(library:nanofl.engine.Library) : void;
 		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.strokes.IStroke;
-		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.strokes.IStroke;
+		static load(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.strokes.IStroke;
 	}
 	
 	export interface IStroke
@@ -7814,12 +7814,12 @@ declare module nanofl.engine.elements
 		equ(element:nanofl.engine.elements.Element) : boolean;
 		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 		toString() : string;
-		static parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.elements.Element;
+		static parse(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.elements.Element;
 	}
 	
 	export class Elements
 	{
-		static parse(base:htmlparser.HtmlNodeElement) : nanofl.engine.elements.Element[];
+		static parse(base:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.elements.Element[];
 		static save(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>, out:htmlparser.XmlBuilder) : void;
 		static expandGroups(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>) : nanofl.engine.elements.Element[];
 		static getUsedSymbols(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>) : nanofl.engine.libraryitems.LibraryItem[];
@@ -8569,7 +8569,7 @@ declare module nanofl.engine
 		getFilter() : createjs.Filter;
 		getLabel() : string;
 		getProperties() : nanofl.engine.CustomProperty[];
-		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.FilterDef;
+		static load(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.FilterDef;
 	}
 	
 	type Font =
@@ -8648,7 +8648,7 @@ declare module nanofl.engine
 		getIndex() : number;
 		equ(keyFrame:nanofl.engine.KeyFrame) : boolean;
 		toString() : string;
-		static parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.KeyFrame;
+		static parse(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.KeyFrame;
 	}
 	
 	export class Guide
@@ -8736,7 +8736,7 @@ declare module nanofl.engine
 		getIndex() : number;
 		equ(layer:nanofl.engine.Layer) : boolean;
 		toString() : string;
-		static parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.Layer;
+		static parse(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.Layer;
 	}
 	
 	export class Library
@@ -8866,6 +8866,7 @@ declare module nanofl.engine
 		static player : string;
 		static document : string;
 		static compare(v1:string, v2:string) : number;
+		static handle<T>(version:string, handlers:Map<string, () => T>) : T;
 	}
 }
 
@@ -8905,7 +8906,7 @@ declare module nanofl.engine.fills
 		setLibrary(library:nanofl.engine.Library) : void;
 		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
 		toString() : string;
-		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.fills.BitmapFill;
+		static load(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.fills.BitmapFill;
 	}
 	
 	export class EraseFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
@@ -8954,7 +8955,7 @@ declare module nanofl.engine.fills
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
 		toString() : string;
-		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.fills.LinearFill;
+		static load(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.fills.LinearFill;
 	}
 	
 	export class RadialFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
@@ -8975,7 +8976,7 @@ declare module nanofl.engine.fills
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
 		toString() : string;
-		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.fills.RadialFill;
+		static load(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.fills.RadialFill;
 	}
 	
 	export class SelectionFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
@@ -9003,7 +9004,7 @@ declare module nanofl.engine.fills
 		equ(e:nanofl.engine.fills.IFill) : boolean;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		toString() : string;
-		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.fills.SolidFill;
+		static load(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.fills.SolidFill;
 	}
 }
 
@@ -9187,7 +9188,7 @@ declare module nanofl.engine.libraryitems
 		preload(ready:() => void) : void;
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 		toString() : string;
-		static parse(namePath:string, fontNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.FontItem;
+		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.FontItem;
 	}
 	
 	export class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem, nanofl.engine.ISpriteSheetableItem, nanofl.engine.IFramedItem, nanofl.engine.ITimeline, nanofl.engine.ILayersContainer

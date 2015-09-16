@@ -16,5 +16,5 @@ extern class BitmapFill extends nanofl.engine.fills.BaseFill implements nanofl.e
 	override function setLibrary(library:nanofl.engine.Library) : Void;
 	function getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
 	function toString() : String;
-	static function load(node:htmlparser.HtmlNodeElement) : nanofl.engine.fills.BitmapFill;
+	static function load(node:htmlparser.HtmlNodeElement, version:String) : nanofl.engine.fills.BitmapFill;
 }

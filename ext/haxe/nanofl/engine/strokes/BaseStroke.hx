@@ -20,5 +20,5 @@ extern class BaseStroke
 	function equ(e:nanofl.engine.strokes.IStroke) : Bool;
 	function setLibrary(library:nanofl.engine.Library) : Void;
 	function getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.strokes.IStroke;
-	static function load(node:htmlparser.HtmlNodeElement) : nanofl.engine.strokes.IStroke;
+	static function load(node:htmlparser.HtmlNodeElement, version:String) : nanofl.engine.strokes.IStroke;
 }

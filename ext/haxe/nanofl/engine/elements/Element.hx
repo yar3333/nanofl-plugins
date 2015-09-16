@@ -19,5 +19,5 @@ extern class Element
 	function equ(element:nanofl.engine.elements.Element) : Bool;
 	function getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 	function toString() : String;
-	static function parse(node:htmlparser.HtmlNodeElement) : nanofl.engine.elements.Element;
+	static function parse(node:htmlparser.HtmlNodeElement, version:String) : nanofl.engine.elements.Element;
 }

@@ -17,5 +17,5 @@ extern class LinearFill extends nanofl.engine.fills.BaseFill implements nanofl.e
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	function getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
 	function toString() : String;
-	static function load(node:htmlparser.HtmlNodeElement) : nanofl.engine.fills.LinearFill;
+	static function load(node:htmlparser.HtmlNodeElement, version:String) : nanofl.engine.fills.LinearFill;
 }

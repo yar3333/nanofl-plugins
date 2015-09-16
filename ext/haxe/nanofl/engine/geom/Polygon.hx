@@ -33,5 +33,5 @@ extern class Polygon implements nanofl.engine.ISelectable
 	function fixErrors() : Bool;
 	function toString() : String;
 	static var showSelection : Bool;
-	static function load(node:htmlparser.HtmlNodeElement, fills:Array<nanofl.engine.fills.IFill>) : nanofl.engine.geom.Polygon;
+	static function load(node:htmlparser.HtmlNodeElement, fills:Array<nanofl.engine.fills.IFill>, version:String) : nanofl.engine.geom.Polygon;
 }

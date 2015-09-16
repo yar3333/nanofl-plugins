@@ -30,7 +30,8 @@ class SoundLoaderPlugin implements ILoaderPlugin
 				if (!r.exists(function(item) return item.namePath == namePath))
 				{
 					var item = new SoundItem(namePath, ext);
-					var xmlFile = files.get(namePath + ".xml");
+					var xmlFile = files.get(namePath + ".xml");                    // v2.0.0+
+					if (xmlFile == null) xmlFile = files.get(namePath + ".sound"); // v1.0.0
 					if (xmlFile != null && xmlFile.xml != null && xmlFile.xml.name == "sound")
 					{
 						item.loadProperties(xmlFile.xml);

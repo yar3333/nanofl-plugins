@@ -29,6 +29,7 @@ BitmapLoaderPlugin.prototype = {
 				})(namePath))) {
 					var item1 = new nanofl.engine.libraryitems.BitmapItem(namePath[0],ext);
 					var xmlFile = files.get(namePath[0] + ".xml");
+					if(xmlFile == null) xmlFile = files.get(namePath[0] + ".bitmap");
 					if(xmlFile != null && xmlFile.xml != null && xmlFile.xml.name == "bitmap") {
 						item1.loadProperties(xmlFile.xml);
 						xmlFile.exclude();
@@ -66,7 +67,12 @@ FontLoaderPlugin.prototype = {
 		while( $it0.hasNext() ) {
 			var file = $it0.next();
 			if(file.excluded) continue;
-			if(haxe_io_Path.extension(file.path) == "xml") {
+			if((function($this) {
+				var $r;
+				var x = haxe_io_Path.extension(file.path);
+				$r = HxOverrides.indexOf(["xml","font"],x,0);
+				return $r;
+			}(this)) >= 0) {
 				var namePath = [haxe_io_Path.withoutExtension(file.path)];
 				if(!Lambda.exists(r,(function(namePath) {
 					return function(item) {
@@ -146,7 +152,12 @@ MovieClipLoaderPlugin.prototype = {
 		while( $it0.hasNext() ) {
 			var file = $it0.next();
 			if(file.excluded) continue;
-			if(haxe_io_Path.extension(file.path) == "xml") {
+			if((function($this) {
+				var $r;
+				var x = haxe_io_Path.extension(file.path);
+				$r = HxOverrides.indexOf(["xml","movieclip"],x,0);
+				return $r;
+			}(this)) > 0) {
 				var namePath = [haxe_io_Path.withoutExtension(file.path)];
 				if(!Lambda.exists(r,(function(namePath) {
 					return function(item) {
@@ -190,6 +201,7 @@ SoundLoaderPlugin.prototype = {
 				})(namePath))) {
 					var item1 = new nanofl.engine.libraryitems.SoundItem(namePath[0],ext);
 					var xmlFile = files.get(namePath[0] + ".xml");
+					if(xmlFile == null) xmlFile = files.get(namePath[0] + ".sound");
 					if(xmlFile != null && xmlFile.xml != null && xmlFile.xml.name == "sound") {
 						item1.loadProperties(xmlFile.xml);
 						xmlFile.exclude();
