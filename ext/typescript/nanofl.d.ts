@@ -286,7 +286,7 @@ declare module nanofl.ide
 		getMenu(pathID:string) : nanofl.ide.menu.MenuItem[];
 	}
 	
-	enum ActiveView
+	export enum ActiveView
 	{
 		LIBRARY,
 		TIMELINE,
@@ -581,13 +581,13 @@ declare module nanofl.ide
 		getSelectedStrokeEdges() : nanofl.engine.geom.StrokeEdge[];
 	}
 	
-	enum FigureElement
+	export enum FigureElement
 	{
 		STROKE_EDGE(edge:nanofl.engine.geom.StrokeEdge),
 		POLYGON(polygon:nanofl.engine.geom.Polygon)
 	}
 	
-	enum FileAction
+	export enum FileAction
 	{
 		RENAME_LIBRARY_ITEM(oldNamePath:string, newNamePath:string),
 		REMOVE_LIBRARY_ITEMS(namePaths:string[])
@@ -9030,7 +9030,7 @@ declare module nanofl.ide.draganddrop
 		droppable(elem:js.JQuery, selector?:string, drops:Map<string, { getDragImageType : (arg:htmlparser.HtmlNodeElement) => nanofl.ide.draganddrop.DragImageType; drop : (arg0:nanofl.ide.draganddrop.DropEffect, arg1:htmlparser.HtmlNodeElement, arg2:js.JQuery.JqEvent) => void; }>, filesDrop?:(arg0:File[], arg1:js.JQuery.JqEvent) => void) : void;
 	}
 	
-	enum DragImageType
+	export enum DragImageType
 	{
 		ICON_TEXT(icon:string, text:string),
 		RECTANGLE(width:number, height:number)

@@ -537,9 +537,6 @@ js_html_compat_Uint8Array._subarray = function(start,end) {
 	a.byteOffset = start;
 	return a;
 };
-var nanofl_ide_FileAction = { __ename__ : true, __constructs__ : ["RENAME_LIBRARY_ITEM","REMOVE_LIBRARY_ITEMS"] };
-nanofl_ide_FileAction.RENAME_LIBRARY_ITEM = function(oldNamePath,newNamePath) { var $x = ["RENAME_LIBRARY_ITEM",0,oldNamePath,newNamePath]; $x.__enum__ = nanofl_ide_FileAction; $x.toString = $estr; return $x; };
-nanofl_ide_FileAction.REMOVE_LIBRARY_ITEMS = function(namePaths) { var $x = ["REMOVE_LIBRARY_ITEMS",1,namePaths]; $x.__enum__ = nanofl_ide_FileAction; $x.toString = $estr; return $x; };
 String.prototype.__class__ = String;
 String.__name__ = true;
 Array.__name__ = true;
