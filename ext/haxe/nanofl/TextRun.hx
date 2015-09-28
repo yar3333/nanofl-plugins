@@ -18,6 +18,9 @@ extern class TextRun
 	function clone() : nanofl.TextRun;
 	function duplicate(?characters:String) : nanofl.TextRun;
 	function equ(textRun:nanofl.TextRun) : Bool;
+	function createText(?color:String, ?outline:Float) : createjs.Text;
+	function isFilled() : Bool;
+	function isStroked() : Bool;
 	static function create(characters:String, fillColor:String, family:String, style:String, size:Float, align:String, strokeSize:Float, strokeColor:String, kerning:Bool, letterSpacing:Float, lineSpacing:Float) : nanofl.TextRun;
 	static function optimize(textRuns:Array<nanofl.TextRun>) : Array<nanofl.TextRun>;
 }

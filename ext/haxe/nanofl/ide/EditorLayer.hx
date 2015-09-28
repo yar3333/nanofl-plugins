@@ -8,6 +8,7 @@ extern class EditorLayer
 	var parentIndex(get, never) : Int;
 	var type(get, never) : String;
 	function addElement(element:nanofl.engine.elements.Element, ?index:Int) : nanofl.ide.editorelements.EditorElement;
+	function addElements<T>(elements:Array<T>, ?index:Int) : Array<nanofl.ide.editorelements.EditorElement>;
 	function removeSelected() : Void;
 	@:noprofile
 	function getItems(?r:Array<nanofl.ide.editorelements.EditorElement>, ?includeShape:Bool) : Array<nanofl.ide.editorelements.EditorElement>;

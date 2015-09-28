@@ -32,7 +32,7 @@ extern class Document
 	function setProperties(properties:nanofl.engine.DocumentProperties) : Void;
 	function save(?callb:Bool -> Void) : Void;
 	function saveAs(?newPath:String, ?callb:Bool -> Void) : Void;
-	function export(destPath:String, ?exporter:nanofl.ide.Exporter, ?callb:Bool -> Void) : Void;
+	function export(?destPath:String, ?plugin:nanofl.ide.plugins.IExporterPlugin, ?callb:Bool -> Void) : Void;
 	function reload(callb:Array<nanofl.engine.libraryitems.LibraryItem> -> Void) : Void;
 	function reloadWoTransactionForced(callb:Array<nanofl.engine.libraryitems.LibraryItem> -> Void) : Void;
 	function test() : Void;

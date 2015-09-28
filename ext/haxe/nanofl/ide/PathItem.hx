@@ -10,6 +10,7 @@ extern class PathItem
 	function setFrameIndex(n:Int) : Void;
 	var layer(default, never) : nanofl.engine.Layer;
 	var frame(default, never) : nanofl.engine.Frame;
+	function getTotalFrames() : Int;
 	function equ(p:nanofl.ide.PathItem) : Bool;
 	function clone() : nanofl.ide.PathItem;
 }

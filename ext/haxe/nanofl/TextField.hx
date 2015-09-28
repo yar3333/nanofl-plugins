@@ -18,6 +18,7 @@ extern class TextField extends createjs.Container
 	var resize(default, null) : stdlib.Event<{ var width : Float; var height : Float; }>;
 	var change(default, null) : stdlib.Event<{ }>;
 	var text : String;
+	function update() : Void;
 	override function draw(ctx:js.html.CanvasRenderingContext2D, ?ignoreCache:Bool) : Bool;
 	function getSelectionFormat() : nanofl.TextRun;
 	function setSelectionFormat(format:nanofl.TextRun) : Void;

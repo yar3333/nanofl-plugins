@@ -14,7 +14,7 @@ extern class Layer
 	function getFrame(frameIndex:Int) : nanofl.engine.Frame;
 	function addKeyFrame(keyFrame:nanofl.engine.KeyFrame) : Void;
 	function insertFrame(frameIndex:Int) : Void;
-	function convertToKeyFrame(frameIndex:Int) : Bool;
+	function convertToKeyFrame(frameIndex:Int, ?blank:Bool) : Bool;
 	function removeFrame(frameIndex:Int) : Bool;
 	function getHumanType() : String;
 	function getIcon() : String;

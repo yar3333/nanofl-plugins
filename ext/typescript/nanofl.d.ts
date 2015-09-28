@@ -52,6 +52,1768 @@ declare module createjs.SpriteSheetBuilder
 	}
 }
 
+declare module nanofl.ide.commands
+{
+	export class BaseGroup
+	{
+		constructor(app:nanofl.ide.Application);
+	}
+	
+	export class ApplicationGroup extends nanofl.ide.commands.BaseGroup
+	{
+		constructor(app:nanofl.ide.Application);
+		preferences() : void;
+		reloadPlugins() : void;
+		showHotkeys() : void;
+		about() : void;
+		quit() : void;
+	}
+	
+	export class Commands
+	{
+		constructor(app:nanofl.ide.Application);
+		application : nanofl.ide.commands.ApplicationGroup;
+		document : nanofl.ide.commands.DocumentGroup;
+		editor : nanofl.ide.commands.EditorGroup;
+		library : nanofl.ide.commands.LibraryGroup;
+		timeline : nanofl.ide.commands.TimelineGroup;
+		validateCommand(command:string) : void;
+		run(command:string, params?:any[]) : boolean;
+	}
+	
+	export class DocumentGroup extends nanofl.ide.commands.BaseGroup
+	{
+		constructor(app:nanofl.ide.Application);
+		createNewEmpty() : void;
+		open(path:string) : void;
+		save() : void;
+		saveAs() : void;
+		import_(pluginName:string) : void;
+		export(pluginName:string) : void;
+		test() : void;
+		undo() : void;
+		redo() : void;
+		cut() : void;
+		copy() : void;
+		paste() : void;
+		properties() : void;
+	}
+	
+	export class EditorGroup extends nanofl.ide.commands.BaseGroup
+	{
+		constructor(app:nanofl.ide.Application);
+		switchToSelectTool() : void;
+		switchToTransformTool() : void;
+		switchToTextTool() : void;
+		switchToPencilTool() : void;
+		switchToEraserTool() : void;
+		switchToLineTool() : void;
+		switchToRectangleTool() : void;
+		switchToOvalTool() : void;
+		switchToFillTool() : void;
+		switchToGradientTool() : void;
+		switchToDropperTool() : void;
+		convertToSymbol() : void;
+		selectAll() : void;
+		deselectAll() : void;
+		toggleSelection() : void;
+		breakApart() : void;
+		group() : void;
+		duplicate() : void;
+		removeTransform() : void;
+		remove() : void;
+		translateLeft() : void;
+		translateRight() : void;
+		translateUp() : void;
+		translateDown() : void;
+		jumpLeft() : void;
+		jumpRight() : void;
+		jumpUp() : void;
+		jumpDown() : void;
+		moveForwards() : void;
+		moveBackwards() : void;
+		moveFront() : void;
+		moveBack() : void;
+		flipHorizontal() : void;
+		flipVertical() : void;
+		cut() : void;
+		copy() : void;
+		paste() : void;
+		properties() : void;
+		dump() : void;
+	}
+	
+	export class LibraryGroup extends nanofl.ide.commands.BaseGroup
+	{
+		constructor(app:nanofl.ide.Application);
+		newSymbol() : void;
+		newFolder() : void;
+		addFontManually() : void;
+		importFiles() : void;
+		remove() : void;
+		deselectAll() : void;
+		rename() : void;
+		gotoPrev() : void;
+		gotoNext() : void;
+		gotoPrevExtSelect() : void;
+		gotoNextExtSelect() : void;
+		optimize() : void;
+		removeUnused() : void;
+		selectUnused() : void;
+		importFont() : void;
+		importSounds() : void;
+		importImages() : void;
+		properties() : void;
+		createFolder() : void;
+	}
+	
+	export class TimelineGroup extends nanofl.ide.commands.BaseGroup
+	{
+		constructor(app:nanofl.ide.Application);
+		insertFrame() : void;
+		convertToKeyFrame() : void;
+		addBlankKeyFrame() : void;
+		removeFrames() : void;
+		gotoPrevFrame() : void;
+		gotoNextFrame() : void;
+		createTween() : void;
+		removeTween() : void;
+		convertToKeyframe() : void;
+		removeFrame() : void;
+		switchLayerTypeToNormal() : void;
+		switchLayerTypeToMask() : void;
+		switchLayerTypeToMasked() : void;
+		switchLayerTypeToGuide() : void;
+		switchLayerTypeToGuided() : void;
+	}
+}
+
+declare module nanofl.engine.geom.BezierCurve
+{
+	type BezierCurvesIntersection =
+	{
+		a : nanofl.engine.geom.BezierCurve[];
+		b : nanofl.engine.geom.BezierCurve[];
+	}
+}
+
+declare module nanofl.ide.menu
+{
+	type MenuItem =
+	{
+		align : string;
+		command : string;
+		icon : string;
+		id : string;
+		items : nanofl.ide.menu.MenuItem[];
+		name : string;
+		params : any[];
+		title : string;
+		version : string;
+	}
+	
+	export class MenuTools
+	{
+		static findItem(items:nanofl.ide.menu.MenuItem[], id:string) : nanofl.ide.menu.MenuItem;
+		static writeItem(item:nanofl.ide.menu.MenuItem, keyboard:nanofl.ide.keyboard.Keyboard, prefixID:string, nesting?:number, out:htmlparser.XmlBuilder) : void;
+		static fixWidth(container:js.JQuery) : void;
+		static updateItemStates(container:js.JQuery, app:nanofl.ide.Application) : void;
+		static enableItem(container:js.JQuery, command:string, enable?:boolean) : void;
+		static toggleItem(container:js.JQuery, command:string, show?:boolean) : void;
+		static onItemClick(a:js.JQuery, commands:nanofl.ide.commands.Commands) : void;
+	}
+}
+
+declare module createjs.Sound
+{
+	type SoundFileloadEvent =
+	{
+		data : any;
+		id : string;
+		src : string;
+		target : any;
+		type : string;
+	}
+	
+	type SoundFileerrorEvent =
+	{
+		data : any;
+		id : string;
+		src : string;
+		target : any;
+		type : string;
+	}
+}
+
+declare module nanofl.ide.textureatlas
+{
+	type TextureAtlas =
+	{
+		frames : nanofl.ide.textureatlas.TextureAtlasFrame[];
+		imagePng : nanofl.engine.Bytes;
+		itemFrames : any;
+	}
+	
+	type TextureAtlasFrame =
+	{
+		height : number;
+		regX : number;
+		regY : number;
+		width : number;
+		x : number;
+		y : number;
+	}
+	
+	type TextureAtlasParams =
+	{
+		height : number;
+		padding : number;
+		width : number;
+	}
+}
+
+declare module nanofl.ide
+{
+	export interface Preferences
+	{
+		set(key:string, value:any) : void;
+		getString(key:string, defValue?:string) : string;
+		getInt(key:string, defValue?:number) : number;
+		getFloat(key:string, defValue?:number) : number;
+		getBool(key:string, defValue?:boolean) : boolean;
+		getObject(key:string, defValue?:any) : any;
+		getKeymap(pathID:string) : { shortcut : string; command : string; }[];
+		getMenu(pathID:string) : nanofl.ide.menu.MenuItem[];
+	}
+	
+	enum ActiveView
+	{
+		LIBRARY,
+		TIMELINE,
+		EDITOR
+	}
+	
+	type Application =
+	{
+		addRecent(path:string) : void;
+		clipboard : nanofl.ide.Clipboard;
+		commands : nanofl.ide.commands.Commands;
+		createNewEmptyDocument(callb?:(arg:nanofl.ide.Document) => void) : void;
+		document : nanofl.ide.Document;
+		dragAndDrop : nanofl.ide.draganddrop.DragAndDrop;
+		fileApi : nanofl.ide.XpcomFileApi;
+		importDocument(path?:string, plugin?:nanofl.ide.plugins.IImporterPlugin, callb?:(arg:nanofl.ide.Document) => void) : void;
+		keyboard : nanofl.ide.keyboard.Keyboard;
+		newObjectParams : nanofl.ide.NewObjectParams;
+		openDocument(path?:string, callb?:(arg:nanofl.ide.Document) => void) : void;
+		pid : string;
+		plugins : nanofl.ide.IPlugins;
+		preferences : nanofl.ide.Preferences;
+		quit(force?:boolean, exitCode?:number) : void;
+		serverApi : nanofl.ide.ServerApi;
+	}
+	
+	export class CachedFile
+	{
+		constructor(fileApi:nanofl.engine.FileApi, libraryDir:string, path:string);
+		text : string;
+		xml : htmlparser.HtmlNodeElement;
+		json : any;
+		/**
+		 * Relative file path.
+		 */
+		path : string;
+		/**
+		 * If true - skip this file.
+		 */
+		excluded : boolean;
+		exclude() : void;
+	}
+	
+	type Clipboard =
+	{
+		canCopy() : boolean;
+		canCut() : boolean;
+		canPaste() : boolean;
+		copy() : boolean;
+		cut() : boolean;
+		paste() : boolean;
+		restoreFocus() : void;
+	}
+	
+	export class Document
+	{
+		/**
+		 * Document UUID (generated on every document object create).
+		 */
+		id : string;
+		/**
+		 * Used when document was opened directly from none-NanoFL format. In other cases is null.
+		 */
+		originalPath : string;
+		/**
+		 * Used when document was opened directly from none-NanoFL format. In other cases is null.
+		 */
+		originalLastModified : Date;
+		/**
+		 * Path to NanoFL document file (*.nfl).
+		 */
+		path : string;
+		properties : nanofl.engine.DocumentProperties;
+		library : nanofl.ide.EditorLibrary;
+		lastModified : Date;
+		navigator : nanofl.ide.Navigator;
+		editor : nanofl.ide.Editor;
+		undoQueue : nanofl.ide.undo.UndoQueue;
+		get_busy() : boolean
+	 	set_busy(v:boolean) : boolean;
+		get_isModified() : boolean;
+		get_isTemporary() : boolean;
+		activate(isCenterView:boolean) : void;
+		setProperties(properties:nanofl.engine.DocumentProperties) : void;
+		save(callb?:(arg:boolean) => void) : void;
+		saveAs(newPath?:string, callb?:(arg:boolean) => void) : void;
+		export(destPath?:string, plugin?:nanofl.ide.plugins.IExporterPlugin, callb?:(arg:boolean) => void) : void;
+		reload(callb:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
+		reloadWoTransactionForced(callb:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
+		test() : void;
+		resize(width:number, height:number) : void;
+		canBeSaved() : boolean;
+		dispose() : void;
+		static createTemporary(app:nanofl.ide.Application) : nanofl.ide.Document;
+		static load(app:nanofl.ide.Application, path:string, callb:(arg:nanofl.ide.Document) => void) : void;
+		static import_(app:nanofl.ide.Application, path:string, importer?:nanofl.ide.Importer, callb?:(arg:nanofl.ide.Document) => void) : void;
+		static disposeAll() : void;
+	}
+	
+	export class Editor
+	{
+		container : createjs.Container;
+		get_activeLayer() : nanofl.ide.EditorLayer;
+		figure : nanofl.ide.Figure;
+		get_magnet() : boolean
+	 	set_magnet(v:boolean) : boolean;
+		get_shift() : boolean
+	 	set_shift(v:boolean) : boolean;
+		get_zoomLevel() : number
+	 	set_zoomLevel(v:number) : number;
+		beginEditing(pathItem:nanofl.ide.PathItem, isCenterView?:boolean) : void;
+		updateShapes() : void;
+		updateElement(element:nanofl.engine.elements.Element) : void;
+		hasSelected() : boolean;
+		toggleSelection() : boolean;
+		select(obj:nanofl.engine.ISelectable, deselectOthers?:boolean) : void;
+		selectWoUpdate(obj:nanofl.engine.ISelectable, deselectOthers?:boolean) : void;
+		deselect(obj:nanofl.engine.ISelectable) : void;
+		deselectWoUpdate(obj:nanofl.engine.ISelectable) : void;
+		selectAll() : void;
+		deselectAll() : void;
+		deselectAllWoUpdate() : void;
+		selectLayers(layerIndexes:number[]) : void;
+		isSelectedAtPos(pos:nanofl.engine.geom.Point) : boolean;
+		getItemAtPos(pos:nanofl.engine.geom.Point) : nanofl.ide.editorelements.EditorElement;
+		getObjectAtPos(pos:nanofl.engine.geom.Point) : { layerIndex : number; obj : nanofl.engine.ISelectable; };
+		breakApartSelected() : void;
+		removeSelected() : void;
+		translateSelected(dx:number, dy:number, lowLevel?:boolean) : void;
+		updateTransformations() : void;
+		getItems(includeShape?:boolean) : nanofl.ide.editorelements.EditorElement[];
+		getSelectedItems() : nanofl.ide.editorelements.EditorElement[];
+		getObjectLayerIndex(obj:nanofl.engine.ISelectable) : number;
+		extractSelected() : nanofl.engine.elements.Element[];
+		isItemCanBeAdded(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
+		addElement(element:nanofl.engine.elements.Element) : nanofl.ide.editorelements.EditorElement;
+		convertToSymbol() : void;
+		groupSelected() : void;
+		translateVertex(point:nanofl.engine.geom.Point, dx:number, dy:number, addUndoTransaction?:boolean) : void;
+		rebind(isCenterView?:boolean) : void;
+		update() : void;
+		showAllLayers() : void;
+		hideAllLayers() : void;
+		lockAllLayers() : void;
+		unlockAllLayers() : void;
+		getSelectedLayerIndexes() : number[];
+		removeTransformFromSelected() : void;
+		moveSelectedFront() : void;
+		moveSelectedForwards() : void;
+		moveSelectedBackwards() : void;
+		moveSelectedBack() : void;
+		swapInstance(instance:nanofl.engine.elements.Instance, newNamePath:string) : void;
+		saveSelectedToXml(out:htmlparser.XmlBuilder) : nanofl.engine.libraryitems.LibraryItem[];
+		pasteFromXml(xml:htmlparser.XmlNodeElement) : boolean;
+		duplicateSelected() : void;
+		getObjectsInRectangle(x:number, y:number, width:number, height:number) : nanofl.engine.ISelectable[];
+		cutToClipboard() : void;
+		copyToClipboard() : void;
+		pasteFromClipboard() : void;
+		flipSelectedHorizontal() : void;
+		flipSelectedVertical() : void;
+		getSelectedBounds() : { height : number; width : number; x : number; y : number; };
+		getHitTestGap() : number;
+	}
+	
+	export class EditorLayer
+	{
+		container : createjs.Container;
+		shape : nanofl.ide.editorelements.EditorElementShape;
+		get_editable() : boolean;
+		get_parentIndex() : number;
+		get_type() : string;
+		addElement(element:nanofl.engine.elements.Element, index?:number) : nanofl.ide.editorelements.EditorElement;
+		addElements<T>(elements:T[], index?:number) : nanofl.ide.editorelements.EditorElement[];
+		removeSelected() : void;
+		getItems(r?:nanofl.ide.editorelements.EditorElement[], includeShape?:boolean) : nanofl.ide.editorelements.EditorElement[];
+		getSelectedItems(r?:nanofl.ide.editorelements.EditorElement[]) : nanofl.ide.editorelements.EditorElement[];
+		hasSelected() : boolean;
+		isAllSelected() : boolean;
+		hasItem(item:nanofl.ide.editorelements.EditorElement) : boolean;
+		selectAll() : void;
+		deselectAll() : void;
+		breakApartSelectedItems() : void;
+		show() : void;
+		hide() : void;
+		lock() : void;
+		unlock() : void;
+		getItemAtPos(pos:nanofl.engine.geom.Point) : nanofl.ide.editorelements.EditorElement;
+		getEditablessReason() : string;
+		moveSelectedFront() : void;
+		moveSelectedForwards() : void;
+		moveSelectedBackwards() : void;
+		moveSelectedBack() : void;
+		magnetSelectedToGuide() : void;
+		getIndex() : number;
+		getTweenedElements(frameIndex:number) : nanofl.engine.TweenedElement[];
+		update() : void;
+		getChildLayers() : nanofl.ide.EditorLayer[];
+		getElementIndex(element:nanofl.engine.elements.Element) : number;
+		getElementByIndex(elementIndex:number) : nanofl.engine.elements.Element;
+		getElementsState() : { elements : nanofl.engine.elements.Element[]; };
+		duplicateSelected() : void;
+		isShowSelection() : boolean;
+	}
+	
+	export class EditorLibrary
+	{
+		constructor(app:nanofl.ide.Application, library:nanofl.engine.Library, document:nanofl.ide.Document);
+		libraryDir : string;
+		activeItem : nanofl.engine.libraryitems.LibraryItem;
+		addItems(items:nanofl.engine.libraryitems.LibraryItem[], addUndoTransaction?:boolean) : void;
+		canRenameItem(oldNamePath:string, newNamePath:string) : boolean;
+		renameItems(itemRenames:{ oldNamePath : string; newNamePath : string; }[]) : void;
+		removeItems(namePaths:string[], filesRemoved?:() => void) : void;
+		copyAndChangeDir(libraryDir:string, callb:() => void) : void;
+		getNextItemName() : string;
+		hasItem(namePath:string) : boolean;
+		addFont(family:string, variants:nanofl.engine.FontVariant[]) : void;
+		preload(ready:() => void) : void;
+		getItem(namePath:string) : nanofl.engine.libraryitems.LibraryItem;
+		getSceneInstance() : nanofl.engine.elements.Instance;
+		getSceneItem() : nanofl.engine.libraryitems.MovieClipItem;
+		getItems(includeScene?:boolean) : nanofl.engine.libraryitems.LibraryItem[];
+		getRawLibrary() : nanofl.engine.Library;
+		getSelectedItemsWithDependencies() : nanofl.engine.libraryitems.LibraryItem[];
+		hasSelected() : boolean;
+		removeSelected() : void;
+		renameByUser(namePath:string) : void;
+		deselectAll() : void;
+		update() : void;
+		getSelectedItems() : nanofl.engine.libraryitems.LibraryItem[];
+		gotoPrevItem(overwriteSelection:boolean) : void;
+		gotoNextItem(overwriteSelection:boolean) : void;
+		showPropertiesPopup() : void;
+		createEmptySymbol() : void;
+		createFolder() : void;
+		importFiles(paths?:string[], folderPath?:string, ready?:() => void) : void;
+		importImages(folderPath?:string, ready?:() => void) : void;
+		importSounds(folderPath?:string, ready?:() => void) : void;
+		importFont() : void;
+		uploadFiles(files:File[], folderPath?:string, callb?:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
+		loadFilesFromClipboard(callb:(arg:boolean) => void) : void;
+		copyFilesIntoLibrary(srcDir:string, relativePaths:string[], callb?:() => void) : void;
+		generateTextureAtlases(textureAtlasesParams:Map<string, nanofl.ide.textureatlas.TextureAtlasParams>) : Map<string, nanofl.ide.textureatlas.TextureAtlas>;
+		selectUnusedItems() : void;
+		removeUnusedItems() : void;
+		optimize() : void;
+		drop(dropEffect:nanofl.ide.draganddrop.DropEffect, data:htmlparser.HtmlNodeElement, folder:string, callb:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
+		getWithExandedFolders(items:nanofl.engine.libraryitems.LibraryItem[]) : nanofl.engine.libraryitems.LibraryItem[];
+		fixErrors() : void;
+	}
+	
+	export class Exporter
+	{
+		constructor(pluginName:string, params:any);
+		pluginName : string;
+		params : any;
+		run(fileApi:nanofl.engine.FileApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library) : boolean;
+		static getPrefKey(pluginName:string) : string;
+	}
+	
+	export class Figure
+	{
+		constructor(editor:nanofl.ide.Editor, layers:nanofl.ide.EditorLayer[]);
+		getVertexAtPos(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
+		getSameEdgeWithLayers(edge:nanofl.engine.geom.Edge) : { layerIndex : number; edge : nanofl.engine.geom.Edge; }[];
+		getEdgeAtPos(pt:nanofl.engine.geom.Point, zoomLevel:number) : { dist : number; edge : nanofl.engine.geom.Edge; layerIndex : number; t : number; };
+		getStrokeEdgeAtPos(pt:nanofl.engine.geom.Point, zoomLevel:number) : { dist : number; edge : nanofl.engine.geom.StrokeEdge; layerIndex : number; t : number; };
+		getPolygonEdgeAtPos(pt:nanofl.engine.geom.Point) : { dist : number; edge : nanofl.engine.geom.Edge; layerIndex : number; t : number; };
+		getPolygonAtPos(pt:nanofl.engine.geom.Point) : { layerIndex : number; polygon : nanofl.engine.geom.Polygon; };
+		translateVertex(point:nanofl.engine.geom.Point, dx:number, dy:number) : void;
+		hasSelected() : boolean;
+		hasSelectedEdges() : boolean;
+		hasSelectedPolygons() : boolean;
+		updateShapes() : void;
+		getSelectedEdgesStrokeParams() : { bitmapPath : string; caps : string; color : string; colors : string[]; ignoreScale : boolean; joints : string; miterLimit : number; r : number; ratios : number[]; thickness : number; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
+		getSelectedPolygonsFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; r : number; ratios : number[]; repeat : string; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
+		getSelectedElements() : nanofl.ide.FigureElement[];
+		selectAll() : void;
+		deselectAll() : void;
+		getBounds(bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
+		getSelectedBounds(bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
+		removeSelected() : void;
+		translateSelected(dx:number, dy:number) : void;
+		transformSelected(m:nanofl.engine.geom.Matrix) : void;
+		setSelectedPolygonsFillParams(params:nanofl.engine.fills.FillParams) : void;
+		setSelectedEdgesStrokeParams(params:nanofl.engine.strokes.StrokeParams) : void;
+		setSelectedPolygonsFill(fill:nanofl.engine.fills.IFill, x1?:number, y1?:number, x2?:number, y2?:number) : void;
+		setSelectedEdgesStroke(stroke:nanofl.engine.strokes.IStroke) : void;
+		combineSelf() : void;
+		combineSelected() : void;
+		extractSelected() : nanofl.engine.elements.ShapeElement;
+		getMagnetPointEx(x:number, y:number, excludeSelf?:boolean) : { found : boolean; point : nanofl.engine.geom.Point; };
+		splitEdge(edge:nanofl.engine.geom.Edge, t:number) : nanofl.engine.geom.Point;
+		getSelectedStrokeEdges() : nanofl.engine.geom.StrokeEdge[];
+	}
+	
+	enum FigureElement
+	{
+		STROKE_EDGE(edge:nanofl.engine.geom.StrokeEdge),
+		POLYGON(polygon:nanofl.engine.geom.Polygon)
+	}
+	
+	enum FileAction
+	{
+		RENAME_LIBRARY_ITEM(oldNamePath:string, newNamePath:string),
+		REMOVE_LIBRARY_ITEMS(namePaths:string[])
+	}
+	
+	type IPlugins =
+	{
+		reload(alertOnSuccess?:boolean) : boolean;
+	}
+	
+	export class Importer
+	{
+		constructor(pluginName:string, params?:any);
+		pluginName : string;
+		params : any;
+		run(fileApi:nanofl.engine.FileApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, fonts:string[], callb:(arg:boolean) => void) : void;
+		static getPrefKey(pluginName:string) : string;
+	}
+	
+	export class LibraryTools
+	{
+		static optimize(library:nanofl.engine.Library) : void;
+		static getUnusedItems(library:nanofl.engine.Library) : string[];
+		static getItemsContainInstances(library:nanofl.engine.Library, namePaths:string[]) : nanofl.engine.libraryitems.LibraryItem[];
+		static hasEquItems(library:nanofl.engine.Library, items:nanofl.engine.libraryitems.LibraryItem[]) : boolean;
+	}
+	
+	export class Navigator
+	{
+		editPath : nanofl.ide.PathItem[];
+		pathItem : nanofl.ide.PathItem;
+		navigateUp() : void;
+		navigateDown(container:nanofl.engine.IPathElement) : void;
+		navigateTo(editPath:nanofl.ide.PathItem[], isCenterView?:boolean) : void;
+		update(isCenterView:boolean) : void;
+		setLayerIndex(index:number) : void;
+		setFrameIndex(index:number) : void;
+		getInstanceNamePaths() : string[];
+	}
+	
+	export class NewObjectParams
+	{
+		constructor(app:nanofl.ide.Application);
+		strokeType : string;
+		fillType : string;
+		stroke : nanofl.engine.strokes.IStroke;
+		fill : nanofl.engine.fills.IFill;
+		roundRadius : number;
+		textFormat : nanofl.TextRun;
+		setStroke(stroke:nanofl.engine.strokes.IStroke) : void;
+		setFill(fill:nanofl.engine.fills.IFill) : void;
+		setStrokeParams(p:nanofl.engine.strokes.StrokeParams) : void;
+		getStrokeParams() : { bitmapPath : string; caps : string; color : string; colors : string[]; ignoreScale : boolean; joints : string; miterLimit : number; r : number; ratios : number[]; thickness : number; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
+		setFillParams(p:nanofl.engine.fills.FillParams) : void;
+		getFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; r : number; ratios : number[]; repeat : string; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
+		getStrokeByType(type:string) : nanofl.engine.strokes.IStroke;
+		getFillByType(type:string) : nanofl.engine.fills.IFill;
+	}
+	
+	export class PathItem
+	{
+		constructor(element:nanofl.engine.IPathElement, layerIndex?:number, frameIndex?:number);
+		element : nanofl.engine.IPathElement;
+		layerIndex : number;
+		frameIndex : number;
+		setLayerIndex(n:number) : void;
+		setFrameIndex(n:number) : void;
+		layer : nanofl.engine.Layer;
+		frame : nanofl.engine.Frame;
+		getTotalFrames() : number;
+		equ(p:nanofl.ide.PathItem) : boolean;
+		clone() : nanofl.ide.PathItem;
+	}
+	
+	export interface ServerApi
+	{
+		getTempDirectory() : string;
+		copyDir(src:string, dest:string, overwrite?:boolean, callb:(arg:boolean) => void) : void;
+		copyLibraryFiles(srcLibraryDir:string, relativePaths:string[], destLibraryDir:string, callb:() => void) : void;
+		requestUrl(url:string, callb:(arg:string) => void) : void;
+		openInBrowser(url:string) : void;
+		uploadFiles(files:File[], destDir:string, callb:() => void) : void;
+		getFonts() : string[];
+		loadFilesFromClipboard(destDir:string, callb:(arg:boolean) => void) : void;
+		saveFilesIntoClipboard(baseDir:string, relativePaths:string[], callb:() => void) : void;
+	}
+	
+	export class ServerApiTools
+	{
+		static loadDocument(fileApi:nanofl.engine.FileApi, path:string, lastModified:Date) : { lastModified : Date; library : nanofl.engine.Library; properties : nanofl.engine.DocumentProperties; };
+		static saveDocument(fileApi:nanofl.engine.FileApi, path:string, properties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>, fileActions:nanofl.ide.FileAction[]) : { generatorError : string; lastModified : Date; };
+		static copyLibraryFiles(fileApi:nanofl.engine.FileApi, srcLibraryDir:string, relativePaths:string[], destLibraryDir:string) : void;
+		static renameFiles(fileApi:nanofl.engine.FileApi, files:{ src : string; dest : string; }[]) : void;
+		static remove(fileApi:nanofl.engine.FileApi, paths:string[]) : void;
+		static loadFilesFromClipboard(fileApi:nanofl.engine.FileApi, destDir:string) : boolean;
+		static saveFilesIntoClipboard(fileApi:nanofl.engine.FileApi, baseDir:string, relativePaths:string[]) : void;
+	}
+	
+	export class ShapePropertiesOptions
+	{
+		constructor();
+		strokePane : boolean;
+		fillPane : boolean;
+		roundRadiusPane : boolean;
+		noneStroke : boolean;
+		noneFill : boolean;
+		showStrokePane() : nanofl.ide.ShapePropertiesOptions;
+		showFillPane() : nanofl.ide.ShapePropertiesOptions;
+		showRoundRadiusPane() : nanofl.ide.ShapePropertiesOptions;
+		disallowNoneStroke() : nanofl.ide.ShapePropertiesOptions;
+		disallowNoneFill() : nanofl.ide.ShapePropertiesOptions;
+	}
+	
+	export class XpcomFileApi implements nanofl.engine.FileApi
+	{
+		constructor();
+		getTempDirectory() : string;
+		getToolsDirectory() : string;
+		getPluginsDirectory() : string;
+		createDirectory(path:string) : void;
+		readDirectory(path:string) : string[];
+		exists(path:string) : boolean;
+		getContent(filePath:string) : string;
+		saveContent(filePath:string, text:string, append?:boolean) : void;
+		getBinary(filePath:string) : nanofl.engine.Bytes;
+		saveBinary(filePath:string, data:nanofl.engine.Bytes) : void;
+		isDirectory(path:string) : boolean;
+		run(filePath:string, args:string[], blocking:boolean) : number;
+		copy(srcPath:string, destPath:string) : void;
+		copyDir(src:string, dest:string, overwrite?:boolean) : boolean;
+		rename(srcPath:string, destPath:string) : void;
+		remove(path:string) : void;
+		findFiles(dirPath:string, onFile?:(arg:string) => void, onDir?:(arg:string) => boolean) : void;
+		getPluginPaths() : string[];
+		nativePath(path:string) : string;
+		getLastModified(path:string) : Date;
+		zip(srcDir:string, destZip:string) : boolean;
+		unzip(srcZip:string, destDir:string) : boolean;
+		getEnvironmentVariable(name:string) : string;
+	}
+}
+
+declare module createjs.DisplayObject
+{
+	type DisplayObjectTickEvent =
+	{
+		params : any[];
+		target : any;
+		type : string;
+	}
+}
+
+declare module createjs.Ticker
+{
+	type TickerTickEvent =
+	{
+		delta : number;
+		paused : boolean;
+		runTime : number;
+		target : any;
+		time : number;
+		type : string;
+	}
+}
+
+declare module nanofl.engine.elements
+{
+	export class Element
+	{
+		matrix : nanofl.engine.geom.Matrix;
+		regX : number;
+		regY : number;
+		visible : boolean;
+		parent : nanofl.engine.IElementsContainer;
+		getType() : string;
+		save(out:htmlparser.XmlBuilder) : void;
+		clone() : nanofl.engine.elements.Element;
+		translate(dx:number, dy:number) : void;
+		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		getState() : nanofl.ide.undo.states.ElementState;
+		setState(state:nanofl.ide.undo.states.ElementState) : void;
+		transform(m:nanofl.engine.geom.Matrix, applyToStrokeAndFill?:boolean) : void;
+		equ(element:nanofl.engine.elements.Element) : boolean;
+		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
+		toString() : string;
+		static parse(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.elements.Element;
+	}
+	
+	export class Elements
+	{
+		static parse(base:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.elements.Element[];
+		static save(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>, out:htmlparser.XmlBuilder) : void;
+		static expandGroups(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>) : nanofl.engine.elements.Element[];
+		static getUsedSymbols(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>) : nanofl.engine.libraryitems.LibraryItem[];
+	}
+	
+	export class GroupElement extends nanofl.engine.elements.Element implements nanofl.engine.IElementsContainer, nanofl.engine.IPathElement
+	{
+		constructor(elements:nanofl.engine.elements.Element[]);
+		elements : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
+		name : string;
+		currentFrame : number;
+		layers : nanofl.engine.ArrayRO<nanofl.engine.Layer>;
+		addElement(element:nanofl.engine.elements.Element, index?:number) : void;
+		removeElementAt(n:number) : void;
+		removeElement(element:nanofl.engine.elements.Element) : void;
+		save(out:htmlparser.XmlBuilder) : void;
+		clone() : nanofl.engine.elements.GroupElement;
+		getChildren() : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
+		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.Container;
+		getMaskFilter(layer:nanofl.engine.Layer, frameIndex:number) : createjs.Container;
+		isScene() : boolean;
+		getNavigatorName() : string;
+		getNavigatorIcon() : string;
+		getTimeline() : nanofl.engine.ITimeline;
+		transform(m:nanofl.engine.geom.Matrix, applyToStrokeAndFill?:boolean) : void;
+		equ(element:nanofl.engine.elements.Element) : boolean;
+	}
+	
+	export class Instance extends nanofl.engine.elements.Element implements nanofl.engine.IPathElement
+	{
+		constructor(namePath:string, name?:string, colorEffect?:nanofl.engine.coloreffects.ColorEffect, filters?:nanofl.engine.FilterDef[]);
+		namePath : string;
+		name : string;
+		colorEffect : nanofl.engine.coloreffects.ColorEffect;
+		filters : nanofl.engine.FilterDef[];
+		symbol : nanofl.engine.libraryitems.InstancableItem;
+		getType() : string;
+		save(out:htmlparser.XmlBuilder) : void;
+		clone() : nanofl.engine.elements.Instance;
+		isScene() : boolean;
+		getState() : nanofl.ide.undo.states.ElementState;
+		setState(state:nanofl.ide.undo.states.ElementState) : void;
+		toString() : string;
+		layers : nanofl.engine.ArrayRO<nanofl.engine.Layer>;
+		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		getNavigatorName() : string;
+		getNavigatorIcon() : string;
+		getChildren() : nanofl.engine.elements.Element[];
+		getTimeline() : nanofl.engine.ITimeline;
+		equ(element:nanofl.engine.elements.Element) : boolean;
+	}
+	
+	export class ShapeElement extends nanofl.engine.elements.Element
+	{
+		constructor(edges?:nanofl.engine.geom.StrokeEdge[], polygons?:nanofl.engine.geom.Polygon[], isNormalize?:boolean);
+		edges : nanofl.engine.geom.StrokeEdge[];
+		polygons : nanofl.engine.geom.Polygon[];
+		getType() : string;
+		save(out:htmlparser.XmlBuilder) : void;
+		ensureNoTransform() : void;
+		draw(g:nanofl.engine.Render, scaleSelection:number) : void;
+		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.Shape;
+		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.Shape;
+		clone() : nanofl.engine.elements.ShapeElement;
+		translate(dx:number, dy:number) : void;
+		isEmpty() : boolean;
+		hasSelected() : boolean;
+		isAllSelected() : boolean;
+		hasSelectedEdges() : boolean;
+		hasSelectedPolygons() : boolean;
+		select(obj:{ selected : boolean; }) : void;
+		selectAll() : void;
+		deselectAll() : void;
+		translateSelected(dx:number, dy:number) : void;
+		translateVertex(point:nanofl.engine.geom.Point, dx:number, dy:number) : void;
+		removeSelected() : void;
+		getPolygonAtPos(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Polygon;
+		getSameEdges(edge:nanofl.engine.geom.Edge) : nanofl.engine.geom.Edge[];
+		getNearestStrokeEdge(pt:nanofl.engine.geom.Point) : { dist : number; edge : nanofl.engine.geom.StrokeEdge; point : nanofl.engine.geom.Point; t : number; };
+		getNearestPolygonEdge(pt:nanofl.engine.geom.Point) : { dist : number; edge : nanofl.engine.geom.Edge; point : nanofl.engine.geom.Point; t : number; };
+		getNearestVertex(pt:nanofl.engine.geom.Point, excludeSelf?:boolean) : { dist : number; distMinusEdgeThickness : number; point : nanofl.engine.geom.Point; };
+		setSelectedEdgesStroke(stroke:nanofl.engine.strokes.IStroke) : void;
+		setSelectedEdgesStrokeParams(params:nanofl.engine.strokes.StrokeParams) : void;
+		getSelectedEdgesStrokeParams() : { bitmapPath : string; caps : string; color : string; colors : string[]; ignoreScale : boolean; joints : string; miterLimit : number; r : number; ratios : number[]; thickness : number; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
+		setSelectedPolygonsFill(fill:nanofl.engine.fills.IFill, x1?:number, y1?:number, x2?:number, y2?:number) : void;
+		setSelectedPolygonsFillParams(params:nanofl.engine.fills.FillParams) : void;
+		getSelectedPolygonsFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; r : number; ratios : number[]; repeat : string; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
+		floodFill(fill:nanofl.engine.fills.IFill, x1:number, y1:number, x2:number, y2:number) : void;
+		getBounds(bounds?:nanofl.engine.geom.Bounds, useStrokeThickness?:boolean) : nanofl.engine.geom.Bounds;
+		getSelectedBounds(bounds?:nanofl.engine.geom.Bounds, useStrokeThickness?:boolean) : nanofl.engine.geom.Bounds;
+		transform(m:nanofl.engine.geom.Matrix, applyToStrokeAndFill?:boolean) : void;
+		transformSelected(m:nanofl.engine.geom.Matrix) : void;
+		combine(shape:nanofl.engine.elements.ShapeElement) : void;
+		combineSelf() : boolean;
+		combineSelected() : void;
+		extractSelected() : nanofl.engine.elements.ShapeElement;
+		getState() : nanofl.ide.undo.states.ElementState;
+		setState(_state:nanofl.ide.undo.states.ElementState) : void;
+		replaceEdge(search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[]) : void;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		applyStrokeAlpha(alpha:number) : void;
+		applyFillAlpha(alpha:number) : void;
+		getEdgeCount() : number;
+		equ(element:nanofl.engine.elements.Element) : boolean;
+		fixErrors() : boolean;
+		toString() : string;
+	}
+	
+	export class SpriteFrameElement extends nanofl.engine.elements.Element
+	{
+		constructor(sprite:nanofl.engine.libraryitems.SpriteItem, index:number);
+		getType() : string;
+		save(out:htmlparser.XmlBuilder) : void;
+		clone() : nanofl.engine.elements.SpriteFrameElement;
+		getState() : nanofl.ide.undo.states.ElementState;
+		setState(state:nanofl.ide.undo.states.ElementState) : void;
+		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		equ(element:nanofl.engine.elements.Element) : boolean;
+		toString() : string;
+	}
+	
+	export class TextElement extends nanofl.engine.elements.Element
+	{
+		constructor(name:string, width:number, height:number, selectable:boolean, border:boolean, textRuns:nanofl.TextRun[], newTextFormat?:nanofl.TextRun);
+		name : string;
+		width : number;
+		height : number;
+		selectable : boolean;
+		border : boolean;
+		textRuns : nanofl.TextRun[];
+		newTextFormat : nanofl.TextRun;
+		save(out:htmlparser.XmlBuilder) : void;
+		getText() : string;
+		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : nanofl.TextField;
+		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : nanofl.TextField;
+		getMinSize(dispObj:createjs.DisplayObject) : { height : number; width : number; };
+		clone() : nanofl.engine.elements.TextElement;
+		getState() : nanofl.ide.undo.states.ElementState;
+		setState(_state:nanofl.ide.undo.states.ElementState) : void;
+		equ(element:nanofl.engine.elements.Element) : boolean;
+		breakApart() : nanofl.engine.elements.TextElement[];
+	}
+}
+
+declare module nanofl.ide.undo
+{
+	export class UndoQueue
+	{
+		/**
+		 * This method may be called several times with different operations.
+		 */
+		beginTransaction(operations:{ document : boolean; element : nanofl.engine.elements.Element; elements : boolean; figure : boolean; libraryAddItems : boolean; libraryChangeItems : string[]; libraryRemoveItems : string[]; libraryRenameItems : { oldNamePath : string; newNamePath : string; }[]; timeline : boolean; transformations : boolean; }) : void;
+		cancelTransaction() : void;
+		revertTransaction() : void;
+		forgetTransaction() : void;
+		commitTransaction() : void;
+		undo() : void;
+		redo() : void;
+		canUndo() : boolean;
+		canRedo() : boolean;
+		documentSaved() : void;
+		isDocumentModified() : boolean;
+		toString() : string;
+	}
+}
+
+declare module createjs.SpriteSheet
+{
+	type SpriteSheetCompleteEvent =
+	{
+		target : any;
+		type : string;
+	}
+	
+	type SpriteSheetGetframeEvent =
+	{
+		frame : any;
+		index : number;
+	}
+}
+
+declare module nanofl.engine.coloreffects
+{
+	export class ColorEffect
+	{
+		apply(obj:createjs.DisplayObject) : void;
+		clone() : nanofl.engine.coloreffects.ColorEffect;
+		getNeutralClone() : nanofl.engine.coloreffects.ColorEffect;
+		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffect;
+		save(out:htmlparser.XmlBuilder) : void;
+		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
+		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffect;
+		static equS(a:nanofl.engine.coloreffects.ColorEffect, b:nanofl.engine.coloreffects.ColorEffect) : boolean;
+	}
+	
+	export class ColorEffectAdvanced extends nanofl.engine.coloreffects.ColorEffect
+	{
+		constructor(alphaMultiplier:number, redMultiplier:number, greenMultiplier:number, blueMultiplier:number, alphaOffset:number, redOffset:number, greenOffset:number, blueOffset:number);
+		redMultiplier : number;
+		greenMultiplier : number;
+		blueMultiplier : number;
+		alphaMultiplier : number;
+		redOffset : number;
+		greenOffset : number;
+		blueOffset : number;
+		alphaOffset : number;
+		save(out:htmlparser.XmlBuilder) : void;
+		apply(obj:createjs.DisplayObject) : void;
+		clone() : nanofl.engine.coloreffects.ColorEffectAdvanced;
+		getNeutralClone() : nanofl.engine.coloreffects.ColorEffectAdvanced;
+		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffectAdvanced;
+		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
+		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffectAdvanced;
+	}
+	
+	export class ColorEffectAlpha extends nanofl.engine.coloreffects.ColorEffect
+	{
+		constructor(value:number);
+		value : number;
+		save(out:htmlparser.XmlBuilder) : void;
+		apply(obj:createjs.DisplayObject) : void;
+		clone() : nanofl.engine.coloreffects.ColorEffectAlpha;
+		getNeutralClone() : nanofl.engine.coloreffects.ColorEffectAlpha;
+		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffectAlpha;
+		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
+		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffectAlpha;
+	}
+	
+	export class ColorEffectBrightness extends nanofl.engine.coloreffects.ColorEffect
+	{
+		constructor(value:number);
+		value : number;
+		save(out:htmlparser.XmlBuilder) : void;
+		apply(obj:createjs.DisplayObject) : void;
+		clone() : nanofl.engine.coloreffects.ColorEffectBrightness;
+		getNeutralClone() : nanofl.engine.coloreffects.ColorEffectBrightness;
+		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffectBrightness;
+		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
+		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffectBrightness;
+	}
+	
+	export class ColorEffectDouble extends nanofl.engine.coloreffects.ColorEffect
+	{
+		constructor(effect0:nanofl.engine.coloreffects.ColorEffect, effect1:nanofl.engine.coloreffects.ColorEffect);
+		apply(obj:createjs.DisplayObject) : void;
+		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
+	}
+	
+	export class ColorEffectTint extends nanofl.engine.coloreffects.ColorEffect
+	{
+		constructor(color:string, multiplier:number);
+		color : string;
+		multiplier : number;
+		save(out:htmlparser.XmlBuilder) : void;
+		apply(obj:createjs.DisplayObject) : void;
+		clone() : nanofl.engine.coloreffects.ColorEffectTint;
+		getNeutralClone() : nanofl.engine.coloreffects.ColorEffectTint;
+		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffectTint;
+		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
+		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffectTint;
+	}
+}
+
+declare module nanofl.engine.geom.Edge
+{
+	type EdgesItersection =
+	{
+		a : nanofl.engine.geom.Edge[];
+		b : nanofl.engine.geom.Edge[];
+	}
+}
+
+declare module htmlparser
+{
+	type CssSelector =
+	{
+		classes : string[];
+		ids : string[];
+		tags : string[];
+		type : string;
+	}
+	
+	export class HtmlAttribute
+	{
+		constructor(name:string, value:string, quote:string);
+		name : string;
+		value : string;
+		quote : string;
+		toString() : string;
+	}
+	
+	export class HtmlNode
+	{
+		parent : htmlparser.HtmlNodeElement;
+		remove() : void;
+		getPrevSiblingNode() : htmlparser.HtmlNode;
+		getNextSiblingNode() : htmlparser.HtmlNode;
+		toString() : string;
+		toText() : string;
+	}
+	
+	export class HtmlNodeElement extends htmlparser.HtmlNode
+	{
+		constructor(name:string, attributes:htmlparser.HtmlAttribute[]);
+		name : string;
+		attributes : htmlparser.HtmlAttribute[];
+		nodes : htmlparser.HtmlNode[];
+		children : htmlparser.HtmlNodeElement[];
+		getPrevSiblingElement() : htmlparser.HtmlNodeElement;
+		getNextSiblingElement() : htmlparser.HtmlNodeElement;
+		addChild(node:htmlparser.HtmlNode, beforeNode?:htmlparser.HtmlNode) : void;
+		toString() : string;
+		getAttribute(name:string) : string;
+		setAttribute(name:string, value:string) : void;
+		removeAttribute(name:string) : void;
+		hasAttribute(name:string) : boolean;
+		innerHTML : string;
+		innerText : string;
+		toText() : string;
+		find(selector:string) : htmlparser.HtmlNodeElement[];
+		replaceChild(node:htmlparser.HtmlNodeElement, newNode:htmlparser.HtmlNode) : void;
+		replaceChildWithInner(node:htmlparser.HtmlNodeElement, nodeContainer:htmlparser.HtmlNodeElement) : void;
+		removeChild(node:htmlparser.HtmlNode) : void;
+		getAttributesAssoc() : Map<string, string>;
+		getAttributesObject() : any;
+		setInnerText(text:string) : void;
+	}
+	
+	export class HtmlDocument extends htmlparser.HtmlNodeElement
+	{
+		constructor(str?:string);
+	}
+	
+	export class HtmlNodeText extends htmlparser.HtmlNode
+	{
+		constructor(text:string);
+		text : string;
+		toString() : string;
+		/**
+		 * Return decoded text.
+		 */
+		toText() : string;
+	}
+	
+	export class HtmlParser
+	{
+		parse(str:string) : htmlparser.HtmlNode[];
+		static SELF_CLOSING_TAGS_HTML : any;
+		static run(str:string) : htmlparser.HtmlNode[];
+		static parseCssSelector(selector:string) : htmlparser.CssSelector[][];
+	}
+	
+	export class HtmlParserTools
+	{
+		static getAttr(node:htmlparser.HtmlNodeElement, attrName:string, defaultValue?:any) : any;
+		static getAttrString(node:htmlparser.HtmlNodeElement, attrName:string, defaultValue?:string) : string;
+		static getAttrInt(node:htmlparser.HtmlNodeElement, attrName:string, defaultValue?:number) : number;
+		static getAttrFloat(node:htmlparser.HtmlNodeElement, attrName:string, defaultValue?:number) : number;
+		static getAttrBool(node:htmlparser.HtmlNodeElement, attrName:string, defaultValue?:boolean) : boolean;
+		static findOne(node:htmlparser.HtmlNodeElement, selector:string) : htmlparser.HtmlNodeElement;
+	}
+	
+	type XmlAttribute = htmlparser.HtmlAttribute;
+	
+	export class XmlBuilder
+	{
+		constructor(indent?:string, newLine?:string);
+		xml : htmlparser.XmlDocument;
+		begin(tag:string, attrs?:{ value : any; name : string; }[]) : htmlparser.XmlBuilder;
+		end() : htmlparser.XmlBuilder;
+		attr(name:string, value:any, defValue?:any) : htmlparser.XmlBuilder;
+		content(s:string) : htmlparser.XmlBuilder;
+		toString() : string;
+	}
+	
+	export class XmlNodeElement extends htmlparser.HtmlNodeElement
+	{
+		constructor(name:string, attributes:htmlparser.HtmlAttribute[]);
+	}
+	
+	export class XmlDocument extends htmlparser.XmlNodeElement
+	{
+		constructor(str?:string);
+	}
+	
+	type XmlNodeText = htmlparser.HtmlNodeText;
+	
+	export class XmlParser extends htmlparser.HtmlParser
+	{
+		static run(str:string) : htmlparser.HtmlNode[];
+	}
+}
+
+declare module nanofl
+{
+	type AdvancableDisplayObject =
+	{
+		advance() : void;
+	}
+	
+	export class Bitmap extends createjs.Bitmap
+	{
+		constructor(symbol:nanofl.engine.libraryitems.InstancableItem);
+		clone(recursive?:boolean) : nanofl.Bitmap;
+		toString() : string;
+	}
+	
+	export class DisplayObjectTools
+	{
+		static autoHitArea : boolean;
+		static smartCache(obj:createjs.DisplayObject) : void;
+		static smartUncache(obj:createjs.DisplayObject) : void;
+		static getOuterBounds(obj:createjs.DisplayObject, ignoreSelf?:boolean) : createjs.Rectangle;
+		static getInnerBounds(obj:createjs.DisplayObject) : createjs.Rectangle;
+		static callMethod(parent:createjs.DisplayObject, name:string) : void;
+		static smartHitTest(obj:createjs.DisplayObject, x:number, y:number, minAlpha?:number) : boolean;
+		static dump(obj:createjs.DisplayObject, level?:number) : void;
+	}
+	
+	export class MovieClip extends createjs.Container
+	{
+		constructor(symbol:nanofl.engine.libraryitems.MovieClipItem, initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]);
+		symbol : nanofl.engine.libraryitems.MovieClipItem;
+		currentFrame : number;
+		addChildToLayer(child:createjs.DisplayObject, layerIndex:number) : createjs.DisplayObject;
+		removeAllChildren() : void;
+		removeChild(child:createjs.DisplayObject) : boolean;
+		removeChildAt(index:number) : boolean;
+		getTotalFrames() : number;
+		maskChild(child:createjs.DisplayObject) : boolean;
+		uncacheChild(child:createjs.DisplayObject) : void;
+		/**
+		 * Return keeped children MovieClips. Return null if all children are keeped.
+		 */
+		gotoFrame(labelOrIndex:any) : nanofl.AdvancableDisplayObject[];
+		clone(recursive?:boolean) : nanofl.MovieClip;
+		toString() : string;
+		static applyMask(mask:createjs.DisplayObject, obj:createjs.DisplayObject) : boolean;
+	}
+	
+	export class Stage extends createjs.Stage
+	{
+		constructor(canvas:any);
+		update(params?:any) : void;
+	}
+	
+	export class TextField extends createjs.Container
+	{
+		constructor(width?:number, height?:number, selectable?:boolean, border?:boolean, dashedBorder?:boolean, textRuns?:nanofl.TextRun[], newTextFormat?:nanofl.TextRun);
+		minWidth : number;
+		minHeight : number;
+		width : number;
+		height : number;
+		selectable : boolean;
+		border : boolean;
+		dashedBorder : boolean;
+		textRuns : nanofl.TextRun[];
+		editing : boolean;
+		selectionStart : number;
+		selectionEnd : number;
+		newTextFormat : nanofl.TextRun;
+		resize : stdlib.Event<{ width : number; height : number; }>;
+		change : stdlib.Event<{ }>;
+		text : string;
+		update() : void;
+		draw(ctx:CanvasRenderingContext2D, ignoreCache?:boolean) : boolean;
+		getSelectionFormat() : nanofl.TextRun;
+		setSelectionFormat(format:nanofl.TextRun) : void;
+		dispose() : void;
+		clone(recursive?:boolean) : nanofl.TextField;
+		static PADDING : number;
+		static measureFontHeight(family:string, style:string, size:number) : number;
+		static measureFontBaselineCoef(family:string, style:string) : number;
+	}
+	
+	export class TextRun
+	{
+		constructor(characters?:string, fillColor?:string, size?:number);
+		characters : string;
+		fillColor : string;
+		family : string;
+		style : string;
+		size : number;
+		align : string;
+		strokeSize : number;
+		strokeColor : string;
+		kerning : boolean;
+		letterSpacing : number;
+		lineSpacing : number;
+		getFontString() : string;
+		clone() : nanofl.TextRun;
+		duplicate(characters?:string) : nanofl.TextRun;
+		equ(textRun:nanofl.TextRun) : boolean;
+		createText(color?:string, outline?:number) : createjs.Text;
+		isFilled() : boolean;
+		isStroked() : boolean;
+		static create(characters:string, fillColor:string, family:string, style:string, size:number, align:string, strokeSize:number, strokeColor:string, kerning:boolean, letterSpacing:number, lineSpacing:number) : nanofl.TextRun;
+		static optimize(textRuns:nanofl.TextRun[]) : nanofl.TextRun[];
+	}
+}
+
+declare module nanofl.ide.keyboard
+{
+	export class Keyboard
+	{
+		constructor(app:nanofl.ide.Application, keymap:{ shortcut : string; command : string; }[], commands:nanofl.ide.commands.Commands);
+		getShortcutsForCommand(command:string) : string[];
+		getGroupedKeymap() : { shortcuts : string; command : string; }[];
+		enable() : void;
+		disable() : void;
+	}
+	
+	export class Keys
+	{
+		static BACKSPACE : number;
+		static TAB : number;
+		static ENTER : number;
+		static SHIFT : number;
+		static CTRL : number;
+		static ALT : number;
+		static PAUSE : number;
+		static CAPS_LOCK : number;
+		static ESCAPE : number;
+		static SPACEBAR : number;
+		static PAGE_UP : number;
+		static PAGE_DOWN : number;
+		static END : number;
+		static HOME : number;
+		static LEFT_ARROW : number;
+		static UP_ARROW : number;
+		static RIGHT_ARROW : number;
+		static DOWN_ARROW : number;
+		static INSERT : number;
+		static DELETE : number;
+		static LEFT_WINDOW_KEY : number;
+		static RIGHT_WINDOW_KEY : number;
+		static SELECT_KEY : number;
+		static NUMPAD_0 : number;
+		static NUMPAD_1 : number;
+		static NUMPAD_2 : number;
+		static NUMPAD_3 : number;
+		static NUMPAD_4 : number;
+		static NUMPAD_5 : number;
+		static NUMPAD_6 : number;
+		static NUMPAD_7 : number;
+		static NUMPAD_8 : number;
+		static NUMPAD_9 : number;
+		static MULTIPLY : number;
+		static ADD : number;
+		static SUBTRACT : number;
+		static DECIMAL_POINT : number;
+		static DIVIDE : number;
+		static F1 : number;
+		static F2 : number;
+		static F3 : number;
+		static F4 : number;
+		static F5 : number;
+		static F6 : number;
+		static F7 : number;
+		static F8 : number;
+		static F9 : number;
+		static F10 : number;
+		static F11 : number;
+		static F12 : number;
+		static NUM_LOCK : number;
+		static SCROLL_LOCK : number;
+		static SEMICOLON : number;
+		static EQUAL_SIGN : number;
+		static COMMA : number;
+		static DASH : number;
+		static PERIOD : number;
+		static FORWARD_SLASH : number;
+		static GRAVE_ACCENT : number;
+		static OPEN_BRACKET : number;
+		static BACK_SLASH : number;
+		static CLOSE_BRAKET : number;
+		static SINGLE_QUOTE : number;
+		static DIGIT_0 : number;
+		static DIGIT_1 : number;
+		static DIGIT_2 : number;
+		static DIGIT_3 : number;
+		static DIGIT_4 : number;
+		static DIGIT_5 : number;
+		static DIGIT_6 : number;
+		static DIGIT_7 : number;
+		static DIGIT_8 : number;
+		static DIGIT_9 : number;
+		static A : number;
+		static B : number;
+		static C : number;
+		static D : number;
+		static E : number;
+		static F : number;
+		static G : number;
+		static H : number;
+		static I : number;
+		static J : number;
+		static K : number;
+		static L : number;
+		static M : number;
+		static N : number;
+		static O : number;
+		static P : number;
+		static Q : number;
+		static R : number;
+		static S : number;
+		static T : number;
+		static U : number;
+		static V : number;
+		static W : number;
+		static X : number;
+		static Y : number;
+		static Z : number;
+		static toString(code:number) : string;
+	}
+	
+	export class Shortcut
+	{
+		test(e:{ altKey : boolean; ctrlKey : boolean; keyCode : number; shiftKey : boolean; }) : boolean;
+		static key(keyCode:number) : nanofl.ide.keyboard.Shortcut;
+		static ctrl(keyCode:number) : nanofl.ide.keyboard.Shortcut;
+		static shift(keyCode:number) : nanofl.ide.keyboard.Shortcut;
+		static alt(keyCode:number) : nanofl.ide.keyboard.Shortcut;
+		static ctrlShift(keyCode:number) : nanofl.ide.keyboard.Shortcut;
+	}
+}
+
+declare module nanofl.engine.fills
+{
+	export class BaseFill
+	{
+		setLibrary(library:nanofl.engine.Library) : void;
+	}
+	
+	export interface IFill
+	{
+		begin(g:nanofl.engine.Render) : void;
+		clone() : nanofl.engine.fills.IFill;
+		equ(e:nanofl.engine.fills.IFill) : boolean;
+		applyAlpha(alpha:number) : void;
+		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
+		save(out:htmlparser.XmlBuilder) : void;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		setLibrary(library:nanofl.engine.Library) : void;
+		toString() : string;
+	}
+	
+	export class BitmapFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
+	{
+		constructor(bitmapPath:string, repeat:string, matrix:nanofl.engine.geom.Matrix);
+		bitmapPath : string;
+		repeat : string;
+		matrix : nanofl.engine.geom.Matrix;
+		save(out:htmlparser.XmlBuilder) : void;
+		clone() : nanofl.engine.fills.BitmapFill;
+		applyAlpha(alpha:number) : void;
+		begin(g:nanofl.engine.Render) : void;
+		getBitmapWidth() : number;
+		equ(e:nanofl.engine.fills.IFill) : boolean;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		setLibrary(library:nanofl.engine.Library) : void;
+		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
+		toString() : string;
+		static load(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.fills.BitmapFill;
+	}
+	
+	export class EraseFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
+	{
+		constructor();
+		save(out:htmlparser.XmlBuilder) : void;
+		clone() : nanofl.engine.fills.EraseFill;
+		applyAlpha(alpha:number) : void;
+		getTyped() : nanofl.engine.fills.TypedFill;
+		begin(g:nanofl.engine.Render) : void;
+		equ(e:nanofl.engine.fills.IFill) : boolean;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
+		toString() : string;
+	}
+	
+	type FillParams =
+	{
+		bitmapPath : string;
+		color : string;
+		colors : string[];
+		matrix : nanofl.engine.geom.Matrix;
+		r : number;
+		ratios : number[];
+		repeat : string;
+		x0 : number;
+		x1 : number;
+		y0 : number;
+		y1 : number;
+	}
+	
+	export class LinearFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
+	{
+		constructor(colors:string[], ratios:number[], x0:number, y0:number, x1:number, y1:number);
+		colors : string[];
+		ratios : number[];
+		x0 : number;
+		y0 : number;
+		x1 : number;
+		y1 : number;
+		save(out:htmlparser.XmlBuilder) : void;
+		clone() : nanofl.engine.fills.LinearFill;
+		applyAlpha(alpha:number) : void;
+		begin(g:nanofl.engine.Render) : void;
+		equ(e:nanofl.engine.fills.IFill) : boolean;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
+		toString() : string;
+		static load(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.fills.LinearFill;
+	}
+	
+	export class RadialFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
+	{
+		constructor(colors:string[], ratios:number[], cx:number, cy:number, r:number, fx:number, fy:number);
+		colors : string[];
+		ratios : number[];
+		cx : number;
+		cy : number;
+		r : number;
+		fx : number;
+		fy : number;
+		save(out:htmlparser.XmlBuilder) : void;
+		clone() : nanofl.engine.fills.RadialFill;
+		applyAlpha(alpha:number) : void;
+		begin(g:nanofl.engine.Render) : void;
+		equ(e:nanofl.engine.fills.IFill) : boolean;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
+		toString() : string;
+		static load(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.fills.RadialFill;
+	}
+	
+	export class SelectionFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
+	{
+		constructor(scale:number);
+		save(out:htmlparser.XmlBuilder) : void;
+		clone() : nanofl.engine.fills.SelectionFill;
+		applyAlpha(alpha:number) : void;
+		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
+		begin(g:nanofl.engine.Render) : void;
+		equ(e:nanofl.engine.fills.IFill) : boolean;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		toString() : string;
+	}
+	
+	export class SolidFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
+	{
+		constructor(color:string);
+		color : string;
+		save(out:htmlparser.XmlBuilder) : void;
+		clone() : nanofl.engine.fills.SolidFill;
+		applyAlpha(alpha:number) : void;
+		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
+		begin(g:nanofl.engine.Render) : void;
+		equ(e:nanofl.engine.fills.IFill) : boolean;
+		swapInstance(oldNamePath:string, newNamePath:string) : void;
+		toString() : string;
+		static load(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.fills.SolidFill;
+	}
+}
+
+declare module nanofl.ide.undo.states
+{
+	type DocumentState = nanofl.engine.DocumentProperties;
+	
+	export class ElementState
+	{
+		equ(state:nanofl.ide.undo.states.ElementState) : boolean;
+		toString() : string;
+	}
+	
+	export class ElementsState
+	{
+		constructor(layerElements:{ elements : nanofl.engine.elements.Element[]; }[]);
+		layerElements : { elements : nanofl.engine.elements.Element[]; }[];
+	}
+	
+	export class FigureState
+	{
+		constructor(shapeStates:nanofl.ide.undo.states.ShapeState[]);
+		shapeStates : nanofl.ide.undo.states.ShapeState[];
+		equ(state:nanofl.ide.undo.states.FigureState) : boolean;
+	}
+	
+	export class InstanceState extends nanofl.ide.undo.states.ElementState
+	{
+		constructor(name:string, colorEffect:nanofl.engine.coloreffects.ColorEffect, filters:nanofl.engine.FilterDef[]);
+		name : string;
+		colorEffect : nanofl.engine.coloreffects.ColorEffect;
+		filters : nanofl.engine.FilterDef[];
+		equ(_state:nanofl.ide.undo.states.ElementState) : boolean;
+	}
+	
+	type LibraryState = nanofl.engine.libraryitems.LibraryItem[];
+	
+	export class NavigatorState
+	{
+		constructor(first:{ frameIndex : number; layerIndex : number; namePath : string; }, nexts:{ layerIndex : number; frameIndex : number; elementIndex : number; }[]);
+		first : { frameIndex : number; layerIndex : number; namePath : string; };
+		nexts : { layerIndex : number; frameIndex : number; elementIndex : number; }[];
+	}
+	
+	export class ShapeState extends nanofl.ide.undo.states.ElementState
+	{
+		constructor(edges:nanofl.engine.geom.StrokeEdge[], polygons:nanofl.engine.geom.Polygon[]);
+		edges : nanofl.engine.geom.StrokeEdge[];
+		polygons : nanofl.engine.geom.Polygon[];
+		equ(_state:nanofl.ide.undo.states.ElementState) : boolean;
+		toString() : string;
+	}
+	
+	export class TextState extends nanofl.ide.undo.states.ElementState
+	{
+		constructor(width:number, height:number, selectable:boolean, border:boolean, textRuns:nanofl.TextRun[]);
+		width : number;
+		height : number;
+		selectable : boolean;
+		border : boolean;
+		textRuns : nanofl.TextRun[];
+		equ(_state:nanofl.ide.undo.states.ElementState) : boolean;
+	}
+	
+	export class TimelineState
+	{
+		constructor(layerStates:nanofl.engine.Layer[]);
+		layerStates : nanofl.engine.Layer[];
+	}
+	
+	export class TransformationsState
+	{
+		constructor(elementStates:nanofl.engine.geom.Matrix[]);
+		elementStates : nanofl.engine.geom.Matrix[];
+		equ(state:nanofl.ide.undo.states.TransformationsState) : boolean;
+	}
+}
+
+declare module createjs.Sprite
+{
+	type SpriteAnimationendEvent =
+	{
+		name : string;
+		next : string;
+		target : any;
+		type : string;
+	}
+	
+	type SpriteChangeEvent =
+	{
+		target : any;
+		type : string;
+	}
+}
+
+declare module nanofl.engine.libraryitems
+{
+	export class LibraryItem
+	{
+		namePath : string;
+		getType() : string;
+		getIcon() : string;
+		clone() : nanofl.engine.libraryitems.LibraryItem;
+		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
+		save(fileApi:nanofl.engine.FileApi) : void;
+		hasXmlToSave() : boolean;
+		saveToXml(out:htmlparser.XmlBuilder) : void;
+		getFilePathToRunWithEditor() : string;
+		getLibraryFilePaths() : string[];
+		preload(ready:() => void) : void;
+		duplicate(newNamePath:string) : nanofl.engine.libraryitems.LibraryItem;
+		remove() : void;
+		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
+		toString() : string;
+		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.LibraryItem;
+	}
+	
+	export class InstancableItem extends nanofl.engine.libraryitems.LibraryItem
+	{
+		linkedClass : string;
+		hasXmlToSave() : boolean;
+		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
+		newInstance() : nanofl.engine.elements.Instance;
+		getDisplayObjectClassName() : string;
+		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
+		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
+	}
+	
+	export class BitmapItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem
+	{
+		constructor(namePath:string, ext:string);
+		textureAtlas : string;
+		image : HTMLImageElement;
+		getType() : string;
+		clone() : nanofl.engine.libraryitems.BitmapItem;
+		getIcon() : string;
+		save(fileApi:nanofl.engine.FileApi) : void;
+		hasXmlToSave() : boolean;
+		saveToXml(out:htmlparser.XmlBuilder) : void;
+		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
+		getUrl() : string;
+		preload(ready:() => void) : void;
+		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
+		getDisplayObjectClassName() : string;
+		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
+		getFilePathToRunWithEditor() : string;
+		getLibraryFilePaths() : string[];
+		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
+		toString() : string;
+		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.BitmapItem;
+	}
+	
+	export class FolderItem extends nanofl.engine.libraryitems.LibraryItem
+	{
+		constructor(namePath:string);
+		opened : boolean;
+		clone() : nanofl.engine.libraryitems.FolderItem;
+		save(fileApi:nanofl.engine.FileApi) : void;
+		hasXmlToSave() : boolean;
+		saveToXml(out:htmlparser.XmlBuilder) : void;
+		getIcon() : string;
+		toString() : string;
+		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
+		getLibraryFilePaths() : string[];
+		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.FolderItem;
+	}
+	
+	export class FontItem extends nanofl.engine.libraryitems.LibraryItem
+	{
+		constructor(namePath:string, variants:nanofl.engine.FontVariant[]);
+		variants : nanofl.engine.FontVariant[];
+		getType() : string;
+		clone() : nanofl.engine.libraryitems.FontItem;
+		getIcon() : string;
+		save(fileApi:nanofl.engine.FileApi) : void;
+		hasXmlToSave() : boolean;
+		saveToXml(out:htmlparser.XmlBuilder) : void;
+		toFont() : nanofl.engine.Font;
+		preload(ready:() => void) : void;
+		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
+		toString() : string;
+		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.FontItem;
+	}
+	
+	export class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem, nanofl.engine.ISpriteSheetableItem, nanofl.engine.IFramedItem, nanofl.engine.ITimeline, nanofl.engine.ILayersContainer
+	{
+		constructor(namePath:string);
+		layers : nanofl.engine.ArrayRO<nanofl.engine.Layer>;
+		likeButton : boolean;
+		autoPlay : boolean;
+		loop : boolean;
+		exportAsSpriteSheet : boolean;
+		textureAtlas : string;
+		getType() : string;
+		clone() : nanofl.engine.libraryitems.MovieClipItem;
+		addLayer(layer:nanofl.engine.Layer) : void;
+		/**
+		 * Add block of layers into timeline.
+		 * Assume that layers' parentIndex referenced inside block.
+		 */
+		addLayersBlock(layersToAdd:nanofl.engine.Layer[], index?:number) : void;
+		removeLayer(index:number) : void;
+		removeLayerWithChildren(index:number) : nanofl.engine.Layer[];
+		getFramesAt(frameIndex:number) : nanofl.engine.Frame[];
+		getIcon() : string;
+		save(fileApi:nanofl.engine.FileApi) : void;
+		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
+		hasXmlToSave() : boolean;
+		saveToXml(out:htmlparser.XmlBuilder) : void;
+		getTotalFrames() : number;
+		getTimelineState() : nanofl.ide.undo.states.TimelineState;
+		setTimelineState(state:nanofl.ide.undo.states.TimelineState) : void;
+		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : nanofl.MovieClip;
+		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
+		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
+		getDisplayObjectClassName() : string;
+		transform(m:nanofl.engine.geom.Matrix) : void;
+		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
+		toString() : string;
+		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MovieClipItem;
+		static createWithFrame(namePath:string, elements?:nanofl.engine.elements.Element[], layerName?:string) : nanofl.engine.libraryitems.MovieClipItem;
+	}
+	
+	export class SoundItem extends nanofl.engine.libraryitems.LibraryItem
+	{
+		constructor(namePath:string, ext:string);
+		linkage : string;
+		getType() : string;
+		clone() : nanofl.engine.libraryitems.SoundItem;
+		getIcon() : string;
+		save(fileApi:nanofl.engine.FileApi) : void;
+		hasXmlToSave() : boolean;
+		saveToXml(out:htmlparser.XmlBuilder) : void;
+		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
+		getUrl() : string;
+		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
+		toString() : string;
+		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.SoundItem;
+	}
+	
+	export class SpriteItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem, nanofl.engine.ILayersContainer
+	{
+		constructor(namePath:string, frames:nanofl.engine.SpriteItemFrame[]);
+		layers : nanofl.engine.ArrayRO<nanofl.engine.Layer>;
+		likeButton : boolean;
+		autoPlay : boolean;
+		loop : boolean;
+		textureAtlas : string;
+		spriteSheet : createjs.SpriteSheet;
+		getType() : string;
+		clone() : nanofl.engine.libraryitems.SpriteItem;
+		getIcon() : string;
+		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
+		hasXmlToSave() : boolean;
+		saveToXml(out:htmlparser.XmlBuilder) : void;
+		preload(ready:() => void) : void;
+		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
+		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
+		getDisplayObjectClassName() : string;
+		toString() : string;
+	}
+}
+
 declare module createjs
 {
 	/**
@@ -6583,15 +8345,6 @@ declare module createjs
 	}
 }
 
-declare module nanofl.engine.geom.BezierCurve
-{
-	type BezierCurvesIntersection =
-	{
-		a : nanofl.engine.geom.BezierCurve[];
-		b : nanofl.engine.geom.BezierCurve[];
-	}
-}
-
 declare module nanofl.engine.geom
 {
 	export class BezierCurve
@@ -7266,27 +9019,6 @@ declare module nanofl.ide.plugins
 	}
 }
 
-declare module createjs.Sound
-{
-	type SoundFileloadEvent =
-	{
-		data : any;
-		id : string;
-		src : string;
-		target : any;
-		type : string;
-	}
-	
-	type SoundFileerrorEvent =
-	{
-		data : any;
-		id : string;
-		src : string;
-		target : any;
-		type : string;
-	}
-}
-
 declare module nanofl.ide.draganddrop
 {
 	type AllowedDropEffect = string;
@@ -7310,693 +9042,6 @@ declare module nanofl.ide.draganddrop
 	type DropEffect = string;
 }
 
-declare module nanofl.ide.textureatlas
-{
-	type TextureAtlas =
-	{
-		frames : nanofl.ide.textureatlas.TextureAtlasFrame[];
-		imagePng : nanofl.engine.Bytes;
-		itemFrames : any;
-	}
-	
-	type TextureAtlasFrame =
-	{
-		height : number;
-		regX : number;
-		regY : number;
-		width : number;
-		x : number;
-		y : number;
-	}
-	
-	type TextureAtlasParams =
-	{
-		height : number;
-		padding : number;
-		width : number;
-	}
-}
-
-declare module createjs.DisplayObject
-{
-	type DisplayObjectTickEvent =
-	{
-		params : any[];
-		target : any;
-		type : string;
-	}
-}
-
-declare module createjs.Ticker
-{
-	type TickerTickEvent =
-	{
-		delta : number;
-		paused : boolean;
-		runTime : number;
-		target : any;
-		time : number;
-		type : string;
-	}
-}
-
-declare module nanofl.ide
-{
-	enum ActiveView
-	{
-		LIBRARY,
-		TIMELINE,
-		EDITOR
-	}
-	
-	type Application =
-	{
-		addRecent(path:string) : void;
-		clipboard : nanofl.ide.Clipboard;
-		createNewEmptyDocument(callb?:(arg:nanofl.ide.Document) => void) : void;
-		document : nanofl.ide.Document;
-		dragAndDrop : nanofl.ide.draganddrop.DragAndDrop;
-		exportDocument(exporter:nanofl.ide.plugins.IExporterPlugin, callb?:(arg:boolean) => void) : void;
-		fileApi : nanofl.ide.XpcomFileApi;
-		importDocument(importer:nanofl.ide.plugins.IImporterPlugin, callb?:(arg:nanofl.ide.Document) => void) : void;
-		newObjectParams : nanofl.ide.NewObjectParams;
-		openDocument(path?:string, callb?:(arg:nanofl.ide.Document) => void) : void;
-		pid : string;
-		plugins : nanofl.ide.IPlugins;
-		quit(force?:boolean, exitCode?:number) : void;
-		serverApi : nanofl.ide.ServerApi;
-	}
-	
-	export class CachedFile
-	{
-		constructor(fileApi:nanofl.engine.FileApi, libraryDir:string, path:string);
-		text : string;
-		xml : htmlparser.HtmlNodeElement;
-		json : any;
-		/**
-		 * Relative file path.
-		 */
-		path : string;
-		/**
-		 * If true - skip this file.
-		 */
-		excluded : boolean;
-		exclude() : void;
-	}
-	
-	type Clipboard =
-	{
-		canCopy() : boolean;
-		canCut() : boolean;
-		canPaste() : boolean;
-		copy() : boolean;
-		cut() : boolean;
-		paste() : boolean;
-		restoreFocus() : void;
-	}
-	
-	export class Document
-	{
-		/**
-		 * Document UUID (generated on every document object create).
-		 */
-		id : string;
-		/**
-		 * Used when document was opened directly from none-NanoFL format. In other cases is null.
-		 */
-		originalPath : string;
-		/**
-		 * Used when document was opened directly from none-NanoFL format. In other cases is null.
-		 */
-		originalLastModified : Date;
-		/**
-		 * Path to NanoFL document file (*.nfl).
-		 */
-		path : string;
-		properties : nanofl.engine.DocumentProperties;
-		library : nanofl.ide.EditorLibrary;
-		lastModified : Date;
-		navigator : nanofl.ide.Navigator;
-		editor : nanofl.ide.Editor;
-		undoQueue : nanofl.ide.undo.UndoQueue;
-		get_busy() : boolean
-	 	set_busy(v:boolean) : boolean;
-		get_isModified() : boolean;
-		get_isTemporary() : boolean;
-		activate(isCenterView:boolean) : void;
-		setProperties(properties:nanofl.engine.DocumentProperties) : void;
-		save(callb?:(arg:boolean) => void) : void;
-		saveAs(newPath?:string, callb?:(arg:boolean) => void) : void;
-		export(destPath:string, exporter?:nanofl.ide.Exporter, callb?:(arg:boolean) => void) : void;
-		reload(callb:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
-		reloadWoTransactionForced(callb:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
-		test() : void;
-		resize(width:number, height:number) : void;
-		canBeSaved() : boolean;
-		dispose() : void;
-		static createTemporary(app:nanofl.ide.Application) : nanofl.ide.Document;
-		static load(app:nanofl.ide.Application, path:string, callb:(arg:nanofl.ide.Document) => void) : void;
-		static import_(app:nanofl.ide.Application, path:string, importer?:nanofl.ide.Importer, callb?:(arg:nanofl.ide.Document) => void) : void;
-		static disposeAll() : void;
-	}
-	
-	export class Editor
-	{
-		container : createjs.Container;
-		get_activeLayer() : nanofl.ide.EditorLayer;
-		figure : nanofl.ide.Figure;
-		get_magnet() : boolean
-	 	set_magnet(v:boolean) : boolean;
-		get_shift() : boolean
-	 	set_shift(v:boolean) : boolean;
-		get_zoomLevel() : number
-	 	set_zoomLevel(v:number) : number;
-		beginEditing(pathItem:nanofl.ide.PathItem, isCenterView?:boolean) : void;
-		updateShapes() : void;
-		updateElement(element:nanofl.engine.elements.Element) : void;
-		hasSelected() : boolean;
-		toggleSelection() : boolean;
-		select(obj:nanofl.engine.ISelectable, deselectOthers?:boolean) : void;
-		selectWoUpdate(obj:nanofl.engine.ISelectable, deselectOthers?:boolean) : void;
-		deselect(obj:nanofl.engine.ISelectable) : void;
-		deselectWoUpdate(obj:nanofl.engine.ISelectable) : void;
-		selectAll() : void;
-		deselectAll() : void;
-		deselectAllWoUpdate() : void;
-		selectLayers(layerIndexes:number[]) : void;
-		isSelectedAtPos(pos:nanofl.engine.geom.Point) : boolean;
-		getItemAtPos(pos:nanofl.engine.geom.Point) : nanofl.ide.editorelements.EditorElement;
-		getObjectAtPos(pos:nanofl.engine.geom.Point) : { layerIndex : number; obj : nanofl.engine.ISelectable; };
-		breakApartSelected() : void;
-		removeSelected() : void;
-		translateSelected(dx:number, dy:number, lowLevel?:boolean) : void;
-		updateTransformations() : void;
-		getItems(includeShape?:boolean) : nanofl.ide.editorelements.EditorElement[];
-		getSelectedItems() : nanofl.ide.editorelements.EditorElement[];
-		getObjectLayerIndex(obj:nanofl.engine.ISelectable) : number;
-		extractSelected() : nanofl.engine.elements.Element[];
-		isItemCanBeAdded(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
-		addElement(element:nanofl.engine.elements.Element) : nanofl.ide.editorelements.EditorElement;
-		convertToSymbol() : void;
-		groupSelected() : void;
-		translateVertex(point:nanofl.engine.geom.Point, dx:number, dy:number, addUndoTransaction?:boolean) : void;
-		rebind(isCenterView?:boolean) : void;
-		update() : void;
-		showAllLayers() : void;
-		hideAllLayers() : void;
-		lockAllLayers() : void;
-		unlockAllLayers() : void;
-		getSelectedLayerIndexes() : number[];
-		removeTransformFromSelected() : void;
-		moveSelectedFront() : void;
-		moveSelectedForwards() : void;
-		moveSelectedBackwards() : void;
-		moveSelectedBack() : void;
-		swapInstance(instance:nanofl.engine.elements.Instance, newNamePath:string) : void;
-		saveSelectedToXml(out:htmlparser.XmlBuilder) : nanofl.engine.libraryitems.LibraryItem[];
-		pasteFromXml(xml:htmlparser.XmlNodeElement) : boolean;
-		duplicateSelected() : void;
-		getObjectsInRectangle(x:number, y:number, width:number, height:number) : nanofl.engine.ISelectable[];
-		cutToClipboard() : void;
-		copyToClipboard() : void;
-		pasteFromClipboard() : void;
-		flipSelectedHorizontal() : void;
-		flipSelectedVertical() : void;
-		getSelectedBounds() : { height : number; width : number; x : number; y : number; };
-		getHitTestGap() : number;
-	}
-	
-	export class EditorLayer
-	{
-		container : createjs.Container;
-		shape : nanofl.ide.editorelements.EditorElementShape;
-		get_editable() : boolean;
-		get_parentIndex() : number;
-		get_type() : string;
-		addElement(element:nanofl.engine.elements.Element, index?:number) : nanofl.ide.editorelements.EditorElement;
-		removeSelected() : void;
-		getItems(r?:nanofl.ide.editorelements.EditorElement[], includeShape?:boolean) : nanofl.ide.editorelements.EditorElement[];
-		getSelectedItems(r?:nanofl.ide.editorelements.EditorElement[]) : nanofl.ide.editorelements.EditorElement[];
-		hasSelected() : boolean;
-		isAllSelected() : boolean;
-		hasItem(item:nanofl.ide.editorelements.EditorElement) : boolean;
-		selectAll() : void;
-		deselectAll() : void;
-		breakApartSelectedItems() : void;
-		show() : void;
-		hide() : void;
-		lock() : void;
-		unlock() : void;
-		getItemAtPos(pos:nanofl.engine.geom.Point) : nanofl.ide.editorelements.EditorElement;
-		getEditablessReason() : string;
-		moveSelectedFront() : void;
-		moveSelectedForwards() : void;
-		moveSelectedBackwards() : void;
-		moveSelectedBack() : void;
-		magnetSelectedToGuide() : void;
-		getIndex() : number;
-		getTweenedElements(frameIndex:number) : nanofl.engine.TweenedElement[];
-		update() : void;
-		getChildLayers() : nanofl.ide.EditorLayer[];
-		getElementIndex(element:nanofl.engine.elements.Element) : number;
-		getElementByIndex(elementIndex:number) : nanofl.engine.elements.Element;
-		getElementsState() : { elements : nanofl.engine.elements.Element[]; };
-		duplicateSelected() : void;
-		isShowSelection() : boolean;
-	}
-	
-	export class EditorLibrary
-	{
-		constructor(app:nanofl.ide.Application, library:nanofl.engine.Library, document:nanofl.ide.Document);
-		libraryDir : string;
-		activeItem : nanofl.engine.libraryitems.LibraryItem;
-		addItems(items:nanofl.engine.libraryitems.LibraryItem[], addUndoTransaction?:boolean) : void;
-		canRenameItem(oldNamePath:string, newNamePath:string) : boolean;
-		renameItems(itemRenames:{ oldNamePath : string; newNamePath : string; }[]) : void;
-		removeItems(namePaths:string[], filesRemoved?:() => void) : void;
-		copyAndChangeDir(libraryDir:string, callb:() => void) : void;
-		getNextItemName() : string;
-		hasItem(namePath:string) : boolean;
-		addFont(family:string, variants:nanofl.engine.FontVariant[]) : void;
-		preload(ready:() => void) : void;
-		getItem(namePath:string) : nanofl.engine.libraryitems.LibraryItem;
-		getSceneInstance() : nanofl.engine.elements.Instance;
-		getSceneItem() : nanofl.engine.libraryitems.MovieClipItem;
-		getItems(includeScene?:boolean) : nanofl.engine.libraryitems.LibraryItem[];
-		getRawLibrary() : nanofl.engine.Library;
-		getSelectedItemsWithDependencies() : nanofl.engine.libraryitems.LibraryItem[];
-		hasSelected() : boolean;
-		removeSelected() : void;
-		renameByUser(namePath:string) : void;
-		deselectAll() : void;
-		update() : void;
-		getSelectedItems() : nanofl.engine.libraryitems.LibraryItem[];
-		gotoPrevItem(overwriteSelection:boolean) : void;
-		gotoNextItem(overwriteSelection:boolean) : void;
-		showPropertiesPopup() : void;
-		createEmptySymbol() : void;
-		createFolder() : void;
-		importFiles(paths:string[], folderPath?:string, ready?:() => void) : void;
-		uploadFiles(files:File[], folderPath?:string, callb?:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
-		loadFilesFromClipboard(callb:(arg:boolean) => void) : void;
-		copyFilesIntoLibrary(srcDir:string, relativePaths:string[], callb?:() => void) : void;
-		generateTextureAtlases(textureAtlasesParams:Map<string, nanofl.ide.textureatlas.TextureAtlasParams>) : Map<string, nanofl.ide.textureatlas.TextureAtlas>;
-		selectUnusedItems() : void;
-		removeUnusedItems() : void;
-		optimize() : void;
-		drop(dropEffect:nanofl.ide.draganddrop.DropEffect, data:htmlparser.HtmlNodeElement, folder:string, callb:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
-		getWithExandedFolders(items:nanofl.engine.libraryitems.LibraryItem[]) : nanofl.engine.libraryitems.LibraryItem[];
-		fixErrors() : void;
-	}
-	
-	export class Exporter
-	{
-		constructor(pluginName:string, params?:any);
-		pluginName : string;
-		params : any;
-		run(fileApi:nanofl.engine.FileApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library) : boolean;
-		getPrefKey() : string;
-	}
-	
-	export class Figure
-	{
-		constructor(editor:nanofl.ide.Editor, layers:nanofl.ide.EditorLayer[]);
-		getVertexAtPos(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
-		getSameEdgeWithLayers(edge:nanofl.engine.geom.Edge) : { layerIndex : number; edge : nanofl.engine.geom.Edge; }[];
-		getEdgeAtPos(pt:nanofl.engine.geom.Point, zoomLevel:number) : { dist : number; edge : nanofl.engine.geom.Edge; layerIndex : number; t : number; };
-		getStrokeEdgeAtPos(pt:nanofl.engine.geom.Point, zoomLevel:number) : { dist : number; edge : nanofl.engine.geom.StrokeEdge; layerIndex : number; t : number; };
-		getPolygonEdgeAtPos(pt:nanofl.engine.geom.Point) : { dist : number; edge : nanofl.engine.geom.Edge; layerIndex : number; t : number; };
-		getPolygonAtPos(pt:nanofl.engine.geom.Point) : { layerIndex : number; polygon : nanofl.engine.geom.Polygon; };
-		translateVertex(point:nanofl.engine.geom.Point, dx:number, dy:number) : void;
-		hasSelected() : boolean;
-		hasSelectedEdges() : boolean;
-		hasSelectedPolygons() : boolean;
-		updateShapes() : void;
-		getSelectedEdgesStrokeParams() : { bitmapPath : string; caps : string; color : string; colors : string[]; ignoreScale : boolean; joints : string; miterLimit : number; r : number; ratios : number[]; thickness : number; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
-		getSelectedPolygonsFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; r : number; ratios : number[]; repeat : string; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
-		getSelectedElements() : nanofl.ide.FigureElement[];
-		selectAll() : void;
-		deselectAll() : void;
-		getBounds(bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
-		getSelectedBounds(bounds?:nanofl.engine.geom.Bounds) : nanofl.engine.geom.Bounds;
-		removeSelected() : void;
-		translateSelected(dx:number, dy:number) : void;
-		transformSelected(m:nanofl.engine.geom.Matrix) : void;
-		setSelectedPolygonsFillParams(params:nanofl.engine.fills.FillParams) : void;
-		setSelectedEdgesStrokeParams(params:nanofl.engine.strokes.StrokeParams) : void;
-		setSelectedPolygonsFill(fill:nanofl.engine.fills.IFill, x1?:number, y1?:number, x2?:number, y2?:number) : void;
-		setSelectedEdgesStroke(stroke:nanofl.engine.strokes.IStroke) : void;
-		combineSelf() : void;
-		combineSelected() : void;
-		extractSelected() : nanofl.engine.elements.ShapeElement;
-		getMagnetPointEx(x:number, y:number, excludeSelf?:boolean) : { found : boolean; point : nanofl.engine.geom.Point; };
-		splitEdge(edge:nanofl.engine.geom.Edge, t:number) : nanofl.engine.geom.Point;
-		getSelectedStrokeEdges() : nanofl.engine.geom.StrokeEdge[];
-	}
-	
-	enum FigureElement
-	{
-		STROKE_EDGE(edge:nanofl.engine.geom.StrokeEdge),
-		POLYGON(polygon:nanofl.engine.geom.Polygon)
-	}
-	
-	enum FileAction
-	{
-		RENAME_LIBRARY_ITEM(oldNamePath:string, newNamePath:string),
-		REMOVE_LIBRARY_ITEMS(namePaths:string[])
-	}
-	
-	type IPlugins =
-	{
-		reload(alertOnSuccess?:boolean) : boolean;
-	}
-	
-	export class Importer
-	{
-		constructor(pluginName:string, params?:any);
-		pluginName : string;
-		params : any;
-		run(fileApi:nanofl.engine.FileApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, fonts:string[], callb:(arg:boolean) => void) : void;
-		getPrefKey() : string;
-	}
-	
-	export class LibraryTools
-	{
-		static optimize(library:nanofl.engine.Library) : void;
-		static getUnusedItems(library:nanofl.engine.Library) : string[];
-		static getItemsContainInstances(library:nanofl.engine.Library, namePaths:string[]) : nanofl.engine.libraryitems.LibraryItem[];
-		static hasEquItems(library:nanofl.engine.Library, items:nanofl.engine.libraryitems.LibraryItem[]) : boolean;
-	}
-	
-	export class Navigator
-	{
-		editPath : nanofl.ide.PathItem[];
-		pathItem : nanofl.ide.PathItem;
-		navigateUp() : void;
-		navigateDown(container:nanofl.engine.IPathElement) : void;
-		navigateTo(editPath:nanofl.ide.PathItem[], isCenterView?:boolean) : void;
-		update(isCenterView:boolean) : void;
-		setLayerIndex(index:number) : void;
-		setFrameIndex(index:number) : void;
-		getInstanceNamePaths() : string[];
-	}
-	
-	export class NewObjectParams
-	{
-		constructor(app:nanofl.ide.Application);
-		strokeType : string;
-		fillType : string;
-		stroke : nanofl.engine.strokes.IStroke;
-		fill : nanofl.engine.fills.IFill;
-		roundRadius : number;
-		textFormat : nanofl.TextRun;
-		setStroke(stroke:nanofl.engine.strokes.IStroke) : void;
-		setFill(fill:nanofl.engine.fills.IFill) : void;
-		setStrokeParams(p:nanofl.engine.strokes.StrokeParams) : void;
-		getStrokeParams() : { bitmapPath : string; caps : string; color : string; colors : string[]; ignoreScale : boolean; joints : string; miterLimit : number; r : number; ratios : number[]; thickness : number; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
-		setFillParams(p:nanofl.engine.fills.FillParams) : void;
-		getFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; r : number; ratios : number[]; repeat : string; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
-		getStrokeByType(type:string) : nanofl.engine.strokes.IStroke;
-		getFillByType(type:string) : nanofl.engine.fills.IFill;
-	}
-	
-	export class PathItem
-	{
-		constructor(element:nanofl.engine.IPathElement, layerIndex?:number, frameIndex?:number);
-		element : nanofl.engine.IPathElement;
-		layerIndex : number;
-		frameIndex : number;
-		setLayerIndex(n:number) : void;
-		setFrameIndex(n:number) : void;
-		layer : nanofl.engine.Layer;
-		frame : nanofl.engine.Frame;
-		equ(p:nanofl.ide.PathItem) : boolean;
-		clone() : nanofl.ide.PathItem;
-	}
-	
-	export interface ServerApi
-	{
-		getTempDirectory() : string;
-		copyDir(src:string, dest:string, overwrite?:boolean, callb:(arg:boolean) => void) : void;
-		copyLibraryFiles(srcLibraryDir:string, relativePaths:string[], destLibraryDir:string, callb:() => void) : void;
-		requestUrl(url:string, callb:(arg:string) => void) : void;
-		openInBrowser(url:string) : void;
-		uploadFiles(files:File[], destDir:string, callb:() => void) : void;
-		getFonts() : string[];
-		loadFilesFromClipboard(destDir:string, callb:(arg:boolean) => void) : void;
-		saveFilesIntoClipboard(baseDir:string, relativePaths:string[], callb:() => void) : void;
-	}
-	
-	export class ServerApiTools
-	{
-		static loadDocument(fileApi:nanofl.engine.FileApi, path:string, lastModified:Date) : { lastModified : Date; library : nanofl.engine.Library; properties : nanofl.engine.DocumentProperties; };
-		static saveDocument(fileApi:nanofl.engine.FileApi, path:string, properties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>, fileActions:nanofl.ide.FileAction[]) : { generatorError : string; lastModified : Date; };
-		static copyLibraryFiles(fileApi:nanofl.engine.FileApi, srcLibraryDir:string, relativePaths:string[], destLibraryDir:string) : void;
-		static renameFiles(fileApi:nanofl.engine.FileApi, files:{ src : string; dest : string; }[]) : void;
-		static remove(fileApi:nanofl.engine.FileApi, paths:string[]) : void;
-		static loadFilesFromClipboard(fileApi:nanofl.engine.FileApi, destDir:string) : boolean;
-		static saveFilesIntoClipboard(fileApi:nanofl.engine.FileApi, baseDir:string, relativePaths:string[]) : void;
-	}
-	
-	export class ShapePropertiesOptions
-	{
-		constructor();
-		strokePane : boolean;
-		fillPane : boolean;
-		roundRadiusPane : boolean;
-		noneStroke : boolean;
-		noneFill : boolean;
-		showStrokePane() : nanofl.ide.ShapePropertiesOptions;
-		showFillPane() : nanofl.ide.ShapePropertiesOptions;
-		showRoundRadiusPane() : nanofl.ide.ShapePropertiesOptions;
-		disallowNoneStroke() : nanofl.ide.ShapePropertiesOptions;
-		disallowNoneFill() : nanofl.ide.ShapePropertiesOptions;
-	}
-	
-	export class XpcomFileApi implements nanofl.engine.FileApi
-	{
-		constructor();
-		getTempDirectory() : string;
-		getToolsDirectory() : string;
-		getPluginsDirectory() : string;
-		createDirectory(path:string) : void;
-		readDirectory(path:string) : string[];
-		exists(path:string) : boolean;
-		getContent(filePath:string) : string;
-		saveContent(filePath:string, text:string, append?:boolean) : void;
-		getBinary(filePath:string) : nanofl.engine.Bytes;
-		saveBinary(filePath:string, data:nanofl.engine.Bytes) : void;
-		isDirectory(path:string) : boolean;
-		run(filePath:string, args:string[], blocking:boolean) : number;
-		copy(srcPath:string, destPath:string) : void;
-		copyDir(src:string, dest:string, overwrite?:boolean) : boolean;
-		rename(srcPath:string, destPath:string) : void;
-		remove(path:string) : void;
-		findFiles(dirPath:string, onFile?:(arg:string) => void, onDir?:(arg:string) => boolean) : void;
-		getPluginPaths() : string[];
-		nativePath(path:string) : string;
-		getLastModified(path:string) : Date;
-		zip(srcDir:string, destZip:string) : boolean;
-		unzip(srcZip:string, destDir:string) : boolean;
-		getEnvironmentVariable(name:string) : string;
-	}
-}
-
-declare module nanofl.engine.elements
-{
-	export class Element
-	{
-		matrix : nanofl.engine.geom.Matrix;
-		regX : number;
-		regY : number;
-		visible : boolean;
-		parent : nanofl.engine.IElementsContainer;
-		getType() : string;
-		save(out:htmlparser.XmlBuilder) : void;
-		clone() : nanofl.engine.elements.Element;
-		translate(dx:number, dy:number) : void;
-		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
-		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
-		getState() : nanofl.ide.undo.states.ElementState;
-		setState(state:nanofl.ide.undo.states.ElementState) : void;
-		transform(m:nanofl.engine.geom.Matrix, applyToStrokeAndFill?:boolean) : void;
-		equ(element:nanofl.engine.elements.Element) : boolean;
-		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
-		toString() : string;
-		static parse(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.elements.Element;
-	}
-	
-	export class Elements
-	{
-		static parse(base:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.elements.Element[];
-		static save(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>, out:htmlparser.XmlBuilder) : void;
-		static expandGroups(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>) : nanofl.engine.elements.Element[];
-		static getUsedSymbols(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>) : nanofl.engine.libraryitems.LibraryItem[];
-	}
-	
-	export class GroupElement extends nanofl.engine.elements.Element implements nanofl.engine.IElementsContainer, nanofl.engine.IPathElement
-	{
-		constructor(elements:nanofl.engine.elements.Element[]);
-		elements : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
-		name : string;
-		currentFrame : number;
-		layers : nanofl.engine.ArrayRO<nanofl.engine.Layer>;
-		addElement(element:nanofl.engine.elements.Element, index?:number) : void;
-		removeElementAt(n:number) : void;
-		removeElement(element:nanofl.engine.elements.Element) : void;
-		save(out:htmlparser.XmlBuilder) : void;
-		clone() : nanofl.engine.elements.GroupElement;
-		getChildren() : nanofl.engine.ArrayRO<nanofl.engine.elements.Element>;
-		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
-		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.Container;
-		getMaskFilter(layer:nanofl.engine.Layer, frameIndex:number) : createjs.Container;
-		isScene() : boolean;
-		getNavigatorName() : string;
-		getNavigatorIcon() : string;
-		getTimeline() : nanofl.engine.ITimeline;
-		transform(m:nanofl.engine.geom.Matrix, applyToStrokeAndFill?:boolean) : void;
-		equ(element:nanofl.engine.elements.Element) : boolean;
-	}
-	
-	export class Instance extends nanofl.engine.elements.Element implements nanofl.engine.IPathElement
-	{
-		constructor(namePath:string, name?:string, colorEffect?:nanofl.engine.coloreffects.ColorEffect, filters?:nanofl.engine.FilterDef[]);
-		namePath : string;
-		name : string;
-		colorEffect : nanofl.engine.coloreffects.ColorEffect;
-		filters : nanofl.engine.FilterDef[];
-		symbol : nanofl.engine.libraryitems.InstancableItem;
-		getType() : string;
-		save(out:htmlparser.XmlBuilder) : void;
-		clone() : nanofl.engine.elements.Instance;
-		isScene() : boolean;
-		getState() : nanofl.ide.undo.states.ElementState;
-		setState(state:nanofl.ide.undo.states.ElementState) : void;
-		toString() : string;
-		layers : nanofl.engine.ArrayRO<nanofl.engine.Layer>;
-		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
-		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
-		getNavigatorName() : string;
-		getNavigatorIcon() : string;
-		getChildren() : nanofl.engine.elements.Element[];
-		getTimeline() : nanofl.engine.ITimeline;
-		equ(element:nanofl.engine.elements.Element) : boolean;
-	}
-	
-	export class ShapeElement extends nanofl.engine.elements.Element
-	{
-		constructor(edges?:nanofl.engine.geom.StrokeEdge[], polygons?:nanofl.engine.geom.Polygon[], isNormalize?:boolean);
-		edges : nanofl.engine.geom.StrokeEdge[];
-		polygons : nanofl.engine.geom.Polygon[];
-		getType() : string;
-		save(out:htmlparser.XmlBuilder) : void;
-		ensureNoTransform() : void;
-		draw(g:nanofl.engine.Render, scaleSelection:number) : void;
-		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.Shape;
-		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.Shape;
-		clone() : nanofl.engine.elements.ShapeElement;
-		translate(dx:number, dy:number) : void;
-		isEmpty() : boolean;
-		hasSelected() : boolean;
-		isAllSelected() : boolean;
-		hasSelectedEdges() : boolean;
-		hasSelectedPolygons() : boolean;
-		select(obj:{ selected : boolean; }) : void;
-		selectAll() : void;
-		deselectAll() : void;
-		translateSelected(dx:number, dy:number) : void;
-		translateVertex(point:nanofl.engine.geom.Point, dx:number, dy:number) : void;
-		removeSelected() : void;
-		getPolygonAtPos(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Polygon;
-		getSameEdges(edge:nanofl.engine.geom.Edge) : nanofl.engine.geom.Edge[];
-		getNearestStrokeEdge(pt:nanofl.engine.geom.Point) : { dist : number; edge : nanofl.engine.geom.StrokeEdge; point : nanofl.engine.geom.Point; t : number; };
-		getNearestPolygonEdge(pt:nanofl.engine.geom.Point) : { dist : number; edge : nanofl.engine.geom.Edge; point : nanofl.engine.geom.Point; t : number; };
-		getNearestVertex(pt:nanofl.engine.geom.Point, excludeSelf?:boolean) : { dist : number; distMinusEdgeThickness : number; point : nanofl.engine.geom.Point; };
-		setSelectedEdgesStroke(stroke:nanofl.engine.strokes.IStroke) : void;
-		setSelectedEdgesStrokeParams(params:nanofl.engine.strokes.StrokeParams) : void;
-		getSelectedEdgesStrokeParams() : { bitmapPath : string; caps : string; color : string; colors : string[]; ignoreScale : boolean; joints : string; miterLimit : number; r : number; ratios : number[]; thickness : number; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
-		setSelectedPolygonsFill(fill:nanofl.engine.fills.IFill, x1?:number, y1?:number, x2?:number, y2?:number) : void;
-		setSelectedPolygonsFillParams(params:nanofl.engine.fills.FillParams) : void;
-		getSelectedPolygonsFillParams() : { bitmapPath : string; color : string; colors : string[]; matrix : nanofl.engine.geom.Matrix; r : number; ratios : number[]; repeat : string; type : string; x0 : number; x1 : number; y0 : number; y1 : number; };
-		floodFill(fill:nanofl.engine.fills.IFill, x1:number, y1:number, x2:number, y2:number) : void;
-		getBounds(bounds?:nanofl.engine.geom.Bounds, useStrokeThickness?:boolean) : nanofl.engine.geom.Bounds;
-		getSelectedBounds(bounds?:nanofl.engine.geom.Bounds, useStrokeThickness?:boolean) : nanofl.engine.geom.Bounds;
-		transform(m:nanofl.engine.geom.Matrix, applyToStrokeAndFill?:boolean) : void;
-		transformSelected(m:nanofl.engine.geom.Matrix) : void;
-		combine(shape:nanofl.engine.elements.ShapeElement) : void;
-		combineSelf() : boolean;
-		combineSelected() : void;
-		extractSelected() : nanofl.engine.elements.ShapeElement;
-		getState() : nanofl.ide.undo.states.ElementState;
-		setState(_state:nanofl.ide.undo.states.ElementState) : void;
-		replaceEdge(search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[]) : void;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		applyStrokeAlpha(alpha:number) : void;
-		applyFillAlpha(alpha:number) : void;
-		getEdgeCount() : number;
-		equ(element:nanofl.engine.elements.Element) : boolean;
-		fixErrors() : boolean;
-		toString() : string;
-	}
-	
-	export class SpriteFrameElement extends nanofl.engine.elements.Element
-	{
-		constructor(sprite:nanofl.engine.libraryitems.SpriteItem, index:number);
-		getType() : string;
-		save(out:htmlparser.XmlBuilder) : void;
-		clone() : nanofl.engine.elements.SpriteFrameElement;
-		getState() : nanofl.ide.undo.states.ElementState;
-		setState(state:nanofl.ide.undo.states.ElementState) : void;
-		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
-		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
-		equ(element:nanofl.engine.elements.Element) : boolean;
-		toString() : string;
-	}
-	
-	export class TextElement extends nanofl.engine.elements.Element
-	{
-		constructor(name:string, width:number, height:number, selectable:boolean, border:boolean, textRuns:nanofl.TextRun[], newTextFormat?:nanofl.TextRun);
-		name : string;
-		width : number;
-		height : number;
-		selectable : boolean;
-		border : boolean;
-		textRuns : nanofl.TextRun[];
-		newTextFormat : nanofl.TextRun;
-		save(out:htmlparser.XmlBuilder) : void;
-		getText() : string;
-		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : nanofl.TextField;
-		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : nanofl.TextField;
-		getMinSize(dispObj:createjs.DisplayObject) : { height : number; width : number; };
-		clone() : nanofl.engine.elements.TextElement;
-		getState() : nanofl.ide.undo.states.ElementState;
-		setState(_state:nanofl.ide.undo.states.ElementState) : void;
-		equ(element:nanofl.engine.elements.Element) : boolean;
-	}
-}
-
-declare module nanofl.ide.undo
-{
-	export class UndoQueue
-	{
-		/**
-		 * This method may be called several times with different operations.
-		 */
-		beginTransaction(operations:{ document : boolean; element : nanofl.engine.elements.Element; elements : boolean; figure : boolean; libraryAddItems : boolean; libraryChangeItems : string[]; libraryRemoveItems : string[]; libraryRenameItems : { oldNamePath : string; newNamePath : string; }[]; timeline : boolean; transformations : boolean; }) : void;
-		cancelTransaction() : void;
-		revertTransaction() : void;
-		forgetTransaction() : void;
-		commitTransaction() : void;
-		undo() : void;
-		redo() : void;
-		canUndo() : boolean;
-		canRedo() : boolean;
-		documentSaved() : void;
-		isDocumentModified() : boolean;
-		toString() : string;
-	}
-}
-
 declare module createjs.DOMElement
 {
 	type DOMElementTickEvent =
@@ -8004,337 +9049,6 @@ declare module createjs.DOMElement
 		params : any[];
 		target : any;
 		type : string;
-	}
-}
-
-declare module createjs.SpriteSheet
-{
-	type SpriteSheetCompleteEvent =
-	{
-		target : any;
-		type : string;
-	}
-	
-	type SpriteSheetGetframeEvent =
-	{
-		frame : any;
-		index : number;
-	}
-}
-
-declare module nanofl.engine.coloreffects
-{
-	export class ColorEffect
-	{
-		apply(obj:createjs.DisplayObject) : void;
-		clone() : nanofl.engine.coloreffects.ColorEffect;
-		getNeutralClone() : nanofl.engine.coloreffects.ColorEffect;
-		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffect;
-		save(out:htmlparser.XmlBuilder) : void;
-		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
-		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffect;
-		static equS(a:nanofl.engine.coloreffects.ColorEffect, b:nanofl.engine.coloreffects.ColorEffect) : boolean;
-	}
-	
-	export class ColorEffectAdvanced extends nanofl.engine.coloreffects.ColorEffect
-	{
-		constructor(alphaMultiplier:number, redMultiplier:number, greenMultiplier:number, blueMultiplier:number, alphaOffset:number, redOffset:number, greenOffset:number, blueOffset:number);
-		redMultiplier : number;
-		greenMultiplier : number;
-		blueMultiplier : number;
-		alphaMultiplier : number;
-		redOffset : number;
-		greenOffset : number;
-		blueOffset : number;
-		alphaOffset : number;
-		save(out:htmlparser.XmlBuilder) : void;
-		apply(obj:createjs.DisplayObject) : void;
-		clone() : nanofl.engine.coloreffects.ColorEffectAdvanced;
-		getNeutralClone() : nanofl.engine.coloreffects.ColorEffectAdvanced;
-		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffectAdvanced;
-		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
-		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffectAdvanced;
-	}
-	
-	export class ColorEffectAlpha extends nanofl.engine.coloreffects.ColorEffect
-	{
-		constructor(value:number);
-		value : number;
-		save(out:htmlparser.XmlBuilder) : void;
-		apply(obj:createjs.DisplayObject) : void;
-		clone() : nanofl.engine.coloreffects.ColorEffectAlpha;
-		getNeutralClone() : nanofl.engine.coloreffects.ColorEffectAlpha;
-		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffectAlpha;
-		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
-		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffectAlpha;
-	}
-	
-	export class ColorEffectBrightness extends nanofl.engine.coloreffects.ColorEffect
-	{
-		constructor(value:number);
-		value : number;
-		save(out:htmlparser.XmlBuilder) : void;
-		apply(obj:createjs.DisplayObject) : void;
-		clone() : nanofl.engine.coloreffects.ColorEffectBrightness;
-		getNeutralClone() : nanofl.engine.coloreffects.ColorEffectBrightness;
-		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffectBrightness;
-		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
-		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffectBrightness;
-	}
-	
-	export class ColorEffectDouble extends nanofl.engine.coloreffects.ColorEffect
-	{
-		constructor(effect0:nanofl.engine.coloreffects.ColorEffect, effect1:nanofl.engine.coloreffects.ColorEffect);
-		apply(obj:createjs.DisplayObject) : void;
-		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
-	}
-	
-	export class ColorEffectTint extends nanofl.engine.coloreffects.ColorEffect
-	{
-		constructor(color:string, multiplier:number);
-		color : string;
-		multiplier : number;
-		save(out:htmlparser.XmlBuilder) : void;
-		apply(obj:createjs.DisplayObject) : void;
-		clone() : nanofl.engine.coloreffects.ColorEffectTint;
-		getNeutralClone() : nanofl.engine.coloreffects.ColorEffectTint;
-		getTweened(k:number, finish:nanofl.engine.coloreffects.ColorEffect) : nanofl.engine.coloreffects.ColorEffectTint;
-		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
-		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffectTint;
-	}
-}
-
-declare module nanofl.engine.geom.Edge
-{
-	type EdgesItersection =
-	{
-		a : nanofl.engine.geom.Edge[];
-		b : nanofl.engine.geom.Edge[];
-	}
-}
-
-declare module htmlparser
-{
-	type CssSelector =
-	{
-		classes : string[];
-		ids : string[];
-		tags : string[];
-		type : string;
-	}
-	
-	export class HtmlAttribute
-	{
-		constructor(name:string, value:string, quote:string);
-		name : string;
-		value : string;
-		quote : string;
-		toString() : string;
-	}
-	
-	export class HtmlNode
-	{
-		parent : htmlparser.HtmlNodeElement;
-		remove() : void;
-		getPrevSiblingNode() : htmlparser.HtmlNode;
-		getNextSiblingNode() : htmlparser.HtmlNode;
-		toString() : string;
-		toText() : string;
-	}
-	
-	export class HtmlNodeElement extends htmlparser.HtmlNode
-	{
-		constructor(name:string, attributes:htmlparser.HtmlAttribute[]);
-		name : string;
-		attributes : htmlparser.HtmlAttribute[];
-		nodes : htmlparser.HtmlNode[];
-		children : htmlparser.HtmlNodeElement[];
-		getPrevSiblingElement() : htmlparser.HtmlNodeElement;
-		getNextSiblingElement() : htmlparser.HtmlNodeElement;
-		addChild(node:htmlparser.HtmlNode, beforeNode?:htmlparser.HtmlNode) : void;
-		toString() : string;
-		getAttribute(name:string) : string;
-		setAttribute(name:string, value:string) : void;
-		removeAttribute(name:string) : void;
-		hasAttribute(name:string) : boolean;
-		innerHTML : string;
-		innerText : string;
-		toText() : string;
-		find(selector:string) : htmlparser.HtmlNodeElement[];
-		replaceChild(node:htmlparser.HtmlNodeElement, newNode:htmlparser.HtmlNode) : void;
-		replaceChildWithInner(node:htmlparser.HtmlNodeElement, nodeContainer:htmlparser.HtmlNodeElement) : void;
-		removeChild(node:htmlparser.HtmlNode) : void;
-		getAttributesAssoc() : Map<string, string>;
-		getAttributesObject() : any;
-		setInnerText(text:string) : void;
-	}
-	
-	export class HtmlDocument extends htmlparser.HtmlNodeElement
-	{
-		constructor(str?:string);
-	}
-	
-	export class HtmlNodeText extends htmlparser.HtmlNode
-	{
-		constructor(text:string);
-		text : string;
-		toString() : string;
-		/**
-		 * Return decoded text.
-		 */
-		toText() : string;
-	}
-	
-	export class HtmlParser
-	{
-		parse(str:string) : htmlparser.HtmlNode[];
-		static SELF_CLOSING_TAGS_HTML : any;
-		static run(str:string) : htmlparser.HtmlNode[];
-		static parseCssSelector(selector:string) : htmlparser.CssSelector[][];
-	}
-	
-	export class HtmlParserTools
-	{
-		static getAttr(node:htmlparser.HtmlNodeElement, attrName:string, defaultValue?:any) : any;
-		static getAttrString(node:htmlparser.HtmlNodeElement, attrName:string, defaultValue?:string) : string;
-		static getAttrInt(node:htmlparser.HtmlNodeElement, attrName:string, defaultValue?:number) : number;
-		static getAttrFloat(node:htmlparser.HtmlNodeElement, attrName:string, defaultValue?:number) : number;
-		static getAttrBool(node:htmlparser.HtmlNodeElement, attrName:string, defaultValue?:boolean) : boolean;
-		static findOne(node:htmlparser.HtmlNodeElement, selector:string) : htmlparser.HtmlNodeElement;
-	}
-	
-	type XmlAttribute = htmlparser.HtmlAttribute;
-	
-	export class XmlBuilder
-	{
-		constructor(indent?:string, newLine?:string);
-		xml : htmlparser.XmlDocument;
-		begin(tag:string, attrs?:{ value : any; name : string; }[]) : htmlparser.XmlBuilder;
-		end() : htmlparser.XmlBuilder;
-		attr(name:string, value:any, defValue?:any) : htmlparser.XmlBuilder;
-		content(s:string) : htmlparser.XmlBuilder;
-		toString() : string;
-	}
-	
-	export class XmlNodeElement extends htmlparser.HtmlNodeElement
-	{
-		constructor(name:string, attributes:htmlparser.HtmlAttribute[]);
-	}
-	
-	export class XmlDocument extends htmlparser.XmlNodeElement
-	{
-		constructor(str?:string);
-	}
-	
-	type XmlNodeText = htmlparser.HtmlNodeText;
-	
-	export class XmlParser extends htmlparser.HtmlParser
-	{
-		static run(str:string) : htmlparser.HtmlNode[];
-	}
-}
-
-declare module nanofl
-{
-	type AdvancableDisplayObject =
-	{
-		advance() : void;
-	}
-	
-	export class Bitmap extends createjs.Bitmap
-	{
-		constructor(symbol:nanofl.engine.libraryitems.InstancableItem);
-		clone(recursive?:boolean) : nanofl.Bitmap;
-		toString() : string;
-	}
-	
-	export class DisplayObjectTools
-	{
-		static autoHitArea : boolean;
-		static smartCache(obj:createjs.DisplayObject) : void;
-		static smartUncache(obj:createjs.DisplayObject) : void;
-		static getOuterBounds(obj:createjs.DisplayObject, ignoreSelf?:boolean) : createjs.Rectangle;
-		static getInnerBounds(obj:createjs.DisplayObject) : createjs.Rectangle;
-		static callMethod(parent:createjs.DisplayObject, name:string) : void;
-		static smartHitTest(obj:createjs.DisplayObject, x:number, y:number, minAlpha?:number) : boolean;
-		static dump(obj:createjs.DisplayObject, level?:number) : void;
-	}
-	
-	export class MovieClip extends createjs.Container
-	{
-		constructor(symbol:nanofl.engine.libraryitems.MovieClipItem, initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]);
-		symbol : nanofl.engine.libraryitems.MovieClipItem;
-		currentFrame : number;
-		addChildToLayer(child:createjs.DisplayObject, layerIndex:number) : createjs.DisplayObject;
-		removeAllChildren() : void;
-		removeChild(child:createjs.DisplayObject) : boolean;
-		removeChildAt(index:number) : boolean;
-		getTotalFrames() : number;
-		maskChild(child:createjs.DisplayObject) : boolean;
-		uncacheChild(child:createjs.DisplayObject) : void;
-		/**
-		 * Return keeped children MovieClips. Return null if all children are keeped.
-		 */
-		gotoFrame(labelOrIndex:any) : nanofl.AdvancableDisplayObject[];
-		clone(recursive?:boolean) : nanofl.MovieClip;
-		toString() : string;
-		static applyMask(mask:createjs.DisplayObject, obj:createjs.DisplayObject) : boolean;
-	}
-	
-	export class Stage extends createjs.Stage
-	{
-		constructor(canvas:any);
-		update(params?:any) : void;
-	}
-	
-	export class TextField extends createjs.Container
-	{
-		constructor(width?:number, height?:number, selectable?:boolean, border?:boolean, dashedBorder?:boolean, textRuns?:nanofl.TextRun[], newTextFormat?:nanofl.TextRun);
-		minWidth : number;
-		minHeight : number;
-		width : number;
-		height : number;
-		selectable : boolean;
-		border : boolean;
-		dashedBorder : boolean;
-		textRuns : nanofl.TextRun[];
-		editing : boolean;
-		selectionStart : number;
-		selectionEnd : number;
-		newTextFormat : nanofl.TextRun;
-		resize : stdlib.Event<{ width : number; height : number; }>;
-		change : stdlib.Event<{ }>;
-		text : string;
-		draw(ctx:CanvasRenderingContext2D, ignoreCache?:boolean) : boolean;
-		getSelectionFormat() : nanofl.TextRun;
-		setSelectionFormat(format:nanofl.TextRun) : void;
-		dispose() : void;
-		clone(recursive?:boolean) : nanofl.TextField;
-		static PADDING : number;
-		static measureFontHeight(family:string, style:string, size:number) : number;
-		static measureFontBaselineCoef(family:string, style:string) : number;
-	}
-	
-	export class TextRun
-	{
-		constructor(characters?:string, fillColor?:string, size?:number);
-		characters : string;
-		fillColor : string;
-		family : string;
-		style : string;
-		size : number;
-		align : string;
-		strokeSize : number;
-		strokeColor : string;
-		kerning : boolean;
-		letterSpacing : number;
-		lineSpacing : number;
-		getFontString() : string;
-		clone() : nanofl.TextRun;
-		duplicate(characters?:string) : nanofl.TextRun;
-		equ(textRun:nanofl.TextRun) : boolean;
-		static create(characters:string, fillColor:string, family:string, style:string, size:number, align:string, strokeSize:number, strokeColor:string, kerning:boolean, letterSpacing:number, lineSpacing:number) : nanofl.TextRun;
-		static optimize(textRuns:nanofl.TextRun[]) : nanofl.TextRun[];
 	}
 }
 
@@ -8731,7 +9445,7 @@ declare module nanofl.engine
 		getFrame(frameIndex:number) : nanofl.engine.Frame;
 		addKeyFrame(keyFrame:nanofl.engine.KeyFrame) : void;
 		insertFrame(frameIndex:number) : void;
-		convertToKeyFrame(frameIndex:number) : boolean;
+		convertToKeyFrame(frameIndex:number, blank?:boolean) : boolean;
 		removeFrame(frameIndex:number) : boolean;
 		getHumanType() : string;
 		getIcon() : string;
@@ -8876,407 +9590,6 @@ declare module nanofl.engine
 		static document : string;
 		static compare(v1:string, v2:string) : number;
 		static handle<T>(version:string, handlers:Map<string, () => T>) : T;
-	}
-}
-
-declare module nanofl.engine.fills
-{
-	export class BaseFill
-	{
-		setLibrary(library:nanofl.engine.Library) : void;
-	}
-	
-	export interface IFill
-	{
-		begin(g:nanofl.engine.Render) : void;
-		clone() : nanofl.engine.fills.IFill;
-		equ(e:nanofl.engine.fills.IFill) : boolean;
-		applyAlpha(alpha:number) : void;
-		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
-		save(out:htmlparser.XmlBuilder) : void;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		setLibrary(library:nanofl.engine.Library) : void;
-		toString() : string;
-	}
-	
-	export class BitmapFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
-	{
-		constructor(bitmapPath:string, repeat:string, matrix:nanofl.engine.geom.Matrix);
-		bitmapPath : string;
-		repeat : string;
-		matrix : nanofl.engine.geom.Matrix;
-		save(out:htmlparser.XmlBuilder) : void;
-		clone() : nanofl.engine.fills.BitmapFill;
-		applyAlpha(alpha:number) : void;
-		begin(g:nanofl.engine.Render) : void;
-		getBitmapWidth() : number;
-		equ(e:nanofl.engine.fills.IFill) : boolean;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		setLibrary(library:nanofl.engine.Library) : void;
-		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
-		toString() : string;
-		static load(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.fills.BitmapFill;
-	}
-	
-	export class EraseFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
-	{
-		constructor();
-		save(out:htmlparser.XmlBuilder) : void;
-		clone() : nanofl.engine.fills.EraseFill;
-		applyAlpha(alpha:number) : void;
-		getTyped() : nanofl.engine.fills.TypedFill;
-		begin(g:nanofl.engine.Render) : void;
-		equ(e:nanofl.engine.fills.IFill) : boolean;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
-		toString() : string;
-	}
-	
-	type FillParams =
-	{
-		bitmapPath : string;
-		color : string;
-		colors : string[];
-		matrix : nanofl.engine.geom.Matrix;
-		r : number;
-		ratios : number[];
-		repeat : string;
-		x0 : number;
-		x1 : number;
-		y0 : number;
-		y1 : number;
-	}
-	
-	export class LinearFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
-	{
-		constructor(colors:string[], ratios:number[], x0:number, y0:number, x1:number, y1:number);
-		colors : string[];
-		ratios : number[];
-		x0 : number;
-		y0 : number;
-		x1 : number;
-		y1 : number;
-		save(out:htmlparser.XmlBuilder) : void;
-		clone() : nanofl.engine.fills.LinearFill;
-		applyAlpha(alpha:number) : void;
-		begin(g:nanofl.engine.Render) : void;
-		equ(e:nanofl.engine.fills.IFill) : boolean;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
-		toString() : string;
-		static load(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.fills.LinearFill;
-	}
-	
-	export class RadialFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
-	{
-		constructor(colors:string[], ratios:number[], cx:number, cy:number, r:number, fx:number, fy:number);
-		colors : string[];
-		ratios : number[];
-		cx : number;
-		cy : number;
-		r : number;
-		fx : number;
-		fy : number;
-		save(out:htmlparser.XmlBuilder) : void;
-		clone() : nanofl.engine.fills.RadialFill;
-		applyAlpha(alpha:number) : void;
-		begin(g:nanofl.engine.Render) : void;
-		equ(e:nanofl.engine.fills.IFill) : boolean;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
-		toString() : string;
-		static load(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.fills.RadialFill;
-	}
-	
-	export class SelectionFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
-	{
-		constructor(scale:number);
-		save(out:htmlparser.XmlBuilder) : void;
-		clone() : nanofl.engine.fills.SelectionFill;
-		applyAlpha(alpha:number) : void;
-		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
-		begin(g:nanofl.engine.Render) : void;
-		equ(e:nanofl.engine.fills.IFill) : boolean;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		toString() : string;
-	}
-	
-	export class SolidFill extends nanofl.engine.fills.BaseFill implements nanofl.engine.fills.IFill
-	{
-		constructor(color:string);
-		color : string;
-		save(out:htmlparser.XmlBuilder) : void;
-		clone() : nanofl.engine.fills.SolidFill;
-		applyAlpha(alpha:number) : void;
-		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.fills.IFill;
-		begin(g:nanofl.engine.Render) : void;
-		equ(e:nanofl.engine.fills.IFill) : boolean;
-		swapInstance(oldNamePath:string, newNamePath:string) : void;
-		toString() : string;
-		static load(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.fills.SolidFill;
-	}
-}
-
-declare module nanofl.ide.undo.states
-{
-	type DocumentState = nanofl.engine.DocumentProperties;
-	
-	export class ElementState
-	{
-		equ(state:nanofl.ide.undo.states.ElementState) : boolean;
-		toString() : string;
-	}
-	
-	export class ElementsState
-	{
-		constructor(layerElements:{ elements : nanofl.engine.elements.Element[]; }[]);
-		layerElements : { elements : nanofl.engine.elements.Element[]; }[];
-	}
-	
-	export class FigureState
-	{
-		constructor(shapeStates:nanofl.ide.undo.states.ShapeState[]);
-		shapeStates : nanofl.ide.undo.states.ShapeState[];
-		equ(state:nanofl.ide.undo.states.FigureState) : boolean;
-	}
-	
-	export class InstanceState extends nanofl.ide.undo.states.ElementState
-	{
-		constructor(name:string, colorEffect:nanofl.engine.coloreffects.ColorEffect, filters:nanofl.engine.FilterDef[]);
-		name : string;
-		colorEffect : nanofl.engine.coloreffects.ColorEffect;
-		filters : nanofl.engine.FilterDef[];
-		equ(_state:nanofl.ide.undo.states.ElementState) : boolean;
-	}
-	
-	type LibraryState = nanofl.engine.libraryitems.LibraryItem[];
-	
-	export class NavigatorState
-	{
-		constructor(first:{ frameIndex : number; layerIndex : number; namePath : string; }, nexts:{ layerIndex : number; frameIndex : number; elementIndex : number; }[]);
-		first : { frameIndex : number; layerIndex : number; namePath : string; };
-		nexts : { layerIndex : number; frameIndex : number; elementIndex : number; }[];
-	}
-	
-	export class ShapeState extends nanofl.ide.undo.states.ElementState
-	{
-		constructor(edges:nanofl.engine.geom.StrokeEdge[], polygons:nanofl.engine.geom.Polygon[]);
-		edges : nanofl.engine.geom.StrokeEdge[];
-		polygons : nanofl.engine.geom.Polygon[];
-		equ(_state:nanofl.ide.undo.states.ElementState) : boolean;
-		toString() : string;
-	}
-	
-	export class TextState extends nanofl.ide.undo.states.ElementState
-	{
-		constructor(width:number, height:number, selectable:boolean, border:boolean, textRuns:nanofl.TextRun[]);
-		width : number;
-		height : number;
-		selectable : boolean;
-		border : boolean;
-		textRuns : nanofl.TextRun[];
-		equ(_state:nanofl.ide.undo.states.ElementState) : boolean;
-	}
-	
-	export class TimelineState
-	{
-		constructor(layerStates:nanofl.engine.Layer[]);
-		layerStates : nanofl.engine.Layer[];
-	}
-	
-	export class TransformationsState
-	{
-		constructor(elementStates:nanofl.engine.geom.Matrix[]);
-		elementStates : nanofl.engine.geom.Matrix[];
-		equ(state:nanofl.ide.undo.states.TransformationsState) : boolean;
-	}
-}
-
-declare module createjs.Sprite
-{
-	type SpriteAnimationendEvent =
-	{
-		name : string;
-		next : string;
-		target : any;
-		type : string;
-	}
-	
-	type SpriteChangeEvent =
-	{
-		target : any;
-		type : string;
-	}
-}
-
-declare module nanofl.engine.libraryitems
-{
-	export class LibraryItem
-	{
-		namePath : string;
-		getType() : string;
-		getIcon() : string;
-		clone() : nanofl.engine.libraryitems.LibraryItem;
-		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
-		save(fileApi:nanofl.engine.FileApi) : void;
-		hasXmlToSave() : boolean;
-		saveToXml(out:htmlparser.XmlBuilder) : void;
-		getFilePathToRunWithEditor() : string;
-		getLibraryFilePaths() : string[];
-		preload(ready:() => void) : void;
-		duplicate(newNamePath:string) : nanofl.engine.libraryitems.LibraryItem;
-		remove() : void;
-		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
-		toString() : string;
-		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.LibraryItem;
-	}
-	
-	export class InstancableItem extends nanofl.engine.libraryitems.LibraryItem
-	{
-		linkedClass : string;
-		hasXmlToSave() : boolean;
-		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
-		newInstance() : nanofl.engine.elements.Instance;
-		getDisplayObjectClassName() : string;
-		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
-		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
-		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
-	}
-	
-	export class BitmapItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem
-	{
-		constructor(namePath:string, ext:string);
-		textureAtlas : string;
-		image : HTMLImageElement;
-		getType() : string;
-		clone() : nanofl.engine.libraryitems.BitmapItem;
-		getIcon() : string;
-		save(fileApi:nanofl.engine.FileApi) : void;
-		hasXmlToSave() : boolean;
-		saveToXml(out:htmlparser.XmlBuilder) : void;
-		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
-		getUrl() : string;
-		preload(ready:() => void) : void;
-		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
-		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
-		getDisplayObjectClassName() : string;
-		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
-		getFilePathToRunWithEditor() : string;
-		getLibraryFilePaths() : string[];
-		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
-		toString() : string;
-		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.BitmapItem;
-	}
-	
-	export class FolderItem extends nanofl.engine.libraryitems.LibraryItem
-	{
-		constructor(namePath:string);
-		opened : boolean;
-		clone() : nanofl.engine.libraryitems.FolderItem;
-		save(fileApi:nanofl.engine.FileApi) : void;
-		hasXmlToSave() : boolean;
-		saveToXml(out:htmlparser.XmlBuilder) : void;
-		getIcon() : string;
-		toString() : string;
-		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
-		getLibraryFilePaths() : string[];
-		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.FolderItem;
-	}
-	
-	export class FontItem extends nanofl.engine.libraryitems.LibraryItem
-	{
-		constructor(namePath:string, variants:nanofl.engine.FontVariant[]);
-		variants : nanofl.engine.FontVariant[];
-		getType() : string;
-		clone() : nanofl.engine.libraryitems.FontItem;
-		getIcon() : string;
-		save(fileApi:nanofl.engine.FileApi) : void;
-		hasXmlToSave() : boolean;
-		saveToXml(out:htmlparser.XmlBuilder) : void;
-		toFont() : nanofl.engine.Font;
-		preload(ready:() => void) : void;
-		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
-		toString() : string;
-		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.FontItem;
-	}
-	
-	export class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem, nanofl.engine.ISpriteSheetableItem, nanofl.engine.IFramedItem, nanofl.engine.ITimeline, nanofl.engine.ILayersContainer
-	{
-		constructor(namePath:string);
-		layers : nanofl.engine.ArrayRO<nanofl.engine.Layer>;
-		likeButton : boolean;
-		autoPlay : boolean;
-		loop : boolean;
-		exportAsSpriteSheet : boolean;
-		textureAtlas : string;
-		getType() : string;
-		clone() : nanofl.engine.libraryitems.MovieClipItem;
-		addLayer(layer:nanofl.engine.Layer) : void;
-		/**
-		 * Add block of layers into timeline.
-		 * Assume that layers' parentIndex referenced inside block.
-		 */
-		addLayersBlock(layersToAdd:nanofl.engine.Layer[], index?:number) : void;
-		removeLayer(index:number) : void;
-		removeLayerWithChildren(index:number) : nanofl.engine.Layer[];
-		getFramesAt(frameIndex:number) : nanofl.engine.Frame[];
-		getIcon() : string;
-		save(fileApi:nanofl.engine.FileApi) : void;
-		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
-		hasXmlToSave() : boolean;
-		saveToXml(out:htmlparser.XmlBuilder) : void;
-		getTotalFrames() : number;
-		getTimelineState() : nanofl.ide.undo.states.TimelineState;
-		setTimelineState(state:nanofl.ide.undo.states.TimelineState) : void;
-		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : nanofl.MovieClip;
-		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
-		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
-		getDisplayObjectClassName() : string;
-		transform(m:nanofl.engine.geom.Matrix) : void;
-		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
-		toString() : string;
-		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MovieClipItem;
-		static createWithFrame(namePath:string, elements?:nanofl.engine.elements.Element[], layerName?:string) : nanofl.engine.libraryitems.MovieClipItem;
-	}
-	
-	export class SoundItem extends nanofl.engine.libraryitems.LibraryItem
-	{
-		constructor(namePath:string, ext:string);
-		linkage : string;
-		getType() : string;
-		clone() : nanofl.engine.libraryitems.SoundItem;
-		getIcon() : string;
-		save(fileApi:nanofl.engine.FileApi) : void;
-		hasXmlToSave() : boolean;
-		saveToXml(out:htmlparser.XmlBuilder) : void;
-		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
-		getUrl() : string;
-		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
-		toString() : string;
-		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.SoundItem;
-	}
-	
-	export class SpriteItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem, nanofl.engine.ILayersContainer
-	{
-		constructor(namePath:string, frames:nanofl.engine.SpriteItemFrame[]);
-		layers : nanofl.engine.ArrayRO<nanofl.engine.Layer>;
-		likeButton : boolean;
-		autoPlay : boolean;
-		loop : boolean;
-		textureAtlas : string;
-		spriteSheet : createjs.SpriteSheet;
-		getType() : string;
-		clone() : nanofl.engine.libraryitems.SpriteItem;
-		getIcon() : string;
-		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
-		hasXmlToSave() : boolean;
-		saveToXml(out:htmlparser.XmlBuilder) : void;
-		preload(ready:() => void) : void;
-		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
-		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
-		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
-		getDisplayObjectClassName() : string;
-		toString() : string;
 	}
 }
 

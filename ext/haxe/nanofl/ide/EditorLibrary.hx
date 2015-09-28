@@ -31,7 +31,10 @@ extern class EditorLibrary
 	function showPropertiesPopup() : Void;
 	function createEmptySymbol() : Void;
 	function createFolder() : Void;
-	function importFiles(paths:Array<String>, ?folderPath:String, ?ready:Void -> Void) : Void;
+	function importFiles(?paths:Array<String>, ?folderPath:String, ?ready:Void -> Void) : Void;
+	function importImages(?folderPath:String, ?ready:Void -> Void) : Void;
+	function importSounds(?folderPath:String, ?ready:Void -> Void) : Void;
+	function importFont() : Void;
 	function uploadFiles(files:Array<js.html.File>, ?folderPath:String, ?callb:Array<nanofl.engine.libraryitems.LibraryItem> -> Void) : Void;
 	function loadFilesFromClipboard(callb:Bool -> Void) : Void;
 	function copyFilesIntoLibrary(srcDir:String, relativePaths:Array<String>, ?callb:Void -> Void) : Void;

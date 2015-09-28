@@ -6,5 +6,5 @@ extern class Importer
 	var pluginName(default, null) : String;
 	var params(default, null) : Dynamic;
 	function run(fileApi:nanofl.engine.FileApi, srcFilePath:String, destFilePath:String, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, fonts:Array<String>, callb:Bool -> Void) : Void;
-	function getPrefKey() : String;
+	static function getPrefKey(pluginName:String) : String;
 }
