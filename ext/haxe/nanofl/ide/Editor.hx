@@ -3,11 +3,11 @@ package nanofl.ide;
 extern class Editor
 {
 	var container(default, null) : createjs.Container;
-	var activeLayer(get, never) : nanofl.ide.EditorLayer;
+	var activeLayer(default, never) : nanofl.ide.EditorLayer;
 	var figure(default, null) : nanofl.ide.Figure;
-	var magnet(get, set) : Bool;
-	var shift(get, set) : Bool;
-	var zoomLevel(get, set) : Float;
+	var magnet : Bool;
+	var shift : Bool;
+	var zoomLevel : Float;
 	function beginEditing(pathItem:nanofl.ide.PathItem, ?isCenterView:Bool) : Void;
 	function updateShapes() : Void;
 	function updateElement(element:nanofl.engine.elements.Element) : Void;

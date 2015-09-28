@@ -389,14 +389,11 @@ declare module nanofl.ide
 	export class Editor
 	{
 		container : createjs.Container;
-		get_activeLayer() : nanofl.ide.EditorLayer;
+		activeLayer : nanofl.ide.EditorLayer;
 		figure : nanofl.ide.Figure;
-		get_magnet() : boolean
-	 	set_magnet(v:boolean) : boolean;
-		get_shift() : boolean
-	 	set_shift(v:boolean) : boolean;
-		get_zoomLevel() : number
-	 	set_zoomLevel(v:number) : number;
+		magnet : boolean;
+		shift : boolean;
+		zoomLevel : number;
 		beginEditing(pathItem:nanofl.ide.PathItem, isCenterView?:boolean) : void;
 		updateShapes() : void;
 		updateElement(element:nanofl.engine.elements.Element) : void;
