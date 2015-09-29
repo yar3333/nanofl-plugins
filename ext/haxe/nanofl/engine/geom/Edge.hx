@@ -48,6 +48,7 @@ extern class Edge
 	function getTangent(t:Float) : Float;
 	function split(tt:Array<Float>) : Array<nanofl.engine.geom.Edge>;
 	function isInRectangle(x:Float, y:Float, width:Float, height:Float) : Bool;
+	function getMonotoneT(k:Float) : Float;
 	static function fromStraightLine(line:nanofl.engine.geom.StraightLine) : nanofl.engine.geom.Edge;
 	static function fromBezierCurve(curve:nanofl.engine.geom.BezierCurve) : nanofl.engine.geom.Edge;
 	static function getIntersection(edgeA:nanofl.engine.geom.Edge, edgeB:nanofl.engine.geom.Edge) : nanofl.engine.geom.Edge.EdgesItersection;

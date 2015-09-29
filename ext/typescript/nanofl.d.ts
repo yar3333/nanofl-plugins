@@ -773,6 +773,7 @@ declare module nanofl.engine.elements
 		transform(m:nanofl.engine.geom.Matrix, applyToStrokeAndFill?:boolean) : void;
 		equ(element:nanofl.engine.elements.Element) : boolean;
 		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
+		fixErrors() : boolean;
 		toString() : string;
 		static parse(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.elements.Element;
 	}
@@ -924,6 +925,7 @@ declare module nanofl.engine.elements
 		setState(_state:nanofl.ide.undo.states.ElementState) : void;
 		equ(element:nanofl.engine.elements.Element) : boolean;
 		breakApart() : nanofl.engine.elements.TextElement[];
+		fixErrors() : boolean;
 	}
 }
 
@@ -8373,6 +8375,7 @@ declare module nanofl.engine.geom
 		getLength() : number;
 		getTangent(t:number) : number;
 		toString() : string;
+		getMonotoneT(k:number) : number;
 	}
 	
 	type Bounds =
@@ -8477,6 +8480,7 @@ declare module nanofl.engine.geom
 		getTangent(t:number) : number;
 		split(tt:number[]) : nanofl.engine.geom.Edge[];
 		isInRectangle(x:number, y:number, width:number, height:number) : boolean;
+		getMonotoneT(k:number) : number;
 		static fromStraightLine(line:nanofl.engine.geom.StraightLine) : nanofl.engine.geom.Edge;
 		static fromBezierCurve(curve:nanofl.engine.geom.BezierCurve) : nanofl.engine.geom.Edge;
 		static getIntersection(edgeA:nanofl.engine.geom.Edge, edgeB:nanofl.engine.geom.Edge) : nanofl.engine.geom.Edge.EdgesItersection;

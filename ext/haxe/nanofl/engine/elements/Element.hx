@@ -18,6 +18,7 @@ extern class Element
 	function transform(m:nanofl.engine.geom.Matrix, ?applyToStrokeAndFill:Bool) : Void;
 	function equ(element:nanofl.engine.elements.Element) : Bool;
 	function getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
+	function fixErrors() : Bool;
 	function toString() : String;
 	static function parse(node:htmlparser.HtmlNodeElement, version:String) : nanofl.engine.elements.Element;
 }

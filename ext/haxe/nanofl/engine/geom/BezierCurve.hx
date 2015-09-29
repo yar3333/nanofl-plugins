@@ -35,4 +35,5 @@ extern class BezierCurve
 	function getLength() : Float;
 	function getTangent(t:Float) : Float;
 	function toString() : String;
+	function getMonotoneT(k:Float) : Float;
 }
