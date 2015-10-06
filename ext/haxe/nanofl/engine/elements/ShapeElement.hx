@@ -53,5 +53,6 @@ extern class ShapeElement extends nanofl.engine.elements.Element
 	function getEdgeCount() : Int;
 	override function equ(element:nanofl.engine.elements.Element) : Bool;
 	override function fixErrors() : Bool;
+	override function getUsedSymbolNamePaths() : Array<String>;
 	override function toString() : String;
 }

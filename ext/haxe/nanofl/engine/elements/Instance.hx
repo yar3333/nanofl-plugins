@@ -23,4 +23,5 @@ extern class Instance extends nanofl.engine.elements.Element implements nanofl.e
 	function getChildren() : Array<nanofl.engine.elements.Element>;
 	function getTimeline() : nanofl.engine.ITimeline;
 	override function equ(element:nanofl.engine.elements.Element) : Bool;
+	override function getUsedSymbolNamePaths() : Array<String>;
 }

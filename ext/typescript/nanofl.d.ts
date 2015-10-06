@@ -173,12 +173,10 @@ declare module nanofl.ide.commands
 		insertFrame() : void;
 		convertToKeyFrame() : void;
 		addBlankKeyFrame() : void;
-		removeFrames() : void;
 		gotoPrevFrame() : void;
 		gotoNextFrame() : void;
 		createTween() : void;
 		removeTween() : void;
-		convertToKeyframe() : void;
 		removeFrame() : void;
 		switchLayerTypeToNormal() : void;
 		switchLayerTypeToMask() : void;
@@ -665,9 +663,9 @@ declare module nanofl.ide
 	export interface ServerApi
 	{
 		getTempDirectory() : string;
-		copyDir(src:string, dest:string, overwrite?:boolean, callb:(arg:boolean) => void) : void;
+		syncDirectory(src:string, dest:string, callb:() => void) : void;
 		copyLibraryFiles(srcLibraryDir:string, relativePaths:string[], destLibraryDir:string, callb:() => void) : void;
-		requestUrl(url:string, callb:(arg:string) => void) : void;
+		requestUrl(url:string, headers?:{ value : string; name : string; }[], callb:(arg:string) => void) : void;
 		openInBrowser(url:string) : void;
 		uploadFiles(files:File[], destDir:string, callb:() => void) : void;
 		getFonts() : string[];
@@ -716,8 +714,8 @@ declare module nanofl.ide
 		saveBinary(filePath:string, data:nanofl.engine.Bytes) : void;
 		isDirectory(path:string) : boolean;
 		run(filePath:string, args:string[], blocking:boolean) : number;
-		copy(srcPath:string, destPath:string) : void;
-		copyDir(src:string, dest:string, overwrite?:boolean) : boolean;
+		copy(srcPath:string, destPath:string) : boolean;
+		syncDirectory(src:string, dest:string) : void;
 		rename(srcPath:string, destPath:string) : void;
 		remove(path:string) : void;
 		findFiles(dirPath:string, onFile?:(arg:string) => void, onDir?:(arg:string) => boolean) : void;
@@ -774,6 +772,7 @@ declare module nanofl.engine.elements
 		equ(element:nanofl.engine.elements.Element) : boolean;
 		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 		fixErrors() : boolean;
+		getUsedSymbolNamePaths() : string[];
 		toString() : string;
 		static parse(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.elements.Element;
 	}
@@ -783,7 +782,7 @@ declare module nanofl.engine.elements
 		static parse(base:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.elements.Element[];
 		static save(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>, out:htmlparser.XmlBuilder) : void;
 		static expandGroups(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>) : nanofl.engine.elements.Element[];
-		static getUsedSymbols(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>) : nanofl.engine.libraryitems.LibraryItem[];
+		static getUsedSymbolNamePaths(elements:nanofl.engine.ArrayRO<nanofl.engine.elements.Element>) : string[];
 	}
 	
 	export class GroupElement extends nanofl.engine.elements.Element implements nanofl.engine.IElementsContainer, nanofl.engine.IPathElement
@@ -807,6 +806,7 @@ declare module nanofl.engine.elements
 		getNavigatorIcon() : string;
 		getTimeline() : nanofl.engine.ITimeline;
 		transform(m:nanofl.engine.geom.Matrix, applyToStrokeAndFill?:boolean) : void;
+		getUsedSymbolNamePaths() : string[];
 		equ(element:nanofl.engine.elements.Element) : boolean;
 	}
 	
@@ -833,6 +833,7 @@ declare module nanofl.engine.elements
 		getChildren() : nanofl.engine.elements.Element[];
 		getTimeline() : nanofl.engine.ITimeline;
 		equ(element:nanofl.engine.elements.Element) : boolean;
+		getUsedSymbolNamePaths() : string[];
 	}
 	
 	export class ShapeElement extends nanofl.engine.elements.Element
@@ -888,6 +889,7 @@ declare module nanofl.engine.elements
 		getEdgeCount() : number;
 		equ(element:nanofl.engine.elements.Element) : boolean;
 		fixErrors() : boolean;
+		getUsedSymbolNamePaths() : string[];
 		toString() : string;
 	}
 	
@@ -1674,6 +1676,7 @@ declare module nanofl.engine.libraryitems
 		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
 		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
 		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
+		getUsedSymbolNamePaths() : string[];
 	}
 	
 	export class BitmapItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem
@@ -1697,6 +1700,7 @@ declare module nanofl.engine.libraryitems
 		getFilePathToRunWithEditor() : string;
 		getLibraryFilePaths() : string[];
 		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
+		getUsedSymbolNamePaths() : string[];
 		toString() : string;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.BitmapItem;
 	}
@@ -1728,6 +1732,7 @@ declare module nanofl.engine.libraryitems
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		toFont() : nanofl.engine.Font;
 		preload(ready:() => void) : void;
+		addVariant(v:nanofl.engine.FontVariant) : void;
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 		toString() : string;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.FontItem;
@@ -1767,6 +1772,7 @@ declare module nanofl.engine.libraryitems
 		getDisplayObjectClassName() : string;
 		transform(m:nanofl.engine.geom.Matrix) : void;
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
+		getUsedSymbolNamePaths() : string[];
 		toString() : string;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MovieClipItem;
 		static createWithFrame(namePath:string, elements?:nanofl.engine.elements.Element[], layerName?:string) : nanofl.engine.libraryitems.MovieClipItem;
@@ -9186,6 +9192,7 @@ declare module nanofl.engine
 		static equ(params1:any, params2:any) : boolean;
 		static tween(start:any, t:number, finish:any, properties:nanofl.engine.CustomProperty[]) : void;
 		static fix(params:any, properties:nanofl.engine.CustomProperty[]) : any;
+		static resetToNeutral(params:any, properties:nanofl.engine.CustomProperty[]) : void;
 	}
 	
 	type CustomProperty =
@@ -9269,8 +9276,8 @@ declare module nanofl.engine
 		exists(path:string) : boolean;
 		isDirectory(path:string) : boolean;
 		run(filePath:string, args:string[], blocking:boolean) : number;
-		copy(srcPath:string, destPath:string) : void;
-		copyDir(src:string, dest:string, overwrite?:boolean) : boolean;
+		copy(srcPath:string, destPath:string) : boolean;
+		syncDirectory(src:string, dest:string) : void;
 		rename(oldPath:string, newPath:string) : void;
 		remove(path:string) : void;
 		findFiles(dirPath:string, onFile?:(arg:string) => void, onDir?:(arg:string) => boolean) : void;
@@ -9293,6 +9300,7 @@ declare module nanofl.engine
 		getFilter() : createjs.Filter;
 		getLabel() : string;
 		getProperties() : nanofl.engine.CustomProperty[];
+		resetToNeutral() : nanofl.engine.FilterDef;
 		static load(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.FilterDef;
 	}
 	
@@ -9305,7 +9313,7 @@ declare module nanofl.engine
 	
 	export class FontVariant
 	{
-		constructor(style?:string, weight?:number, locals?:string[], url?:string, format?:string);
+		constructor(style?:string, weight?:number, locals?:string[], urls?:Map<string, string>);
 		/**
 		 * "normal", "italic"
 		 */
@@ -9315,18 +9323,15 @@ declare module nanofl.engine
 		 */
 		weight : number;
 		/**
-		 * possible font name in system to prevent loading from web if exists locally ("Open Sans Bold", "OpenSans-Bold")
+		 * Possible font name in system to prevent loading from web if exists locally ("Open Sans Bold", "OpenSans-Bold").
 		 */
 		locals : string[];
 		/**
-		 * url to font file (can be relative to library directory)
+		 * format => url (can be relative to the library directory).
 		 */
-		url : string;
-		/**
-		 * font file format ("woff")
-		 */
-		format : string;
+		urls : Map<string, string>;
 		equ(e:nanofl.engine.FontVariant) : boolean;
+		getUrlByFormats(formats:string[]) : string;
 	}
 	
 	export class Frame
