@@ -14,9 +14,9 @@ class HtmlGenerator extends TextureAtlasGenerator
 	var serializedLibrary : String;
 	var filterCodes : Map<String, String>;
 	
-	public function new(fileApi:FileApi, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>, supportDir:String)
+	public function new(fileApi:FileApi, params:Params, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>, supportDir:String)
 	{
-		super(fileApi, documentProperties, library, textureAtlases, supportDir);
+		super(fileApi, params, documentProperties, library, textureAtlases, supportDir);
 		
 		var data = library.compile("library");
 		serializedLibrary = data.serializedLibrary;
@@ -54,6 +54,8 @@ class HtmlGenerator extends TextureAtlasGenerator
 			template = template.split("{bodyStyle}").join("background-color:" + documentProperties.backgroundColor + "; margin:0; padding:0; font-size:0; overflow:hidden");
 			template = template.split("{createjsUrl}").join(createjsUrl);
 			template = template.split("{playerUrl}").join(playerUrl.split("{version}").join(Version.player));
+			template = template.split("{preCanvas}").join(params.urlOnClick != "" ? "<a href='" + params.urlOnClick + "' target='_blank'>\n\t\t\t" : "");
+			template = template.split("{postCanvas}").join(params.urlOnClick != "" ? "\n\t\t</a>" : "");
 			
 			var scriptUrls = getScriptUrls(dir, name).map(function(s) return "<script src=\"" + s + "\"></script>").join("\n\t\t");
 			template = template.split("{scriptUrls}").join(scriptUrls + (scriptUrls != "" ? "\n\t\t" : ""));

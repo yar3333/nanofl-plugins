@@ -34,12 +34,17 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 				"TextureAtlas"
 			] 
 		},
+		//{
+		//	type:"bool", name:"graphicsAcceleration", label:"Graphics acceleration", defaultValue:false,
+		//	description:"Use WebGL acceleration (classes SpriteStage, Sprite, SpriteContainer and so on)."
+		//},
 		{
-			type:"bool", name:"graphicsAcceleration", label:"Graphics acceleration", defaultValue:false
+			type:"string", name:"urlOnClick", label:"URL on click", defaultValue:"",
+			description:"Useful for Banner Ads. Keep field empty to disable this feature."
 		}
 	];
 	
-	public function generate(fileApi:FileApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>) : Void
+	public function generate(fileApi:FileApi, params:Params, filePath:String, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>) : Void
 	{
 		var supportDir = fileApi.getPluginsDirectory() + "/CreateJSGeneratorPlugin";
 		
@@ -52,11 +57,11 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 		
 		var generator : BaseGenerator = switch (languageAndIde[0])
 		{
-			case "HTML":		new HtmlGenerator(fileApi, documentProperties, library, textureAtlases, supportDir);
-			case "JavaScript":	new JavaScriptGenerator(fileApi, documentProperties, library, textureAtlases, supportDir);
-			case "TypeScript":	new TypeScriptGenerator(fileApi, documentProperties, library, textureAtlases, supportDir);
-			case "Haxe":		new HaxeGenerator(fileApi, documentProperties, library, textureAtlases, supportDir);
-			case "TextureAtlas":new TextureAtlasGenerator(fileApi, documentProperties, library, textureAtlases, supportDir);
+			case "HTML":		new HtmlGenerator(fileApi, params, documentProperties, library, textureAtlases, supportDir);
+			case "JavaScript":	new JavaScriptGenerator(fileApi, params, documentProperties, library, textureAtlases, supportDir);
+			case "TypeScript":	new TypeScriptGenerator(fileApi, params, documentProperties, library, textureAtlases, supportDir);
+			case "Haxe":		new HaxeGenerator(fileApi, params, documentProperties, library, textureAtlases, supportDir);
+			case "TextureAtlas":new TextureAtlasGenerator(fileApi, params, documentProperties, library, textureAtlases, supportDir);
 			case _: throw "Unsupported language '" + languageAndIde[0] + "'."; null;
 		}
 		trace("CreateJSGeneratorPlugin.generate filePath = " + filePath + "; supportDir = " + supportDir + "; dir= " + dir + "; name = " + name);

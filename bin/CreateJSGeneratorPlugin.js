@@ -7,7 +7,7 @@ function $extend(from, fields) {
 	return proto;
 }
 var CreateJSGeneratorPlugin = function() {
-	this.properties = [{ type : "list", name : "mode", label : "Mode", defaultValue : "HTML", values : ["HTML","JavaScript","JavaScript/FlashDevelop","JavaScript/MsVisualStudio2013","TypeScript","TypeScript/MsVisualStudio2013","Haxe","Haxe/FlashDevelop","TextureAtlas"]},{ type : "bool", name : "graphicsAcceleration", label : "Graphics acceleration", defaultValue : false}];
+	this.properties = [{ type : "list", name : "mode", label : "Mode", defaultValue : "HTML", values : ["HTML","JavaScript","JavaScript/FlashDevelop","JavaScript/MsVisualStudio2013","TypeScript","TypeScript/MsVisualStudio2013","Haxe","Haxe/FlashDevelop","TextureAtlas"]},{ type : "string", name : "urlOnClick", label : "URL on click", defaultValue : "", description : "Useful for Banner Ads. Keep field empty to disable this feature."}];
 	this.name = "CreateJS";
 };
 CreateJSGeneratorPlugin.__name__ = true;
@@ -28,19 +28,19 @@ CreateJSGeneratorPlugin.prototype = {
 		var _g = languageAndIde[0];
 		switch(_g) {
 		case "HTML":
-			generator = new languages_HtmlGenerator(fileApi,documentProperties,library,textureAtlases,supportDir);
+			generator = new languages_HtmlGenerator(fileApi,params,documentProperties,library,textureAtlases,supportDir);
 			break;
 		case "JavaScript":
-			generator = new languages_JavaScriptGenerator(fileApi,documentProperties,library,textureAtlases,supportDir);
+			generator = new languages_JavaScriptGenerator(fileApi,params,documentProperties,library,textureAtlases,supportDir);
 			break;
 		case "TypeScript":
-			generator = new languages_TypeScriptGenerator(fileApi,documentProperties,library,textureAtlases,supportDir);
+			generator = new languages_TypeScriptGenerator(fileApi,params,documentProperties,library,textureAtlases,supportDir);
 			break;
 		case "Haxe":
-			generator = new languages_HaxeGenerator(fileApi,documentProperties,library,textureAtlases,supportDir);
+			generator = new languages_HaxeGenerator(fileApi,params,documentProperties,library,textureAtlases,supportDir);
 			break;
 		case "TextureAtlas":
-			generator = new languages_TextureAtlasGenerator(fileApi,documentProperties,library,textureAtlases,supportDir);
+			generator = new languages_TextureAtlasGenerator(fileApi,params,documentProperties,library,textureAtlases,supportDir);
 			break;
 		default:
 			throw new js__$Boot_HaxeError("Unsupported language '" + languageAndIde[0] + "'.");
@@ -778,8 +778,9 @@ js_html_compat_Uint8Array._subarray = function(start,end) {
 	a.byteOffset = start;
 	return a;
 };
-var languages_BaseGenerator = function(fileApi,documentProperties,library,textureAtlases,supportDir) {
+var languages_BaseGenerator = function(fileApi,params,documentProperties,library,textureAtlases,supportDir) {
 	this.fileApi = fileApi;
+	this.params = params;
 	this.documentProperties = documentProperties;
 	this.library = library;
 	this.textureAtlases = textureAtlases;
@@ -791,8 +792,8 @@ languages_BaseGenerator.prototype = {
 	}
 	,__class__: languages_BaseGenerator
 };
-var languages_TextureAtlasGenerator = function(fileApi,documentProperties,library,textureAtlases,supportDir) {
-	languages_BaseGenerator.call(this,fileApi,documentProperties,library,textureAtlases,supportDir);
+var languages_TextureAtlasGenerator = function(fileApi,params,documentProperties,library,textureAtlases,supportDir) {
+	languages_BaseGenerator.call(this,fileApi,params,documentProperties,library,textureAtlases,supportDir);
 };
 languages_TextureAtlasGenerator.__name__ = true;
 languages_TextureAtlasGenerator.__super__ = languages_BaseGenerator;
@@ -838,8 +839,8 @@ languages_TextureAtlasGenerator.prototype = $extend(languages_BaseGenerator.prot
 	}
 	,__class__: languages_TextureAtlasGenerator
 });
-var languages_HtmlGenerator = function(fileApi,documentProperties,library,textureAtlases,supportDir) {
-	languages_TextureAtlasGenerator.call(this,fileApi,documentProperties,library,textureAtlases,supportDir);
+var languages_HtmlGenerator = function(fileApi,params,documentProperties,library,textureAtlases,supportDir) {
+	languages_TextureAtlasGenerator.call(this,fileApi,params,documentProperties,library,textureAtlases,supportDir);
 	var data = library.compile("library");
 	this.serializedLibrary = data.serializedLibrary;
 	this.filterCodes = data.filterCodes;
@@ -869,6 +870,8 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 			template = template.split("{bodyStyle}").join("background-color:" + this.documentProperties.backgroundColor + "; margin:0; padding:0; font-size:0; overflow:hidden");
 			template = template.split("{createjsUrl}").join(languages_HtmlGenerator.createjsUrl);
 			template = template.split("{playerUrl}").join(languages_HtmlGenerator.playerUrl.split("{version}").join(nanofl.engine.Version.player));
+			template = template.split("{preCanvas}").join(this.params.urlOnClick != ""?"<a href='" + this.params.urlOnClick + "' target='_blank'>\n\t\t\t":"");
+			template = template.split("{postCanvas}").join(this.params.urlOnClick != ""?"\n\t\t</a>":"");
 			var scriptUrls = this.getScriptUrls(dir,name).map(function(s) {
 				return "<script src=\"" + s + "\"></script>";
 			}).join("\n\t\t");
@@ -927,8 +930,8 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 	}
 	,__class__: languages_HtmlGenerator
 });
-var languages_CodeGenerator = function(fileApi,documentProperties,library,textureAtlases,supportDir) {
-	languages_HtmlGenerator.call(this,fileApi,documentProperties,library,textureAtlases,supportDir);
+var languages_CodeGenerator = function(fileApi,params,documentProperties,library,textureAtlases,supportDir) {
+	languages_HtmlGenerator.call(this,fileApi,params,documentProperties,library,textureAtlases,supportDir);
 };
 languages_CodeGenerator.__name__ = true;
 languages_CodeGenerator.__super__ = languages_HtmlGenerator;
@@ -955,8 +958,8 @@ languages_CodeGenerator.prototype = $extend(languages_HtmlGenerator.prototype,{
 	}
 	,__class__: languages_CodeGenerator
 });
-var languages_HaxeGenerator = function(fileApi,documentProperties,library,textureAtlases,supportDir) {
-	languages_CodeGenerator.call(this,fileApi,documentProperties,library,textureAtlases,supportDir);
+var languages_HaxeGenerator = function(fileApi,params,documentProperties,library,textureAtlases,supportDir) {
+	languages_CodeGenerator.call(this,fileApi,params,documentProperties,library,textureAtlases,supportDir);
 };
 languages_HaxeGenerator.__name__ = true;
 languages_HaxeGenerator.__super__ = languages_CodeGenerator;
@@ -1019,8 +1022,8 @@ languages_HaxeGenerator.prototype = $extend(languages_CodeGenerator.prototype,{
 	}
 	,__class__: languages_HaxeGenerator
 });
-var languages_JavaScriptGenerator = function(fileApi,documentProperties,library,textureAtlases,supportDir) {
-	languages_CodeGenerator.call(this,fileApi,documentProperties,library,textureAtlases,supportDir);
+var languages_JavaScriptGenerator = function(fileApi,params,documentProperties,library,textureAtlases,supportDir) {
+	languages_CodeGenerator.call(this,fileApi,params,documentProperties,library,textureAtlases,supportDir);
 };
 languages_JavaScriptGenerator.__name__ = true;
 languages_JavaScriptGenerator.__super__ = languages_CodeGenerator;
@@ -1124,8 +1127,8 @@ languages_JavaScriptGenerator.prototype = $extend(languages_CodeGenerator.protot
 	}
 	,__class__: languages_JavaScriptGenerator
 });
-var languages_TypeScriptGenerator = function(fileApi,documentProperties,library,textureAtlases,supportDir) {
-	languages_CodeGenerator.call(this,fileApi,documentProperties,library,textureAtlases,supportDir);
+var languages_TypeScriptGenerator = function(fileApi,params,documentProperties,library,textureAtlases,supportDir) {
+	languages_CodeGenerator.call(this,fileApi,params,documentProperties,library,textureAtlases,supportDir);
 };
 languages_TypeScriptGenerator.__name__ = true;
 languages_TypeScriptGenerator.__super__ = languages_CodeGenerator;

@@ -5,7 +5,7 @@
 		<title>{title}</title>
 	</head>
 	<body style="{bodyStyle}">
-		<canvas id="mainCanvas" width="{width}" height="{height}" style="position:relative"></canvas>
+		{preCanvas}<canvas id="mainCanvas" width="{width}" height="{height}" style="position:relative"></canvas>{postCanvas}
 		<script src="{createjsUrl}"></script>
 		<script src="{playerUrl}"></script>
 		{scriptUrls}<script>
