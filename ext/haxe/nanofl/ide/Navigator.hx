@@ -9,6 +9,6 @@ extern class Navigator
 	function navigateTo(editPath:Array<nanofl.ide.PathItem>, ?isCenterView:Bool) : Void;
 	function update(isCenterView:Bool) : Void;
 	function setLayerIndex(index:Int) : Void;
-	function setFrameIndex(index:Int) : Void;
+	function setFrameIndex(index:Int, ?invalidater:nanofl.ide.Invalidater, ?commitBeforeChange:Bool) : Void;
 	function getInstanceNamePaths() : Array<String>;
 }

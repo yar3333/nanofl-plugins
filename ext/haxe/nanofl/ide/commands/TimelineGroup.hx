@@ -11,6 +11,8 @@ extern class TimelineGroup extends nanofl.ide.commands.BaseGroup
 	function createTween() : Void;
 	function removeTween() : Void;
 	function removeFrame() : Void;
+	function play() : Void;
+	function stop() : Void;
 	function switchLayerTypeToNormal() : Void;
 	function switchLayerTypeToMask() : Void;
 	function switchLayerTypeToMasked() : Void;

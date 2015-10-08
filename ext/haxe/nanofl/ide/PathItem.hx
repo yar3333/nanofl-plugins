@@ -7,7 +7,6 @@ extern class PathItem
 	var layerIndex(default, null) : Int;
 	var frameIndex(default, null) : Int;
 	function setLayerIndex(n:Int) : Void;
-	function setFrameIndex(n:Int) : Void;
 	var layer(default, never) : nanofl.engine.Layer;
 	var frame(default, never) : nanofl.engine.Frame;
 	function getTotalFrames() : Int;

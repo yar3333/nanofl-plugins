@@ -178,6 +178,8 @@ declare module nanofl.ide.commands
 		createTween() : void;
 		removeTween() : void;
 		removeFrame() : void;
+		play() : void;
+		stop() : void;
 		switchLayerTypeToNormal() : void;
 		switchLayerTypeToMask() : void;
 		switchLayerTypeToMasked() : void;
@@ -336,7 +338,7 @@ declare module nanofl.ide
 		copy() : boolean;
 		cut() : boolean;
 		paste() : boolean;
-		restoreFocus() : void;
+		restoreFocus(container?:HTMLElement) : void;
 	}
 	
 	export class Document
@@ -622,7 +624,7 @@ declare module nanofl.ide
 		navigateTo(editPath:nanofl.ide.PathItem[], isCenterView?:boolean) : void;
 		update(isCenterView:boolean) : void;
 		setLayerIndex(index:number) : void;
-		setFrameIndex(index:number) : void;
+		setFrameIndex(index:number, invalidater?:nanofl.ide.Invalidater, commitBeforeChange?:boolean) : void;
 		getInstanceNamePaths() : string[];
 	}
 	
@@ -652,7 +654,6 @@ declare module nanofl.ide
 		layerIndex : number;
 		frameIndex : number;
 		setLayerIndex(n:number) : void;
-		setFrameIndex(n:number) : void;
 		layer : nanofl.engine.Layer;
 		frame : nanofl.engine.Frame;
 		getTotalFrames() : number;
