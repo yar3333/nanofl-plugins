@@ -9188,6 +9188,16 @@ declare module nanofl.engine
 		static normalize(s:string) : string;
 	}
 	
+	export class Console
+	{
+		constructor();
+		log(v:any) : void;
+		info(v:any) : void;
+		warn(v:any) : void;
+		error(v:any) : void;
+		static console : nanofl.engine.Console;
+	}
+	
 	export class CustomPropertiesTools
 	{
 		static equ(params1:any, params2:any) : boolean;

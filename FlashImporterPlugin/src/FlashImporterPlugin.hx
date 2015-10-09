@@ -47,7 +47,6 @@ class FlashImporterPlugin implements IImporterPlugin
 				library,
 				fonts,
 				true,
-				null,
 				function(success:Bool)
 				{
 					fileApi.remove(dir);
@@ -67,7 +66,6 @@ class FlashImporterPlugin implements IImporterPlugin
 				library,
 				fonts,
 				true,
-				null,
 				callb
 			);
 		}

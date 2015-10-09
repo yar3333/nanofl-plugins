@@ -12,7 +12,7 @@ using StringTools;
 
 class DocumentImporter
 {
-	public static function process(importMediaScriptTemplate:String, fileApi:FileApi, srcFilePath:String, destFilePath:String, destDocProp:DocumentProperties, destLibrary:Library, fonts:Array<String>, runFlashToImportMedia:Bool, log:Dynamic->Void, callb:Bool->Void) : Void
+	public static function process(importMediaScriptTemplate:String, fileApi:FileApi, srcFilePath:String, destFilePath:String, destDocProp:DocumentProperties, destLibrary:Library, fonts:Array<String>, runFlashToImportMedia:Bool, callb:Bool->Void) : Void
 	{
 		if (runFlashToImportMedia && hasMedia(fileApi, srcFilePath))
 		{
@@ -22,14 +22,14 @@ class DocumentImporter
 				fileApi, srcFilePath, destFilePath, destLibrary,
 				function(success)
 				{
-					if (success) importXmlFiles(fileApi, srcFilePath, destDocProp, destLibrary, fonts, log);
+					if (success) importXmlFiles(fileApi, srcFilePath, destDocProp, destLibrary, fonts);
 					callb(success);
 				}
 			);
 		}
 		else
 		{
-			importXmlFiles(fileApi, srcFilePath, destDocProp, destLibrary, fonts, log);
+			importXmlFiles(fileApi, srcFilePath, destDocProp, destLibrary, fonts);
 			callb(true);
 		}
 	}
@@ -70,14 +70,14 @@ class DocumentImporter
 		});
 	}
 	
-	static function importXmlFiles(fileApi:FileApi, srcFilePath:String, destDocProp:DocumentProperties, destLibrary:Library, fonts:Array<String>, log:Dynamic->Void)
+	static function importXmlFiles(fileApi:FileApi, srcFilePath:String, destDocProp:DocumentProperties, destLibrary:Library, fonts:Array<String>)
 	{
 		var srcDir = Path.directory(srcFilePath);
 		
 		var srcDoc = new XmlDocument(fileApi.getContent(srcDir + "/DOMDocument.xml"));
 		
 		var srcLibDir = srcDir + "/LIBRARY";
-		var symbolLoader = new SymbolLoader(fileApi, srcDoc, srcLibDir, destLibrary, fonts, log);
+		var symbolLoader = new SymbolLoader(fileApi, srcDoc, srcLibDir, destLibrary, fonts);
 		var docPropNode = srcDoc.findOne(">DOMDocument");
 		destDocProp.width = docPropNode.getAttr("width", 550);
 		destDocProp.height = docPropNode.getAttr("height", 400);

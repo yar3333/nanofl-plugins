@@ -9,6 +9,7 @@ import nanofl.engine.coloreffects.ColorEffectAlpha;
 import nanofl.engine.coloreffects.ColorEffectBrightness;
 import nanofl.engine.coloreffects.ColorEffectTint;
 import nanofl.engine.ColorTools;
+import nanofl.engine.Console.console;
 import nanofl.engine.elements.Element;
 import nanofl.engine.elements.GroupElement;
 import nanofl.engine.elements.Instance;
@@ -48,7 +49,6 @@ class SymbolLoader
 	var doc : XmlDocument;
 	var srcLibDir : String;
 	var library : Library;
-	var log : Dynamic->Void;
 	
 	var fontMap = new Map<String, { face:String, style:String }>();
 	var morphingNotSupported = new Array<String>();
@@ -56,13 +56,12 @@ class SymbolLoader
 	
 	var generatedAutoIDs = new Array<String>();
 	
-	public function new(fileApi:FileApi, doc:XmlDocument, srcLibDir:String, library:Library, fonts:Array<String>, ?log:Dynamic->Void)
+	public function new(fileApi:FileApi, doc:XmlDocument, srcLibDir:String, library:Library, fonts:Array<String>)
 	{
 		this.fileApi = fileApi;
 		this.doc = doc;
 		this.srcLibDir = srcLibDir;
 		this.library = library;
-		this.log = log != null ? log : function(v) {};
 		
 		this.fontConvertor = new FontConvertor(fonts);
 	}
@@ -165,12 +164,12 @@ class SymbolLoader
 				if (!morphingNotSupported.has(namePath))
 				{
 					morphingNotSupported.push(namePath);
-					log("WARNING: shape morphing tween is not supported (symbol '" + namePath + "').");
+					console.warn("Shape morphing tween is not supported (symbol '" + namePath + "').");
 				}
 				return null;
 				
 			case _:
-				log("WARNING: unknow tween type '" + type + "' (symbol '" + namePath + "').");
+				console.warn("Unknow tween type '" + type + "' (symbol '" + namePath + "').");
 				return null;
 		}
 	}
@@ -217,8 +216,11 @@ class SymbolLoader
 						r.push(group);
 					}
 					
+				case "DOMTLFText":
+					console.warn("DOMTLFText is not supported. Please, resave original document in Flash Pro CC.");
+					
 				case _:
-					log("WARNING: unknow element node: '" + element.name + "'.");
+					console.warn("Unknow element node: '" + element.name + "'.");
 			}
 		}
 		return r;
@@ -389,7 +391,7 @@ class SymbolLoader
 				};
 				
 			case _:
-				log("WARNING: unknow fill type '" + fill.name + "'.");
+				console.warn("Unknow fill type '" + fill.name + "'.");
 				return
 				{
 					fill: new SolidFill("#FFFFFF"),
@@ -421,7 +423,7 @@ class SymbolLoader
 				};
 			
 			case _:
-				log("WARNING: unknow stroke type '" + stroke.name + "'.");
+				console.warn("Unknow stroke type '" + stroke.name + "'.");
 				return 
 				{
 					stroke: new SolidStroke("#000000"),
@@ -464,7 +466,7 @@ class SymbolLoader
 		{
 			var font = fontConvertor.convert(face);
 			fontMap.set(face, font);
-			log("FONT MAP: " + face +" -> " + font.face + " / " + (font.style != "" ? font.style : "regular"));
+			console.log("FONT MAP: " + face +" -> " + font.face + " / " + (font.style != "" ? font.style : "regular"));
 		}
 		
 		var font = fontMap.get(face);
@@ -565,7 +567,7 @@ class SymbolLoader
 			var linkageIdentifier = node.getAttr("linkageIdentifier", "");
 			if (linkageIdentifier != "")
 			{
-				log("WARNING: linkage identifier is not supported (symbol '" + item.namePath + "')");
+				console.warn("Linkage identifier is not supported (symbol '" + item.namePath + "')");
 				if (item.linkedClass == "") item.linkedClass = linkageIdentifier;
 			}
 		}

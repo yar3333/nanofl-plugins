@@ -89,11 +89,11 @@ FlashImporterPlugin.prototype = {
 		if(haxe_io_Path.extension(srcFilePath) == "fla") {
 			var dir = fileApi.getTempDirectory() + "/unsaved/" + stdlib_Uuid.newUuid();
 			fileApi.unzip(srcFilePath,dir);
-			flashimport_DocumentImporter.process(FlashImporterPlugin.IMPORT_MEDIA_SCRIPT_TEMPLATE,fileApi,dir + "/" + haxe_io_Path.withoutDirectory(haxe_io_Path.withoutExtension(srcFilePath)) + ".xfl",destFilePath,documentProperties,library,fonts,true,null,function(success) {
+			flashimport_DocumentImporter.process(FlashImporterPlugin.IMPORT_MEDIA_SCRIPT_TEMPLATE,fileApi,dir + "/" + haxe_io_Path.withoutDirectory(haxe_io_Path.withoutExtension(srcFilePath)) + ".xfl",destFilePath,documentProperties,library,fonts,true,function(success) {
 				fileApi.remove(dir);
 				callb(success);
 			});
-		} else flashimport_DocumentImporter.process(FlashImporterPlugin.IMPORT_MEDIA_SCRIPT_TEMPLATE,fileApi,srcFilePath,destFilePath,documentProperties,library,fonts,true,null,callb);
+		} else flashimport_DocumentImporter.process(FlashImporterPlugin.IMPORT_MEDIA_SCRIPT_TEMPLATE,fileApi,srcFilePath,destFilePath,documentProperties,library,fonts,true,callb);
 	}
 	,__class__: FlashImporterPlugin
 };
@@ -386,12 +386,12 @@ Type.enumConstructor = function(e) {
 };
 var flashimport_DocumentImporter = function() { };
 flashimport_DocumentImporter.__name__ = ["flashimport","DocumentImporter"];
-flashimport_DocumentImporter.process = function(importMediaScriptTemplate,fileApi,srcFilePath,destFilePath,destDocProp,destLibrary,fonts,runFlashToImportMedia,log,callb) {
+flashimport_DocumentImporter.process = function(importMediaScriptTemplate,fileApi,srcFilePath,destFilePath,destDocProp,destLibrary,fonts,runFlashToImportMedia,callb) {
 	if(runFlashToImportMedia && flashimport_DocumentImporter.hasMedia(fileApi,srcFilePath)) flashimport_DocumentImporter.importMedia(importMediaScriptTemplate,fileApi,srcFilePath,destFilePath,destLibrary,function(success) {
-		if(success) flashimport_DocumentImporter.importXmlFiles(fileApi,srcFilePath,destDocProp,destLibrary,fonts,log);
+		if(success) flashimport_DocumentImporter.importXmlFiles(fileApi,srcFilePath,destDocProp,destLibrary,fonts);
 		callb(success);
 	}); else {
-		flashimport_DocumentImporter.importXmlFiles(fileApi,srcFilePath,destDocProp,destLibrary,fonts,log);
+		flashimport_DocumentImporter.importXmlFiles(fileApi,srcFilePath,destDocProp,destLibrary,fonts);
 		callb(true);
 	}
 };
@@ -417,11 +417,11 @@ flashimport_DocumentImporter.importMedia = function(importMediaScriptTemplate,fi
 		} else callb(false);
 	});
 };
-flashimport_DocumentImporter.importXmlFiles = function(fileApi,srcFilePath,destDocProp,destLibrary,fonts,log) {
+flashimport_DocumentImporter.importXmlFiles = function(fileApi,srcFilePath,destDocProp,destLibrary,fonts) {
 	var srcDir = haxe_io_Path.directory(srcFilePath);
 	var srcDoc = new htmlparser.XmlDocument(fileApi.getContent(srcDir + "/DOMDocument.xml"));
 	var srcLibDir = srcDir + "/LIBRARY";
-	var symbolLoader = new flashimport_SymbolLoader(fileApi,srcDoc,srcLibDir,destLibrary,fonts,log);
+	var symbolLoader = new flashimport_SymbolLoader(fileApi,srcDoc,srcLibDir,destLibrary,fonts);
 	var docPropNode = htmlparser.HtmlParserTools.findOne(srcDoc,">DOMDocument");
 	destDocProp.width = htmlparser.HtmlParserTools.getAttr(docPropNode,"width",550);
 	destDocProp.height = htmlparser.HtmlParserTools.getAttr(docPropNode,"height",400);
@@ -792,7 +792,7 @@ flashimport_ShapeConvertor.prototype = {
 	}
 	,__class__: flashimport_ShapeConvertor
 };
-var flashimport_SymbolLoader = function(fileApi,doc,srcLibDir,library,fonts,log) {
+var flashimport_SymbolLoader = function(fileApi,doc,srcLibDir,library,fonts) {
 	this.generatedAutoIDs = [];
 	this.morphingNotSupported = [];
 	this.fontMap = new haxe_ds_StringMap();
@@ -800,8 +800,6 @@ var flashimport_SymbolLoader = function(fileApi,doc,srcLibDir,library,fonts,log)
 	this.doc = doc;
 	this.srcLibDir = srcLibDir;
 	this.library = library;
-	if(log != null) this.log = log; else this.log = function(v) {
-	};
 	this.fontConvertor = new flashimport_FontConvertor(fonts);
 };
 flashimport_SymbolLoader.__name__ = ["flashimport","SymbolLoader"];
@@ -868,11 +866,11 @@ flashimport_SymbolLoader.prototype = {
 		case "shape":
 			if(!Lambda.has(this.morphingNotSupported,namePath)) {
 				this.morphingNotSupported.push(namePath);
-				this.log("WARNING: shape morphing tween is not supported (symbol '" + namePath + "').");
+				nanofl.engine.Console.console.warn("Shape morphing tween is not supported (symbol '" + namePath + "').");
 			}
 			return null;
 		default:
-			this.log("WARNING: unknow tween type '" + type + "' (symbol '" + namePath + "').");
+			nanofl.engine.Console.console.warn("Unknow tween type '" + type + "' (symbol '" + namePath + "').");
 			return null;
 		}
 	}
@@ -908,8 +906,11 @@ flashimport_SymbolLoader.prototype = {
 					r.push(group);
 				}
 				break;
+			case "DOMTLFText":
+				nanofl.engine.Console.console.warn("DOMTLFText is not supported. Please, resave original document in Flash Pro CC.");
+				break;
 			default:
-				this.log("WARNING: unknow element node: '" + element.name + "'.");
+				nanofl.engine.Console.console.warn("Unknow element node: '" + element.name + "'.");
 			}
 		}
 		return r;
@@ -1023,7 +1024,7 @@ flashimport_SymbolLoader.prototype = {
 		case "BitmapFill":
 			return { fill : new nanofl.engine.fills.BitmapFill(htmlparser.HtmlParserTools.getAttr(fill,"bitmapPath"),htmlparser.HtmlParserTools.getAttr(fill,"bitmapIsClipped",true)?"no-repeat":"repeat",flashimport_MatrixParser.load(htmlparser.HtmlParserTools.findOne(fill,">matrix>Matrix"),20)), matrix : new nanofl.engine.geom.Matrix()};
 		default:
-			this.log("WARNING: unknow fill type '" + fill.name + "'.");
+			nanofl.engine.Console.console.warn("Unknow fill type '" + fill.name + "'.");
 			return { fill : new nanofl.engine.fills.SolidFill("#FFFFFF"), matrix : new nanofl.engine.geom.Matrix()};
 		}
 	}
@@ -1035,7 +1036,7 @@ flashimport_SymbolLoader.prototype = {
 		case "SolidStroke":
 			return { stroke : new nanofl.engine.strokes.SolidStroke(nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(colorElem,"color","#000000"),htmlparser.HtmlParserTools.getAttr(colorElem,"alpha",1.0)),!isHairline?htmlparser.HtmlParserTools.getAttr(stroke,"weight",1.0):1.0,htmlparser.HtmlParserTools.getAttr(stroke,"caps","round"),htmlparser.HtmlParserTools.getAttr(stroke,"joins","round"),htmlparser.HtmlParserTools.getAttr(stroke,"miterLimit",3.0),isHairline), matrix : new nanofl.engine.geom.Matrix()};
 		default:
-			this.log("WARNING: unknow stroke type '" + stroke.name + "'.");
+			nanofl.engine.Console.console.warn("Unknow stroke type '" + stroke.name + "'.");
 			return { stroke : new nanofl.engine.strokes.SolidStroke("#000000"), matrix : new nanofl.engine.geom.Matrix()};
 		}
 	}
@@ -1060,7 +1061,7 @@ flashimport_SymbolLoader.prototype = {
 		if(!this.fontMap.exists(face)) {
 			var font1 = this.fontConvertor.convert(face);
 			this.fontMap.set(face,font1);
-			this.log("FONT MAP: " + face + " -> " + font1.face + " / " + (font1.style != ""?font1.style:"regular"));
+			nanofl.engine.Console.console.log("FONT MAP: " + face + " -> " + font1.face + " / " + (font1.style != ""?font1.style:"regular"));
 		}
 		var font = this.fontMap.get(face);
 		return nanofl.TextRun.create(StringTools.replace(stdlib_Utf8.htmlUnescape(htmlparser.HtmlParserTools.findOne(textRun,">characters").innerHTML),"\r","\n"),htmlparser.HtmlParserTools.getAttr(textAttrs,"fillColor","#000000"),font.face,font.style,htmlparser.HtmlParserTools.getAttrFloat(textAttrs,"size",12.0),htmlparser.HtmlParserTools.getAttr(textAttrs,"alignment","left"),0,"#000000",htmlparser.HtmlParserTools.getAttrBool(textAttrs,"autoKern",false),htmlparser.HtmlParserTools.getAttrFloat(textAttrs,"letterSpacing",0),htmlparser.HtmlParserTools.getAttrFloat(textAttrs,"lineSpacing",2));
@@ -1118,7 +1119,7 @@ flashimport_SymbolLoader.prototype = {
 			item.linkedClass = htmlparser.HtmlParserTools.getAttr(node,"linkageClassName","");
 			var linkageIdentifier = htmlparser.HtmlParserTools.getAttr(node,"linkageIdentifier","");
 			if(linkageIdentifier != "") {
-				this.log("WARNING: linkage identifier is not supported (symbol '" + item.namePath + "')");
+				nanofl.engine.Console.console.warn("Linkage identifier is not supported (symbol '" + item.namePath + "')");
 				if(item.linkedClass == "") item.linkedClass = linkageIdentifier;
 			}
 		}

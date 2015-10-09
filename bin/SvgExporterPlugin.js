@@ -70,7 +70,7 @@ SvgExporterPlugin.main = function() {
 };
 SvgExporterPlugin.prototype = {
 	exportDocument: function(fileApi,params,srcFilePath,destFilePath,documentProperties,library) {
-		console.log("Plugin.exportDocument " + srcFilePath + " => " + destFilePath);
+		nanofl.engine.Console.console.log("Plugin.exportDocument " + srcFilePath + " => " + destFilePath);
 		var xml = new htmlparser.XmlBuilder();
 		xml.begin("svg").attr("xmlns","http://www.w3.org/2000/svg").attr("width",documentProperties.width).attr("height",documentProperties.height).attr("xmlns:xlink","http://www.w3.org/1999/xlink");
 		new svgexporter_SvgExporter(library)["export"](xml);
@@ -597,7 +597,7 @@ svgexporter_Gradient.fromStroke = function(stroke) {
 	} else if(js_Boot.__instanceof(stroke,nanofl.engine.strokes.RadialStroke)) {
 		var data1 = stroke;
 		return svgexporter_Gradient.createRadial(data1.colors,data1.ratios,data1.cx,data1.cy,data1.r,data1.fx,data1.fy);
-	} else if(js_Boot.__instanceof(stroke,nanofl.engine.strokes.BitmapStroke)) console.log("BitmapStroke is not supported.");
+	} else if(js_Boot.__instanceof(stroke,nanofl.engine.strokes.BitmapStroke)) nanofl.engine.Console.console.warn("BitmapStroke is not supported.");
 	return null;
 };
 svgexporter_Gradient.fromFill = function(fill) {
@@ -607,7 +607,7 @@ svgexporter_Gradient.fromFill = function(fill) {
 	} else if(js_Boot.__instanceof(fill,nanofl.engine.fills.RadialFill)) {
 		var data1 = fill;
 		return svgexporter_Gradient.createRadial(data1.colors,data1.ratios,data1.cx,data1.cy,data1.r,data1.fx,data1.fy);
-	} else if(js_Boot.__instanceof(fill,nanofl.engine.fills.BitmapFill)) console.log("BitmapFill is not supported.");
+	} else if(js_Boot.__instanceof(fill,nanofl.engine.fills.BitmapFill)) nanofl.engine.Console.console.warn("BitmapFill is not supported.");
 	return null;
 };
 svgexporter_Gradient.createLinear = function(colors,ratios,x0,y0,x1,y1) {
@@ -1006,7 +1006,7 @@ svgexporter_SvgExporter.prototype = {
 			}
 		} else if(js_Boot.__instanceof(element,nanofl.engine.elements.ShapeElement)) {
 			if(this.shapePaths.h.__keys__[element.__id__] != null) this.exportExistShapeElement(element,null,xml); else this.shapeExporter["export"](null,element,xml);
-		} else console.log("Unsupported element: " + element.toString());
+		} else nanofl.engine.Console.console.warn("Unsupported element: " + element.toString());
 	}
 	,exportExistShapeElement: function(shape,matrix,xml) {
 		var _g = 0;

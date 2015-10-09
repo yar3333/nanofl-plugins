@@ -1,4 +1,5 @@
 import htmlparser.XmlBuilder;
+import nanofl.engine.Console.console;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
@@ -24,7 +25,7 @@ class SvgExporterPlugin implements IExporterPlugin
 	
 	public function exportDocument(fileApi:FileApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
 	{
-		trace("Plugin.exportDocument " + srcFilePath + " => " + destFilePath);
+		console.log("Plugin.exportDocument " + srcFilePath + " => " + destFilePath);
 		
 		var xml = new XmlBuilder();
 		xml.begin("svg")

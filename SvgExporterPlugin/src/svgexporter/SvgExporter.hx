@@ -1,6 +1,7 @@
 package svgexporter;
 
 import htmlparser.XmlBuilder;
+import nanofl.engine.Console.console;
 import nanofl.engine.elements.Element;
 import nanofl.engine.elements.Elements;
 import nanofl.engine.elements.GroupElement;
@@ -184,7 +185,7 @@ class SvgExporter
 		//}
 		else
 		{
-			trace("Unsupported element: " + element.toString());
+			console.warn("Unsupported element: " + element.toString());
 		}
 	}
 	

@@ -1,6 +1,7 @@
 package svgexporter;
 
 import htmlparser.XmlBuilder;
+import nanofl.engine.Console.console;
 import nanofl.engine.fills.BitmapFill;
 import nanofl.engine.fills.IFill;
 import nanofl.engine.fills.LinearFill;
@@ -82,7 +83,7 @@ class Gradient
 		else
 		if (Std.is(stroke, BitmapStroke))
 		{
-			trace("BitmapStroke is not supported.");
+			console.warn("BitmapStroke is not supported.");
 		}
 		return null;
 	}
@@ -103,7 +104,7 @@ class Gradient
 		else
 		if (Std.is(fill, BitmapFill))
 		{
-			trace("BitmapFill is not supported.");
+			console.warn("BitmapFill is not supported.");
 		}
 		return null;
 	}
