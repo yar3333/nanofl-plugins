@@ -1,9 +1,12 @@
 package svgimport;
 
+import nanofl.engine.ColorTools;
 import nanofl.engine.elements.TextElement;
 import nanofl.engine.Layer;
 import nanofl.engine.Library;
 import nanofl.TextRun;
+import svgimport.gradients.GradientType;
+using StringTools;
 
 class SvgTextExporter extends BaseExporter
 {
@@ -35,20 +38,7 @@ class SvgTextExporter extends BaseExporter
 			case _:							"#000000";
 		};
 		
-		var r = new TextElement(text.name, 0, 0, false, false, [ TextRun.create
-		(
-			text.text,
-			fillColor,
-			text.fontFamily,
-			"",
-			text.fontSize,
-			"left",
-			text.strokeWidth,
-			color,
-			true,
-			text.letterSpacing,
-			0
-		) ]);
+		var r = new TextElement(text.name, 0, 0, false, false, text.spans.map(exportSpan));
 		r.matrix = text.matrix.clone();
 		
 		#if js
@@ -73,5 +63,57 @@ class SvgTextExporter extends BaseExporter
 		#end
 		
 		return r;
+	}
+	
+	function exportSpan(span:SvgTextSpan) : TextRun
+	{
+		return TextRun.create
+		(
+			span.text,
+			fillToColor(span.fill, span.fillAlpha),
+			span.fontFamily,
+			(span.fontWeight + span.fontStyle).trim(),
+			span.fontSize,
+			"left",
+			span.strokeWidth,
+			strokeToColor(span.stroke, span.strokeWidth),
+			span.kerning == 0 && span.letterSpacing == 0,
+			span.kerning + span.letterSpacing,
+			0
+		);
+	}
+	
+	function strokeToColor(strokeType:StrokeType, alpha:Float) : String
+	{
+		switch (strokeType)
+		{
+			case StrokeType.StrokeNone: return "rgba(0,0,0,0)";
+			case StrokeType.StrokeSolid(color): return ColorTools.colorToString(color, alpha);
+			case StrokeType.StrokeGrad(grad): return gradientToColor(grad);
+		}
+		return null;
+	}
+	
+	function fillToColor(fillType:FillType, alpha:Float) : String
+	{
+		switch (fillType)
+		{
+			case FillType.FillNone: return "rgba(0,0,0,0)";
+			case FillType.FillSolid(color): return ColorTools.colorToString(color, alpha);
+			case FillType.FillGrad(grad): return gradientToColor(grad);
+		}
+		return null;
+	}
+	
+	function gradientToColor(grad:GradientType) : String
+	{
+		switch (grad)
+		{
+			case GradientType.LINEAR(grad):
+				return ColorTools.colorToString(grad.colors[0], grad.alphas[0]);
+			case GradientType.RADIAL(grad):
+				return ColorTools.colorToString(grad.colors[0], grad.alphas[0]);
+		}
+		return null;
 	}
 }
