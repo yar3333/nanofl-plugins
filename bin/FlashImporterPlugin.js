@@ -866,11 +866,11 @@ flashimport_SymbolLoader.prototype = {
 		case "shape":
 			if(!Lambda.has(this.morphingNotSupported,namePath)) {
 				this.morphingNotSupported.push(namePath);
-				nanofl.engine.Console.console.warn("Shape morphing tween is not supported (symbol '" + namePath + "').");
+				nanofl.engine.Debug.console.warn("Shape morphing tween is not supported (symbol '" + namePath + "').");
 			}
 			return null;
 		default:
-			nanofl.engine.Console.console.warn("Unknow tween type '" + type + "' (symbol '" + namePath + "').");
+			nanofl.engine.Debug.console.warn("Unknow tween type '" + type + "' (symbol '" + namePath + "').");
 			return null;
 		}
 	}
@@ -907,10 +907,10 @@ flashimport_SymbolLoader.prototype = {
 				}
 				break;
 			case "DOMTLFText":
-				nanofl.engine.Console.console.warn("DOMTLFText is not supported. Please, resave original document in Flash Pro CC.");
+				nanofl.engine.Debug.console.warn("DOMTLFText is not supported. Please, resave original document in Flash Pro CC.");
 				break;
 			default:
-				nanofl.engine.Console.console.warn("Unknow element node: '" + element.name + "'.");
+				nanofl.engine.Debug.console.warn("Unknow element node: '" + element.name + "'.");
 			}
 		}
 		return r;
@@ -1024,7 +1024,7 @@ flashimport_SymbolLoader.prototype = {
 		case "BitmapFill":
 			return { fill : new nanofl.engine.fills.BitmapFill(htmlparser.HtmlParserTools.getAttr(fill,"bitmapPath"),htmlparser.HtmlParserTools.getAttr(fill,"bitmapIsClipped",true)?"no-repeat":"repeat",flashimport_MatrixParser.load(htmlparser.HtmlParserTools.findOne(fill,">matrix>Matrix"),20)), matrix : new nanofl.engine.geom.Matrix()};
 		default:
-			nanofl.engine.Console.console.warn("Unknow fill type '" + fill.name + "'.");
+			nanofl.engine.Debug.console.warn("Unknow fill type '" + fill.name + "'.");
 			return { fill : new nanofl.engine.fills.SolidFill("#FFFFFF"), matrix : new nanofl.engine.geom.Matrix()};
 		}
 	}
@@ -1036,7 +1036,7 @@ flashimport_SymbolLoader.prototype = {
 		case "SolidStroke":
 			return { stroke : new nanofl.engine.strokes.SolidStroke(nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(colorElem,"color","#000000"),htmlparser.HtmlParserTools.getAttr(colorElem,"alpha",1.0)),!isHairline?htmlparser.HtmlParserTools.getAttr(stroke,"weight",1.0):1.0,htmlparser.HtmlParserTools.getAttr(stroke,"caps","round"),htmlparser.HtmlParserTools.getAttr(stroke,"joins","round"),htmlparser.HtmlParserTools.getAttr(stroke,"miterLimit",3.0),isHairline), matrix : new nanofl.engine.geom.Matrix()};
 		default:
-			nanofl.engine.Console.console.warn("Unknow stroke type '" + stroke.name + "'.");
+			nanofl.engine.Debug.console.warn("Unknow stroke type '" + stroke.name + "'.");
 			return { stroke : new nanofl.engine.strokes.SolidStroke("#000000"), matrix : new nanofl.engine.geom.Matrix()};
 		}
 	}
@@ -1061,7 +1061,7 @@ flashimport_SymbolLoader.prototype = {
 		if(!this.fontMap.exists(face)) {
 			var font1 = this.fontConvertor.convert(face);
 			this.fontMap.set(face,font1);
-			nanofl.engine.Console.console.log("FONT MAP: " + face + " -> " + font1.face + " / " + (font1.style != ""?font1.style:"regular"));
+			nanofl.engine.Debug.console.log("FONT MAP: " + face + " -> " + font1.face + " / " + (font1.style != ""?font1.style:"regular"));
 		}
 		var font = this.fontMap.get(face);
 		return nanofl.TextRun.create(StringTools.replace(stdlib_Utf8.htmlUnescape(htmlparser.HtmlParserTools.findOne(textRun,">characters").innerHTML),"\r","\n"),htmlparser.HtmlParserTools.getAttr(textAttrs,"fillColor","#000000"),font.face,font.style,htmlparser.HtmlParserTools.getAttrFloat(textAttrs,"size",12.0),htmlparser.HtmlParserTools.getAttr(textAttrs,"alignment","left"),0,"#000000",htmlparser.HtmlParserTools.getAttrBool(textAttrs,"autoKern",false),htmlparser.HtmlParserTools.getAttrFloat(textAttrs,"letterSpacing",0),htmlparser.HtmlParserTools.getAttrFloat(textAttrs,"lineSpacing",2));
@@ -1119,7 +1119,7 @@ flashimport_SymbolLoader.prototype = {
 			item.linkedClass = htmlparser.HtmlParserTools.getAttr(node,"linkageClassName","");
 			var linkageIdentifier = htmlparser.HtmlParserTools.getAttr(node,"linkageIdentifier","");
 			if(linkageIdentifier != "") {
-				nanofl.engine.Console.console.warn("Linkage identifier is not supported (symbol '" + item.namePath + "')");
+				nanofl.engine.Debug.console.warn("Linkage identifier is not supported (symbol '" + item.namePath + "')");
 				if(item.linkedClass == "") item.linkedClass = linkageIdentifier;
 			}
 		}

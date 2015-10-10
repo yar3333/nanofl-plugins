@@ -1,8 +1,7 @@
 package svgexporter;
 
-import nanofl.engine.ColorTools;
 import htmlparser.XmlBuilder;
-import nanofl.engine.Console.console;
+import nanofl.engine.Debug.console;
 import nanofl.engine.elements.Element;
 import nanofl.engine.elements.Elements;
 import nanofl.engine.elements.GroupElement;

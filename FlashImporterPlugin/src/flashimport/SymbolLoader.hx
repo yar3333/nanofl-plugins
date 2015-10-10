@@ -9,7 +9,7 @@ import nanofl.engine.coloreffects.ColorEffectAlpha;
 import nanofl.engine.coloreffects.ColorEffectBrightness;
 import nanofl.engine.coloreffects.ColorEffectTint;
 import nanofl.engine.ColorTools;
-import nanofl.engine.Console.console;
+import nanofl.engine.Debug.console;
 import nanofl.engine.elements.Element;
 import nanofl.engine.elements.GroupElement;
 import nanofl.engine.elements.Instance;

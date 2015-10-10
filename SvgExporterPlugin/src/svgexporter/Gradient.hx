@@ -1,7 +1,7 @@
 package svgexporter;
 
 import htmlparser.XmlBuilder;
-import nanofl.engine.Console.console;
+import nanofl.engine.Debug.console;
 import nanofl.engine.fills.BitmapFill;
 import nanofl.engine.fills.IFill;
 import nanofl.engine.fills.LinearFill;

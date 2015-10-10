@@ -1,6 +1,6 @@
 import htmlparser.XmlBuilder;
-import nanofl.engine.Console.console;
 import nanofl.engine.CustomProperty;
+import nanofl.engine.Debug.console;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;

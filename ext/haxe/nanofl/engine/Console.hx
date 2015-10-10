@@ -7,5 +7,4 @@ extern class Console
 	function info(v:Dynamic) : Void;
 	function warn(v:Dynamic) : Void;
 	function error(v:Dynamic) : Void;
-	static var console(default, never) : nanofl.engine.Console;
 }

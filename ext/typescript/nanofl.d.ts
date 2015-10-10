@@ -9196,7 +9196,6 @@ declare module nanofl.engine
 		info(v:any) : void;
 		warn(v:any) : void;
 		error(v:any) : void;
-		static console : nanofl.engine.Console;
 	}
 	
 	export class CustomPropertiesTools
@@ -9251,6 +9250,11 @@ declare module nanofl.engine
 		 * List options. Used for list only.
 		 */
 		values : string[];
+	}
+	
+	export class Debug
+	{
+		static console : nanofl.engine.Console;
 	}
 	
 	export class DocumentProperties

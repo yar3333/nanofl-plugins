@@ -1,6 +1,7 @@
 package svgimport;
 
 import nanofl.engine.ColorTools;
+import nanofl.engine.Debug.console;
 import nanofl.engine.elements.TextElement;
 import nanofl.engine.Layer;
 import nanofl.engine.Library;
@@ -65,7 +66,7 @@ class SvgTextExporter extends BaseExporter
 			
 		#else
 			
-			trace("Text-anchor in not supported on sys platform.");
+			console.warn("Text position is not calculable on the server.");
 			
 		#end
 		
