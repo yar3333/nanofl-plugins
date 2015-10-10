@@ -38,7 +38,14 @@ class SvgTextExporter extends BaseExporter
 			case _:							"#000000";
 		};
 		
-		var r = new TextElement(text.name, 0, 0, false, false, text.spans.map(exportSpan));
+		
+		var runs = text.spans.map(exportSpan);
+		if (runs.length > 0)
+		{
+			runs[0].characters = runs[0].characters.ltrim();
+			runs[runs.length - 1].characters = runs[runs.length - 1].characters.rtrim();
+		}
+		var r = new TextElement(text.name, 0, 0, false, false, runs.filter(function(e) return e.characters != ""));
 		r.matrix = text.matrix.clone();
 		
 		#if js
@@ -69,7 +76,7 @@ class SvgTextExporter extends BaseExporter
 	{
 		return TextRun.create
 		(
-			span.text,
+			~/[\r\n\t ]+/g.replace(span.text, " "),
 			fillToColor(span.fill, span.fillAlpha),
 			span.fontFamily,
 			(span.fontWeight + span.fontStyle).trim(),

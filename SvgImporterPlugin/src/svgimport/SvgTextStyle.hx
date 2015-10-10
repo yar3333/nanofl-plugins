@@ -34,7 +34,7 @@ class SvgTextStyle
 		strokeWidth = XmlTools.getFloatStyle(node, "stroke-width", styles, 1);
 		
 		fontFamily = XmlTools.getStyle(node, "font-family", styles, "");
-		fontSize = XmlTools.getFloatStyle(node, "font-size", styles, 12);
+		fontSize = XmlTools.getFloatStyle(node, "font-size", styles, 16);
 		fontStyle = XmlTools.getStyle(node, "font-style", styles, "");
 		fontWeight = XmlTools.getStyle(node, "font-weight", styles, "");
 		

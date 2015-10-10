@@ -1,5 +1,6 @@
 package svgexporter;
 
+import nanofl.engine.ColorTools;
 import htmlparser.XmlBuilder;
 import nanofl.engine.Console.console;
 import nanofl.engine.elements.Element;
@@ -7,6 +8,7 @@ import nanofl.engine.elements.Elements;
 import nanofl.engine.elements.GroupElement;
 import nanofl.engine.elements.Instance;
 import nanofl.engine.elements.ShapeElement;
+import nanofl.engine.elements.TextElement;
 import nanofl.engine.geom.Matrix;
 import nanofl.engine.Layer;
 import nanofl.engine.Library;
@@ -178,15 +180,73 @@ class SvgExporter
 				shapeExporter.export(null, (cast element:ShapeElement), xml);
 			}
 		}
-		//else
-		//if (Std.is(element, TextElement))
-		//{
-		//	var text : TextElement = cast element;
-		//}
+		else
+		if (Std.is(element, TextElement))
+		{
+			exportTextElement((cast element:TextElement), xml);
+		}
 		else
 		{
 			console.warn("Unsupported element: " + element.toString());
 		}
+	}
+	
+	function exportTextElement(text:TextElement, xml:XmlBuilder)
+	{
+		#if !server
+		
+		var tf : nanofl.TextField = text.createDisplayObject(null);
+		tf.update();
+		
+		var y = nanofl.TextField.PADDING;
+		for (line in tf.getTextLines())
+		{
+			xml.begin("text");
+			
+			var m = text.matrix.clone();
+			switch (line.align)
+			{
+				case "left":
+					xml.attr("text-anchor", "start");
+					m.appendTransform(nanofl.TextField.PADDING, 0);
+					
+				case "center":
+					xml.attr("text-anchor", "middle");
+					m.appendTransform(tf.width / 2, 0);
+					
+				case "right":
+					xml.attr("text-anchor", "end");
+					m.appendTransform(tf.width - nanofl.TextField.PADDING, 0);
+			}
+			m.appendTransform(0, y - line.minY);
+			exportMatrix(m, xml);
+			
+			for (chunk in line.chunks)
+			{
+				xml.begin("tspan");
+				xml.attr("fill", chunk.format.fillColor, "#000000");
+				xml.attr("stroke", chunk.format.strokeColor, "rgba(0,0,0,0)");
+				xml.attr("stroke-width", chunk.format.strokeSize, 1);
+				xml.attr("font-family", chunk.format.family, "");
+				xml.attr("font-size", chunk.format.size, 16);
+				xml.attr("font-style", chunk.format.style.indexOf("italic") >= 0 ? "italic" : "", "");
+				xml.attr("font-weight", chunk.format.style.indexOf("bold") >= 0 ? "bold" : "", "");
+				xml.attr("kerning", chunk.format.kerning ? "auto" : "0", "auto");
+				xml.attr("letter-spacing", chunk.format.letterSpacing, 0);
+				xml.content(chunk.format.characters);
+				xml.end();
+			}
+			
+			xml.end();
+			
+			y += line.maxY - line.minY + line.spacing;
+		}
+		
+		#else
+		
+		console.warn("Text is not supported on server.");
+		
+		#end
 	}
 	
 	function exportExistShapeElement(shape:ShapeElement, matrix:Matrix, xml:XmlBuilder)

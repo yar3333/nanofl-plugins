@@ -1006,7 +1006,57 @@ svgexporter_SvgExporter.prototype = {
 			}
 		} else if(js_Boot.__instanceof(element,nanofl.engine.elements.ShapeElement)) {
 			if(this.shapePaths.h.__keys__[element.__id__] != null) this.exportExistShapeElement(element,null,xml); else this.shapeExporter["export"](null,element,xml);
-		} else nanofl.engine.Console.console.warn("Unsupported element: " + element.toString());
+		} else if(js_Boot.__instanceof(element,nanofl.engine.elements.TextElement)) this.exportTextElement(element,xml); else nanofl.engine.Console.console.warn("Unsupported element: " + element.toString());
+	}
+	,exportTextElement: function(text,xml) {
+		var tf = text.createDisplayObject(null);
+		tf.update();
+		var y = nanofl.TextField.PADDING;
+		var _g = 0;
+		var _g1 = tf.getTextLines();
+		while(_g < _g1.length) {
+			var line = _g1[_g];
+			++_g;
+			xml.begin("text");
+			var m = text.matrix.clone();
+			var _g2 = line.align;
+			switch(_g2) {
+			case "left":
+				xml.attr("text-anchor","start");
+				m.appendTransform(nanofl.TextField.PADDING,0);
+				break;
+			case "center":
+				xml.attr("text-anchor","middle");
+				m.appendTransform(tf.width / 2,0);
+				break;
+			case "right":
+				xml.attr("text-anchor","end");
+				m.appendTransform(tf.width - nanofl.TextField.PADDING,0);
+				break;
+			}
+			m.appendTransform(0,y - line.minY);
+			this.exportMatrix(m,xml);
+			var _g21 = 0;
+			var _g3 = line.chunks;
+			while(_g21 < _g3.length) {
+				var chunk = _g3[_g21];
+				++_g21;
+				xml.begin("tspan");
+				xml.attr("fill",chunk.format.fillColor,"#000000");
+				xml.attr("stroke",chunk.format.strokeColor,"rgba(0,0,0,0)");
+				xml.attr("stroke-width",chunk.format.strokeSize,1);
+				xml.attr("font-family",chunk.format.family,"");
+				xml.attr("font-size",chunk.format.size,16);
+				xml.attr("font-style",chunk.format.style.indexOf("italic") >= 0?"italic":"","");
+				xml.attr("font-weight",chunk.format.style.indexOf("bold") >= 0?"bold":"","");
+				xml.attr("kerning",chunk.format.kerning?"auto":"0","auto");
+				xml.attr("letter-spacing",chunk.format.letterSpacing,0);
+				xml.content(chunk.format.characters);
+				xml.end();
+			}
+			xml.end();
+			y += line.maxY - line.minY + line.spacing;
+		}
 	}
 	,exportExistShapeElement: function(shape,matrix,xml) {
 		var _g = 0;

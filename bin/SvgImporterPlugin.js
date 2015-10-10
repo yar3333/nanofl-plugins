@@ -2757,31 +2757,56 @@ svgimport_SvgPathToShapeConvertor.prototype = {
 	}
 	,__class__: svgimport_SvgPathToShapeConvertor
 };
-var svgimport_SvgText = function(node,baseStyles,gradients) {
-	this.matrix = svgimport_Transform.load(node.getAttribute("transform"));
+var svgimport_SvgTextStyle = function(node,baseStyles,gradients) {
 	var styles = svgimport_XmlTools.getStyles(node,baseStyles);
-	this.name = htmlparser.HtmlParserTools.getAttr(node,"id","");
-	var x = svgimport_XmlTools.getFloatValue(node,"x",0);
-	var y = svgimport_XmlTools.getFloatValue(node,"y",0);
-	if(x != 0 || y != 0) this.matrix.appendTransform(x,y);
 	this.fill = svgimport_XmlTools.getFillStyle(node,"fill",styles,gradients);
 	this.fillAlpha = svgimport_XmlTools.getFloatStyle(node,"fill-opacity",styles,1);
 	this.stroke = svgimport_XmlTools.getStrokeStyle(node,"stroke",styles,gradients);
 	this.strokeAlpha = svgimport_XmlTools.getFloatStyle(node,"stroke-opacity",styles,1);
 	this.strokeWidth = svgimport_XmlTools.getFloatStyle(node,"stroke-width",styles,1);
 	this.fontFamily = svgimport_XmlTools.getStyle(node,"font-family",styles,"");
-	this.fontSize = svgimport_XmlTools.getFloatStyle(node,"font-size",styles,12);
+	this.fontSize = svgimport_XmlTools.getFloatStyle(node,"font-size",styles,16);
 	this.fontStyle = svgimport_XmlTools.getStyle(node,"font-style",styles,"");
 	this.fontWeight = svgimport_XmlTools.getStyle(node,"font-weight",styles,"");
 	this.kerning = svgimport_XmlTools.getFloatStyle(node,"kerning",styles,0);
 	this.letterSpacing = svgimport_XmlTools.getFloatStyle(node,"letter-spacing",styles,0);
+};
+svgimport_SvgTextStyle.__name__ = ["svgimport","SvgTextStyle"];
+svgimport_SvgTextStyle.prototype = {
+	__class__: svgimport_SvgTextStyle
+};
+var svgimport_SvgText = function(node,baseStyles,gradients) {
+	this.spans = [];
+	svgimport_SvgTextStyle.call(this,node,baseStyles,gradients);
+	this.matrix = svgimport_Transform.load(node.getAttribute("transform"));
+	var styles = svgimport_XmlTools.getStyles(node,baseStyles);
+	this.name = htmlparser.HtmlParserTools.getAttr(node,"id","");
+	var x = svgimport_XmlTools.getFloatValue(node,"x",0);
+	var y = svgimport_XmlTools.getFloatValue(node,"y",0);
+	if(x != 0 || y != 0) this.matrix.appendTransform(x,y);
 	this.textAnchor = svgimport_XmlTools.getStyle(node,"text-anchor",styles,"left");
-	this.text = node.innerText;
+	this.loadFromChildrenNodes(node,styles,gradients);
 };
 svgimport_SvgText.__name__ = ["svgimport","SvgText"];
-svgimport_SvgText.prototype = {
-	__class__: svgimport_SvgText
-};
+svgimport_SvgText.__super__ = svgimport_SvgTextStyle;
+svgimport_SvgText.prototype = $extend(svgimport_SvgTextStyle.prototype,{
+	loadFromChildrenNodes: function(base,styles,gradients) {
+		var _g = 0;
+		var _g1 = base.nodes;
+		while(_g < _g1.length) {
+			var node = _g1[_g];
+			++_g;
+			if(js_Boot.__instanceof(node,htmlparser.HtmlNodeElement)) {
+				if(node.name == "tspan") this.spans.push(new svgimport_SvgTextSpan(node,styles,gradients)); else this.loadFromChildrenNodes(node,styles,gradients);
+			} else if(js_Boot.__instanceof(node,htmlparser.HtmlNodeText)) {
+				var span = new htmlparser.HtmlNodeElement("tspan",[]);
+				span.addChild(new htmlparser.HtmlNodeText(node.text));
+				this.spans.push(new svgimport_SvgTextSpan(span,styles,gradients));
+			}
+		}
+	}
+	,__class__: svgimport_SvgText
+});
 var svgimport_SvgTextExporter = function(svg,library,text) {
 	svgimport_BaseExporter.call(this,svg,library);
 	this.text = text;
@@ -2803,7 +2828,7 @@ svgimport_SvgTextExporter.prototype = $extend(svgimport_BaseExporter.prototype,{
 				break;
 			case 2:
 				var gradType = _g[2];
-				haxe_Log.trace("Text gradients is not supported.",{ fileName : "SvgTextExporter.hx", lineNumber : 26, className : "svgimport.SvgTextExporter", methodName : "exportAsElement"});
+				haxe_Log.trace("Text gradients is not supported.",{ fileName : "SvgTextExporter.hx", lineNumber : 29, className : "svgimport.SvgTextExporter", methodName : "exportAsElement"});
 				fillColor = "#000000";
 				break;
 			}
@@ -2823,7 +2848,14 @@ svgimport_SvgTextExporter.prototype = $extend(svgimport_BaseExporter.prototype,{
 				color = "#000000";
 			}
 		}
-		var r = new nanofl.engine.elements.TextElement(this.text.name,0,0,false,false,[nanofl.TextRun.create(this.text.text,fillColor,this.text.fontFamily,"",this.text.fontSize,"left",this.text.strokeWidth,color,true,this.text.letterSpacing,0)]);
+		var runs = this.text.spans.map($bind(this,this.exportSpan));
+		if(runs.length > 0) {
+			runs[0].characters = StringTools.ltrim(runs[0].characters);
+			runs[runs.length - 1].characters = StringTools.rtrim(runs[runs.length - 1].characters);
+		}
+		var r = new nanofl.engine.elements.TextElement(this.text.name,0,0,false,false,runs.filter(function(e) {
+			return e.characters != "";
+		}));
 		r.matrix = this.text.matrix.clone();
 		var t = r.createDisplayObject(null);
 		var fontHeight = nanofl.TextField.measureFontHeight(this.text.fontFamily,this.text.fontStyle,this.text.fontSize);
@@ -2842,7 +2874,56 @@ svgimport_SvgTextExporter.prototype = $extend(svgimport_BaseExporter.prototype,{
 		}
 		return r;
 	}
+	,exportSpan: function(span) {
+		return nanofl.TextRun.create(new EReg("[\r\n\t ]+","g").replace(span.text," "),this.fillToColor(span.fill,span.fillAlpha),span.fontFamily,StringTools.trim(span.fontWeight + span.fontStyle),span.fontSize,"left",span.strokeWidth,this.strokeToColor(span.stroke,span.strokeWidth),span.kerning == 0 && span.letterSpacing == 0,span.kerning + span.letterSpacing,0);
+	}
+	,strokeToColor: function(strokeType,alpha) {
+		switch(strokeType[1]) {
+		case 0:
+			return "rgba(0,0,0,0)";
+		case 1:
+			var color = strokeType[2];
+			return nanofl.engine.ColorTools.colorToString(color,alpha);
+		case 2:
+			var grad = strokeType[2];
+			return this.gradientToColor(grad);
+		}
+		return null;
+	}
+	,fillToColor: function(fillType,alpha) {
+		switch(fillType[1]) {
+		case 0:
+			return "rgba(0,0,0,0)";
+		case 1:
+			var color = fillType[2];
+			return nanofl.engine.ColorTools.colorToString(color,alpha);
+		case 2:
+			var grad = fillType[2];
+			return this.gradientToColor(grad);
+		}
+		return null;
+	}
+	,gradientToColor: function(grad) {
+		switch(grad[1]) {
+		case 0:
+			var grad1 = grad[2];
+			return nanofl.engine.ColorTools.colorToString(grad1.colors[0],grad1.alphas[0]);
+		case 1:
+			var grad2 = grad[2];
+			return nanofl.engine.ColorTools.colorToString(grad2.colors[0],grad2.alphas[0]);
+		}
+		return null;
+	}
 	,__class__: svgimport_SvgTextExporter
+});
+var svgimport_SvgTextSpan = function(node,baseStyles,gradients) {
+	svgimport_SvgTextStyle.call(this,node,baseStyles,gradients);
+	this.text = node.innerText;
+};
+svgimport_SvgTextSpan.__name__ = ["svgimport","SvgTextSpan"];
+svgimport_SvgTextSpan.__super__ = svgimport_SvgTextStyle;
+svgimport_SvgTextSpan.prototype = $extend(svgimport_SvgTextStyle.prototype,{
+	__class__: svgimport_SvgTextSpan
 });
 var svgimport_SvgUse = function(svg,node,baseStyles) {
 	svgimport_SvgDisplayObject.call(this,svg,node,baseStyles,this.id);

@@ -1252,6 +1252,7 @@ declare module nanofl
 		resize : stdlib.Event<{ width : number; height : number; }>;
 		change : stdlib.Event<{ }>;
 		text : string;
+		getTextLines() : nanofl.engine.TextLine[];
 		update() : void;
 		draw(ctx:CanvasRenderingContext2D, ignoreCache?:boolean) : boolean;
 		getSelectionFormat() : nanofl.TextRun;
@@ -9592,6 +9593,26 @@ declare module nanofl.engine
 		width : number;
 		x : number;
 		y : number;
+	}
+	
+	type TextChunk =
+	{
+		backgroundColor : string;
+		bounds : createjs.Rectangle;
+		charIndex : number;
+		format : nanofl.TextRun;
+		text : createjs.Text;
+		textSecond : createjs.Text;
+	}
+	
+	type TextLine =
+	{
+		align : string;
+		chunks : nanofl.engine.TextChunk[];
+		maxY : number;
+		minY : number;
+		spacing : number;
+		width : number;
 	}
 	
 	type TweenedElement =
