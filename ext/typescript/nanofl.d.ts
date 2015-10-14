@@ -338,7 +338,7 @@ declare module nanofl.ide
 		copy() : boolean;
 		cut() : boolean;
 		paste() : boolean;
-		restoreFocus(container?:HTMLElement) : void;
+		restoreFocus(e?:MouseEvent) : void;
 	}
 	
 	export class Document

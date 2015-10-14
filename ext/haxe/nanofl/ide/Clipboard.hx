@@ -8,5 +8,5 @@ typedef Clipboard =
 	function copy() : Bool;
 	function cut() : Bool;
 	function paste() : Bool;
-	function restoreFocus(?container:js.html.Element) : Void;
+	function restoreFocus(?e:js.html.MouseEvent) : Void;
 };
