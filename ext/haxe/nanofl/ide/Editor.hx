@@ -4,6 +4,7 @@ extern class Editor
 {
 	var container(default, null) : createjs.Container;
 	var activeLayer(default, never) : nanofl.ide.EditorLayer;
+	var activeShape(default, never) : nanofl.engine.elements.ShapeElement;
 	var figure(default, null) : nanofl.ide.Figure;
 	var magnet : Bool;
 	var shift : Bool;
@@ -24,6 +25,7 @@ extern class Editor
 	function isSelectedAtPos(pos:nanofl.engine.geom.Point) : Bool;
 	function getItemAtPos(pos:nanofl.engine.geom.Point) : nanofl.ide.editorelements.EditorElement;
 	function getObjectAtPos(pos:nanofl.engine.geom.Point) : { var layerIndex : Int; var obj : nanofl.engine.ISelectable; };
+	function getStrokeEdgeOrPolygonAtPos(pos:nanofl.engine.geom.Point) : { var layerIndex : Int; var obj : haxe.extern.EitherType<nanofl.engine.geom.StrokeEdge, nanofl.engine.geom.Polygon>; };
 	function breakApartSelected() : Void;
 	function removeSelected() : Void;
 	function translateSelected(dx:Float, dy:Float, ?lowLevel:Bool) : Void;
@@ -56,9 +58,6 @@ extern class Editor
 	function pasteFromXml(xml:htmlparser.XmlNodeElement) : Bool;
 	function duplicateSelected() : Void;
 	function getObjectsInRectangle(x:Float, y:Float, width:Float, height:Float) : Array<nanofl.engine.ISelectable>;
-	function cutToClipboard() : Void;
-	function copyToClipboard() : Void;
-	function pasteFromClipboard() : Void;
 	function flipSelectedHorizontal() : Void;
 	function flipSelectedVertical() : Void;
 	function getSelectedBounds() : { var height : Float; var width : Float; var x : Float; var y : Float; };

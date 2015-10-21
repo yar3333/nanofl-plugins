@@ -19,6 +19,6 @@ extern class BaseStroke
 	function clone() : nanofl.engine.strokes.IStroke;
 	function equ(e:nanofl.engine.strokes.IStroke) : Bool;
 	function setLibrary(library:nanofl.engine.Library) : Void;
-	function getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.strokes.IStroke;
+	function getTransformed(m:nanofl.engine.geom.Matrix, applyToThickness:Bool) : nanofl.engine.strokes.IStroke;
 	static function load(node:htmlparser.HtmlNodeElement, version:String) : nanofl.engine.strokes.IStroke;
 }

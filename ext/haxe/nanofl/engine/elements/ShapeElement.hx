@@ -39,7 +39,7 @@ extern class ShapeElement extends nanofl.engine.elements.Element
 	function getBounds(?bounds:nanofl.engine.geom.Bounds, ?useStrokeThickness:Bool) : nanofl.engine.geom.Bounds;
 	function getSelectedBounds(?bounds:nanofl.engine.geom.Bounds, ?useStrokeThickness:Bool) : nanofl.engine.geom.Bounds;
 	override function transform(m:nanofl.engine.geom.Matrix, ?applyToStrokeAndFill:Bool) : Void;
-	function transformSelected(m:nanofl.engine.geom.Matrix) : Void;
+	function transformSelected(m:nanofl.engine.geom.Matrix, ?applyToStrokeSize:Bool) : Void;
 	function combine(shape:nanofl.engine.elements.ShapeElement) : Void;
 	function combineSelf() : Bool;
 	function combineSelected() : Void;

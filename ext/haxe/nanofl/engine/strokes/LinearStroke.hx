@@ -15,6 +15,6 @@ extern class LinearStroke extends nanofl.engine.strokes.BaseStroke implements na
 	override function equ(e:nanofl.engine.strokes.IStroke) : Bool;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	function applyAlpha(alpha:Float) : Void;
-	override function getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.strokes.LinearStroke;
+	override function getTransformed(m:nanofl.engine.geom.Matrix, applyToThickness:Bool) : nanofl.engine.strokes.LinearStroke;
 	function toString() : String;
 }

@@ -165,6 +165,9 @@ declare module nanofl.ide.commands
 		importImages() : void;
 		properties() : void;
 		createFolder() : void;
+		cut() : void;
+		copy() : void;
+		paste() : void;
 	}
 	
 	export class TimelineGroup extends nanofl.ide.commands.BaseGroup
@@ -185,6 +188,9 @@ declare module nanofl.ide.commands
 		switchLayerTypeToMasked() : void;
 		switchLayerTypeToGuide() : void;
 		switchLayerTypeToGuided() : void;
+		cut() : void;
+		copy() : void;
+		paste() : void;
 	}
 }
 
@@ -390,6 +396,7 @@ declare module nanofl.ide
 	{
 		container : createjs.Container;
 		activeLayer : nanofl.ide.EditorLayer;
+		activeShape : nanofl.engine.elements.ShapeElement;
 		figure : nanofl.ide.Figure;
 		magnet : boolean;
 		shift : boolean;
@@ -410,6 +417,7 @@ declare module nanofl.ide
 		isSelectedAtPos(pos:nanofl.engine.geom.Point) : boolean;
 		getItemAtPos(pos:nanofl.engine.geom.Point) : nanofl.ide.editorelements.EditorElement;
 		getObjectAtPos(pos:nanofl.engine.geom.Point) : { layerIndex : number; obj : nanofl.engine.ISelectable; };
+		getStrokeEdgeOrPolygonAtPos(pos:nanofl.engine.geom.Point) : { layerIndex : number; obj : haxe.extern.EitherType<nanofl.engine.geom.StrokeEdge, nanofl.engine.geom.Polygon>; };
 		breakApartSelected() : void;
 		removeSelected() : void;
 		translateSelected(dx:number, dy:number, lowLevel?:boolean) : void;
@@ -440,9 +448,6 @@ declare module nanofl.ide
 		pasteFromXml(xml:htmlparser.XmlNodeElement) : boolean;
 		duplicateSelected() : void;
 		getObjectsInRectangle(x:number, y:number, width:number, height:number) : nanofl.engine.ISelectable[];
-		cutToClipboard() : void;
-		copyToClipboard() : void;
-		pasteFromClipboard() : void;
 		flipSelectedHorizontal() : void;
 		flipSelectedVertical() : void;
 		getSelectedBounds() : { height : number; width : number; x : number; y : number; };
@@ -876,7 +881,7 @@ declare module nanofl.engine.elements
 		getBounds(bounds?:nanofl.engine.geom.Bounds, useStrokeThickness?:boolean) : nanofl.engine.geom.Bounds;
 		getSelectedBounds(bounds?:nanofl.engine.geom.Bounds, useStrokeThickness?:boolean) : nanofl.engine.geom.Bounds;
 		transform(m:nanofl.engine.geom.Matrix, applyToStrokeAndFill?:boolean) : void;
-		transformSelected(m:nanofl.engine.geom.Matrix) : void;
+		transformSelected(m:nanofl.engine.geom.Matrix, applyToStrokeSize?:boolean) : void;
 		combine(shape:nanofl.engine.elements.ShapeElement) : void;
 		combineSelf() : boolean;
 		combineSelected() : void;
@@ -8714,7 +8719,7 @@ declare module nanofl.engine.geom
 		selected : boolean;
 		getNearestPointUseStrokeSize(x:number, y:number) : { point : nanofl.engine.geom.Point; t : number; };
 		addTo(edges:nanofl.engine.geom.StrokeEdge[]) : void;
-		transform(m:nanofl.engine.geom.Matrix, applyToStroke?:boolean) : void;
+		transform(m:nanofl.engine.geom.Matrix, applyToStrokeThickness?:boolean) : void;
 		translate(dx:number, dy:number) : void;
 		clone() : nanofl.engine.geom.StrokeEdge;
 		duplicate(e:nanofl.engine.geom.Edge) : nanofl.engine.geom.StrokeEdge;
@@ -8777,7 +8782,7 @@ declare module nanofl.engine.strokes
 		clone() : nanofl.engine.strokes.IStroke;
 		equ(e:nanofl.engine.strokes.IStroke) : boolean;
 		setLibrary(library:nanofl.engine.Library) : void;
-		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.strokes.IStroke;
+		getTransformed(m:nanofl.engine.geom.Matrix, applyToThickness:boolean) : nanofl.engine.strokes.IStroke;
 		static load(node:htmlparser.HtmlNodeElement, version:string) : nanofl.engine.strokes.IStroke;
 	}
 	
@@ -8792,7 +8797,7 @@ declare module nanofl.engine.strokes
 		clone() : nanofl.engine.strokes.IStroke;
 		equ(e:nanofl.engine.strokes.IStroke) : boolean;
 		applyAlpha(alpha:number) : void;
-		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.strokes.IStroke;
+		getTransformed(m:nanofl.engine.geom.Matrix, applyToThickness:boolean) : nanofl.engine.strokes.IStroke;
 		save(out:htmlparser.XmlBuilder) : void;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		setLibrary(library:nanofl.engine.Library) : void;
@@ -8829,7 +8834,7 @@ declare module nanofl.engine.strokes
 		equ(e:nanofl.engine.strokes.IStroke) : boolean;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		applyAlpha(alpha:number) : void;
-		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.strokes.LinearStroke;
+		getTransformed(m:nanofl.engine.geom.Matrix, applyToThickness:boolean) : nanofl.engine.strokes.LinearStroke;
 		toString() : string;
 	}
 	
@@ -8849,7 +8854,7 @@ declare module nanofl.engine.strokes
 		equ(e:nanofl.engine.strokes.IStroke) : boolean;
 		swapInstance(oldNamePath:string, newNamePath:string) : void;
 		applyAlpha(alpha:number) : void;
-		getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.strokes.RadialStroke;
+		getTransformed(m:nanofl.engine.geom.Matrix, applyToThickness:boolean) : nanofl.engine.strokes.RadialStroke;
 		toString() : string;
 	}
 	

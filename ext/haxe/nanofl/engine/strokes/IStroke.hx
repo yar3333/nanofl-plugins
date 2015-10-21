@@ -11,7 +11,7 @@ extern interface IStroke
 	function clone() : nanofl.engine.strokes.IStroke;
 	function equ(e:nanofl.engine.strokes.IStroke) : Bool;
 	function applyAlpha(alpha:Float) : Void;
-	function getTransformed(m:nanofl.engine.geom.Matrix) : nanofl.engine.strokes.IStroke;
+	function getTransformed(m:nanofl.engine.geom.Matrix, applyToThickness:Bool) : nanofl.engine.strokes.IStroke;
 	function save(out:htmlparser.XmlBuilder) : Void;
 	function swapInstance(oldNamePath:String, newNamePath:String) : Void;
 	function setLibrary(library:nanofl.engine.Library) : Void;

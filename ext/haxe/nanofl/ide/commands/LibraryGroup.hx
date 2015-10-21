@@ -22,4 +22,7 @@ extern class LibraryGroup extends nanofl.ide.commands.BaseGroup
 	function importImages() : Void;
 	function properties() : Void;
 	function createFolder() : Void;
+	function cut() : Void;
+	function copy() : Void;
+	function paste() : Void;
 }
