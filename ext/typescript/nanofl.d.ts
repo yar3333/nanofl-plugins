@@ -881,7 +881,7 @@ declare module nanofl.engine.elements
 		getBounds(bounds?:nanofl.engine.geom.Bounds, useStrokeThickness?:boolean) : nanofl.engine.geom.Bounds;
 		getSelectedBounds(bounds?:nanofl.engine.geom.Bounds, useStrokeThickness?:boolean) : nanofl.engine.geom.Bounds;
 		transform(m:nanofl.engine.geom.Matrix, applyToStrokeAndFill?:boolean) : void;
-		transformSelected(m:nanofl.engine.geom.Matrix, applyToStrokeSize?:boolean) : void;
+		transformSelected(m:nanofl.engine.geom.Matrix, applyToStrokeThickness?:boolean) : void;
 		combine(shape:nanofl.engine.elements.ShapeElement) : void;
 		combineSelf() : boolean;
 		combineSelected() : void;
