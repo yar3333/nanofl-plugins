@@ -55,7 +55,7 @@ extern class Editor
 	function moveSelectedBack() : Void;
 	function swapInstance(instance:nanofl.engine.elements.Instance, newNamePath:String) : Void;
 	function saveSelectedToXml(out:htmlparser.XmlBuilder) : Array<nanofl.engine.libraryitems.LibraryItem>;
-	function pasteFromXml(xml:htmlparser.XmlNodeElement) : Bool;
+	function pasteFromXml(xml:htmlparser.XmlNodeElement, ?selectPasted:Bool) : Bool;
 	function duplicateSelected() : Void;
 	function getObjectsInRectangle(x:Float, y:Float, width:Float, height:Float) : Array<nanofl.engine.ISelectable>;
 	function flipSelectedHorizontal() : Void;

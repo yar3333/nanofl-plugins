@@ -445,7 +445,7 @@ declare module nanofl.ide
 		moveSelectedBack() : void;
 		swapInstance(instance:nanofl.engine.elements.Instance, newNamePath:string) : void;
 		saveSelectedToXml(out:htmlparser.XmlBuilder) : nanofl.engine.libraryitems.LibraryItem[];
-		pasteFromXml(xml:htmlparser.XmlNodeElement) : boolean;
+		pasteFromXml(xml:htmlparser.XmlNodeElement, selectPasted?:boolean) : boolean;
 		duplicateSelected() : void;
 		getObjectsInRectangle(x:number, y:number, width:number, height:number) : nanofl.engine.ISelectable[];
 		flipSelectedHorizontal() : void;
@@ -1661,7 +1661,6 @@ declare module nanofl.engine.libraryitems
 		clone() : nanofl.engine.libraryitems.LibraryItem;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		save(fileApi:nanofl.engine.FileApi) : void;
-		hasXmlToSave() : boolean;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		getFilePathToRunWithEditor() : string;
 		getLibraryFilePaths() : string[];
@@ -1676,7 +1675,6 @@ declare module nanofl.engine.libraryitems
 	export class InstancableItem extends nanofl.engine.libraryitems.LibraryItem
 	{
 		linkedClass : string;
-		hasXmlToSave() : boolean;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		newInstance() : nanofl.engine.elements.Instance;
 		getDisplayObjectClassName() : string;
@@ -1695,7 +1693,6 @@ declare module nanofl.engine.libraryitems
 		clone() : nanofl.engine.libraryitems.BitmapItem;
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;
-		hasXmlToSave() : boolean;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		getUrl() : string;
@@ -1718,7 +1715,6 @@ declare module nanofl.engine.libraryitems
 		opened : boolean;
 		clone() : nanofl.engine.libraryitems.FolderItem;
 		save(fileApi:nanofl.engine.FileApi) : void;
-		hasXmlToSave() : boolean;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		getIcon() : string;
 		toString() : string;
@@ -1735,7 +1731,6 @@ declare module nanofl.engine.libraryitems
 		clone() : nanofl.engine.libraryitems.FontItem;
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;
-		hasXmlToSave() : boolean;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		toFont() : nanofl.engine.Font;
 		preload(ready:() => void) : void;
@@ -1768,7 +1763,6 @@ declare module nanofl.engine.libraryitems
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
-		hasXmlToSave() : boolean;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		getTotalFrames() : number;
 		getTimelineState() : nanofl.ide.undo.states.TimelineState;
@@ -1793,7 +1787,6 @@ declare module nanofl.engine.libraryitems
 		clone() : nanofl.engine.libraryitems.SoundItem;
 		getIcon() : string;
 		save(fileApi:nanofl.engine.FileApi) : void;
-		hasXmlToSave() : boolean;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		getUrl() : string;
@@ -1815,7 +1808,6 @@ declare module nanofl.engine.libraryitems
 		clone() : nanofl.engine.libraryitems.SpriteItem;
 		getIcon() : string;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
-		hasXmlToSave() : boolean;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		preload(ready:() => void) : void;
 		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
@@ -1823,6 +1815,7 @@ declare module nanofl.engine.libraryitems
 		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 		getDisplayObjectClassName() : string;
 		toString() : string;
+		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.SpriteItem;
 	}
 }
 

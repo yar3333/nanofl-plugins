@@ -3,7 +3,6 @@ package nanofl.engine.libraryitems;
 extern class InstancableItem extends nanofl.engine.libraryitems.LibraryItem
 {
 	var linkedClass : String;
-	override function hasXmlToSave() : Bool;
 	override function loadProperties(xml:htmlparser.HtmlNodeElement) : Void;
 	function newInstance() : nanofl.engine.elements.Instance;
 	function getDisplayObjectClassName() : String;
