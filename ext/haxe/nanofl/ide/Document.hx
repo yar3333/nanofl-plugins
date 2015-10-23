@@ -39,7 +39,7 @@ extern class Document
 	function resize(width:Int, height:Int) : Void;
 	function canBeSaved() : Bool;
 	function dispose() : Void;
-	static function createTemporary(app:nanofl.ide.Application) : nanofl.ide.Document;
+	static function createTemporary(app:nanofl.ide.Application, ?properties:nanofl.engine.DocumentProperties) : nanofl.ide.Document;
 	static function load(app:nanofl.ide.Application, path:String, callb:nanofl.ide.Document -> Void) : Void;
 	static function import_(app:nanofl.ide.Application, path:String, ?importer:nanofl.ide.Importer, ?callb:nanofl.ide.Document -> Void) : Void;
 	static function disposeAll() : Void;

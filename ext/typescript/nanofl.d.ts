@@ -386,7 +386,7 @@ declare module nanofl.ide
 		resize(width:number, height:number) : void;
 		canBeSaved() : boolean;
 		dispose() : void;
-		static createTemporary(app:nanofl.ide.Application) : nanofl.ide.Document;
+		static createTemporary(app:nanofl.ide.Application, properties?:nanofl.engine.DocumentProperties) : nanofl.ide.Document;
 		static load(app:nanofl.ide.Application, path:string, callb:(arg:nanofl.ide.Document) => void) : void;
 		static import_(app:nanofl.ide.Application, path:string, importer?:nanofl.ide.Importer, callb?:(arg:nanofl.ide.Document) => void) : void;
 		static disposeAll() : void;
@@ -9271,6 +9271,7 @@ declare module nanofl.engine
 		save(fileApi:nanofl.engine.FileApi, filePath:string) : void;
 		getGeneratorAsString() : string;
 		equ(p:nanofl.engine.DocumentProperties) : boolean;
+		clone() : nanofl.engine.DocumentProperties;
 		static load(filePath:string, fileApi:nanofl.engine.FileApi) : nanofl.engine.DocumentProperties;
 		static parseGenerator(s:string) : { name : string; params : any; };
 		static newTextureAtlasParams() : nanofl.ide.textureatlas.TextureAtlasParams;
