@@ -4,7 +4,7 @@ extern class EditorLibrary
 {
 	function new(app:nanofl.ide.Application, library:nanofl.engine.Library, document:nanofl.ide.Document) : Void;
 	var libraryDir(default, never) : String;
-	var activeItem(default, never) : nanofl.engine.libraryitems.LibraryItem;
+	var activeItem : nanofl.engine.libraryitems.LibraryItem;
 	function addItems(items:Array<nanofl.engine.libraryitems.LibraryItem>, ?addUndoTransaction:Bool) : Void;
 	function canRenameItem(oldNamePath:String, newNamePath:String) : Bool;
 	function renameItems(itemRenames:Array<{ var oldNamePath : String; var newNamePath : String; }>) : Void;

@@ -37,7 +37,7 @@ extern class Editor
 	function getObjectLayerIndex(obj:nanofl.engine.ISelectable) : Int;
 	function extractSelected() : Array<nanofl.engine.elements.Element>;
 	function isItemCanBeAdded(item:nanofl.engine.libraryitems.LibraryItem) : Bool;
-	function addElement(element:nanofl.engine.elements.Element) : nanofl.ide.editorelements.EditorElement;
+	function addElement(element:nanofl.engine.elements.Element, ?addUndoTransaction:Bool) : nanofl.ide.editorelements.EditorElement;
 	function convertToSymbol() : Void;
 	function groupSelected() : Void;
 	function translateVertex(point:nanofl.engine.geom.Point, dx:Float, dy:Float, ?addUndoTransaction:Bool) : Void;

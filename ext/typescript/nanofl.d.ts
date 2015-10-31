@@ -427,7 +427,7 @@ declare module nanofl.ide
 		getObjectLayerIndex(obj:nanofl.engine.ISelectable) : number;
 		extractSelected() : nanofl.engine.elements.Element[];
 		isItemCanBeAdded(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
-		addElement(element:nanofl.engine.elements.Element) : nanofl.ide.editorelements.EditorElement;
+		addElement(element:nanofl.engine.elements.Element, addUndoTransaction?:boolean) : nanofl.ide.editorelements.EditorElement;
 		convertToSymbol() : void;
 		groupSelected() : void;
 		translateVertex(point:nanofl.engine.geom.Point, dx:number, dy:number, addUndoTransaction?:boolean) : void;
