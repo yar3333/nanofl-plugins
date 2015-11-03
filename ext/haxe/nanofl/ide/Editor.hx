@@ -25,7 +25,6 @@ extern class Editor
 	function isSelectedAtPos(pos:nanofl.engine.geom.Point) : Bool;
 	function getItemAtPos(pos:nanofl.engine.geom.Point) : nanofl.ide.editorelements.EditorElement;
 	function getObjectAtPos(pos:nanofl.engine.geom.Point) : { var layerIndex : Int; var obj : nanofl.engine.ISelectable; };
-	function getStrokeEdgeOrPolygonAtPos(pos:nanofl.engine.geom.Point) : { var layerIndex : Int; var obj : haxe.extern.EitherType<nanofl.engine.geom.StrokeEdge, nanofl.engine.geom.Polygon>; };
 	function breakApartSelected() : Void;
 	function removeSelected() : Void;
 	function translateSelected(dx:Float, dy:Float, ?lowLevel:Bool) : Void;
@@ -62,4 +61,5 @@ extern class Editor
 	function flipSelectedVertical() : Void;
 	function getSelectedBounds() : { var height : Float; var width : Float; var x : Float; var y : Float; };
 	function getHitTestGap() : Float;
+	function getEditableLayers() : Array<nanofl.ide.EditorLayer>;
 }

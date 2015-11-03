@@ -41,4 +41,10 @@ extern class EditorLayer
 	function getElementsState() : { var elements : Array<nanofl.engine.elements.Element>; };
 	function duplicateSelected() : Void;
 	function isShowSelection() : Bool;
+	function getVertexAtPos(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
+	function getEdgeAtPos(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Edge;
+	function getStrokeEdgeAtPos(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.StrokeEdge;
+	function getPolygonEdgeAtPos(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Edge;
+	function getPolygonAtPos(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Polygon;
+	function getObjectAtPos(pos:nanofl.engine.geom.Point) : nanofl.engine.ISelectable;
 }

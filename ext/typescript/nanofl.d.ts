@@ -417,7 +417,6 @@ declare module nanofl.ide
 		isSelectedAtPos(pos:nanofl.engine.geom.Point) : boolean;
 		getItemAtPos(pos:nanofl.engine.geom.Point) : nanofl.ide.editorelements.EditorElement;
 		getObjectAtPos(pos:nanofl.engine.geom.Point) : { layerIndex : number; obj : nanofl.engine.ISelectable; };
-		getStrokeEdgeOrPolygonAtPos(pos:nanofl.engine.geom.Point) : { layerIndex : number; obj : haxe.extern.EitherType<nanofl.engine.geom.StrokeEdge, nanofl.engine.geom.Polygon>; };
 		breakApartSelected() : void;
 		removeSelected() : void;
 		translateSelected(dx:number, dy:number, lowLevel?:boolean) : void;
@@ -452,6 +451,7 @@ declare module nanofl.ide
 		flipSelectedVertical() : void;
 		getSelectedBounds() : { height : number; width : number; x : number; y : number; };
 		getHitTestGap() : number;
+		getEditableLayers() : nanofl.ide.EditorLayer[];
 	}
 	
 	export class EditorLayer
@@ -492,6 +492,12 @@ declare module nanofl.ide
 		getElementsState() : { elements : nanofl.engine.elements.Element[]; };
 		duplicateSelected() : void;
 		isShowSelection() : boolean;
+		getVertexAtPos(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
+		getEdgeAtPos(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Edge;
+		getStrokeEdgeAtPos(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.StrokeEdge;
+		getPolygonEdgeAtPos(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Edge;
+		getPolygonAtPos(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Polygon;
+		getObjectAtPos(pos:nanofl.engine.geom.Point) : nanofl.engine.ISelectable;
 	}
 	
 	export class EditorLibrary
@@ -553,12 +559,8 @@ declare module nanofl.ide
 	export class Figure
 	{
 		constructor(editor:nanofl.ide.Editor, layers:nanofl.ide.EditorLayer[]);
-		getVertexAtPos(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 		getSameEdgeWithLayers(edge:nanofl.engine.geom.Edge) : { layerIndex : number; edge : nanofl.engine.geom.Edge; }[];
-		getEdgeAtPos(pt:nanofl.engine.geom.Point, zoomLevel:number) : { dist : number; edge : nanofl.engine.geom.Edge; layerIndex : number; t : number; };
-		getStrokeEdgeAtPos(pt:nanofl.engine.geom.Point, zoomLevel:number) : { dist : number; edge : nanofl.engine.geom.StrokeEdge; layerIndex : number; t : number; };
-		getPolygonEdgeAtPos(pt:nanofl.engine.geom.Point) : { dist : number; edge : nanofl.engine.geom.Edge; layerIndex : number; t : number; };
-		getPolygonAtPos(pt:nanofl.engine.geom.Point) : { layerIndex : number; polygon : nanofl.engine.geom.Polygon; };
+		getEdgeAtPos(pos:nanofl.engine.geom.Point) : { edge : nanofl.engine.geom.Edge; layerIndex : number; };
 		translateVertex(point:nanofl.engine.geom.Point, dx:number, dy:number) : void;
 		hasSelected() : boolean;
 		hasSelectedEdges() : boolean;
@@ -584,6 +586,7 @@ declare module nanofl.ide
 		getMagnetPointEx(x:number, y:number, excludeSelf?:boolean) : { found : boolean; point : nanofl.engine.geom.Point; };
 		splitEdge(edge:nanofl.engine.geom.Edge, t:number) : nanofl.engine.geom.Point;
 		getSelectedStrokeEdges() : nanofl.engine.geom.StrokeEdge[];
+		getStrokeEdgeOrPolygonAtPos(pos:nanofl.engine.geom.Point) : { layerIndex : number; obj : haxe.extern.EitherType<nanofl.engine.geom.StrokeEdge, nanofl.engine.geom.Polygon>; };
 	}
 	
 	export enum FigureElement

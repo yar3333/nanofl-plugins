@@ -3,12 +3,8 @@ package nanofl.ide;
 extern class Figure
 {
 	function new(editor:nanofl.ide.Editor, layers:Array<nanofl.ide.EditorLayer>) : Void;
-	function getVertexAtPos(pt:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 	function getSameEdgeWithLayers(edge:nanofl.engine.geom.Edge) : Array<{ var layerIndex : Int; var edge : nanofl.engine.geom.Edge; }>;
-	function getEdgeAtPos(pt:nanofl.engine.geom.Point, zoomLevel:Float) : { var dist : Float; var edge : nanofl.engine.geom.Edge; var layerIndex : Int; var t : Float; };
-	function getStrokeEdgeAtPos(pt:nanofl.engine.geom.Point, zoomLevel:Float) : { var dist : Float; var edge : nanofl.engine.geom.StrokeEdge; var layerIndex : Int; var t : Float; };
-	function getPolygonEdgeAtPos(pt:nanofl.engine.geom.Point) : { var dist : Float; var edge : nanofl.engine.geom.Edge; var layerIndex : Int; var t : Float; };
-	function getPolygonAtPos(pt:nanofl.engine.geom.Point) : { var layerIndex : Int; var polygon : nanofl.engine.geom.Polygon; };
+	function getEdgeAtPos(pos:nanofl.engine.geom.Point) : { var edge : nanofl.engine.geom.Edge; var layerIndex : Int; };
 	function translateVertex(point:nanofl.engine.geom.Point, dx:Float, dy:Float) : Void;
 	function hasSelected() : Bool;
 	function hasSelectedEdges() : Bool;
@@ -34,4 +30,5 @@ extern class Figure
 	function getMagnetPointEx(x:Float, y:Float, ?excludeSelf:Bool) : { var found : Bool; var point : nanofl.engine.geom.Point; };
 	function splitEdge(edge:nanofl.engine.geom.Edge, t:Float) : nanofl.engine.geom.Point;
 	function getSelectedStrokeEdges() : Array<nanofl.engine.geom.StrokeEdge>;
+	function getStrokeEdgeOrPolygonAtPos(pos:nanofl.engine.geom.Point) : { var layerIndex : Int; var obj : haxe.extern.EitherType<nanofl.engine.geom.StrokeEdge, nanofl.engine.geom.Polygon>; };
 }
