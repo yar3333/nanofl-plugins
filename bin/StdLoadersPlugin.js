@@ -20,7 +20,12 @@ BitmapLoaderPlugin.prototype = {
 			var file = $it0.next();
 			if(file.excluded) continue;
 			var ext = haxe_io_Path.extension(file.path);
-			if(HxOverrides.indexOf(BitmapLoaderPlugin.extensions,ext,0) >= 0) {
+			if(ext != null && (function($this) {
+				var $r;
+				var x = ext.toLowerCase();
+				$r = HxOverrides.indexOf(BitmapLoaderPlugin.extensions,x,0);
+				return $r;
+			}(this)) >= 0) {
 				var namePath = [haxe_io_Path.withoutExtension(file.path)];
 				if(!Lambda.exists(r,(function(namePath) {
 					return function(item) {
@@ -192,7 +197,12 @@ SoundLoaderPlugin.prototype = {
 			var file = $it0.next();
 			if(file.excluded) continue;
 			var ext = haxe_io_Path.extension(file.path);
-			if(HxOverrides.indexOf(SoundLoaderPlugin.extensions,ext,0) >= 0) {
+			if(ext != null && (function($this) {
+				var $r;
+				var x = ext.toLowerCase();
+				$r = HxOverrides.indexOf(SoundLoaderPlugin.extensions,x,0);
+				return $r;
+			}(this)) >= 0) {
 				var namePath = [haxe_io_Path.withoutExtension(file.path)];
 				if(!Lambda.exists(r,(function(namePath) {
 					return function(item) {

@@ -4,6 +4,7 @@ import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.engine.MapRO;
 import nanofl.ide.CachedFile;
 import nanofl.ide.plugins.ILoaderPlugin;
+using StringTools;
 using Lambda;
 
 class BitmapLoaderPlugin implements ILoaderPlugin
@@ -24,7 +25,7 @@ class BitmapLoaderPlugin implements ILoaderPlugin
 			if (file.excluded) continue;
 			
 			var ext = Path.extension(file.path);
-			if (extensions.indexOf(ext) >= 0)
+			if (ext != null && extensions.indexOf(ext.toLowerCase()) >= 0)
 			{
 				var namePath = Path.withoutExtension(file.path);
 				if (!r.exists(function(item) return item.namePath == namePath))

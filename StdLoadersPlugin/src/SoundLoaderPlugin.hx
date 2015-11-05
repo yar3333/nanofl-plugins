@@ -24,7 +24,7 @@ class SoundLoaderPlugin implements ILoaderPlugin
 			if (file.excluded) continue;
 			
 			var ext = Path.extension(file.path);
-			if (extensions.indexOf(ext) >= 0)
+			if (ext != null && extensions.indexOf(ext.toLowerCase()) >= 0)
 			{
 				var namePath = Path.withoutExtension(file.path);
 				if (!r.exists(function(item) return item.namePath == namePath))
