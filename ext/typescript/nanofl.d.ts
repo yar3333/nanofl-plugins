@@ -191,6 +191,7 @@ declare module nanofl.ide.commands
 		cut() : void;
 		copy() : void;
 		paste() : void;
+		renameLayer() : void;
 	}
 }
 

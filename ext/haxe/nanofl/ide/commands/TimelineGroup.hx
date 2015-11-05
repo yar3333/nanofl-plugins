@@ -21,4 +21,5 @@ extern class TimelineGroup extends nanofl.ide.commands.BaseGroup
 	function cut() : Void;
 	function copy() : Void;
 	function paste() : Void;
+	function renameLayer() : Void;
 }
