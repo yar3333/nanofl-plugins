@@ -1263,10 +1263,10 @@ declare module nanofl
 		getTextLines() : nanofl.engine.TextLine[];
 		update() : void;
 		draw(ctx:CanvasRenderingContext2D, ignoreCache?:boolean) : boolean;
+		clone(recursive?:boolean) : nanofl.TextField;
 		getSelectionFormat() : nanofl.TextRun;
 		setSelectionFormat(format:nanofl.TextRun) : void;
 		dispose() : void;
-		clone(recursive?:boolean) : nanofl.TextField;
 		static PADDING : number;
 		static measureFontHeight(family:string, style:string, size:number) : number;
 		static measureFontBaselineCoef(family:string, style:string) : number;
