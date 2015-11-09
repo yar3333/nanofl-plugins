@@ -417,7 +417,7 @@ declare module nanofl.ide
 		selectLayers(layerIndexes:number[]) : void;
 		isSelectedAtPos(pos:nanofl.engine.geom.Point) : boolean;
 		getItemAtPos(pos:nanofl.engine.geom.Point) : nanofl.ide.editorelements.EditorElement;
-		getObjectAtPos(pos:nanofl.engine.geom.Point) : { layerIndex : number; obj : nanofl.engine.ISelectable; };
+		getObjectAtPosEx(pos:nanofl.engine.geom.Point) : { layerIndex : number; obj : nanofl.engine.ISelectable; };
 		breakApartSelected() : void;
 		removeSelected() : void;
 		translateSelected(dx:number, dy:number, lowLevel?:boolean) : void;
