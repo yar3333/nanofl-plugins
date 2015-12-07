@@ -4,7 +4,7 @@ class MsVisualStudio2013Generator extends BaseIdeGenerator
 {
 	override public function generate(language:String, dir:String, name:String)
 	{
-		trace("MsVisualStudio2013Generator language = " + language+"; dir = " + dir + "; name = " + name);
+		trace("MsVisualStudio2013Generator language = " + language + "; dir = " + dir + "; name = " + name);
 		
 		var guid = newGuid();
 		for (ext in [".sln", ".csproj"])

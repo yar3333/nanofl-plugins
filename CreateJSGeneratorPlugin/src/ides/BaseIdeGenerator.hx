@@ -1,9 +1,6 @@
 package ides;
 
-import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
-import nanofl.engine.Library;
-import nanofl.ide.textureatlas.TextureAtlas;
 
 class BaseIdeGenerator
 {
