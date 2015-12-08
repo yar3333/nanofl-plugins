@@ -22,7 +22,7 @@ extern interface IGeneratorPlugin
 	 */
 	function generate(fileApi:nanofl.engine.FileApi, params:Dynamic, filePath:String, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<String, nanofl.ide.textureatlas.TextureAtlas>) : Void;
 	/**
-	 * called to "run" saved document. Must return error message or null if no errors.
+	 * Called to "run" saved document. Must return error message or null if no errors.
 	 * Use this method if you need direct access to file system and OS.
 	 * @param	serverApi	Use this object to open URLs in embedded web server.
 	 * @param	fileApi		Use this object to work with file system.
@@ -30,4 +30,15 @@ extern interface IGeneratorPlugin
 	 * @param	filePath	Path to `*.nfl` file.
 	 */
 	function test(serverApi:nanofl.ide.ServerApi, fileApi:nanofl.engine.FileApi, params:Dynamic, filePath:String) : String;
+	/**
+	 *
+	 * @param	fileApi				Use this object to work with file system.
+	 * @param	params				Custom parameters specified by user (produced from `properties`).
+	 * @param	filePath			Path to `*.nfl` file.
+	 * @param	documentProperties	Properties of the document.
+	 * @param	library				Document's library.
+	 * @param	textureAtlases		Generated texture atlases.
+	 * @return	Paths to files to publish.
+	 */
+	function getFilesToPublish(fileApi:nanofl.engine.FileApi, params:Dynamic, filePath:String, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<String, nanofl.ide.textureatlas.TextureAtlas>) : Array<String>;
 }

@@ -2154,6 +2154,9 @@ stdlib_Std.min = function(a,b) {
 stdlib_Std.max = function(a,b) {
 	if(a > b) return a; else return b;
 };
+stdlib_Std.abs = function(x) {
+	if(x >= 0) return x; else return -x;
+};
 stdlib_Std.sign = function(n) {
 	if(n > 0) return 1; else if(n < 0) return -1; else return 0;
 };

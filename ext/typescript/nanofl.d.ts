@@ -91,6 +91,8 @@ declare module nanofl.ide.commands
 		import_(pluginName:string) : void;
 		export(pluginName:string) : void;
 		test() : void;
+		publishSettings() : void;
+		publish() : void;
 		undo() : void;
 		redo() : void;
 		cut() : void;
@@ -368,6 +370,7 @@ declare module nanofl.ide
 		path : string;
 		properties : nanofl.engine.DocumentProperties;
 		library : nanofl.ide.EditorLibrary;
+		publishSettings : Map<string, any>;
 		lastModified : Date;
 		navigator : nanofl.ide.Navigator;
 		editor : nanofl.ide.Editor;
@@ -384,8 +387,10 @@ declare module nanofl.ide
 		reload(callb:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
 		reloadWoTransactionForced(callb:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
 		test() : void;
+		publish(callb?:(arg:boolean) => void) : void;
 		resize(width:number, height:number) : void;
 		canBeSaved() : boolean;
+		canBePublished() : boolean;
 		dispose() : void;
 		static createTemporary(app:nanofl.ide.Application, properties?:nanofl.engine.DocumentProperties) : nanofl.ide.Document;
 		static load(app:nanofl.ide.Application, path:string, callb:(arg:nanofl.ide.Document) => void) : void;
@@ -687,6 +692,7 @@ declare module nanofl.ide
 	{
 		static loadDocument(fileApi:nanofl.engine.FileApi, path:string, lastModified:Date) : { lastModified : Date; library : nanofl.engine.Library; properties : nanofl.engine.DocumentProperties; };
 		static saveDocument(fileApi:nanofl.engine.FileApi, path:string, properties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>, fileActions:nanofl.ide.FileAction[]) : { generatorError : string; lastModified : Date; };
+		static publishDocument(fileApi:nanofl.engine.FileApi, path:string, properties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>, publishSettings:Map<string, any>) : boolean;
 		static copyLibraryFiles(fileApi:nanofl.engine.FileApi, srcLibraryDir:string, relativePaths:string[], destLibraryDir:string) : void;
 		static renameFiles(fileApi:nanofl.engine.FileApi, files:{ src : string; dest : string; }[]) : void;
 		static remove(fileApi:nanofl.engine.FileApi, paths:string[]) : void;
@@ -8681,6 +8687,10 @@ declare module nanofl.engine.geom
 		static fromRawContours(originalContours:nanofl.engine.geom.Contour[], fill:nanofl.engine.fills.IFill, fillEvenOdd:boolean) : nanofl.engine.geom.Polygon[];
 		static assertCorrect(polygons:nanofl.engine.geom.Polygon[], intergrityChecks:boolean, message?:any) : void;
 		static removeErased(polygons:nanofl.engine.geom.Polygon[]) : void;
+		/**
+		 * Compare with fill testing.
+		 */
+		static equ(a:nanofl.engine.geom.Polygon[], b:nanofl.engine.geom.Polygon[]) : boolean;
 	}
 	
 	export class StraightLine
@@ -8734,6 +8744,10 @@ declare module nanofl.engine.geom
 		static drawSorted(edges:nanofl.engine.geom.StrokeEdge[], g:nanofl.engine.Render, scaleSelection:number) : void;
 		static fromEdges(edges:nanofl.engine.geom.Edge[], stroke:nanofl.engine.strokes.IStroke, selected?:boolean) : nanofl.engine.geom.StrokeEdge[];
 		static replace(edges:nanofl.engine.geom.StrokeEdge[], search:nanofl.engine.geom.Edge, replacement:nanofl.engine.geom.Edge[]) : void;
+		/**
+		 * Compare with stroke testing.
+		 */
+		static equ(a:nanofl.engine.geom.StrokeEdge[], b:nanofl.engine.geom.StrokeEdge[]) : boolean;
 	}
 }
 
@@ -8899,6 +8913,13 @@ declare module nanofl.engine.strokes
 
 declare module nanofl.ide.plugins
 {
+	type CustomizablePlugin =
+	{
+		menuItemIcon : string;
+		name : string;
+		properties : nanofl.engine.CustomProperty[];
+	}
+	
 	export interface IExporterPlugin
 	{
 		/**
@@ -8960,7 +8981,7 @@ declare module nanofl.ide.plugins
 		 */
 		generate(fileApi:nanofl.engine.FileApi, params:any, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : void;
 		/**
-		 * called to "run" saved document. Must return error message or null if no errors.
+		 * Called to "run" saved document. Must return error message or null if no errors.
 		 * Use this method if you need direct access to file system and OS.
 		 * @param	serverApi	Use this object to open URLs in embedded web server.
 		 * @param	fileApi		Use this object to work with file system.
@@ -8968,6 +8989,17 @@ declare module nanofl.ide.plugins
 		 * @param	filePath	Path to `*.nfl` file.
 		 */
 		test(serverApi:nanofl.ide.ServerApi, fileApi:nanofl.engine.FileApi, params:any, filePath:string) : string;
+		/**
+		 *
+		 * @param	fileApi				Use this object to work with file system.
+		 * @param	params				Custom parameters specified by user (produced from `properties`).
+		 * @param	filePath			Path to `*.nfl` file.
+		 * @param	documentProperties	Properties of the document.
+		 * @param	library				Document's library.
+		 * @param	textureAtlases		Generated texture atlases.
+		 * @return	Paths to files to publish.
+		 */
+		getFilesToPublish(fileApi:nanofl.engine.FileApi, params:any, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : string[];
 	}
 	
 	export interface IImporterPlugin
@@ -9027,6 +9059,41 @@ declare module nanofl.ide.plugins
 		 * Use file.exclude() for processed files (to prevent loading them from other loaders).
 		 */
 		load(files:nanofl.engine.MapRO<string, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.LibraryItem[];
+	}
+	
+	export interface IPublisherPlugin
+	{
+		/**
+		 * Internal name (for example: "IntelXDEPublisher", "ApacheCordovaPublisher").
+		 */
+		name : string;
+		/**
+		 * Human name ("Intel XDE", "Apache Cordova").
+		 */
+		menuItemName : string;
+		/**
+		 * Css class or image url in "url(pathToImage)" format.
+		 */
+		menuItemIcon : string;
+		/**
+		 * Like "Destination folder".
+		 */
+		fileFilterDescription : string;
+		/**
+		 * Like [ "fla", "xfl" ].
+		 */
+		fileFilterExtensions : string[];
+		/**
+		 * Custom properties for tune by user. Can be null or empty array if you have no customizable parameters.
+		 */
+		properties : nanofl.engine.CustomProperty[];
+		/**
+		 * This method must publish document.
+		 * @param	fileApi	Use this object to work with file system.
+		 * @param	params	Custom parameters specified by user (produced from `properties`).
+		 * @param	files	Code/image/sound/font files to publish.
+		 */
+		publish(fileApi:nanofl.engine.FileApi, params:any, files:string[]) : { message : string; success : boolean; };
 	}
 }
 
@@ -9555,11 +9622,13 @@ declare module nanofl.engine
 		static exporters : Map<string, nanofl.ide.plugins.IExporterPlugin>;
 		static generators : Map<string, nanofl.ide.plugins.IGeneratorPlugin>;
 		static loaders : Map<string, nanofl.ide.plugins.ILoaderPlugin>;
+		static publishers : Map<string, nanofl.ide.plugins.IPublisherPlugin>;
 		static registerFilter(plugin:nanofl.engine.plugins.IFilterPlugin) : void;
 		static registerImporter(plugin:nanofl.ide.plugins.IImporterPlugin) : void;
 		static registerExporter(plugin:nanofl.ide.plugins.IExporterPlugin) : void;
 		static registerGenerator(plugin:nanofl.ide.plugins.IGeneratorPlugin) : void;
 		static registerLoader(plugin:nanofl.ide.plugins.ILoaderPlugin) : void;
+		static registerPublisher(plugin:nanofl.ide.plugins.IPublisherPlugin) : void;
 		static getImporterByExtension(ext:string) : nanofl.ide.plugins.IImporterPlugin;
 		static getExporterByExtension(ext:string) : nanofl.ide.plugins.IExporterPlugin;
 	}

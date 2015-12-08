@@ -10,6 +10,8 @@ extern class DocumentGroup extends nanofl.ide.commands.BaseGroup
 	function import_(pluginName:String) : Void;
 	function export(pluginName:String) : Void;
 	function test() : Void;
+	function publishSettings() : Void;
+	function publish() : Void;
 	function undo() : Void;
 	function redo() : Void;
 	function cut() : Void;

@@ -13,4 +13,8 @@ extern class Polygons
 	static function fromRawContours(originalContours:Array<nanofl.engine.geom.Contour>, fill:nanofl.engine.fills.IFill, fillEvenOdd:Bool) : Array<nanofl.engine.geom.Polygon>;
 	static function assertCorrect(polygons:Array<nanofl.engine.geom.Polygon>, intergrityChecks:Bool, ?message:Dynamic) : Void;
 	static function removeErased(polygons:Array<nanofl.engine.geom.Polygon>) : Void;
+	/**
+	 * Compare with fill testing.
+	 */
+	static function equ(a:Array<nanofl.engine.geom.Polygon>, b:Array<nanofl.engine.geom.Polygon>) : Bool;
 }

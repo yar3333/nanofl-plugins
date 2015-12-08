@@ -20,6 +20,7 @@ extern class Document
 	var path(default, null) : String;
 	var properties(default, null) : nanofl.engine.DocumentProperties;
 	var library(default, null) : nanofl.ide.EditorLibrary;
+	var publishSettings(default, null) : Map<String, Dynamic>;
 	var lastModified(default, null) : Date;
 	var navigator(default, null) : nanofl.ide.Navigator;
 	var editor(default, null) : nanofl.ide.Editor;
@@ -36,8 +37,10 @@ extern class Document
 	function reload(callb:Array<nanofl.engine.libraryitems.LibraryItem> -> Void) : Void;
 	function reloadWoTransactionForced(callb:Array<nanofl.engine.libraryitems.LibraryItem> -> Void) : Void;
 	function test() : Void;
+	function publish(?callb:Bool -> Void) : Void;
 	function resize(width:Int, height:Int) : Void;
 	function canBeSaved() : Bool;
+	function canBePublished() : Bool;
 	function dispose() : Void;
 	static function createTemporary(app:nanofl.ide.Application, ?properties:nanofl.engine.DocumentProperties) : nanofl.ide.Document;
 	static function load(app:nanofl.ide.Application, path:String, callb:nanofl.ide.Document -> Void) : Void;

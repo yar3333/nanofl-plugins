@@ -9,4 +9,8 @@ extern class StrokeEdges
 	static function drawSorted(edges:Array<nanofl.engine.geom.StrokeEdge>, g:nanofl.engine.Render, scaleSelection:Float) : Void;
 	static function fromEdges(edges:Array<nanofl.engine.geom.Edge>, stroke:nanofl.engine.strokes.IStroke, ?selected:Bool) : Array<nanofl.engine.geom.StrokeEdge>;
 	static function replace(edges:Array<nanofl.engine.geom.StrokeEdge>, search:nanofl.engine.geom.Edge, replacement:Array<nanofl.engine.geom.Edge>) : Void;
+	/**
+	 * Compare with stroke testing.
+	 */
+	static function equ(a:Array<nanofl.engine.geom.StrokeEdge>, b:Array<nanofl.engine.geom.StrokeEdge>) : Bool;
 }

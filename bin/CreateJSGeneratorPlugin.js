@@ -71,6 +71,11 @@ CreateJSGeneratorPlugin.prototype = {
 		serverApi.openInBrowser(htmlFilePath);
 		return null;
 	}
+	,getFilesToPublish: function(fileApi,params,filePath,documentProperties,library,textureAtlases) {
+		var pathParts = filePath.split("/");
+		var dir = pathParts.slice(0,pathParts.length - 1).join("/");
+		return ["bin",dir + "/" + this.name + ".html"];
+	}
 	,__class__: CreateJSGeneratorPlugin
 };
 var EReg = function(r,opt) {
