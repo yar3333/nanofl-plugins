@@ -15,6 +15,7 @@ extern class XpcomFileApi implements nanofl.engine.FileApi
 	function saveBinary(filePath:String, data:nanofl.engine.Bytes) : Void;
 	function isDirectory(path:String) : Bool;
 	function run(filePath:String, args:Array<String>, blocking:Bool) : Int;
+	function runCaptured(filePath:String, args:Array<String>, ?input:String) : { var error : String; var exitCode : Int; var output : String; };
 	function copy(srcPath:String, destPath:String) : Bool;
 	function syncDirectory(src:String, dest:String) : Void;
 	function rename(srcPath:String, destPath:String) : Void;

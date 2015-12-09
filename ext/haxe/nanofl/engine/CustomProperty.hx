@@ -40,7 +40,7 @@ typedef CustomProperty =
 	@:optional
 	var neutralValue : Dynamic;
 	/**
-	 * int / float / string / color / bool / list
+	 * int / float / string / color / bool / list / delimiter
 	 */
 	var type : String;
 	/**

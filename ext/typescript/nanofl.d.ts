@@ -730,6 +730,7 @@ declare module nanofl.ide
 		saveBinary(filePath:string, data:nanofl.engine.Bytes) : void;
 		isDirectory(path:string) : boolean;
 		run(filePath:string, args:string[], blocking:boolean) : number;
+		runCaptured(filePath:string, args:string[], input?:string) : { error : string; exitCode : number; output : string; };
 		copy(srcPath:string, destPath:string) : boolean;
 		syncDirectory(src:string, dest:string) : void;
 		rename(srcPath:string, destPath:string) : void;
@@ -8916,6 +8917,7 @@ declare module nanofl.ide.plugins
 	type CustomizablePlugin =
 	{
 		menuItemIcon : string;
+		menuItemName : string;
 		name : string;
 		properties : nanofl.engine.CustomProperty[];
 	}
@@ -9308,7 +9310,7 @@ declare module nanofl.engine
 		 */
 		neutralValue : any;
 		/**
-		 * int / float / string / color / bool / list
+		 * int / float / string / color / bool / list / delimiter
 		 */
 		type : string;
 		/**
@@ -9362,6 +9364,7 @@ declare module nanofl.engine
 		exists(path:string) : boolean;
 		isDirectory(path:string) : boolean;
 		run(filePath:string, args:string[], blocking:boolean) : number;
+		runCaptured(filePath:string, args:string[], input?:string) : { error : string; exitCode : number; output : string; };
 		copy(srcPath:string, destPath:string) : boolean;
 		syncDirectory(src:string, dest:string) : void;
 		rename(oldPath:string, newPath:string) : void;
