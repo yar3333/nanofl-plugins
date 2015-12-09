@@ -5,6 +5,7 @@ typedef CustomProperty =
 	/**
 	 * Like 123, 10.3, "myStr", true, "#00aaff", "rgb(1,2,3)" or "rgba(12,32,255,128)".
 	 */
+	@:optional
 	var defaultValue : Dynamic;
 	/**
 	 * Long description. Used for tooltip.
@@ -29,6 +30,7 @@ typedef CustomProperty =
 	/**
 	 * Used as field name in params.
 	 */
+	@:optional
 	var name : String;
 	/**
 	 * Value for neutral case.

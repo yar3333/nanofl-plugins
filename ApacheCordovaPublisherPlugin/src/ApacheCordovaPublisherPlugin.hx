@@ -19,9 +19,52 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 	public var fileFilterDescription = "Apache Cordova destination folder";
 	public var fileFilterExtensions = [ "" ];
 	
-	public var properties : Array<CustomProperty> = null;
+	public var properties : Array<CustomProperty> =
+	[
+		{ type:"string", name:"outPath", 				label:"Output folder", defaultValue:"publishers/cordova", description:"Folder to store cordova files related to document folder." },
+		{ type:"delimiter", label:"Platforms" },
+		{ type:"bool", name:"platform_amazon_fireos",	label:"Amazon Fire OS",				defaultValue:false },
+		{ type:"bool", name:"platform_android", 		label:"Android", 					defaultValue:false },
+		{ type:"bool", name:"platform_blackberry10",	label:"Blackberry 10", 				defaultValue:false },
+		{ type:"bool", name:"platform_firefoxos",		label:"Firefox OS", 				defaultValue:false },
+		{ type:"bool", name:"platform_ubuntu",			label:"Ubuntu", 					defaultValue:false },
+		{ type:"bool", name:"platform_windows",			label:"Windows 8.0+, Phone 8.1",	defaultValue:false },
+		{ type:"bool", name:"platform_wp8", 			label:"Windows Phone 8", 			defaultValue:false },
+		{ type:"delimiter", label:"Plugins" },
+		{ type:"bool", name:"cordova-plugin-device",				label:"Basic device information (Device API)",	defaultValue:false },
+		{ type:"bool", name:"cordova-plugin-network-information",	label:"Network Connection",						defaultValue:false },
+		{ type:"bool", name:"cordova-plugin-battery-status",		label:"Battery Events",							defaultValue:false },
+		{ type:"bool", name:"cordova-plugin-device-motion",			label:"Accelerometer",							defaultValue:false },
+		{ type:"bool", name:"cordova-plugin-device-orientation",	label:"Compass",								defaultValue:false },
+		{ type:"bool", name:"cordova-plugin-geolocation",			label:"Geolocation",							defaultValue:false },
+		{ type:"bool", name:"cordova-plugin-camera",				label:"Camera",									defaultValue:false },
+		{ type:"bool", name:"cordova-plugin-media-capture",			label:"Media playback",							defaultValue:false },
+		{ type:"bool", name:"cordova-plugin-media",					label:"Capture",								defaultValue:false },
+		{ type:"bool", name:"cordova-plugin-file",					label:"Access files on device",					defaultValue:false },
+		{ type:"bool", name:"cordova-plugin-file-transfer",			label:"Access files in network",				defaultValue:false },
+		{ type:"bool", name:"cordova-plugin-dialogs",				label:"Notification via dialog",				defaultValue:false },
+		{ type:"bool", name:"cordova-plugin-vibration",				label:"Notification via vibration",				defaultValue:false },
+		{ type:"bool", name:"cordova-plugin-contacts",				label:"Contacts",								defaultValue:false },
+		{ type:"bool", name:"cordova-plugin-globalization",			label:"Globalization",							defaultValue:false },
+		{ type:"bool", name:"cordova-plugin-splashscreen",			label:"Splashscreen",							defaultValue:false },
+		{ type:"bool", name:"cordova-plugin-inappbrowser",			label:"Open new browser windows (InAppBrowser)",defaultValue:false },
+		{ type:"bool", name:"cordova-plugin-console",				label:"Debug console",							defaultValue:false },
+		
+		/*
+		var type : String; // int / float / string / color / bool / list
+		var name : String;
+		@:optional var label : String;
+		@:optional var description : String;
+		var defaultValue : Dynamic;
+		@:optional var neutralValue : Dynamic;
+		@:optional var units : String;
+		@:optional var minValue : Dynamic;
+		@:optional var maxValue : Dynamic;
+		@:optional var values : Array<String>;
+		*/
+	];
 	
-	public function publish(fileApi:nanofl.engine.FileApi, params:Dynamic, files:Array<String>) : { success:Bool, message:String }
+	public function publish(fileApi:FileApi, params:Dynamic, files:Array<String>) : { success:Bool, message:String }
 	{
 		console.log("Plugin.publish " + files);
 		
