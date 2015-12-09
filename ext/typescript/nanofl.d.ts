@@ -8980,8 +8980,9 @@ declare module nanofl.ide.plugins
 		 * @param	documentProperties	Properties of the document.
 		 * @param	library				Document's library.
 		 * @param	textureAtlases		Generated texture atlases.
+		 * @return	Paths to files to publish.
 		 */
-		generate(fileApi:nanofl.engine.FileApi, params:any, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : void;
+		generate(fileApi:nanofl.engine.FileApi, params:any, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : string[];
 		/**
 		 * Called to "run" saved document. Must return error message or null if no errors.
 		 * Use this method if you need direct access to file system and OS.
@@ -8991,17 +8992,6 @@ declare module nanofl.ide.plugins
 		 * @param	filePath	Path to `*.nfl` file.
 		 */
 		test(serverApi:nanofl.ide.ServerApi, fileApi:nanofl.engine.FileApi, params:any, filePath:string) : string;
-		/**
-		 *
-		 * @param	fileApi				Use this object to work with file system.
-		 * @param	params				Custom parameters specified by user (produced from `properties`).
-		 * @param	filePath			Path to `*.nfl` file.
-		 * @param	documentProperties	Properties of the document.
-		 * @param	library				Document's library.
-		 * @param	textureAtlases		Generated texture atlases.
-		 * @return	Paths to files to publish.
-		 */
-		getFilesToPublish(fileApi:nanofl.engine.FileApi, params:any, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : string[];
 	}
 	
 	export interface IImporterPlugin
