@@ -64,17 +64,13 @@ CreateJSGeneratorPlugin.prototype = {
 			}
 			generator1.generate(languageAndIde[0],dir,name);
 		}
+		return ["bin",dir + "/" + name + ".html"];
 	}
 	,test: function(serverApi,fileApi,params,filePath) {
 		var htmlFilePath = haxe_io_Path.withoutExtension(filePath) + ".html";
 		if(fileApi != null && !fileApi.exists(htmlFilePath)) return "File \"" + htmlFilePath + "\" not found.";
 		serverApi.openInBrowser(htmlFilePath);
 		return null;
-	}
-	,getFilesToPublish: function(fileApi,params,filePath,documentProperties,library,textureAtlases) {
-		var pathParts = filePath.split("/");
-		var dir = pathParts.slice(0,pathParts.length - 1).join("/");
-		return ["bin",dir + "/" + this.name + ".html"];
 	}
 	,__class__: CreateJSGeneratorPlugin
 };

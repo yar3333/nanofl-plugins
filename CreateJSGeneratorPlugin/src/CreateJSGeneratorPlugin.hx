@@ -44,7 +44,7 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 		}
 	];
 	
-	public function generate(fileApi:FileApi, params:Params, filePath:String, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>) : Void
+	public function generate(fileApi:FileApi, params:Params, filePath:String, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>) : Array<String>
 	{
 		var supportDir = fileApi.getPluginsDirectory() + "/CreateJSGeneratorPlugin";
 		
@@ -77,6 +77,8 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 			};
 			generator.generate(languageAndIde[0], dir, name);
 		}
+		
+		return [ "bin", dir + "/" + name + ".html" ];
 	}
 	
 	#if js
@@ -88,12 +90,4 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 		return null;
 	}
 	#end
-	
-	public function getFilesToPublish(fileApi:FileApi, params:Params, filePath:String, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>) : Array<String>
-	{
-		var pathParts = filePath.split("/");
-		var dir = pathParts.slice(0, pathParts.length - 1).join("/");
-		
-		return [ "bin", dir + "/" + name + ".html" ];
-	}
 }
