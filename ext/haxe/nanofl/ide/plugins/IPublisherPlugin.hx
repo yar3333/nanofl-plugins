@@ -32,5 +32,5 @@ extern interface IPublisherPlugin
 	 * @param	params	Custom parameters specified by user (produced from `properties`).
 	 * @param	files	Code/image/sound/font files to publish.
 	 */
-	function publish(fileApi:nanofl.engine.FileApi, params:Dynamic, files:Array<String>) : { var message : String; var success : Bool; };
+	function publish(fileApi:nanofl.engine.FileApi, params:Dynamic, srcFilePath:String, files:Array<String>) : { var message : String; var success : Bool; };
 }

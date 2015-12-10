@@ -7,7 +7,7 @@ function $extend(from, fields) {
 	return proto;
 }
 var ApacheCordovaPublisherPlugin = function() {
-	this.properties = [{ type : "string", name : "outPath", label : "Output folder", defaultValue : "publish/cordova", description : "Folder to store cordova files."},{ type : "string", name : "domain", label : "Project domain", defaultValue : "com.example.hello", description : "Project name in domain notation."},{ type : "string", name : "title", label : "Title", defaultValue : "MyProject", description : "Application's display title"},{ type : "delimiter", label : "Platforms"},{ type : "bool", name : "platform_amazon_fireos", label : "Amazon Fire OS", defaultValue : false},{ type : "bool", name : "platform_android", label : "Android", defaultValue : false},{ type : "bool", name : "platform_blackberry10", label : "Blackberry 10", defaultValue : false},{ type : "bool", name : "platform_firefoxos", label : "Firefox OS", defaultValue : false},{ type : "bool", name : "platform_ios", label : "iOS", defaultValue : false},{ type : "bool", name : "platform_ubuntu", label : "Ubuntu", defaultValue : false},{ type : "bool", name : "platform_windows", label : "Windows 8+, Phone 8.1", defaultValue : false},{ type : "bool", name : "platform_wp8", label : "Windows Phone 8", defaultValue : false},{ type : "delimiter", label : "Plugins"},{ type : "bool", name : "cordova_plugin_device", label : "Basic device information (Device API)", defaultValue : false},{ type : "bool", name : "cordova_plugin_network_information", label : "Network Connection", defaultValue : false},{ type : "bool", name : "cordova_plugin_battery_status", label : "Battery Events", defaultValue : false},{ type : "bool", name : "cordova_plugin_device_motion", label : "Accelerometer", defaultValue : false},{ type : "bool", name : "cordova_plugin_device_orientation", label : "Compass", defaultValue : false},{ type : "bool", name : "cordova_plugin_geolocation", label : "Geolocation", defaultValue : false},{ type : "bool", name : "cordova_plugin_camera", label : "Camera", defaultValue : false},{ type : "bool", name : "cordova_plugin_media_capture", label : "Media playback", defaultValue : false},{ type : "bool", name : "cordova_plugin_media", label : "Capture", defaultValue : false},{ type : "bool", name : "cordova_plugin_file", label : "Access files on device", defaultValue : false},{ type : "bool", name : "cordova_plugin_file_transfer", label : "Access files in network", defaultValue : false},{ type : "bool", name : "cordova_plugin_dialogs", label : "Notification via dialog", defaultValue : false},{ type : "bool", name : "cordova_plugin_vibration", label : "Notification via vibration", defaultValue : false},{ type : "bool", name : "cordova_plugin_contacts", label : "Contacts", defaultValue : false},{ type : "bool", name : "cordova_plugin_globalization", label : "Globalization", defaultValue : false},{ type : "bool", name : "cordova_plugin_splashscreen", label : "Splashscreen", defaultValue : false},{ type : "bool", name : "cordova_plugin_inappbrowser", label : "Open new browser windows (InAppBrowser)", defaultValue : false},{ type : "bool", name : "cordova_plugin_console", label : "Debug console", defaultValue : false}];
+	this.properties = [{ type : "string", name : "outPath", label : "Output folder", defaultValue : "publish/cordova", description : "Folder to store cordova files."},{ type : "string", name : "domain", label : "Project domain", defaultValue : "com.example.hello", description : "Project name in domain notation."},{ type : "string", name : "title", label : "Title", defaultValue : "", description : "Application's display title"},{ type : "delimiter", label : "Platforms"},{ type : "bool", name : "platform_amazon_fireos", label : "Amazon Fire OS", defaultValue : false},{ type : "bool", name : "platform_android", label : "Android", defaultValue : false},{ type : "bool", name : "platform_blackberry10", label : "Blackberry 10", defaultValue : false},{ type : "bool", name : "platform_firefoxos", label : "Firefox OS", defaultValue : false},{ type : "bool", name : "platform_ios", label : "iOS", defaultValue : false},{ type : "bool", name : "platform_ubuntu", label : "Ubuntu", defaultValue : false},{ type : "bool", name : "platform_windows", label : "Windows 8+, Phone 8.1", defaultValue : false},{ type : "bool", name : "platform_wp8", label : "Windows Phone 8", defaultValue : false},{ type : "delimiter", label : "Plugins"},{ type : "bool", name : "cordova_plugin_device", label : "Basic device information (Device API)", defaultValue : false},{ type : "bool", name : "cordova_plugin_network_information", label : "Network Connection", defaultValue : false},{ type : "bool", name : "cordova_plugin_battery_status", label : "Battery Events", defaultValue : false},{ type : "bool", name : "cordova_plugin_device_motion", label : "Accelerometer", defaultValue : false},{ type : "bool", name : "cordova_plugin_device_orientation", label : "Compass", defaultValue : false},{ type : "bool", name : "cordova_plugin_geolocation", label : "Geolocation", defaultValue : false},{ type : "bool", name : "cordova_plugin_camera", label : "Camera", defaultValue : false},{ type : "bool", name : "cordova_plugin_media_capture", label : "Media playback", defaultValue : false},{ type : "bool", name : "cordova_plugin_media", label : "Capture", defaultValue : false},{ type : "bool", name : "cordova_plugin_file", label : "Access files on device", defaultValue : false},{ type : "bool", name : "cordova_plugin_file_transfer", label : "Access files in network", defaultValue : false},{ type : "bool", name : "cordova_plugin_dialogs", label : "Notification via dialog", defaultValue : false},{ type : "bool", name : "cordova_plugin_vibration", label : "Notification via vibration", defaultValue : false},{ type : "bool", name : "cordova_plugin_contacts", label : "Contacts", defaultValue : false},{ type : "bool", name : "cordova_plugin_globalization", label : "Globalization", defaultValue : false},{ type : "bool", name : "cordova_plugin_splashscreen", label : "Splashscreen", defaultValue : false},{ type : "bool", name : "cordova_plugin_inappbrowser", label : "Open new browser windows (InAppBrowser)", defaultValue : false},{ type : "bool", name : "cordova_plugin_console", label : "Debug console", defaultValue : false}];
 	this.fileFilterExtensions = [""];
 	this.fileFilterDescription = "Apache Cordova destination folder";
 	this.menuItemIcon = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAACXBIWXMAAAsSAAALEgHS3X78AAACv0lEQVQokSXBzWtcVRwG4Pece+Kdmc6XIZO2SgPB2jrWpn5V3IouBVGEuBEEEeqiddFtV+JfYAQhJepCDAguKrVg1VjFoKiYkFrT1jTp3Gk7na/MzJ2Pm7nn/s7rwudRJJEkiVFKJSLyehzHp0SkJSIQESUi4pybBvAlgEUAGoBTJD2SQvJR59xXnucdV0pJp9PxrLWYLBYdFXSz2aqSfEVrvUbS0wBEKQWl1Nta6+ObN7fiP/5a14VCgaVSid//vKoufXclzmQyh7TnvZeIpEgKSEJEXiApt4M7yamz59yb757lpcsrvPjtD3zupVdZmH2SP63+HktiGQTBa7VaDYZk3pHva0D/uf63S/u+ejCTxteXVzCK9jCdy+CWc/hw6XPzzIljyGazHwyHQ9+IyL5+GD6bJNbZeKyfOPYYJh6YQNjpopjP4bdr19EaC4zE6n6t5kgpt3e7L2oAIxG56qczerded7VwgMyJOdy4voWLF75B6qmnsb98FPe3K6Si7nS621EU/WqUUnsi8q/n6ZOjfp/r95pwhw/j6rVNVG9XEJ98HnebLUylJmhtrKIo2rHWbhiS4/5gsJVO+UgXC/xx6Qv+cmVV+UwQQ2Hlo4/R7fZ4+q15N+r39WA43CZ50xhjUCwWt+uNBh4vH+G5M+8oG+3BTRiQhLYWDlo99PB+tNq7iKLolta6ZxqNBhYWFnbm599APpNKyo8c6k1Nl/b5xqRskiAMw3G93hrkC7l0p9cz+Vx+x1oL3W63sby8HB48eMCl0unU+aVPK/9s3ojCYaR6/ZEK7ty15z/5bGs42ovKR45icXGxFgQBVKVSwezs7NTc3NzLSZKUq9WqnpyczPq+r0kijmM2m81uqVRyuVxuZ2Nj48La2lpDBUGAmZkZ3/O8gogcAJAFkAAg/qcAGAAjrfU951xYrVbH/wGrY6Tm/qMTkAAAAABJRU5ErkJggg==)";
@@ -20,12 +20,13 @@ ApacheCordovaPublisherPlugin.main = function() {
 	nanofl.engine.Plugins.registerPublisher(new ApacheCordovaPublisherPlugin());
 };
 ApacheCordovaPublisherPlugin.prototype = {
-	publish: function(fileApi,params,files) {
+	publish: function(fileApi,params,srcFilePath,files) {
 		nanofl.engine.Debug.console.log("Plugin.publish " + Std.string(files));
-		if(params.outPath == null || params.outPath == "") return this.error("Output folder must be specified. Check publish settings.");
-		if(!fileApi.exists(params.outPath) || fileApi.readDirectory(params.outPath).length == 0) {
-			fileApi.createDirectory(params.outPath);
-			var r = fileApi.runCaptured("cordova",["create",".",params.domain,params.title]);
+		if(params.outPath == "") return this.error("Output folder must be specified. Check publish settings.");
+		var outPath = haxe_io_Path.join([haxe_io_Path.directory(srcFilePath),params.outPath]);
+		if(!fileApi.exists(outPath) || fileApi.readDirectory(outPath).length == 0) {
+			fileApi.createDirectory(outPath);
+			var r = fileApi.runCaptured("cordova",["create",".",params.domain,params.title != ""?params.title:haxe_io_Path.withoutDirectory(haxe_io_Path.withoutExtension(srcFilePath))],null,outPath);
 			if(r.exitCode != 0) return this.error("Run cordova CLI error (" + r.exitCode + "): " + r.output + "\n" + r.error);
 		}
 		return { success : true, message : "OK"};
@@ -35,11 +36,48 @@ ApacheCordovaPublisherPlugin.prototype = {
 	}
 	,__class__: ApacheCordovaPublisherPlugin
 };
+var EReg = function(r,opt) {
+	opt = opt.split("u").join("");
+	this.r = new RegExp(r,opt);
+};
+EReg.__name__ = true;
+EReg.prototype = {
+	replace: function(s,by) {
+		return s.replace(this.r,by);
+	}
+	,__class__: EReg
+};
+var HxOverrides = function() { };
+HxOverrides.__name__ = true;
+HxOverrides.cca = function(s,index) {
+	var x = s.charCodeAt(index);
+	if(x != x) return undefined;
+	return x;
+};
+HxOverrides.substr = function(s,pos,len) {
+	if(pos != null && pos != 0 && len != null && len < 0) return "";
+	if(len == null) len = s.length;
+	if(pos < 0) {
+		pos = s.length + pos;
+		if(pos < 0) pos = 0;
+	} else if(len < 0) len = s.length + len - pos;
+	return s.substr(pos,len);
+};
 Math.__name__ = true;
 var Std = function() { };
 Std.__name__ = true;
 Std.string = function(s) {
 	return js_Boot.__string_rec(s,"");
+};
+var StringBuf = function() {
+	this.b = "";
+};
+StringBuf.__name__ = true;
+StringBuf.prototype = {
+	add: function(x) {
+		this.b += Std.string(x);
+	}
+	,__class__: StringBuf
 };
 var haxe_IMap = function() { };
 haxe_IMap.__name__ = true;
@@ -110,6 +148,135 @@ haxe_io_FPHelper.doubleToI64 = function(v) {
 		i64.high = (v < 0?-2147483648:0) | exp + 1023 << 20 | sig_h;
 	}
 	return i64;
+};
+var haxe_io_Path = function(path) {
+	switch(path) {
+	case ".":case "..":
+		this.dir = path;
+		this.file = "";
+		return;
+	}
+	var c1 = path.lastIndexOf("/");
+	var c2 = path.lastIndexOf("\\");
+	if(c1 < c2) {
+		this.dir = HxOverrides.substr(path,0,c2);
+		path = HxOverrides.substr(path,c2 + 1,null);
+		this.backslash = true;
+	} else if(c2 < c1) {
+		this.dir = HxOverrides.substr(path,0,c1);
+		path = HxOverrides.substr(path,c1 + 1,null);
+	} else this.dir = null;
+	var cp = path.lastIndexOf(".");
+	if(cp != -1) {
+		this.ext = HxOverrides.substr(path,cp + 1,null);
+		this.file = HxOverrides.substr(path,0,cp);
+	} else {
+		this.ext = null;
+		this.file = path;
+	}
+};
+haxe_io_Path.__name__ = true;
+haxe_io_Path.withoutExtension = function(path) {
+	var s = new haxe_io_Path(path);
+	s.ext = null;
+	return s.toString();
+};
+haxe_io_Path.withoutDirectory = function(path) {
+	var s = new haxe_io_Path(path);
+	s.dir = null;
+	return s.toString();
+};
+haxe_io_Path.directory = function(path) {
+	var s = new haxe_io_Path(path);
+	if(s.dir == null) return "";
+	return s.dir;
+};
+haxe_io_Path.join = function(paths) {
+	var paths1 = paths.filter(function(s) {
+		return s != null && s != "";
+	});
+	if(paths1.length == 0) return "";
+	var path = paths1[0];
+	var _g1 = 1;
+	var _g = paths1.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		path = haxe_io_Path.addTrailingSlash(path);
+		path += paths1[i];
+	}
+	return haxe_io_Path.normalize(path);
+};
+haxe_io_Path.normalize = function(path) {
+	var slash = "/";
+	path = path.split("\\").join("/");
+	if(path == null || path == slash) return slash;
+	var target = [];
+	var _g = 0;
+	var _g1 = path.split(slash);
+	while(_g < _g1.length) {
+		var token = _g1[_g];
+		++_g;
+		if(token == ".." && target.length > 0 && target[target.length - 1] != "..") target.pop(); else if(token != ".") target.push(token);
+	}
+	var tmp = target.join(slash);
+	var regex = new EReg("([^:])/+","g");
+	var result = regex.replace(tmp,"$1" + slash);
+	var acc = new StringBuf();
+	var colon = false;
+	var slashes = false;
+	var _g11 = 0;
+	var _g2 = tmp.length;
+	while(_g11 < _g2) {
+		var i = _g11++;
+		var _g21 = HxOverrides.cca(tmp,i);
+		var i1 = _g21;
+		if(_g21 != null) switch(_g21) {
+		case 58:
+			acc.b += ":";
+			colon = true;
+			break;
+		case 47:
+			if(colon == false) slashes = true; else {
+				colon = false;
+				if(slashes) {
+					acc.b += "/";
+					slashes = false;
+				}
+				acc.add(String.fromCharCode(i1));
+			}
+			break;
+		default:
+			colon = false;
+			if(slashes) {
+				acc.b += "/";
+				slashes = false;
+			}
+			acc.add(String.fromCharCode(i1));
+		} else {
+			colon = false;
+			if(slashes) {
+				acc.b += "/";
+				slashes = false;
+			}
+			acc.add(String.fromCharCode(i1));
+		}
+	}
+	var result1 = acc.b;
+	return result1;
+};
+haxe_io_Path.addTrailingSlash = function(path) {
+	if(path.length == 0) return "/";
+	var c1 = path.lastIndexOf("/");
+	var c2 = path.lastIndexOf("\\");
+	if(c1 < c2) {
+		if(c2 != path.length - 1) return path + "\\"; else return path;
+	} else if(c1 != path.length - 1) return path + "/"; else return path;
+};
+haxe_io_Path.prototype = {
+	toString: function() {
+		return (this.dir == null?"":this.dir + (this.backslash?"\\":"/")) + this.file + (this.ext == null?"":"." + this.ext);
+	}
+	,__class__: haxe_io_Path
 };
 var js__$Boot_HaxeError = function(val) {
 	Error.call(this);
@@ -451,6 +618,17 @@ var Bool = Boolean;
 Bool.__ename__ = ["Bool"];
 var Class = { __name__ : ["Class"]};
 var Enum = { };
+if(Array.prototype.filter == null) Array.prototype.filter = function(f1) {
+	var a1 = [];
+	var _g11 = 0;
+	var _g2 = this.length;
+	while(_g11 < _g2) {
+		var i1 = _g11++;
+		var e = this[i1];
+		if(f1(e)) a1.push(e);
+	}
+	return a1;
+};
 var __map_reserved = {}
 var ArrayBuffer = (Function("return typeof ArrayBuffer != 'undefined' ? ArrayBuffer : null"))() || js_html_compat_ArrayBuffer;
 if(ArrayBuffer.prototype.slice == null) ArrayBuffer.prototype.slice = js_html_compat_ArrayBuffer.sliceImpl;
