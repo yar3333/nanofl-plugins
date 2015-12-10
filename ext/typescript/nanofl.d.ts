@@ -9068,25 +9068,17 @@ declare module nanofl.ide.plugins
 		 */
 		menuItemIcon : string;
 		/**
-		 * Like "Destination folder".
-		 */
-		fileFilterDescription : string;
-		/**
-		 * Like [ "fla", "xfl" ].
-		 */
-		fileFilterExtensions : string[];
-		/**
 		 * Custom properties for tune by user. Can be null or empty array if you have no customizable parameters.
 		 */
 		properties : nanofl.engine.CustomProperty[];
 		/**
 		 * This method must publish document.
-		 * @param	fileApi	Use this object to work with file system.
-		 * @param	params	Custom parameters specified by user (produced from `properties`).
-		 * @param	srcFilePath Path to `*.nfl` file.
-		 * @param	files	Code/image/sound/font files to publish.
+		 * @param	fileApi		Use this object to work with file system.
+		 * @param	params		Custom parameters specified by user (produced from `properties`).
+		 * @param	srcFilePath	Path to `*.nfl` file.
+		 * @param	files		Code/image/sound/font files to publish.
 		 */
-		publish(fileApi:nanofl.engine.FileApi, params:any, srcFilePath:string, files:string[]) : { message : string; success : boolean; };
+		publish(fileApi:nanofl.engine.FileApi, params:any, srcFilePath:string, files:string[]) : void;
 	}
 }
 
@@ -9301,7 +9293,7 @@ declare module nanofl.engine
 		 */
 		neutralValue : any;
 		/**
-		 * int / float / string / color / bool / list / delimiter
+		 * int / float / string / color / bool / list / delimiter / info
 		 */
 		type : string;
 		/**
