@@ -729,15 +729,15 @@ declare module nanofl.ide
 		getBinary(filePath:string) : nanofl.engine.Bytes;
 		saveBinary(filePath:string, data:nanofl.engine.Bytes) : void;
 		isDirectory(path:string) : boolean;
-		run(filePath:string, args:string[], blocking:boolean) : number;
-		runCaptured(filePath:string, args:string[], input?:string) : { error : string; exitCode : number; output : string; };
+		run(filePath:string, args:string[], blocking:boolean, directory?:string) : number;
+		runCaptured(filePath:string, args:string[], input?:string, directory?:string) : { error : string; exitCode : number; output : string; };
 		copy(srcPath:string, destPath:string) : boolean;
 		syncDirectory(src:string, dest:string) : void;
 		rename(srcPath:string, destPath:string) : void;
 		remove(path:string) : void;
 		findFiles(dirPath:string, onFile?:(arg:string) => void, onDir?:(arg:string) => boolean) : void;
 		getPluginPaths() : string[];
-		nativePath(path:string) : string;
+		nativePath(path:string, makeAbsolute?:boolean) : string;
 		getLastModified(path:string) : Date;
 		zip(srcDir:string, destZip:string) : boolean;
 		unzip(srcZip:string, destDir:string) : boolean;
@@ -9083,9 +9083,10 @@ declare module nanofl.ide.plugins
 		 * This method must publish document.
 		 * @param	fileApi	Use this object to work with file system.
 		 * @param	params	Custom parameters specified by user (produced from `properties`).
+		 * @param	srcFilePath Path to `*.nfl` file.
 		 * @param	files	Code/image/sound/font files to publish.
 		 */
-		publish(fileApi:nanofl.engine.FileApi, params:any, files:string[]) : { message : string; success : boolean; };
+		publish(fileApi:nanofl.engine.FileApi, params:any, srcFilePath:string, files:string[]) : { message : string; success : boolean; };
 	}
 }
 
@@ -9353,8 +9354,8 @@ declare module nanofl.engine
 		saveBinary(filePath:string, data:nanofl.engine.Bytes) : void;
 		exists(path:string) : boolean;
 		isDirectory(path:string) : boolean;
-		run(filePath:string, args:string[], blocking:boolean) : number;
-		runCaptured(filePath:string, args:string[], input?:string) : { error : string; exitCode : number; output : string; };
+		run(filePath:string, args:string[], blocking:boolean, directory?:string) : number;
+		runCaptured(filePath:string, args:string[], input?:string, directory?:string) : { error : string; exitCode : number; output : string; };
 		copy(srcPath:string, destPath:string) : boolean;
 		syncDirectory(src:string, dest:string) : void;
 		rename(oldPath:string, newPath:string) : void;
