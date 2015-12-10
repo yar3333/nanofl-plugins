@@ -1,3 +1,4 @@
+import haxe.io.Path;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.Debug.console;
 import nanofl.engine.DocumentProperties;
@@ -23,7 +24,7 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 	[
 		{ type:"string", name:"outPath",	label:"Output folder",	defaultValue:"publish/cordova",		description:"Folder to store cordova files." },
 		{ type:"string", name:"domain", 	label:"Project domain",	defaultValue:"com.example.hello",	description:"Project name in domain notation." },
-		{ type:"string", name:"title", 		label:"Title",			defaultValue:"MyProject",			description:"Application's display title" },
+		{ type:"string", name:"title", 		label:"Title",			defaultValue:"",					description:"Application's display title" },
 		
 		{ type:"delimiter", label:"Platforms" },
 		{ type:"bool", name:"platform_amazon_fireos",	label:"Amazon Fire OS",			defaultValue:false },
@@ -56,16 +57,18 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		{ type:"bool", name:"cordova_plugin_console",				label:"Debug console",							defaultValue:false },
 	];
 	
-	public function publish(fileApi:FileApi, params:Dynamic, files:Array<String>) : { success:Bool, message:String }
+	public function publish(fileApi:FileApi, params:Dynamic, srcFilePath:String, files:Array<String>) : { success:Bool, message:String }
 	{
 		console.log("Plugin.publish " + files);
 		
-		if (params.outPath == null || params.outPath == "") return error("Output folder must be specified. Check publish settings.");
+		if (params.outPath == "") return error("Output folder must be specified. Check publish settings.");
 		
-		if (!fileApi.exists(params.outPath) || fileApi.readDirectory(params.outPath).length == 0)
+		var outPath = Path.join([ Path.directory(srcFilePath), params.outPath ]);
+		
+		if (!fileApi.exists(outPath) || fileApi.readDirectory(outPath).length == 0)
 		{
-			fileApi.createDirectory(params.outPath);
-			var r = fileApi.runCaptured("cordova", [ "create", ".", params.domain, params.title ]);
+			fileApi.createDirectory(outPath);
+			var r = fileApi.runCaptured("cordova", [ "create", ".", params.domain, (params.title != "" ? params.title : Path.withoutDirectory(Path.withoutExtension(srcFilePath))) ], null, outPath);
 			if (r.exitCode != 0) return error("Run cordova CLI error (" + r.exitCode + "): " + r.output + "\n" + r.error);
 		}
 		
