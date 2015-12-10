@@ -15,14 +15,6 @@ extern interface IPublisherPlugin
 	 */
 	var menuItemIcon : String;
 	/**
-	 * Like "Destination folder".
-	 */
-	var fileFilterDescription : String;
-	/**
-	 * Like [ "fla", "xfl" ].
-	 */
-	var fileFilterExtensions : Array<String>;
-	/**
 	 * Custom properties for tune by user. Can be null or empty array if you have no customizable parameters.
 	 */
 	var properties : Array<nanofl.engine.CustomProperty>;
@@ -33,5 +25,5 @@ extern interface IPublisherPlugin
 	 * @param	srcFilePath Path to `*.nfl` file.
 	 * @param	files	Code/image/sound/font files to publish.
 	 */
-	function publish(fileApi:nanofl.engine.FileApi, params:Dynamic, srcFilePath:String, files:Array<String>) : { var message : String; var success : Bool; };
+	function publish(fileApi:nanofl.engine.FileApi, params:Dynamic, srcFilePath:String, files:Array<String>) : Void;
 }

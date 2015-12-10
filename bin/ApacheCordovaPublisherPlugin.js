@@ -7,9 +7,7 @@ function $extend(from, fields) {
 	return proto;
 }
 var ApacheCordovaPublisherPlugin = function() {
-	this.properties = [{ type : "string", name : "outPath", label : "Output folder", defaultValue : "publish/cordova", description : "Folder to store cordova files."},{ type : "string", name : "domain", label : "Project domain", defaultValue : "com.example.hello", description : "Project name in domain notation."},{ type : "string", name : "title", label : "Title", defaultValue : "", description : "Application's display title"},{ type : "delimiter", label : "Platforms"},{ type : "bool", name : "platform_amazon_fireos", label : "Amazon Fire OS", defaultValue : false},{ type : "bool", name : "platform_android", label : "Android", defaultValue : false},{ type : "bool", name : "platform_blackberry10", label : "Blackberry 10", defaultValue : false},{ type : "bool", name : "platform_firefoxos", label : "Firefox OS", defaultValue : false},{ type : "bool", name : "platform_ios", label : "iOS", defaultValue : false},{ type : "bool", name : "platform_ubuntu", label : "Ubuntu", defaultValue : false},{ type : "bool", name : "platform_windows", label : "Windows 8+, Phone 8.1", defaultValue : false},{ type : "bool", name : "platform_wp8", label : "Windows Phone 8", defaultValue : false},{ type : "delimiter", label : "Plugins"},{ type : "bool", name : "cordova_plugin_device", label : "Basic device information (Device API)", defaultValue : false},{ type : "bool", name : "cordova_plugin_network_information", label : "Network Connection", defaultValue : false},{ type : "bool", name : "cordova_plugin_battery_status", label : "Battery Events", defaultValue : false},{ type : "bool", name : "cordova_plugin_device_motion", label : "Accelerometer", defaultValue : false},{ type : "bool", name : "cordova_plugin_device_orientation", label : "Compass", defaultValue : false},{ type : "bool", name : "cordova_plugin_geolocation", label : "Geolocation", defaultValue : false},{ type : "bool", name : "cordova_plugin_camera", label : "Camera", defaultValue : false},{ type : "bool", name : "cordova_plugin_media_capture", label : "Media playback", defaultValue : false},{ type : "bool", name : "cordova_plugin_media", label : "Capture", defaultValue : false},{ type : "bool", name : "cordova_plugin_file", label : "Access files on device", defaultValue : false},{ type : "bool", name : "cordova_plugin_file_transfer", label : "Access files in network", defaultValue : false},{ type : "bool", name : "cordova_plugin_dialogs", label : "Notification via dialog", defaultValue : false},{ type : "bool", name : "cordova_plugin_vibration", label : "Notification via vibration", defaultValue : false},{ type : "bool", name : "cordova_plugin_contacts", label : "Contacts", defaultValue : false},{ type : "bool", name : "cordova_plugin_globalization", label : "Globalization", defaultValue : false},{ type : "bool", name : "cordova_plugin_splashscreen", label : "Splashscreen", defaultValue : false},{ type : "bool", name : "cordova_plugin_inappbrowser", label : "Open new browser windows (InAppBrowser)", defaultValue : false},{ type : "bool", name : "cordova_plugin_console", label : "Debug console", defaultValue : false}];
-	this.fileFilterExtensions = [""];
-	this.fileFilterDescription = "Apache Cordova destination folder";
+	this.properties = [{ type : "string", name : "outPath", label : "Output folder", defaultValue : "publish/cordova", description : "Folder to store cordova files."},{ type : "string", name : "domain", label : "Project domain", defaultValue : "com.example.hello", description : "Project name in domain notation."},{ type : "string", name : "title", label : "Title", defaultValue : "", description : "Application's display title"},{ type : "delimiter", label : "Platforms"},{ type : "bool", name : "platform_amazon_fireos", label : "Amazon Fire OS", defaultValue : false},{ type : "bool", name : "platform_android", label : "Android", defaultValue : false},{ type : "bool", name : "platform_blackberry10", label : "Blackberry 10", defaultValue : false},{ type : "bool", name : "platform_firefoxos", label : "Firefox OS", defaultValue : false},{ type : "bool", name : "platform_ios", label : "iOS", defaultValue : false},{ type : "bool", name : "platform_ubuntu", label : "Ubuntu", defaultValue : false},{ type : "bool", name : "platform_windows8", label : "Windows 8+, Phone 8.1", defaultValue : false},{ type : "bool", name : "platform_wp8", label : "Windows Phone 8", defaultValue : false}];
 	this.menuItemIcon = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAACXBIWXMAAAsSAAALEgHS3X78AAACv0lEQVQokSXBzWtcVRwG4Pece+Kdmc6XIZO2SgPB2jrWpn5V3IouBVGEuBEEEeqiddFtV+JfYAQhJepCDAguKrVg1VjFoKiYkFrT1jTp3Gk7na/MzJ2Pm7nn/s7rwudRJJEkiVFKJSLyehzHp0SkJSIQESUi4pybBvAlgEUAGoBTJD2SQvJR59xXnucdV0pJp9PxrLWYLBYdFXSz2aqSfEVrvUbS0wBEKQWl1Nta6+ObN7fiP/5a14VCgaVSid//vKoufXclzmQyh7TnvZeIpEgKSEJEXiApt4M7yamz59yb757lpcsrvPjtD3zupVdZmH2SP63+HktiGQTBa7VaDYZk3pHva0D/uf63S/u+ejCTxteXVzCK9jCdy+CWc/hw6XPzzIljyGazHwyHQ9+IyL5+GD6bJNbZeKyfOPYYJh6YQNjpopjP4bdr19EaC4zE6n6t5kgpt3e7L2oAIxG56qczerded7VwgMyJOdy4voWLF75B6qmnsb98FPe3K6Si7nS621EU/WqUUnsi8q/n6ZOjfp/r95pwhw/j6rVNVG9XEJ98HnebLUylJmhtrKIo2rHWbhiS4/5gsJVO+UgXC/xx6Qv+cmVV+UwQQ2Hlo4/R7fZ4+q15N+r39WA43CZ50xhjUCwWt+uNBh4vH+G5M+8oG+3BTRiQhLYWDlo99PB+tNq7iKLolta6ZxqNBhYWFnbm599APpNKyo8c6k1Nl/b5xqRskiAMw3G93hrkC7l0p9cz+Vx+x1oL3W63sby8HB48eMCl0unU+aVPK/9s3ojCYaR6/ZEK7ty15z/5bGs42ovKR45icXGxFgQBVKVSwezs7NTc3NzLSZKUq9WqnpyczPq+r0kijmM2m81uqVRyuVxuZ2Nj48La2lpDBUGAmZkZ3/O8gogcAJAFkAAg/qcAGAAjrfU951xYrVbH/wGrY6Tm/qMTkAAAAABJRU5ErkJggg==)";
 	this.menuItemName = "Apache Cordova";
 	this.name = "ApacheCordovaPublisher";
@@ -19,20 +17,75 @@ ApacheCordovaPublisherPlugin.__interfaces__ = [nanofl.ide.plugins.IPublisherPlug
 ApacheCordovaPublisherPlugin.main = function() {
 	nanofl.engine.Plugins.registerPublisher(new ApacheCordovaPublisherPlugin());
 };
+ApacheCordovaPublisherPlugin.log = function(s,infos) {
+};
 ApacheCordovaPublisherPlugin.prototype = {
 	publish: function(fileApi,params,srcFilePath,files) {
+		var _g2 = this;
 		nanofl.engine.Debug.console.log("Plugin.publish " + Std.string(files));
-		if(params.outPath == "") return this.error("Output folder must be specified. Check publish settings.");
+		if(params.outPath == "") this.error("Output folder must be specified. Check publish settings.",{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 42, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
 		var outPath = haxe_io_Path.join([haxe_io_Path.directory(srcFilePath),params.outPath]);
 		if(!fileApi.exists(outPath) || fileApi.readDirectory(outPath).length == 0) {
 			fileApi.createDirectory(outPath);
-			var r = fileApi.runCaptured("cordova",["create",".",params.domain,params.title != ""?params.title:haxe_io_Path.withoutDirectory(haxe_io_Path.withoutExtension(srcFilePath))],null,outPath);
-			if(r.exitCode != 0) return this.error("Run cordova CLI error (" + r.exitCode + "): " + r.output + "\n" + r.error);
+			this.runCordova(["create",".",params.domain,params.title != ""?params.title:haxe_io_Path.withoutDirectory(haxe_io_Path.withoutExtension(srcFilePath))],fileApi,outPath);
 		}
-		return { success : true, message : "OK"};
+		var re = new EReg("Installed\\s+platforms:([^\r\n]+).+?Available\\s+platforms:([^\r\n]+)","s");
+		var s = this.runCordova(["platforms","ls"],fileApi,outPath).output;
+		ApacheCordovaPublisherPlugin.log("s = " + s,{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 54, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
+		if(re.match(s)) {
+			var installedPlatforms = re.matched(1).split(",").map(StringTools.trim).filter(function(s1) {
+				return s1 != "";
+			}).map(function(s2) {
+				return s2.split(" ")[0];
+			});
+			var availablePlatforms = re.matched(2).split(",").map(StringTools.trim).filter(function(s3) {
+				return s3 != "";
+			});
+			nanofl.engine.Debug.console.log("Installed platforms = " + installedPlatforms.join(" | "));
+			nanofl.engine.Debug.console.log("Available platforms = " + availablePlatforms.join(" | "));
+			var _g = 0;
+			var _g1 = Reflect.fields(params);
+			while(_g < _g1.length) {
+				var name = _g1[_g];
+				++_g;
+				if(StringTools.startsWith(name,"platform_")) {
+					var platform = [StringTools.replace(name.substring("platform_".length),"_","-")];
+					ApacheCordovaPublisherPlugin.log("params." + name + " => " + platform[0],{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 67, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
+					if(Reflect.field(params,name)) {
+						if(!Lambda.exists(installedPlatforms,(function(platform) {
+							return function(s4) {
+								return _g2.trimNums(s4) == _g2.trimNums(platform[0]);
+							};
+						})(platform))) {
+							if(HxOverrides.indexOf(availablePlatforms,platform[0],0) >= 0) {
+								nanofl.engine.Debug.console.log("Install platform: " + platform[0]);
+								this.runCordova(["platform","add",platform[0]],fileApi,outPath);
+							} else nanofl.engine.Debug.console.log("Unsupported platform: " + platform[0]);
+						}
+					} else if(Lambda.exists(installedPlatforms,(function(platform) {
+						return function(s5) {
+							return _g2.trimNums(s5) == _g2.trimNums(platform[0]);
+						};
+					})(platform))) {
+						nanofl.engine.Debug.console.log("Uninstall platform: " + platform[0]);
+						this.runCordova(["platform","remove",platform[0]],fileApi,outPath);
+					}
+				}
+			}
+		} else this.error("Can't detect installed platforms.",{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 97, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
 	}
-	,error: function(message) {
-		return { success : false, message : message};
+	,runCordova: function(args,fileApi,directory) {
+		var r = fileApi.runCaptured("cordova",args,null,directory);
+		if(r.exitCode != 0) this.error("Run cordova error: " + args.join(" ") + "\n\texit code = " + r.exitCode + "\n\toutput = " + r.output + "\n\terror = " + r.error,{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 104, className : "ApacheCordovaPublisherPlugin", methodName : "runCordova"});
+		return r;
+	}
+	,error: function(s,infos) {
+		haxe_Log.trace(s,infos);
+		throw new js__$Boot_HaxeError(s);
+	}
+	,trimNums: function(s) {
+		while(s.length > 0 && "0123456789".indexOf(s.charAt(s.length - 1)) >= 0) s = s.substring(0,s.length - 1);
+		return s;
 	}
 	,__class__: ApacheCordovaPublisherPlugin
 };
@@ -42,7 +95,16 @@ var EReg = function(r,opt) {
 };
 EReg.__name__ = true;
 EReg.prototype = {
-	replace: function(s,by) {
+	match: function(s) {
+		if(this.r.global) this.r.lastIndex = 0;
+		this.r.m = this.r.exec(s);
+		this.r.s = s;
+		return this.r.m != null;
+	}
+	,matched: function(n) {
+		if(this.r.m != null && n >= 0 && n < this.r.m.length) return this.r.m[n]; else throw new js__$Boot_HaxeError("EReg::matched");
+	}
+	,replace: function(s,by) {
 		return s.replace(this.r,by);
 	}
 	,__class__: EReg
@@ -63,7 +125,56 @@ HxOverrides.substr = function(s,pos,len) {
 	} else if(len < 0) len = s.length + len - pos;
 	return s.substr(pos,len);
 };
+HxOverrides.indexOf = function(a,obj,i) {
+	var len = a.length;
+	if(i < 0) {
+		i += len;
+		if(i < 0) i = 0;
+	}
+	while(i < len) {
+		if(a[i] === obj) return i;
+		i++;
+	}
+	return -1;
+};
+HxOverrides.iter = function(a) {
+	return { cur : 0, arr : a, hasNext : function() {
+		return this.cur < this.arr.length;
+	}, next : function() {
+		return this.arr[this.cur++];
+	}};
+};
+var Lambda = function() { };
+Lambda.__name__ = true;
+Lambda.exists = function(it,f) {
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		if(f(x)) return true;
+	}
+	return false;
+};
 Math.__name__ = true;
+var Reflect = function() { };
+Reflect.__name__ = true;
+Reflect.field = function(o,field) {
+	try {
+		return o[field];
+	} catch( e ) {
+		if (e instanceof js__$Boot_HaxeError) e = e.val;
+		return null;
+	}
+};
+Reflect.fields = function(o) {
+	var a = [];
+	if(o != null) {
+		var hasOwnProperty = Object.prototype.hasOwnProperty;
+		for( var f in o ) {
+		if(f != "__id__" && f != "hx__closures__" && hasOwnProperty.call(o,f)) a.push(f);
+		}
+	}
+	return a;
+};
 var Std = function() { };
 Std.__name__ = true;
 Std.string = function(s) {
@@ -79,6 +190,33 @@ StringBuf.prototype = {
 	}
 	,__class__: StringBuf
 };
+var StringTools = function() { };
+StringTools.__name__ = true;
+StringTools.startsWith = function(s,start) {
+	return s.length >= start.length && HxOverrides.substr(s,0,start.length) == start;
+};
+StringTools.isSpace = function(s,pos) {
+	var c = HxOverrides.cca(s,pos);
+	return c > 8 && c < 14 || c == 32;
+};
+StringTools.ltrim = function(s) {
+	var l = s.length;
+	var r = 0;
+	while(r < l && StringTools.isSpace(s,r)) r++;
+	if(r > 0) return HxOverrides.substr(s,r,l - r); else return s;
+};
+StringTools.rtrim = function(s) {
+	var l = s.length;
+	var r = 0;
+	while(r < l && StringTools.isSpace(s,l - r - 1)) r++;
+	if(r > 0) return HxOverrides.substr(s,0,l - r); else return s;
+};
+StringTools.trim = function(s) {
+	return StringTools.ltrim(StringTools.rtrim(s));
+};
+StringTools.replace = function(s,sub,by) {
+	return s.split(sub).join(by);
+};
 var haxe_IMap = function() { };
 haxe_IMap.__name__ = true;
 var haxe__$Int64__$_$_$Int64 = function(high,low) {
@@ -88,6 +226,11 @@ var haxe__$Int64__$_$_$Int64 = function(high,low) {
 haxe__$Int64__$_$_$Int64.__name__ = true;
 haxe__$Int64__$_$_$Int64.prototype = {
 	__class__: haxe__$Int64__$_$_$Int64
+};
+var haxe_Log = function() { };
+haxe_Log.__name__ = true;
+haxe_Log.trace = function(v,infos) {
+	js_Boot.__trace(v,infos);
 };
 var haxe_ds_StringMap = function() { };
 haxe_ds_StringMap.__name__ = true;
@@ -291,6 +434,25 @@ js__$Boot_HaxeError.prototype = $extend(Error.prototype,{
 });
 var js_Boot = function() { };
 js_Boot.__name__ = true;
+js_Boot.__unhtml = function(s) {
+	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+};
+js_Boot.__trace = function(v,i) {
+	var msg;
+	if(i != null) msg = i.fileName + ":" + i.lineNumber + ": "; else msg = "";
+	msg += js_Boot.__string_rec(v,"");
+	if(i != null && i.customParams != null) {
+		var _g = 0;
+		var _g1 = i.customParams;
+		while(_g < _g1.length) {
+			var v1 = _g1[_g];
+			++_g;
+			msg += "," + js_Boot.__string_rec(v1,"");
+		}
+	}
+	var d;
+	if(typeof(document) != "undefined" && (d = document.getElementById("haxe:trace")) != null) d.innerHTML += js_Boot.__unhtml(msg) + "<br/>"; else if(typeof console != "undefined" && console.log != null) console.log(msg);
+};
 js_Boot.getClass = function(o) {
 	if((o instanceof Array) && o.__enum__ == null) return Array; else {
 		var cl = o.__class__;
@@ -605,6 +767,12 @@ js_html_compat_Uint8Array._subarray = function(start,end) {
 	a.byteOffset = start;
 	return a;
 };
+function $iterator(o) { if( o instanceof Array ) return function() { return HxOverrides.iter(o); }; return typeof(o.iterator) == 'function' ? $bind(o,o.iterator) : o.iterator; }
+var $_, $fid = 0;
+function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }
+if(Array.prototype.indexOf) HxOverrides.indexOf = function(a,o,i) {
+	return Array.prototype.indexOf.call(a,o,i);
+};
 String.prototype.__class__ = String;
 String.__name__ = true;
 Array.__name__ = true;
@@ -618,6 +786,16 @@ var Bool = Boolean;
 Bool.__ename__ = ["Bool"];
 var Class = { __name__ : ["Class"]};
 var Enum = { };
+if(Array.prototype.map == null) Array.prototype.map = function(f) {
+	var a = [];
+	var _g1 = 0;
+	var _g = this.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		a[i] = f(this[i]);
+	}
+	return a;
+};
 if(Array.prototype.filter == null) Array.prototype.filter = function(f1) {
 	var a1 = [];
 	var _g11 = 0;
