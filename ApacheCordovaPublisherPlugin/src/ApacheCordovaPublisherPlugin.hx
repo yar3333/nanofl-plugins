@@ -37,78 +37,75 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 	
 	public function publish(fileApi:FileApi, params:Dynamic, srcFilePath:String, files:Array<String>) : Void
 	{
-		console.log("Plugin.publish " + files);
+		console.log("ApacheCordovaPublisherPlugin.publish " + files);
 		
 		if (params.outPath == "") error("Output folder must be specified. Check publish settings.");
 		
-		var outPath = Path.join([ Path.directory(srcFilePath), params.outPath ]);
+		var baseSrcDir = Path.directory(srcFilePath);
+		var outPath = Path.join([ baseSrcDir, params.outPath ]);
+		
+		var cordovaCLI = new CordovaCLI(fileApi, outPath);
 		
 		if (!fileApi.exists(outPath) || fileApi.readDirectory(outPath).length == 0)
 		{
 			fileApi.createDirectory(outPath);
-			runCordova([ "create", ".", params.domain, (params.title != "" ? params.title : Path.withoutDirectory(Path.withoutExtension(srcFilePath))) ], fileApi, outPath);
+			cordovaCLI.createApplication(params.domain, params.title != "" ? params.title : Path.withoutDirectory(Path.withoutExtension(srcFilePath)));
 		}
 		
-		var re = ~/Installed\s+platforms:([^\r\n]+).+?Available\s+platforms:([^\r\n]+)/s;
-		var s = runCordova([ "platforms", "ls" ], fileApi, outPath).output;
-		log("s = " + s);
-		if (re.match(s))
+		var platforms = cordovaCLI.getPlatforms();
+		console.log("Installed platforms = " + platforms.installed.join(" | "));
+		console.log("Available platforms = " + platforms.available.join(" | "));
+		
+		for (name in Reflect.fields(params))
 		{
-			var installedPlatforms = re.matched(1).split(",").map(StringTools.trim).filter(function(s) return s != "").map(function(s) return s.split(" ")[0]);
-			var availablePlatforms = re.matched(2).split(",").map(StringTools.trim).filter(function(s) return s != "");
-			console.log("Installed platforms = " + installedPlatforms.join(" | "));
-			console.log("Available platforms = " + availablePlatforms.join(" | "));
-			
-			for (name in Reflect.fields(params))
+			if (name.startsWith("platform_"))
 			{
-				if (name.startsWith("platform_"))
+				var platform = name.substring("platform_".length).replace("_", "-");
+				log("params." + name + " => " + platform);
+				
+				if (Reflect.field(params, name))
 				{
-					var platform = name.substring("platform_".length).replace("_", "-");
-					log("params." + name + " => " + platform);
-					
-					if (Reflect.field(params, name))
+					if (!platforms.installed.exists(function(s) return trimNums(s) == trimNums(platform)))
 					{
-						if (!installedPlatforms.exists(function(s) return trimNums(s) == trimNums(platform)))
+						if (platforms.available.indexOf(platform) >= 0)
 						{
-							if (availablePlatforms.indexOf(platform) >= 0)
-							{
-								console.log("Install platform: " + platform);
-								runCordova([ "platform", "add", platform ], fileApi, outPath);
-							}
-							else
-							{
-								console.log("Unsupported platform: " + platform);
-							}
+							console.log("Add platform: " + platform);
+							cordovaCLI.addPlatform(platform);
+						}
+						else
+						{
+							console.log("Can't add platform '" + platform + "' due unsupported.");
 						}
 					}
-					else
+				}
+				else
+				{
+					if (platforms.installed.exists(function(s) return trimNums(s) == trimNums(platform)))
 					{
-						if (installedPlatforms.exists(function(s) return trimNums(s) == trimNums(platform)))
-						{
-							console.log("Uninstall platform: " + platform);
-							runCordova([ "platform", "remove", platform ], fileApi, outPath);
-						}
+						console.log("Remove platform: " + platform);
+						cordovaCLI.removePlatform(platform);
 					}
 				}
 			}
 		}
-		else
+		
+		log("COPY");
+		
+		var destDir = outPath + "/www";
+		removeDirectoryContent(fileApi, destDir);
+		for (file in files)
 		{
-			error("Can't detect installed platforms.");
+			log("copy " + baseSrcDir + "/" + file + " => " + destDir + "/" + file);
+			fileApi.copy(baseSrcDir + "/" + file, destDir + "/" + file);
 		}
 	}
 	
-	function runCordova(args:Array<String>, fileApi:FileApi, directory:String) : { exitCode:Int, output:String, error:String }
+	function removeDirectoryContent(fileApi:FileApi, dir:String)
 	{
-		var r = fileApi.runCaptured("cordova", args, null, directory);
-		if (r.exitCode != 0) error("Run cordova error: " + args.join(" ") + "\n\texit code = " + r.exitCode + "\n\toutput = " + r.output + "\n\terror = " + r.error);
-		return r;
-	}
-	
-	function error(s:String, ?infos:haxe.PosInfos)
-	{
-		haxe.Log.trace(s, infos);
-		throw s;
+		for (file in fileApi.readDirectory(dir))
+		{
+			fileApi.remove(dir + "/" + file);
+		}
 	}
 	
 	function trimNums(s:String) : String
@@ -117,8 +114,14 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		return s;
 	}
 	
+	function error(s:String, ?infos:haxe.PosInfos)
+	{
+		haxe.Log.trace(s, infos);
+		throw s;
+	}
+	
 	static function log(s:Dynamic, ?infos:haxe.PosInfos)
 	{
-		//haxe.Log.trace(s, infos);
+		haxe.Log.trace(s, infos);
 	}
 }

@@ -23,11 +23,12 @@ class SimpleHtmlPublisherPlugin implements IPublisherPlugin
 	
 	public function publish(fileApi:FileApi, params:Dynamic, srcFilePath:String, files:Array<String>) : Void
 	{
-		console.log("Plugin.publish " + files);
+		console.log("SimpleHtmlPublisherPlugin.publish " + files);
 		
 		if (params.outPath == "") throw "Output folder must be specified. Check publish settings.";
 		
-		var outPath = Path.join([ Path.directory(srcFilePath), params.outPath ]);
+		var baseSrcDir = Path.directory(srcFilePath);
+		var outPath = Path.join([ baseSrcDir, params.outPath ]);
 		
 		if (fileApi.exists(outPath))
 		{
@@ -40,5 +41,27 @@ class SimpleHtmlPublisherPlugin implements IPublisherPlugin
 		{
 			fileApi.createDirectory(outPath);
 		}
+		
+		log("COPY");
+		
+		removeDirectoryContent(fileApi, outPath);
+		for (file in files)
+		{
+			log("copy " + baseSrcDir + "/" + file + " => " + outPath + "/" + file);
+			fileApi.copy(baseSrcDir + "/" + file, outPath + "/" + file);
+		}
+	}
+	
+	function removeDirectoryContent(fileApi:FileApi, dir:String)
+	{
+		for (file in fileApi.readDirectory(dir))
+		{
+			fileApi.remove(dir + "/" + file);
+		}
+	}
+	
+	static function log(s:Dynamic, ?infos:haxe.PosInfos)
+	{
+		haxe.Log.trace(s, infos);
 	}
 }

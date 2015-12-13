@@ -24,70 +24,110 @@ ApacheCordovaPublisherPlugin.prototype = {
 		var _g2 = this;
 		nanofl.engine.Debug.console.log("Plugin.publish " + Std.string(files));
 		if(params.outPath == "") this.error("Output folder must be specified. Check publish settings.",{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 42, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
-		var outPath = haxe_io_Path.join([haxe_io_Path.directory(srcFilePath),params.outPath]);
+		var baseSrcDir = haxe_io_Path.directory(srcFilePath);
+		var outPath = haxe_io_Path.join([baseSrcDir,params.outPath]);
+		var cordovaCLI = new CordovaCLI(fileApi,outPath);
 		if(!fileApi.exists(outPath) || fileApi.readDirectory(outPath).length == 0) {
 			fileApi.createDirectory(outPath);
-			this.runCordova(["create",".",params.domain,params.title != ""?params.title:haxe_io_Path.withoutDirectory(haxe_io_Path.withoutExtension(srcFilePath))],fileApi,outPath);
+			cordovaCLI.createApplication(params.domain,params.title != ""?params.title:haxe_io_Path.withoutDirectory(haxe_io_Path.withoutExtension(srcFilePath)));
 		}
-		var re = new EReg("Installed\\s+platforms:([^\r\n]+).+?Available\\s+platforms:([^\r\n]+)","s");
-		var s = this.runCordova(["platforms","ls"],fileApi,outPath).output;
-		ApacheCordovaPublisherPlugin.log("s = " + s,{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 54, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
-		if(re.match(s)) {
-			var installedPlatforms = re.matched(1).split(",").map(StringTools.trim).filter(function(s1) {
-				return s1 != "";
-			}).map(function(s2) {
-				return s2.split(" ")[0];
-			});
-			var availablePlatforms = re.matched(2).split(",").map(StringTools.trim).filter(function(s3) {
-				return s3 != "";
-			});
-			nanofl.engine.Debug.console.log("Installed platforms = " + installedPlatforms.join(" | "));
-			nanofl.engine.Debug.console.log("Available platforms = " + availablePlatforms.join(" | "));
-			var _g = 0;
-			var _g1 = Reflect.fields(params);
-			while(_g < _g1.length) {
-				var name = _g1[_g];
-				++_g;
-				if(StringTools.startsWith(name,"platform_")) {
-					var platform = [StringTools.replace(name.substring("platform_".length),"_","-")];
-					ApacheCordovaPublisherPlugin.log("params." + name + " => " + platform[0],{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 67, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
-					if(Reflect.field(params,name)) {
-						if(!Lambda.exists(installedPlatforms,(function(platform) {
-							return function(s4) {
-								return _g2.trimNums(s4) == _g2.trimNums(platform[0]);
-							};
-						})(platform))) {
-							if(HxOverrides.indexOf(availablePlatforms,platform[0],0) >= 0) {
-								nanofl.engine.Debug.console.log("Install platform: " + platform[0]);
-								this.runCordova(["platform","add",platform[0]],fileApi,outPath);
-							} else nanofl.engine.Debug.console.log("Unsupported platform: " + platform[0]);
-						}
-					} else if(Lambda.exists(installedPlatforms,(function(platform) {
-						return function(s5) {
-							return _g2.trimNums(s5) == _g2.trimNums(platform[0]);
+		var platforms = cordovaCLI.getPlatforms();
+		nanofl.engine.Debug.console.log("Installed platforms = " + platforms.installed.join(" | "));
+		nanofl.engine.Debug.console.log("Available platforms = " + platforms.available.join(" | "));
+		var _g = 0;
+		var _g1 = Reflect.fields(params);
+		while(_g < _g1.length) {
+			var name = _g1[_g];
+			++_g;
+			if(StringTools.startsWith(name,"platform_")) {
+				var platform = [StringTools.replace(name.substring("platform_".length),"_","-")];
+				ApacheCordovaPublisherPlugin.log("params." + name + " => " + platform[0],{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 64, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
+				if(Reflect.field(params,name)) {
+					if(!Lambda.exists(platforms.installed,(function(platform) {
+						return function(s) {
+							return _g2.trimNums(s) == _g2.trimNums(platform[0]);
 						};
 					})(platform))) {
-						nanofl.engine.Debug.console.log("Uninstall platform: " + platform[0]);
-						this.runCordova(["platform","remove",platform[0]],fileApi,outPath);
+						if(HxOverrides.indexOf(platforms.available,platform[0],0) >= 0) {
+							nanofl.engine.Debug.console.log("Add platform: " + platform[0]);
+							cordovaCLI.addPlatform(platform[0]);
+						} else nanofl.engine.Debug.console.log("Can't add platform '" + platform[0] + "' due unsupported.");
 					}
+				} else if(Lambda.exists(platforms.installed,(function(platform) {
+					return function(s1) {
+						return _g2.trimNums(s1) == _g2.trimNums(platform[0]);
+					};
+				})(platform))) {
+					nanofl.engine.Debug.console.log("Remove platform: " + platform[0]);
+					cordovaCLI.removePlatform(platform[0]);
 				}
 			}
-		} else this.error("Can't detect installed platforms.",{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 97, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
+		}
+		this.removeDirectoryContent(fileApi,outPath + "/www");
+		var _g3 = 0;
+		while(_g3 < files.length) {
+			var file = files[_g3];
+			++_g3;
+			fileApi.copy(baseSrcDir + "/" + file,outPath + "/" + file);
+		}
 	}
-	,runCordova: function(args,fileApi,directory) {
-		var r = fileApi.runCaptured("cordova",args,null,directory);
-		if(r.exitCode != 0) this.error("Run cordova error: " + args.join(" ") + "\n\texit code = " + r.exitCode + "\n\toutput = " + r.output + "\n\terror = " + r.error,{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 104, className : "ApacheCordovaPublisherPlugin", methodName : "runCordova"});
-		return r;
-	}
-	,error: function(s,infos) {
-		haxe_Log.trace(s,infos);
-		throw new js__$Boot_HaxeError(s);
+	,removeDirectoryContent: function(fileApi,dir) {
+		var _g = 0;
+		var _g1 = fileApi.readDirectory(dir);
+		while(_g < _g1.length) {
+			var file = _g1[_g];
+			++_g;
+			fileApi.remove(dir + "/" + file);
+		}
 	}
 	,trimNums: function(s) {
 		while(s.length > 0 && "0123456789".indexOf(s.charAt(s.length - 1)) >= 0) s = s.substring(0,s.length - 1);
 		return s;
 	}
+	,error: function(s,infos) {
+		haxe_Log.trace(s,infos);
+		throw new js__$Boot_HaxeError(s);
+	}
 	,__class__: ApacheCordovaPublisherPlugin
+};
+var CordovaCLI = function(fileApi,directory) {
+	this.fileApi = fileApi;
+	this.directory = directory;
+};
+CordovaCLI.__name__ = true;
+CordovaCLI.prototype = {
+	run: function(args) {
+		var r = this.fileApi.runCaptured("cordova",args,null,this.directory);
+		if(r.exitCode != 0) this.error("not zero exit code when run with args: " + args.join(" ") + "\n\texit code = " + r.exitCode + "\n\toutput = " + r.output + "\n\terror = " + r.error,{ fileName : "CordovaCLI.hx", lineNumber : 18, className : "CordovaCLI", methodName : "run"});
+		return r;
+	}
+	,createApplication: function(domain,title) {
+		this.run(["create",".",domain,title]);
+	}
+	,getPlatforms: function() {
+		var re = new EReg("Installed\\s+platforms:([^\r\n]+).+?Available\\s+platforms:([^\r\n]+)","s");
+		var s = this.run(["platforms","ls"]).output;
+		if(re.match(s)) return { installed : re.matched(1).split(",").map(StringTools.trim).filter(function(s1) {
+			return s1 != "";
+		}).map(function(s2) {
+			return s2.split(" ")[0];
+		}), available : re.matched(2).split(",").map(StringTools.trim).filter(function(s3) {
+			return s3 != "";
+		})};
+		this.error("can't detect platforms.",{ fileName : "CordovaCLI.hx", lineNumber : 39, className : "CordovaCLI", methodName : "getPlatforms"});
+		return null;
+	}
+	,addPlatform: function(platform) {
+		this.run(["platform","add",platform]);
+	}
+	,removePlatform: function(platform) {
+		this.run(["platform","remove",platform]);
+	}
+	,error: function(s,infos) {
+		haxe_Log.trace("Cordova CLI error: " + s,infos);
+		throw new js__$Boot_HaxeError(s);
+	}
+	,__class__: CordovaCLI
 };
 var EReg = function(r,opt) {
 	opt = opt.split("u").join("");
