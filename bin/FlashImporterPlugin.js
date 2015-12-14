@@ -2084,6 +2084,13 @@ stdlib_LambdaIterator.filter = function(it,pred) {
 	}
 	return r;
 };
+stdlib_LambdaIterator.exists = function(it,pred) {
+	while( it.hasNext() ) {
+		var e = it.next();
+		if(pred(e)) return true;
+	}
+	return false;
+};
 stdlib_LambdaIterator.count = function(it,pred) {
 	var n = 0;
 	if(pred == null) {

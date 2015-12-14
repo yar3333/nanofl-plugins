@@ -45,11 +45,15 @@ SimpleHtmlPublisherPlugin.__interfaces__ = [nanofl.ide.plugins.IPublisherPlugin]
 SimpleHtmlPublisherPlugin.main = function() {
 	nanofl.engine.Plugins.registerPublisher(new SimpleHtmlPublisherPlugin());
 };
+SimpleHtmlPublisherPlugin.log = function(s,infos) {
+	haxe_Log.trace(s,infos);
+};
 SimpleHtmlPublisherPlugin.prototype = {
 	publish: function(fileApi,params,srcFilePath,files) {
-		nanofl.engine.Debug.console.log("Plugin.publish " + Std.string(files));
+		nanofl.engine.Debug.console.log("SimpleHtmlPublisherPlugin.publish " + Std.string(files));
 		if(params.outPath == "") throw new js__$Boot_HaxeError("Output folder must be specified. Check publish settings.");
-		var outPath = haxe_io_Path.join([haxe_io_Path.directory(srcFilePath),params.outPath]);
+		var baseSrcDir = haxe_io_Path.directory(srcFilePath);
+		var outPath = haxe_io_Path.join([baseSrcDir,params.outPath]);
 		if(fileApi.exists(outPath)) {
 			var _g = 0;
 			var _g1 = fileApi.readDirectory(outPath);
@@ -59,6 +63,24 @@ SimpleHtmlPublisherPlugin.prototype = {
 				fileApi.remove(outPath + "/" + file);
 			}
 		} else fileApi.createDirectory(outPath);
+		SimpleHtmlPublisherPlugin.log("COPY",{ fileName : "SimpleHtmlPublisherPlugin.hx", lineNumber : 45, className : "SimpleHtmlPublisherPlugin", methodName : "publish"});
+		this.removeDirectoryContent(fileApi,outPath);
+		var _g2 = 0;
+		while(_g2 < files.length) {
+			var file1 = files[_g2];
+			++_g2;
+			SimpleHtmlPublisherPlugin.log("copy " + baseSrcDir + "/" + file1 + " => " + outPath + "/" + file1,{ fileName : "SimpleHtmlPublisherPlugin.hx", lineNumber : 50, className : "SimpleHtmlPublisherPlugin", methodName : "publish"});
+			fileApi.copy(baseSrcDir + "/" + file1,outPath + "/" + file1);
+		}
+	}
+	,removeDirectoryContent: function(fileApi,dir) {
+		var _g = 0;
+		var _g1 = fileApi.readDirectory(dir);
+		while(_g < _g1.length) {
+			var file = _g1[_g];
+			++_g;
+			fileApi.remove(dir + "/" + file);
+		}
 	}
 	,__class__: SimpleHtmlPublisherPlugin
 };
@@ -86,6 +108,11 @@ var haxe__$Int64__$_$_$Int64 = function(high,low) {
 haxe__$Int64__$_$_$Int64.__name__ = true;
 haxe__$Int64__$_$_$Int64.prototype = {
 	__class__: haxe__$Int64__$_$_$Int64
+};
+var haxe_Log = function() { };
+haxe_Log.__name__ = true;
+haxe_Log.trace = function(v,infos) {
+	js_Boot.__trace(v,infos);
 };
 var haxe_ds_StringMap = function() { };
 haxe_ds_StringMap.__name__ = true;
@@ -276,6 +303,25 @@ js__$Boot_HaxeError.prototype = $extend(Error.prototype,{
 });
 var js_Boot = function() { };
 js_Boot.__name__ = true;
+js_Boot.__unhtml = function(s) {
+	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+};
+js_Boot.__trace = function(v,i) {
+	var msg;
+	if(i != null) msg = i.fileName + ":" + i.lineNumber + ": "; else msg = "";
+	msg += js_Boot.__string_rec(v,"");
+	if(i != null && i.customParams != null) {
+		var _g = 0;
+		var _g1 = i.customParams;
+		while(_g < _g1.length) {
+			var v1 = _g1[_g];
+			++_g;
+			msg += "," + js_Boot.__string_rec(v1,"");
+		}
+	}
+	var d;
+	if(typeof(document) != "undefined" && (d = document.getElementById("haxe:trace")) != null) d.innerHTML += js_Boot.__unhtml(msg) + "<br/>"; else if(typeof console != "undefined" && console.log != null) console.log(msg);
+};
 js_Boot.getClass = function(o) {
 	if((o instanceof Array) && o.__enum__ == null) return Array; else {
 		var cl = o.__class__;

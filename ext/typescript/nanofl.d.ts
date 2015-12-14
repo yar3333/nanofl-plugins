@@ -370,7 +370,6 @@ declare module nanofl.ide
 		path : string;
 		properties : nanofl.engine.DocumentProperties;
 		library : nanofl.ide.EditorLibrary;
-		publishSettings : Map<string, any>;
 		lastModified : Date;
 		navigator : nanofl.ide.Navigator;
 		editor : nanofl.ide.Editor;
@@ -692,7 +691,7 @@ declare module nanofl.ide
 	{
 		static loadDocument(fileApi:nanofl.engine.FileApi, path:string, lastModified:Date) : { lastModified : Date; library : nanofl.engine.Library; properties : nanofl.engine.DocumentProperties; };
 		static saveDocument(fileApi:nanofl.engine.FileApi, path:string, properties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>, fileActions:nanofl.ide.FileAction[]) : { generatorError : string; lastModified : Date; };
-		static publishDocument(fileApi:nanofl.engine.FileApi, path:string, properties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>, publishSettings:Map<string, any>) : boolean;
+		static publishDocument(fileApi:nanofl.engine.FileApi, path:string, properties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : boolean;
 		static copyLibraryFiles(fileApi:nanofl.engine.FileApi, srcLibraryDir:string, relativePaths:string[], destLibraryDir:string) : void;
 		static renameFiles(fileApi:nanofl.engine.FileApi, files:{ src : string; dest : string; }[]) : void;
 		static remove(fileApi:nanofl.engine.FileApi, paths:string[]) : void;
@@ -1675,6 +1674,7 @@ declare module nanofl.engine.libraryitems
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		getFilePathToRunWithEditor() : string;
 		getLibraryFilePaths() : string[];
+		getFilePathsToPublish() : string[];
 		preload(ready:() => void) : void;
 		duplicate(newNamePath:string) : nanofl.engine.libraryitems.LibraryItem;
 		remove() : void;
@@ -1714,6 +1714,7 @@ declare module nanofl.engine.libraryitems
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 		getFilePathToRunWithEditor() : string;
 		getLibraryFilePaths() : string[];
+		getFilePathsToPublish() : string[];
 		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 		getUsedSymbolNamePaths() : string[];
 		toString() : string;
@@ -1746,6 +1747,7 @@ declare module nanofl.engine.libraryitems
 		toFont() : nanofl.engine.Font;
 		preload(ready:() => void) : void;
 		addVariant(v:nanofl.engine.FontVariant) : void;
+		getFilePathsToPublish() : string[];
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 		toString() : string;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.FontItem;
@@ -1801,6 +1803,7 @@ declare module nanofl.engine.libraryitems
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		getUrl() : string;
+		getFilePathsToPublish() : string[];
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 		toString() : string;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.SoundItem;
@@ -9080,6 +9083,11 @@ declare module nanofl.ide.plugins
 		 */
 		publish(fileApi:nanofl.engine.FileApi, params:any, srcFilePath:string, files:string[]) : void;
 	}
+	
+	type PublishSetting =
+	{
+		__enabled : boolean;
+	}
 }
 
 declare module nanofl.ide.draganddrop
@@ -9313,7 +9321,7 @@ declare module nanofl.engine
 	
 	export class DocumentProperties
 	{
-		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, scaleMode?:string, generatorName?:string, generatorParams?:any, useTextureAtlases?:boolean, textureAtlases?:Map<string, { width : number; padding : number; height : number; }>);
+		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, scaleMode?:string, generatorName?:string, generatorParams?:any, useTextureAtlases?:boolean, textureAtlases?:Map<string, { width : number; padding : number; height : number; }>, publishSettings?:Map<string, nanofl.ide.plugins.PublishSetting>);
 		title : string;
 		width : number;
 		height : number;
@@ -9324,6 +9332,7 @@ declare module nanofl.engine
 		generatorParams : any;
 		useTextureAtlases : boolean;
 		textureAtlases : Map<string, { width : number; padding : number; height : number; }>;
+		publishSettings : Map<string, nanofl.ide.plugins.PublishSetting>;
 		save(fileApi:nanofl.engine.FileApi, filePath:string) : void;
 		getGeneratorAsString() : string;
 		equ(p:nanofl.engine.DocumentProperties) : boolean;
