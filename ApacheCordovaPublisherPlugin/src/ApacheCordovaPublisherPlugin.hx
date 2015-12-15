@@ -48,10 +48,17 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		
 		var cordovaCLI = new CordovaCLI(fileApi, outPath);
 		
-		if (!fileApi.exists(outPath) || fileApi.readDirectory(outPath).length == 0)
+		if (!fileApi.exists(outPath)
+		 || fileApi.readDirectory(outPath).length == 0)
 		{
 			fileApi.createDirectory(outPath);
-			cordovaCLI.createApplication(params.domain, params.title != "" ? params.title : Path.withoutDirectory(Path.withoutExtension(filePath)));
+			createProject(cordovaCLI, filePath, params);
+		}
+		else
+		if (!cordovaCLI.isProjectDirectory())
+		{
+			removeDirectoryContent(fileApi, outPath);
+			createProject(cordovaCLI, filePath, params);
 		}
 		
 		var platforms = cordovaCLI.getPlatforms();
@@ -63,7 +70,6 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 			if (name.startsWith("platform_"))
 			{
 				var platform = name.substring("platform_".length).replace("_", "-");
-				log("params." + name + " => " + platform);
 				
 				if (Reflect.field(params, name))
 				{
@@ -102,6 +108,11 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		
 		log("BUILD");
 		cordovaCLI.build();
+	}
+	
+	function createProject(cordovaCLI:CordovaCLI, filePath:String, params:Dynamic)
+	{
+		cordovaCLI.createApplication(params.domain, params.title != "" ? params.title : Path.withoutDirectory(Path.withoutExtension(filePath)));
 	}
 	
 	function removeDirectoryContent(fileApi:FileApi, dir:String)

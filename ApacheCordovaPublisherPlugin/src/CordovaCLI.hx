@@ -1,5 +1,7 @@
 import nanofl.engine.FileApi;
 
+using StringTools;
+
 class CordovaCLI
 {
 	var fileApi : FileApi;
@@ -9,13 +11,12 @@ class CordovaCLI
 	{
 		this.fileApi = fileApi;
 		this.directory = directory;
-		
 	}
 	
 	public function run(args:Array<String>) : { exitCode:Int, output:String, error:String }
 	{
 		var r = fileApi.runCaptured("cordova", args, null, directory);
-		if (r.exitCode != 0) error("not zero exit code when run with args: " + args.join(" ") + "\n\texit code = " + r.exitCode + "\n\toutput = " + r.output + "\n\terror = " + r.error);
+		if (r.exitCode != 0) error("none zero exit code (" + r.exitCode + ") when run with args: " + args.join(" ") + (r.output != "" ? "\n" + r.output : "") + (r.error != "" ? "\n" + r.error : ""));
 		return r;
 	}
 	
@@ -50,6 +51,12 @@ class CordovaCLI
 		run([ "platform", "remove", platform ]);
 	}
 	
+	public function isProjectDirectory() : Bool
+	{
+		var r = fileApi.runCaptured("cordova", [ "info" ], null, directory);
+		return r.exitCode == 0;
+	}
+	
 	public function build() : { exitCode:Int, output:String, error:String }
 	{
 		return run([ "build" ]);
@@ -57,7 +64,7 @@ class CordovaCLI
 	
 	function error(s:String, ?infos:haxe.PosInfos)
 	{
-		haxe.Log.trace("Cordova CLI error: " + s, infos);
-		throw s;
+		haxe.Log.trace("Cordova CLI error:\n" + s, infos);
+		throw s.replace("\n", "<br>");
 	}
 }
