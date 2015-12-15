@@ -50,6 +50,11 @@ class CordovaCLI
 		run([ "platform", "remove", platform ]);
 	}
 	
+	public function build() : { exitCode:Int, output:String, error:String }
+	{
+		return run([ "build" ]);
+	}
+	
 	function error(s:String, ?infos:haxe.PosInfos)
 	{
 		haxe.Log.trace("Cordova CLI error: " + s, infos);

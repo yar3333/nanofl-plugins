@@ -1,6 +1,7 @@
 import haxe.io.Path;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.Debug.console;
+import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileApi;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
@@ -36,13 +37,13 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		{ type:"bool", name:"platform_wp8", 			label:"Windows Phone 8", 		defaultValue:false },
 	];
 	
-	public function publish(fileApi:FileApi, params:Dynamic, srcFilePath:String, library:Library, generatorFiles:Array<String>) : Void
+	public function publish(fileApi:FileApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, generatorFiles:Array<String>) : Void
 	{
 		console.log("ApacheCordovaPublisherPlugin.publish " + generatorFiles);
 		
 		if (params.outPath == "") error("Output folder must be specified. Check publish settings.");
 		
-		var baseSrcDir = Path.directory(srcFilePath);
+		var baseSrcDir = Path.directory(filePath);
 		var outPath = Path.join([ baseSrcDir, params.outPath ]);
 		
 		var cordovaCLI = new CordovaCLI(fileApi, outPath);
@@ -50,7 +51,7 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		if (!fileApi.exists(outPath) || fileApi.readDirectory(outPath).length == 0)
 		{
 			fileApi.createDirectory(outPath);
-			cordovaCLI.createApplication(params.domain, params.title != "" ? params.title : Path.withoutDirectory(Path.withoutExtension(srcFilePath)));
+			cordovaCLI.createApplication(params.domain, params.title != "" ? params.title : Path.withoutDirectory(Path.withoutExtension(filePath)));
 		}
 		
 		var platforms = cordovaCLI.getPlatforms();
@@ -91,14 +92,16 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		}
 		
 		log("COPY");
-		
 		var destDir = outPath + "/www";
 		removeDirectoryContent(fileApi, destDir);
 		for (file in generatorFiles)
 		{
 			fileApi.copy(baseSrcDir + "/" + file, outPath + "/" + file);
 		}
-		library.publish(fileApi, outPath + "/library");
+		library.publish(fileApi, documentProperties.useTextureAtlases, outPath + "/library");
+		
+		log("BUILD");
+		cordovaCLI.build();
 	}
 	
 	function removeDirectoryContent(fileApi:FileApi, dir:String)

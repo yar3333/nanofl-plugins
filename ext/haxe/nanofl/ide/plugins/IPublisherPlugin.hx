@@ -22,8 +22,8 @@ extern interface IPublisherPlugin
 	 * This method must publish document.
 	 * @param	fileApi			Use this object to work with file system.
 	 * @param	params			Custom parameters specified by user (produced from `properties`).
-	 * @param	srcFilePath		Path to `*.nfl` file.
+	 * @param	filePath		Path to `*.nfl` file.
 	 * @param	generatorFiles	Code files to publish.
 	 */
-	function publish(fileApi:nanofl.engine.FileApi, params:Dynamic, srcFilePath:String, library:nanofl.engine.Library, generatorFiles:Array<String>) : Void;
+	function publish(fileApi:nanofl.engine.FileApi, params:Dynamic, filePath:String, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, generatorFiles:Array<String>) : Void;
 }
