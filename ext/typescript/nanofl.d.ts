@@ -273,11 +273,14 @@ declare module nanofl.ide.textureatlas
 		y : number;
 	}
 	
-	type TextureAtlasParams =
+	export class TextureAtlasParams
 	{
+		constructor(width?:number, height?:number, padding?:number);
+		width : number;
 		height : number;
 		padding : number;
-		width : number;
+		equ(p:nanofl.ide.textureatlas.TextureAtlasParams) : boolean;
+		clone() : nanofl.ide.textureatlas.TextureAtlasParams;
 	}
 }
 
@@ -9084,9 +9087,14 @@ declare module nanofl.ide.plugins
 		publish(fileApi:nanofl.engine.FileApi, params:any, srcFilePath:string, files:string[]) : void;
 	}
 	
-	type PublishSetting =
+	export class PublishSetting
 	{
-		__enabled : boolean;
+		constructor(publisher:string, enabled:boolean, params:any);
+		publisher : string;
+		enabled : boolean;
+		params : any;
+		equ(ps:nanofl.ide.plugins.PublishSetting) : boolean;
+		clone() : nanofl.ide.plugins.PublishSetting;
 	}
 }
 
@@ -9321,7 +9329,7 @@ declare module nanofl.engine
 	
 	export class DocumentProperties
 	{
-		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, scaleMode?:string, generatorName?:string, generatorParams?:any, useTextureAtlases?:boolean, textureAtlases?:Map<string, { width : number; padding : number; height : number; }>, publishSettings?:Map<string, nanofl.ide.plugins.PublishSetting>);
+		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, scaleMode?:string, generatorName?:string, generatorParams?:any, useTextureAtlases?:boolean, textureAtlases?:Map<string, nanofl.ide.textureatlas.TextureAtlasParams>, publishSettings?:nanofl.ide.plugins.PublishSetting[]);
 		title : string;
 		width : number;
 		height : number;
@@ -9331,15 +9339,14 @@ declare module nanofl.engine
 		generatorName : string;
 		generatorParams : any;
 		useTextureAtlases : boolean;
-		textureAtlases : Map<string, { width : number; padding : number; height : number; }>;
-		publishSettings : Map<string, nanofl.ide.plugins.PublishSetting>;
+		textureAtlases : Map<string, nanofl.ide.textureatlas.TextureAtlasParams>;
+		publishSettings : nanofl.ide.plugins.PublishSetting[];
 		save(fileApi:nanofl.engine.FileApi, filePath:string) : void;
 		getGeneratorAsString() : string;
 		equ(p:nanofl.engine.DocumentProperties) : boolean;
 		clone() : nanofl.engine.DocumentProperties;
 		static load(filePath:string, fileApi:nanofl.engine.FileApi) : nanofl.engine.DocumentProperties;
 		static parseGenerator(s:string) : { name : string; params : any; };
-		static newTextureAtlasParams() : nanofl.ide.textureatlas.TextureAtlasParams;
 	}
 	
 	export interface FileApi
