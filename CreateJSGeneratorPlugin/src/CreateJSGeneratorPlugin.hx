@@ -78,10 +78,17 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 			generator.generate(languageAndIde[0], dir, name);
 		}
 		
-		var files = [ "bin", name + ".html" ];
+		var files =
+		[
+			"bin",
+			name + ".html"
+		];
 		for (item in library.getItems())
 		{
-			files = files.concat(item.getFilePathsToPublish());
+			for (file in item.getFilePathsToPublish())
+			{
+				files.push("library/" + file);
+			}
 		}
 
 		return files;
