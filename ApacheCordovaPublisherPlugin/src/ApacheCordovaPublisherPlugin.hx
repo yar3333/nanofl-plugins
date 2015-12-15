@@ -2,6 +2,7 @@ import haxe.io.Path;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.Debug.console;
 import nanofl.engine.FileApi;
+import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IPublisherPlugin;
 using Lambda;
@@ -35,9 +36,9 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		{ type:"bool", name:"platform_wp8", 			label:"Windows Phone 8", 		defaultValue:false },
 	];
 	
-	public function publish(fileApi:FileApi, params:Dynamic, srcFilePath:String, files:Array<String>) : Void
+	public function publish(fileApi:FileApi, params:Dynamic, srcFilePath:String, library:Library, generatorFiles:Array<String>) : Void
 	{
-		console.log("ApacheCordovaPublisherPlugin.publish " + files);
+		console.log("ApacheCordovaPublisherPlugin.publish " + generatorFiles);
 		
 		if (params.outPath == "") error("Output folder must be specified. Check publish settings.");
 		
@@ -93,11 +94,11 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		
 		var destDir = outPath + "/www";
 		removeDirectoryContent(fileApi, destDir);
-		for (file in files)
+		for (file in generatorFiles)
 		{
-			log("copy " + baseSrcDir + "/" + file + " => " + destDir + "/" + file);
-			fileApi.copy(baseSrcDir + "/" + file, destDir + "/" + file);
+			fileApi.copy(baseSrcDir + "/" + file, outPath + "/" + file);
 		}
+		library.publish(fileApi, outPath + "/library");
 	}
 	
 	function removeDirectoryContent(fileApi:FileApi, dir:String)

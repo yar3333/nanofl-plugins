@@ -2,6 +2,7 @@ import haxe.io.Path;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.Debug.console;
 import nanofl.engine.FileApi;
+import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IPublisherPlugin;
 
@@ -21,9 +22,9 @@ class SimpleHtmlPublisherPlugin implements IPublisherPlugin
 		{ type:"string", name:"outPath", label:"Output folder", defaultValue:"publish/html", description:"Folder to store cordova files." }
 	];
 	
-	public function publish(fileApi:FileApi, params:Dynamic, srcFilePath:String, files:Array<String>) : Void
+	public function publish(fileApi:FileApi, params:Dynamic, srcFilePath:String, library:Library, generatorFiles:Array<String>) : Void
 	{
-		console.log("SimpleHtmlPublisherPlugin.publish " + files);
+		console.log("SimpleHtmlPublisherPlugin.publish " + generatorFiles);
 		
 		if (params.outPath == "") throw "Output folder must be specified. Check publish settings.";
 		
@@ -45,11 +46,11 @@ class SimpleHtmlPublisherPlugin implements IPublisherPlugin
 		log("COPY");
 		
 		removeDirectoryContent(fileApi, outPath);
-		for (file in files)
+		for (file in generatorFiles)
 		{
-			log("copy " + baseSrcDir + "/" + file + " => " + outPath + "/" + file);
 			fileApi.copy(baseSrcDir + "/" + file, outPath + "/" + file);
 		}
+		library.publish(fileApi, outPath + "/library");
 	}
 	
 	function removeDirectoryContent(fileApi:FileApi, dir:String)

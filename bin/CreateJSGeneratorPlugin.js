@@ -64,15 +64,7 @@ CreateJSGeneratorPlugin.prototype = {
 			}
 			generator1.generate(languageAndIde[0],dir,name);
 		}
-		var files = ["bin",name + ".html"];
-		var _g2 = 0;
-		var _g11 = library.getItems();
-		while(_g2 < _g11.length) {
-			var item = _g11[_g2];
-			++_g2;
-			files = files.concat(item.getFilePathsToPublish());
-		}
-		return files;
+		return ["bin",name + ".html"];
 	}
 	,test: function(serverApi,fileApi,params,filePath) {
 		var htmlFilePath = haxe_io_Path.withoutExtension(filePath) + ".html";

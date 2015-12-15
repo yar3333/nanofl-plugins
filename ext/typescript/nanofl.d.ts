@@ -9079,12 +9079,12 @@ declare module nanofl.ide.plugins
 		properties : nanofl.engine.CustomProperty[];
 		/**
 		 * This method must publish document.
-		 * @param	fileApi		Use this object to work with file system.
-		 * @param	params		Custom parameters specified by user (produced from `properties`).
-		 * @param	srcFilePath	Path to `*.nfl` file.
-		 * @param	files		Code/image/sound/font files to publish.
+		 * @param	fileApi			Use this object to work with file system.
+		 * @param	params			Custom parameters specified by user (produced from `properties`).
+		 * @param	srcFilePath		Path to `*.nfl` file.
+		 * @param	generatorFiles	Code files to publish.
 		 */
-		publish(fileApi:nanofl.engine.FileApi, params:any, srcFilePath:string, files:string[]) : void;
+		publish(fileApi:nanofl.engine.FileApi, params:any, srcFilePath:string, library:nanofl.engine.Library, generatorFiles:string[]) : void;
 	}
 	
 	export class PublishSetting
@@ -9569,6 +9569,7 @@ declare module nanofl.engine
 		compile(libraryDir:string) : { filterCodes : Map<string, string>; serializedLibrary : string; };
 		removeUnusedItems() : void;
 		optimize() : void;
+		publish(fileApi:nanofl.engine.FileApi, destDir:string) : void;
 		addItem<T>(item:T) : T;
 		removeItem(namePath:string) : void;
 		getSceneItem() : nanofl.engine.libraryitems.MovieClipItem;
