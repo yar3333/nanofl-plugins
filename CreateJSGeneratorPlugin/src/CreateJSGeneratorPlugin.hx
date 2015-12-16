@@ -78,7 +78,7 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 			generator.generate(languageAndIde[0], dir, name);
 		}
 		
-		return [ "bin", name + ".html" ].concat(library.getFilePathsToPublish(documentProperties.useTextureAtlases));
+		return [ "bin", name + ".html" ];
 	}
 	
 	#if js

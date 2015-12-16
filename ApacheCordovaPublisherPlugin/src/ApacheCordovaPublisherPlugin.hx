@@ -37,9 +37,9 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		{ type:"bool", name:"platform_wp8", 			label:"Windows Phone 8", 		defaultValue:false },
 	];
 	
-	public function publish(fileApi:FileApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, files:Array<String>) : Void
+	public function publish(fileApi:FileApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, generatorFiles:Array<String>, optimizedLibraryFilesDirectory:String) : Void
 	{
-		console.log("ApacheCordovaPublisherPlugin.publish " + files);
+		console.log("ApacheCordovaPublisherPlugin.publish " + generatorFiles);
 		
 		if (params.outPath == "") error("Output folder must be specified. Check publish settings.");
 		
@@ -100,11 +100,24 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		log("COPY");
 		var destDir = outPath + "/www";
 		removeDirectoryContent(fileApi, destDir);
-		for (file in files)
+		for (file in generatorFiles)
 		{
 			fileApi.copy(baseSrcDir + "/" + file, outPath + "/" + file);
 		}
-		
+		for (item in library.getItems())
+		{
+			for (file in item.getFilePathsToPublish())
+			{
+				if (fileApi.exists(optimizedLibraryFilesDirectory + "/" + file))
+				{
+					fileApi.copy(optimizedLibraryFilesDirectory + "/" + file, outPath + "/" + file);
+				}
+				else
+				{
+					fileApi.copy(library.libraryDir + "/" + file, outPath + "/" + file);
+				}
+			}
+		}
 		log("BUILD");
 		cordovaCLI.build();
 	}

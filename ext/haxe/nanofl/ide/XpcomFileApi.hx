@@ -4,8 +4,8 @@ extern class XpcomFileApi implements nanofl.engine.FileApi
 {
 	function new() : Void;
 	function getTempDirectory() : String;
-	function getToolsDirectory() : String;
 	function getPluginsDirectory() : String;
+	function getToolPath(windowsRelativePath:String, linuxCommand:String) : String;
 	function createDirectory(path:String) : Void;
 	function readDirectory(path:String) : Array<String>;
 	function exists(path:String) : Bool;
@@ -27,4 +27,6 @@ extern class XpcomFileApi implements nanofl.engine.FileApi
 	function zip(srcDir:String, destZip:String) : Bool;
 	function unzip(srcZip:String, destDir:String) : Bool;
 	function getEnvironmentVariable(name:String) : String;
+	function convertImage(srcFile:String, destFile:String, quality:Int) : Bool;
+	function convertAudio(srcFile:String, destFile:String, quality:Int) : Bool;
 }

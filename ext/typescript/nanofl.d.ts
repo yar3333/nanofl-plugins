@@ -625,9 +625,13 @@ declare module nanofl.ide
 	
 	export class LibraryOptimizationParams
 	{
-		constructor(isConvertImagesIntoJpeg?:boolean, jpegQuality?:number);
+		constructor(isConvertImagesIntoJpeg?:boolean, jpegQuality?:number, isGenerateWavSounds?:boolean, isGenerateMp3Sounds?:boolean, isGenerateOggSounds?:boolean, audioQuality?:number);
 		isConvertImagesIntoJpeg : boolean;
 		jpegQuality : number;
+		isGenerateWavSounds : boolean;
+		isGenerateMp3Sounds : boolean;
+		isGenerateOggSounds : boolean;
+		audioQuality : number;
 		equ(p:nanofl.ide.LibraryOptimizationParams) : boolean;
 		clone() : nanofl.ide.LibraryOptimizationParams;
 		save() : string;
@@ -705,7 +709,7 @@ declare module nanofl.ide
 	{
 		static loadDocument(fileApi:nanofl.engine.FileApi, path:string, lastModified:Date) : { lastModified : Date; library : nanofl.engine.Library; properties : nanofl.engine.DocumentProperties; };
 		static saveDocument(fileApi:nanofl.engine.FileApi, path:string, properties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>, fileActions:nanofl.ide.FileAction[]) : { generatorError : string; lastModified : Date; };
-		static publishDocument(fileApi:nanofl.engine.FileApi, path:string, properties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : { message : string; success : boolean; };
+		static publishDocument(fileApi:nanofl.engine.FileApi, path:string, properties:nanofl.engine.DocumentProperties, originalLibrary:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : { message : string; success : boolean; };
 		static copyLibraryFiles(fileApi:nanofl.engine.FileApi, srcLibraryDir:string, relativePaths:string[], destLibraryDir:string) : void;
 		static renameFiles(fileApi:nanofl.engine.FileApi, files:{ src : string; dest : string; }[]) : void;
 		static remove(fileApi:nanofl.engine.FileApi, paths:string[]) : void;
@@ -732,8 +736,8 @@ declare module nanofl.ide
 	{
 		constructor();
 		getTempDirectory() : string;
-		getToolsDirectory() : string;
 		getPluginsDirectory() : string;
+		getToolPath(windowsRelativePath:string, linuxCommand:string) : string;
 		createDirectory(path:string) : void;
 		readDirectory(path:string) : string[];
 		exists(path:string) : boolean;
@@ -755,6 +759,8 @@ declare module nanofl.ide
 		zip(srcDir:string, destZip:string) : boolean;
 		unzip(srcZip:string, destDir:string) : boolean;
 		getEnvironmentVariable(name:string) : string;
+		convertImage(srcFile:string, destFile:string, quality:number) : boolean;
+		convertAudio(srcFile:string, destFile:string, quality:number) : boolean;
 	}
 }
 
@@ -1712,6 +1718,7 @@ declare module nanofl.engine.libraryitems
 	export class BitmapItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem
 	{
 		constructor(namePath:string, ext:string);
+		ext : string;
 		textureAtlas : string;
 		image : HTMLImageElement;
 		getType() : string;
@@ -1809,6 +1816,7 @@ declare module nanofl.engine.libraryitems
 	export class SoundItem extends nanofl.engine.libraryitems.LibraryItem
 	{
 		constructor(namePath:string, ext:string);
+		ext : string;
 		linkage : string;
 		getType() : string;
 		clone() : nanofl.engine.libraryitems.SoundItem;
@@ -9094,8 +9102,9 @@ declare module nanofl.ide.plugins
 		 * @param	params			Custom parameters specified by user (produced from `properties`).
 		 * @param	filePath		Path to `*.nfl` file.
 		 * @param	generatorFiles	Code files to publish.
+		 * @param	optimizedLibraryFilesDirectory	Directory where optimized library files stored. Publisher must examine this folder before library.libraryDir.
 		 */
-		publish(fileApi:nanofl.engine.FileApi, params:any, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, generatorFiles:string[]) : void;
+		publish(fileApi:nanofl.engine.FileApi, params:any, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, generatorFiles:string[], optimizedLibraryFilesDirectory:string) : void;
 	}
 	
 	export class PublishSetting
@@ -9365,7 +9374,7 @@ declare module nanofl.engine
 	{
 		getTempDirectory() : string;
 		getPluginsDirectory() : string;
-		getToolsDirectory() : string;
+		getToolPath(windowsRelativePath:string, linuxCommand:string) : string;
 		createDirectory(path:string) : void;
 		readDirectory(dir:string) : string[];
 		getContent(filePath:string) : string;
@@ -9386,6 +9395,8 @@ declare module nanofl.engine
 		zip(srcDir:string, destZip:string) : boolean;
 		unzip(srcZip:string, destDir:string) : boolean;
 		getEnvironmentVariable(name:string) : string;
+		convertImage(srcFile:string, destFile:string, quality:number) : boolean;
+		convertAudio(srcFile:string, destFile:string, quality:number) : boolean;
 	}
 	
 	export class FilterDef

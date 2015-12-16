@@ -23,9 +23,9 @@ class SimpleHtmlPublisherPlugin implements IPublisherPlugin
 		{ type:"string", name:"outPath", label:"Output folder", defaultValue:"publish/html", description:"Folder to store cordova files." }
 	];
 	
-	public function publish(fileApi:FileApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, files:Array<String>) : Void
+	public function publish(fileApi:FileApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, generatorFiles:Array<String>, optimizedLibraryFilesDirectory:String) : Void
 	{
-		console.log("SimpleHtmlPublisherPlugin.publish " + files);
+		console.log("SimpleHtmlPublisherPlugin.publish " + generatorFiles);
 		
 		if (params.outPath == "") throw "Output folder must be specified. Check publish settings.";
 		
@@ -45,11 +45,24 @@ class SimpleHtmlPublisherPlugin implements IPublisherPlugin
 		}
 		
 		log("COPY");
-		
 		removeDirectoryContent(fileApi, outPath);
-		for (file in files)
+		for (file in generatorFiles)
 		{
 			fileApi.copy(baseSrcDir + "/" + file, outPath + "/" + file);
+		}
+		for (item in library.getItems())
+		{
+			for (file in item.getFilePathsToPublish())
+			{
+				if (fileApi.exists(optimizedLibraryFilesDirectory + "/" + file))
+				{
+					fileApi.copy(optimizedLibraryFilesDirectory + "/" + file, outPath + "/" + file);
+				}
+				else
+				{
+					fileApi.copy(library.libraryDir + "/" + file, outPath + "/" + file);
+				}
+			}
 		}
 	}
 	

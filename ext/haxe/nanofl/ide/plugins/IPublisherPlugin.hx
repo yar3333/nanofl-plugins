@@ -24,6 +24,7 @@ extern interface IPublisherPlugin
 	 * @param	params			Custom parameters specified by user (produced from `properties`).
 	 * @param	filePath		Path to `*.nfl` file.
 	 * @param	generatorFiles	Code files to publish.
+	 * @param	optimizedLibraryFilesDirectory	Directory where optimized library files stored. Publisher must examine this folder before library.libraryDir.
 	 */
-	function publish(fileApi:nanofl.engine.FileApi, params:Dynamic, filePath:String, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, generatorFiles:Array<String>) : Void;
+	function publish(fileApi:nanofl.engine.FileApi, params:Dynamic, filePath:String, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, generatorFiles:Array<String>, optimizedLibraryFilesDirectory:String) : Void;
 }

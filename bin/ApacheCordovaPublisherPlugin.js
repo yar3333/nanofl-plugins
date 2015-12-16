@@ -21,9 +21,9 @@ ApacheCordovaPublisherPlugin.log = function(s,infos) {
 	haxe_Log.trace(s,infos);
 };
 ApacheCordovaPublisherPlugin.prototype = {
-	publish: function(fileApi,params,filePath,documentProperties,library,files) {
+	publish: function(fileApi,params,filePath,documentProperties,library,generatorFiles,optimizedLibraryFilesDirectory) {
 		var _g2 = this;
-		nanofl.engine.Debug.console.log("ApacheCordovaPublisherPlugin.publish " + Std.string(files));
+		nanofl.engine.Debug.console.log("ApacheCordovaPublisherPlugin.publish " + Std.string(generatorFiles));
 		if(params.outPath == "") this.error("Output folder must be specified. Check publish settings.",{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 44, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
 		var baseSrcDir = haxe_io_Path.directory(filePath);
 		var outPath = haxe_io_Path.join([baseSrcDir,params.outPath]);
@@ -70,12 +70,25 @@ ApacheCordovaPublisherPlugin.prototype = {
 		var destDir = outPath + "/www";
 		this.removeDirectoryContent(fileApi,destDir);
 		var _g3 = 0;
-		while(_g3 < files.length) {
-			var file = files[_g3];
+		while(_g3 < generatorFiles.length) {
+			var file = generatorFiles[_g3];
 			++_g3;
 			fileApi.copy(baseSrcDir + "/" + file,outPath + "/" + file);
 		}
-		ApacheCordovaPublisherPlugin.log("BUILD",{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 108, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
+		var _g4 = 0;
+		var _g11 = library.getItems();
+		while(_g4 < _g11.length) {
+			var item = _g11[_g4];
+			++_g4;
+			var _g21 = 0;
+			var _g31 = item.getFilePathsToPublish();
+			while(_g21 < _g31.length) {
+				var file1 = _g31[_g21];
+				++_g21;
+				if(fileApi.exists(optimizedLibraryFilesDirectory + "/" + file1)) fileApi.copy(optimizedLibraryFilesDirectory + "/" + file1,outPath + "/" + file1); else fileApi.copy(library.libraryDir + "/" + file1,outPath + "/" + file1);
+			}
+		}
+		ApacheCordovaPublisherPlugin.log("BUILD",{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 121, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
 		cordovaCLI.build();
 	}
 	,createProject: function(cordovaCLI,filePath,params) {

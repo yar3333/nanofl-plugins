@@ -3,6 +3,7 @@ package nanofl.engine.libraryitems;
 extern class SoundItem extends nanofl.engine.libraryitems.LibraryItem
 {
 	function new(namePath:String, ext:String) : Void;
+	var ext : String;
 	var linkage : String;
 	override function getType() : String;
 	override function clone() : nanofl.engine.libraryitems.SoundItem;
