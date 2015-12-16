@@ -37,9 +37,9 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		{ type:"bool", name:"platform_wp8", 			label:"Windows Phone 8", 		defaultValue:false },
 	];
 	
-	public function publish(fileApi:FileApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, generatorFiles:Array<String>) : Void
+	public function publish(fileApi:FileApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, files:Array<String>) : Void
 	{
-		console.log("ApacheCordovaPublisherPlugin.publish " + generatorFiles);
+		console.log("ApacheCordovaPublisherPlugin.publish " + files);
 		
 		if (params.outPath == "") error("Output folder must be specified. Check publish settings.");
 		
@@ -100,11 +100,10 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		log("COPY");
 		var destDir = outPath + "/www";
 		removeDirectoryContent(fileApi, destDir);
-		for (file in generatorFiles)
+		for (file in files)
 		{
 			fileApi.copy(baseSrcDir + "/" + file, outPath + "/" + file);
 		}
-		library.publish(fileApi, documentProperties.useTextureAtlases, outPath + "/library");
 		
 		log("BUILD");
 		cordovaCLI.build();

@@ -623,6 +623,17 @@ declare module nanofl.ide
 		static getPrefKey(pluginName:string) : string;
 	}
 	
+	export class LibraryOptimizationParams
+	{
+		constructor(isConvertImagesIntoJpeg?:boolean, jpegQuality?:number);
+		isConvertImagesIntoJpeg : boolean;
+		jpegQuality : number;
+		equ(p:nanofl.ide.LibraryOptimizationParams) : boolean;
+		clone() : nanofl.ide.LibraryOptimizationParams;
+		save() : string;
+		static load(s:string) : nanofl.ide.LibraryOptimizationParams;
+	}
+	
 	export class LibraryTools
 	{
 		static optimize(library:nanofl.engine.Library) : void;
@@ -694,7 +705,7 @@ declare module nanofl.ide
 	{
 		static loadDocument(fileApi:nanofl.engine.FileApi, path:string, lastModified:Date) : { lastModified : Date; library : nanofl.engine.Library; properties : nanofl.engine.DocumentProperties; };
 		static saveDocument(fileApi:nanofl.engine.FileApi, path:string, properties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>, fileActions:nanofl.ide.FileAction[]) : { generatorError : string; lastModified : Date; };
-		static publishDocument(fileApi:nanofl.engine.FileApi, path:string, properties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : boolean;
+		static publishDocument(fileApi:nanofl.engine.FileApi, path:string, properties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : { message : string; success : boolean; };
 		static copyLibraryFiles(fileApi:nanofl.engine.FileApi, srcLibraryDir:string, relativePaths:string[], destLibraryDir:string) : void;
 		static renameFiles(fileApi:nanofl.engine.FileApi, files:{ src : string; dest : string; }[]) : void;
 		static remove(fileApi:nanofl.engine.FileApi, paths:string[]) : void;
@@ -9089,9 +9100,10 @@ declare module nanofl.ide.plugins
 	
 	export class PublishSetting
 	{
-		constructor(publisher:string, enabled:boolean, params:any);
+		constructor(publisher:string, enabled:boolean, optimizations:nanofl.ide.LibraryOptimizationParams, params:any);
 		publisher : string;
 		enabled : boolean;
+		optimizations : nanofl.ide.LibraryOptimizationParams;
 		params : any;
 		equ(ps:nanofl.ide.plugins.PublishSetting) : boolean;
 		clone() : nanofl.ide.plugins.PublishSetting;
@@ -9569,7 +9581,7 @@ declare module nanofl.engine
 		compile(libraryDir:string) : { filterCodes : Map<string, string>; serializedLibrary : string; };
 		removeUnusedItems() : void;
 		optimize() : void;
-		publish(fileApi:nanofl.engine.FileApi, useTextureAtlases:boolean, destDir:string) : void;
+		getFilePathsToPublish(useTextureAtlases:boolean) : string[];
 		addItem<T>(item:T) : T;
 		removeItem(namePath:string) : void;
 		getSceneItem() : nanofl.engine.libraryitems.MovieClipItem;

@@ -23,9 +23,9 @@ class SimpleHtmlPublisherPlugin implements IPublisherPlugin
 		{ type:"string", name:"outPath", label:"Output folder", defaultValue:"publish/html", description:"Folder to store cordova files." }
 	];
 	
-	public function publish(fileApi:FileApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, generatorFiles:Array<String>) : Void
+	public function publish(fileApi:FileApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, files:Array<String>) : Void
 	{
-		console.log("SimpleHtmlPublisherPlugin.publish " + generatorFiles);
+		console.log("SimpleHtmlPublisherPlugin.publish " + files);
 		
 		if (params.outPath == "") throw "Output folder must be specified. Check publish settings.";
 		
@@ -47,11 +47,10 @@ class SimpleHtmlPublisherPlugin implements IPublisherPlugin
 		log("COPY");
 		
 		removeDirectoryContent(fileApi, outPath);
-		for (file in generatorFiles)
+		for (file in files)
 		{
 			fileApi.copy(baseSrcDir + "/" + file, outPath + "/" + file);
 		}
-		library.publish(fileApi, documentProperties.useTextureAtlases, outPath + "/library");
 	}
 	
 	function removeDirectoryContent(fileApi:FileApi, dir:String)

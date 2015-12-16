@@ -21,16 +21,19 @@ ApacheCordovaPublisherPlugin.log = function(s,infos) {
 	haxe_Log.trace(s,infos);
 };
 ApacheCordovaPublisherPlugin.prototype = {
-	publish: function(fileApi,params,filePath,documentProperties,library,generatorFiles) {
+	publish: function(fileApi,params,filePath,documentProperties,library,files) {
 		var _g2 = this;
-		nanofl.engine.Debug.console.log("ApacheCordovaPublisherPlugin.publish " + Std.string(generatorFiles));
+		nanofl.engine.Debug.console.log("ApacheCordovaPublisherPlugin.publish " + Std.string(files));
 		if(params.outPath == "") this.error("Output folder must be specified. Check publish settings.",{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 44, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
 		var baseSrcDir = haxe_io_Path.directory(filePath);
 		var outPath = haxe_io_Path.join([baseSrcDir,params.outPath]);
 		var cordovaCLI = new CordovaCLI(fileApi,outPath);
 		if(!fileApi.exists(outPath) || fileApi.readDirectory(outPath).length == 0) {
 			fileApi.createDirectory(outPath);
-			cordovaCLI.createApplication(params.domain,params.title != ""?params.title:haxe_io_Path.withoutDirectory(haxe_io_Path.withoutExtension(filePath)));
+			this.createProject(cordovaCLI,filePath,params);
+		} else if(!cordovaCLI.isProjectDirectory()) {
+			this.removeDirectoryContent(fileApi,outPath);
+			this.createProject(cordovaCLI,filePath,params);
 		}
 		var platforms = cordovaCLI.getPlatforms();
 		nanofl.engine.Debug.console.log("Installed platforms = " + platforms.installed.join(" | "));
@@ -42,7 +45,6 @@ ApacheCordovaPublisherPlugin.prototype = {
 			++_g;
 			if(StringTools.startsWith(name,"platform_")) {
 				var platform = [StringTools.replace(name.substring("platform_".length),"_","-")];
-				ApacheCordovaPublisherPlugin.log("params." + name + " => " + platform[0],{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 66, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
 				if(Reflect.field(params,name)) {
 					if(!Lambda.exists(platforms.installed,(function(platform) {
 						return function(s) {
@@ -64,18 +66,20 @@ ApacheCordovaPublisherPlugin.prototype = {
 				}
 			}
 		}
-		ApacheCordovaPublisherPlugin.log("COPY",{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 94, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
+		ApacheCordovaPublisherPlugin.log("COPY",{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 100, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
 		var destDir = outPath + "/www";
 		this.removeDirectoryContent(fileApi,destDir);
 		var _g3 = 0;
-		while(_g3 < generatorFiles.length) {
-			var file = generatorFiles[_g3];
+		while(_g3 < files.length) {
+			var file = files[_g3];
 			++_g3;
 			fileApi.copy(baseSrcDir + "/" + file,outPath + "/" + file);
 		}
-		library.publish(fileApi,documentProperties.useTextureAtlases,outPath + "/library");
-		ApacheCordovaPublisherPlugin.log("BUILD",{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 103, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
+		ApacheCordovaPublisherPlugin.log("BUILD",{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 108, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
 		cordovaCLI.build();
+	}
+	,createProject: function(cordovaCLI,filePath,params) {
+		cordovaCLI.createApplication(params.domain,params.title != ""?params.title:haxe_io_Path.withoutDirectory(haxe_io_Path.withoutExtension(filePath)));
 	}
 	,removeDirectoryContent: function(fileApi,dir) {
 		var _g = 0;
@@ -104,7 +108,7 @@ CordovaCLI.__name__ = true;
 CordovaCLI.prototype = {
 	run: function(args) {
 		var r = this.fileApi.runCaptured("cordova",args,null,this.directory);
-		if(r.exitCode != 0) this.error("not zero exit code when run with args: " + args.join(" ") + "\n\texit code = " + r.exitCode + "\n\toutput = " + r.output + "\n\terror = " + r.error,{ fileName : "CordovaCLI.hx", lineNumber : 18, className : "CordovaCLI", methodName : "run"});
+		if(r.exitCode != 0) this.error("none zero exit code (" + r.exitCode + ") when run with args: " + args.join(" ") + (r.output != ""?"\n" + r.output:"") + (r.error != ""?"\n" + r.error:""),{ fileName : "CordovaCLI.hx", lineNumber : 19, className : "CordovaCLI", methodName : "run"});
 		return r;
 	}
 	,createApplication: function(domain,title) {
@@ -120,7 +124,7 @@ CordovaCLI.prototype = {
 		}), available : re.matched(2).split(",").map(StringTools.trim).filter(function(s3) {
 			return s3 != "";
 		})};
-		this.error("can't detect platforms.",{ fileName : "CordovaCLI.hx", lineNumber : 39, className : "CordovaCLI", methodName : "getPlatforms"});
+		this.error("can't detect platforms.",{ fileName : "CordovaCLI.hx", lineNumber : 40, className : "CordovaCLI", methodName : "getPlatforms"});
 		return null;
 	}
 	,addPlatform: function(platform) {
@@ -129,12 +133,16 @@ CordovaCLI.prototype = {
 	,removePlatform: function(platform) {
 		this.run(["platform","remove",platform]);
 	}
+	,isProjectDirectory: function() {
+		var r = this.fileApi.runCaptured("cordova",["info"],null,this.directory);
+		return r.exitCode == 0;
+	}
 	,build: function() {
 		return this.run(["build"]);
 	}
 	,error: function(s,infos) {
-		haxe_Log.trace("Cordova CLI error: " + s,infos);
-		throw new js__$Boot_HaxeError(s);
+		haxe_Log.trace("Cordova CLI error:\n" + s,infos);
+		throw new js__$Boot_HaxeError(StringTools.replace(s,"\n","<br>"));
 	}
 	,__class__: CordovaCLI
 };

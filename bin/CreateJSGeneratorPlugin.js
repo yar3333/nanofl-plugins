@@ -64,7 +64,7 @@ CreateJSGeneratorPlugin.prototype = {
 			}
 			generator1.generate(languageAndIde[0],dir,name);
 		}
-		return ["bin",name + ".html"];
+		return ["bin",name + ".html"].concat(library.getFilePathsToPublish(documentProperties.useTextureAtlases));
 	}
 	,test: function(serverApi,fileApi,params,filePath) {
 		var htmlFilePath = haxe_io_Path.withoutExtension(filePath) + ".html";
