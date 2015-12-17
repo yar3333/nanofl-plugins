@@ -37,9 +37,9 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		{ type:"bool", name:"platform_wp8", 			label:"Windows Phone 8", 		defaultValue:false },
 	];
 	
-	public function publish(fileApi:FileApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, generatorFiles:Array<String>, optimizedLibraryFilesDirectory:String) : Void
+	public function publish(fileApi:FileApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, files:Array<{ baseDir:String, relPath:String }>) : Void
 	{
-		console.log("ApacheCordovaPublisherPlugin.publish " + generatorFiles);
+		console.log("ApacheCordovaPublisherPlugin.publish " + files);
 		
 		if (params.outPath == "") error("Output folder must be specified. Check publish settings.");
 		
@@ -100,23 +100,9 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		log("COPY");
 		var destDir = outPath + "/www";
 		removeDirectoryContent(fileApi, destDir);
-		for (file in generatorFiles)
+		for (file in files)
 		{
-			fileApi.copy(baseSrcDir + "/" + file, destDir + "/" + file);
-		}
-		for (item in library.getItems())
-		{
-			for (file in item.getFilePathsToPublish())
-			{
-				if (fileApi.exists(optimizedLibraryFilesDirectory + "/" + file))
-				{
-					fileApi.copy(optimizedLibraryFilesDirectory + "/" + file, destDir + "/library/" + file);
-				}
-				else
-				{
-					fileApi.copy(library.libraryDir + "/" + file, destDir + "/library/" + file);
-				}
-			}
+			fileApi.copy(file.baseDir + "/" + file.relPath, destDir + "/" + file.relPath);
 		}
 		log("BUILD");
 		cordovaCLI.build();
