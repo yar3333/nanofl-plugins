@@ -102,7 +102,7 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		removeDirectoryContent(fileApi, destDir);
 		for (file in generatorFiles)
 		{
-			fileApi.copy(baseSrcDir + "/" + file, outPath + "/" + file);
+			fileApi.copy(baseSrcDir + "/" + file, destDir + "/" + file);
 		}
 		for (item in library.getItems())
 		{
@@ -110,11 +110,11 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 			{
 				if (fileApi.exists(optimizedLibraryFilesDirectory + "/" + file))
 				{
-					fileApi.copy(optimizedLibraryFilesDirectory + "/" + file, outPath + "/" + file);
+					fileApi.copy(optimizedLibraryFilesDirectory + "/" + file, destDir + "/library/" + file);
 				}
 				else
 				{
-					fileApi.copy(library.libraryDir + "/" + file, outPath + "/" + file);
+					fileApi.copy(library.libraryDir + "/" + file, destDir + "/library/" + file);
 				}
 			}
 		}

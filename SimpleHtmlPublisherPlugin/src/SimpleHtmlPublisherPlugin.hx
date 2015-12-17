@@ -56,11 +56,11 @@ class SimpleHtmlPublisherPlugin implements IPublisherPlugin
 			{
 				if (fileApi.exists(optimizedLibraryFilesDirectory + "/" + file))
 				{
-					fileApi.copy(optimizedLibraryFilesDirectory + "/" + file, outPath + "/" + file);
+					fileApi.copy(optimizedLibraryFilesDirectory + "/" + file, outPath + "/library/" + file);
 				}
 				else
 				{
-					fileApi.copy(library.libraryDir + "/" + file, outPath + "/" + file);
+					fileApi.copy(library.libraryDir + "/" + file, outPath + "/library/" + file);
 				}
 			}
 		}
