@@ -710,7 +710,7 @@ declare module nanofl.ide
 	{
 		static loadDocument(fileApi:nanofl.engine.FileApi, path:string, lastModified:Date) : { lastModified : Date; library : nanofl.engine.Library; properties : nanofl.engine.DocumentProperties; };
 		static saveDocument(fileApi:nanofl.engine.FileApi, path:string, properties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>, fileActions:nanofl.ide.FileAction[]) : { generatorError : string; lastModified : Date; };
-		static publishDocument(fileApi:nanofl.engine.FileApi, path:string, properties:nanofl.engine.DocumentProperties, originalLibrary:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : { message : string; success : boolean; };
+		static publishDocument(fileApi:nanofl.engine.FileApi, path:string, originalProperties:nanofl.engine.DocumentProperties, originalLibrary:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : { message : string; success : boolean; };
 		static copyLibraryFiles(fileApi:nanofl.engine.FileApi, srcLibraryDir:string, relativePaths:string[], destLibraryDir:string) : void;
 		static renameFiles(fileApi:nanofl.engine.FileApi, files:{ src : string; dest : string; }[]) : void;
 		static remove(fileApi:nanofl.engine.FileApi, paths:string[]) : void;
@@ -9369,6 +9369,7 @@ declare module nanofl.engine
 		getGeneratorAsString() : string;
 		equ(p:nanofl.engine.DocumentProperties) : boolean;
 		clone() : nanofl.engine.DocumentProperties;
+		getOptimized(optimizations:nanofl.ide.PublishOptimizations) : nanofl.engine.DocumentProperties;
 		static load(filePath:string, fileApi:nanofl.engine.FileApi) : nanofl.engine.DocumentProperties;
 		static parseGenerator(s:string) : { name : string; params : any; };
 	}

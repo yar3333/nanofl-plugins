@@ -18,6 +18,7 @@ extern class DocumentProperties
 	function getGeneratorAsString() : String;
 	function equ(p:nanofl.engine.DocumentProperties) : Bool;
 	function clone() : nanofl.engine.DocumentProperties;
+	function getOptimized(optimizations:nanofl.ide.PublishOptimizations) : nanofl.engine.DocumentProperties;
 	static function load(filePath:String, fileApi:nanofl.engine.FileApi) : nanofl.engine.DocumentProperties;
 	static function parseGenerator(s:String) : { var name : String; var params : Dynamic; };
 }
