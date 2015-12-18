@@ -49,8 +49,8 @@ SimpleHtmlPublisherPlugin.log = function(s,infos) {
 	haxe_Log.trace(s,infos);
 };
 SimpleHtmlPublisherPlugin.prototype = {
-	publish: function(fileApi,params,filePath,documentProperties,library,generatorFiles,optimizedLibraryFilesDirectory) {
-		nanofl.engine.Debug.console.log("SimpleHtmlPublisherPlugin.publish " + Std.string(generatorFiles));
+	publish: function(fileApi,params,filePath,documentProperties,library,files) {
+		nanofl.engine.Debug.console.log("SimpleHtmlPublisherPlugin.publish " + Std.string(files));
 		if(params.outPath == "") throw new js__$Boot_HaxeError("Output folder must be specified. Check publish settings.");
 		var baseSrcDir = haxe_io_Path.directory(filePath);
 		var outPath = haxe_io_Path.join([baseSrcDir,params.outPath]);
@@ -66,23 +66,10 @@ SimpleHtmlPublisherPlugin.prototype = {
 		SimpleHtmlPublisherPlugin.log("COPY",{ fileName : "SimpleHtmlPublisherPlugin.hx", lineNumber : 47, className : "SimpleHtmlPublisherPlugin", methodName : "publish"});
 		this.removeDirectoryContent(fileApi,outPath);
 		var _g2 = 0;
-		while(_g2 < generatorFiles.length) {
-			var file1 = generatorFiles[_g2];
+		while(_g2 < files.length) {
+			var file1 = files[_g2];
 			++_g2;
-			fileApi.copy(baseSrcDir + "/" + file1,outPath + "/" + file1);
-		}
-		var _g3 = 0;
-		var _g11 = library.getItems();
-		while(_g3 < _g11.length) {
-			var item = _g11[_g3];
-			++_g3;
-			var _g21 = 0;
-			var _g31 = item.getFilePathsToPublish();
-			while(_g21 < _g31.length) {
-				var file2 = _g31[_g21];
-				++_g21;
-				if(fileApi.exists(optimizedLibraryFilesDirectory + "/" + file2)) fileApi.copy(optimizedLibraryFilesDirectory + "/" + file2,outPath + "/" + file2); else fileApi.copy(library.libraryDir + "/" + file2,outPath + "/" + file2);
-			}
+			fileApi.copy(file1.baseDir + "/" + file1.relPath,outPath + "/" + file1.relPath);
 		}
 	}
 	,removeDirectoryContent: function(fileApi,dir) {

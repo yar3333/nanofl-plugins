@@ -20,7 +20,8 @@ extern class BitmapItem extends nanofl.engine.libraryitems.InstancableItem imple
 	override function equ(item:nanofl.engine.libraryitems.LibraryItem) : Bool;
 	override function getFilePathToRunWithEditor() : String;
 	override function getLibraryFilePaths() : Array<String>;
-	override function getFilePathsToPublish() : Array<String>;
+	override function getOptimized(optimizations:nanofl.ide.PublishOptimizations) : nanofl.engine.libraryitems.BitmapItem;
+	override function generateOptimizedFiles(fileApi:nanofl.engine.FileApi, optimizations:nanofl.ide.PublishOptimizations, destDir:String) : Array<{ var relPath : String; var baseDir : String; }>;
 	override function getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 	override function getUsedSymbolNamePaths() : Array<String>;
 	override function toString() : String;

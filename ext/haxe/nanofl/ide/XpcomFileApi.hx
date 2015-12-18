@@ -24,6 +24,7 @@ extern class XpcomFileApi implements nanofl.engine.FileApi
 	function getPluginPaths() : Array<String>;
 	function nativePath(path:String, ?makeAbsolute:Bool) : String;
 	function getLastModified(path:String) : Date;
+	function getSize(path:String) : Int;
 	function zip(srcDir:String, destZip:String) : Bool;
 	function unzip(srcZip:String, destDir:String) : Bool;
 	function getEnvironmentVariable(name:String) : String;

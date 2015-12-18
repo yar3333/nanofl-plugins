@@ -623,21 +623,6 @@ declare module nanofl.ide
 		static getPrefKey(pluginName:string) : string;
 	}
 	
-	export class LibraryOptimizationParams
-	{
-		constructor(isConvertImagesIntoJpeg?:boolean, jpegQuality?:number, isGenerateWavSounds?:boolean, isGenerateMp3Sounds?:boolean, isGenerateOggSounds?:boolean, audioQuality?:number);
-		isConvertImagesIntoJpeg : boolean;
-		jpegQuality : number;
-		isGenerateWavSounds : boolean;
-		isGenerateMp3Sounds : boolean;
-		isGenerateOggSounds : boolean;
-		audioQuality : number;
-		equ(p:nanofl.ide.LibraryOptimizationParams) : boolean;
-		clone() : nanofl.ide.LibraryOptimizationParams;
-		save() : string;
-		static load(s:string) : nanofl.ide.LibraryOptimizationParams;
-	}
-	
 	export class LibraryTools
 	{
 		static optimize(library:nanofl.engine.Library) : void;
@@ -690,6 +675,22 @@ declare module nanofl.ide
 		getTotalFrames() : number;
 		equ(p:nanofl.ide.PathItem) : boolean;
 		clone() : nanofl.ide.PathItem;
+	}
+	
+	export class PublishOptimizations
+	{
+		constructor(useTextureAtlases:boolean, isConvertImagesIntoJpeg?:boolean, jpegQuality?:number, isGenerateMp3Sounds?:boolean, isGenerateOggSounds?:boolean, isGenerateWavSounds?:boolean, audioQuality?:number);
+		useTextureAtlases : boolean;
+		isConvertImagesIntoJpeg : boolean;
+		jpegQuality : number;
+		isGenerateMp3Sounds : boolean;
+		isGenerateOggSounds : boolean;
+		isGenerateWavSounds : boolean;
+		audioQuality : number;
+		equ(p:nanofl.ide.PublishOptimizations) : boolean;
+		clone() : nanofl.ide.PublishOptimizations;
+		save() : string;
+		static load(s:string) : nanofl.ide.PublishOptimizations;
 	}
 	
 	export interface ServerApi
@@ -756,6 +757,7 @@ declare module nanofl.ide
 		getPluginPaths() : string[];
 		nativePath(path:string, makeAbsolute?:boolean) : string;
 		getLastModified(path:string) : Date;
+		getSize(path:string) : number;
 		zip(srcDir:string, destZip:string) : boolean;
 		unzip(srcZip:string, destDir:string) : boolean;
 		getEnvironmentVariable(name:string) : string;
@@ -958,10 +960,10 @@ declare module nanofl.engine.elements
 		createDisplayObject(frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : nanofl.TextField;
 		updateDisplayObject(dispObj:createjs.DisplayObject, frameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : nanofl.TextField;
 		getMinSize(dispObj:createjs.DisplayObject) : { height : number; width : number; };
-		clone() : nanofl.engine.elements.TextElement;
 		getState() : nanofl.ide.undo.states.ElementState;
 		setState(_state:nanofl.ide.undo.states.ElementState) : void;
 		equ(element:nanofl.engine.elements.Element) : boolean;
+		clone() : nanofl.engine.elements.TextElement;
 		breakApart() : nanofl.engine.elements.TextElement[];
 		fixErrors() : boolean;
 	}
@@ -1694,7 +1696,8 @@ declare module nanofl.engine.libraryitems
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		getFilePathToRunWithEditor() : string;
 		getLibraryFilePaths() : string[];
-		getFilePathsToPublish() : string[];
+		getOptimized(optimizations:nanofl.ide.PublishOptimizations) : nanofl.engine.libraryitems.LibraryItem;
+		generateOptimizedFiles(fileApi:nanofl.engine.FileApi, optimizations:nanofl.ide.PublishOptimizations, destDir:string) : { relPath : string; baseDir : string; }[];
 		preload(ready:() => void) : void;
 		duplicate(newNamePath:string) : nanofl.engine.libraryitems.LibraryItem;
 		remove() : void;
@@ -1735,7 +1738,8 @@ declare module nanofl.engine.libraryitems
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 		getFilePathToRunWithEditor() : string;
 		getLibraryFilePaths() : string[];
-		getFilePathsToPublish() : string[];
+		getOptimized(optimizations:nanofl.ide.PublishOptimizations) : nanofl.engine.libraryitems.BitmapItem;
+		generateOptimizedFiles(fileApi:nanofl.engine.FileApi, optimizations:nanofl.ide.PublishOptimizations, destDir:string) : { relPath : string; baseDir : string; }[];
 		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 		getUsedSymbolNamePaths() : string[];
 		toString() : string;
@@ -1768,7 +1772,7 @@ declare module nanofl.engine.libraryitems
 		toFont() : nanofl.engine.Font;
 		preload(ready:() => void) : void;
 		addVariant(v:nanofl.engine.FontVariant) : void;
-		getFilePathsToPublish() : string[];
+		generateOptimizedFiles(fileApi:nanofl.engine.FileApi, optimizations:nanofl.ide.PublishOptimizations, destDir:string) : { relPath : string; baseDir : string; }[];
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 		toString() : string;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.FontItem;
@@ -1825,7 +1829,7 @@ declare module nanofl.engine.libraryitems
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		getUrl() : string;
-		getFilePathsToPublish() : string[];
+		generateOptimizedFiles(fileApi:nanofl.engine.FileApi, optimizations:nanofl.ide.PublishOptimizations, destDir:string) : { relPath : string; baseDir : string; }[];
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 		toString() : string;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.SoundItem;
@@ -9005,7 +9009,7 @@ declare module nanofl.ide.plugins
 		 * @param	documentProperties	Properties of the document.
 		 * @param	library				Document's library.
 		 * @param	textureAtlases		Generated texture atlases.
-		 * @return	Paths to files to publish.
+		 * @return	Paths to files to publish. Must be relative to the the document's root directory.
 		 */
 		generate(fileApi:nanofl.engine.FileApi, params:any, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : string[];
 		/**
@@ -9098,21 +9102,20 @@ declare module nanofl.ide.plugins
 		properties : nanofl.engine.CustomProperty[];
 		/**
 		 * This method must publish document.
-		 * @param	fileApi			Use this object to work with file system.
-		 * @param	params			Custom parameters specified by user (produced from `properties`).
-		 * @param	filePath		Path to `*.nfl` file.
-		 * @param	generatorFiles	Code files to publish.
-		 * @param	optimizedLibraryFilesDirectory	Directory where optimized library files stored. Publisher must examine this folder before library.libraryDir.
+		 * @param	fileApi		Use this object to work with file system.
+		 * @param	params		Custom parameters specified by user (produced from `properties`).
+		 * @param	filePath	Path to `*.nfl` file.
+		 * @param	files		Files to publish.
 		 */
-		publish(fileApi:nanofl.engine.FileApi, params:any, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, generatorFiles:string[], optimizedLibraryFilesDirectory:string) : void;
+		publish(fileApi:nanofl.engine.FileApi, params:any, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, files:{ relPath : string; baseDir : string; }[]) : void;
 	}
 	
 	export class PublishSetting
 	{
-		constructor(publisher:string, enabled:boolean, optimizations:nanofl.ide.LibraryOptimizationParams, params:any);
+		constructor(publisher:string, enabled:boolean, optimizations:nanofl.ide.PublishOptimizations, params:any);
 		publisher : string;
 		enabled : boolean;
-		optimizations : nanofl.ide.LibraryOptimizationParams;
+		optimizations : nanofl.ide.PublishOptimizations;
 		params : any;
 		equ(ps:nanofl.ide.plugins.PublishSetting) : boolean;
 		clone() : nanofl.ide.plugins.PublishSetting;
@@ -9392,6 +9395,7 @@ declare module nanofl.engine
 		findFiles(dirPath:string, onFile?:(arg:string) => void, onDir?:(arg:string) => boolean) : void;
 		getPluginPaths() : string[];
 		getLastModified(path:string) : Date;
+		getSize(path:string) : number;
 		zip(srcDir:string, destZip:string) : boolean;
 		unzip(srcZip:string, destDir:string) : boolean;
 		getEnvironmentVariable(name:string) : string;
@@ -9592,7 +9596,7 @@ declare module nanofl.engine
 		compile(libraryDir:string) : { filterCodes : Map<string, string>; serializedLibrary : string; };
 		removeUnusedItems() : void;
 		optimize() : void;
-		getFilePathsToPublish(useTextureAtlases:boolean) : string[];
+		getOptimized(optimizations:nanofl.ide.PublishOptimizations) : nanofl.engine.Library;
 		addItem<T>(item:T) : T;
 		removeItem(namePath:string) : void;
 		getSceneItem() : nanofl.engine.libraryitems.MovieClipItem;

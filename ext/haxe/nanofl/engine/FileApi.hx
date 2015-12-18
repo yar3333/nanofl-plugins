@@ -22,6 +22,7 @@ extern interface FileApi
 	function findFiles(dirPath:String, ?onFile:String -> Void, ?onDir:String -> Bool) : Void;
 	function getPluginPaths() : Array<String>;
 	function getLastModified(path:String) : Date;
+	function getSize(path:String) : Int;
 	function zip(srcDir:String, destZip:String) : Bool;
 	function unzip(srcZip:String, destDir:String) : Bool;
 	function getEnvironmentVariable(name:String) : String;

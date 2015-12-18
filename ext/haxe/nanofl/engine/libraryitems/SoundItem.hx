@@ -12,7 +12,7 @@ extern class SoundItem extends nanofl.engine.libraryitems.LibraryItem
 	override function saveToXml(out:htmlparser.XmlBuilder) : Void;
 	override function loadProperties(xml:htmlparser.HtmlNodeElement) : Void;
 	function getUrl() : String;
-	override function getFilePathsToPublish() : Array<String>;
+	override function generateOptimizedFiles(fileApi:nanofl.engine.FileApi, optimizations:nanofl.ide.PublishOptimizations, destDir:String) : Array<{ var relPath : String; var baseDir : String; }>;
 	override function equ(item:nanofl.engine.libraryitems.LibraryItem) : Bool;
 	override function toString() : String;
 	static function parse(namePath:String, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.SoundItem;

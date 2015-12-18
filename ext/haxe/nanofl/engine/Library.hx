@@ -13,7 +13,7 @@ extern class Library
 	function compile(libraryDir:String) : { var filterCodes : Map<String, String>; var serializedLibrary : String; };
 	function removeUnusedItems() : Void;
 	function optimize() : Void;
-	function getFilePathsToPublish(useTextureAtlases:Bool) : Array<String>;
+	function getOptimized(optimizations:nanofl.ide.PublishOptimizations) : nanofl.engine.Library;
 	function addItem<T>(item:T) : T;
 	function removeItem(namePath:String) : Void;
 	function getSceneItem() : nanofl.engine.libraryitems.MovieClipItem;
