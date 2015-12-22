@@ -14,6 +14,8 @@ class DocumentImporter
 {
 	public static function process(importMediaScriptTemplate:String, fileApi:FileApi, srcFilePath:String, destFilePath:String, destDocProp:DocumentProperties, destLibrary:Library, fonts:Array<String>, runFlashToImportMedia:Bool, callb:Bool->Void) : Void
 	{
+		log("DocumentImporter.process");
+		
 		if (runFlashToImportMedia && hasMedia(fileApi, srcFilePath))
 		{
 			importMedia
@@ -42,6 +44,8 @@ class DocumentImporter
 	
 	static function importMedia(importMediaScriptTemplate:String, fileApi:FileApi, srcFilePath:String, destFilePath:String, destLibrary:Library, callb:Bool->Void)
 	{
+		log("DocumentImporter.importMedia");
+		
 		var destDir = Path.directory(destFilePath);
 		
 		var scriptFilePath = fileApi.getTempDirectory() + "/flashImporter.jsfl";
@@ -72,6 +76,8 @@ class DocumentImporter
 	
 	static function importXmlFiles(fileApi:FileApi, srcFilePath:String, destDocProp:DocumentProperties, destLibrary:Library, fonts:Array<String>)
 	{
+		log("DocumentImporter.importXmlFiles BEGIN");
+		
 		var srcDir = Path.directory(srcFilePath);
 		
 		var srcDoc = new XmlDocument(fileApi.getContent(srcDir + "/DOMDocument.xml"));
@@ -84,6 +90,7 @@ class DocumentImporter
 		destDocProp.backgroundColor = docPropNode.getAttr("backgroundColor", "#ffffff");
 		destDocProp.framerate = docPropNode.getAttr("frameRate", 24);
 		
+		log("DocumentImporter.importXmlFiles load media");
 		for (node in docPropNode.find(">media>DOMSoundItem"))
 		{
 			var soundItem = destLibrary.getItem(node.getAttr("name"));
@@ -96,6 +103,7 @@ class DocumentImporter
 			}
 		}
 		
+		log("DocumentImporter.importXmlFiles load folders");
 		for (node in docPropNode.find(">folders>DOMFolderItem"))
 		{
 			if (node.hasAttribute("name"))
@@ -108,13 +116,20 @@ class DocumentImporter
 			}
 		}
 		
+		log("DocumentImporter.importXmlFiles load document");
 		symbolLoader.loadFromXml(Library.SCENE_NAME_PATH, srcDoc);
 		
+		log("DocumentImporter.importXmlFiles load library");
 		fileApi.findFiles(srcLibDir, function(file)
 		{
+			log("fileApi.findFiles vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
 			var namePath = Path.withoutExtension(file.substr(srcLibDir.length + 1));
+			log(" ====> namePath = " + namePath);
 			symbolLoader.loadFromLibrary(namePath);
+			log("fileApi.findFiles ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 		});
+		
+		log("DocumentImporter.importXmlFiles END");
 	}
 	
 	#if !sys
@@ -158,4 +173,9 @@ class DocumentImporter
 	}
 	
 	#end
+	
+	static function log(s:String, ?infos:haxe.PosInfos)
+	{
+		haxe.Log.trace(s, infos);
+	}
 }
