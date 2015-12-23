@@ -28,7 +28,15 @@ class FlashImporterPlugin implements IImporterPlugin
 	public var fileFilterDescription = "Adobe Flash Documents (*.fla;*.xfl)";
 	public var fileFilterExtensions = [ "fla", "xfl" ];
 	
-	public var properties : Array<CustomProperty> = null;
+	public var properties : Array<CustomProperty> =
+	[
+		{
+			type: "bool",
+			name: "importMedia",
+			label: "Import media (Adobe Flash CS5+ must be installed).",
+			defaultValue: true
+		}
+	];
 	
 	public function importDocument(fileApi:FileApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, fonts:Array<String>, callb:Bool->Void)
 	{
@@ -46,7 +54,7 @@ class FlashImporterPlugin implements IImporterPlugin
 				documentProperties,
 				library,
 				fonts,
-				true,
+				params.importMedia,
 				function(success:Bool)
 				{
 					fileApi.remove(dir);
@@ -65,7 +73,7 @@ class FlashImporterPlugin implements IImporterPlugin
 				documentProperties,
 				library,
 				fonts,
-				true,
+				params.importMedia,
 				callb
 			);
 		}
