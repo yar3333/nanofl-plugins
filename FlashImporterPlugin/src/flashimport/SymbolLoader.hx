@@ -73,12 +73,12 @@ class SymbolLoader
 			var filePath = srcLibDir + "/" + namePath + ".xml";
 			if (fileApi.exists(filePath))
 			{
-				trace("Load file " + filePath + "...");
+				log("Load file " + filePath + "...");
 				var data = fileApi.getContent(filePath);
-				trace("Loaded");
-				trace("Parse xml...");
+				log("Loaded");
+				log("Parse xml...");
 				var doc = new XmlDocument(data);
-				trace("Parsed");
+				log("Parsed");
 				loadFromXml(namePath, doc);
 			}
 			else
@@ -91,16 +91,16 @@ class SymbolLoader
 	
 	public function loadFromXml(namePath:String, src:HtmlNodeElement) : MovieClipItem
 	{
-		trace("SymbolLoader.loadFromXml " + namePath + " BEGIN");
+		log("SymbolLoader.loadFromXml " + namePath + " BEGIN");
 		if (library.hasItem(namePath))
 		{
-			trace("SymbolLoader.loadFromXml1");
+			log("SymbolLoader.loadFromXml1");
 			var r = cast(library.getItem(namePath), MovieClipItem);
-			trace("SymbolLoader.loadFromXml2");
+			log("SymbolLoader.loadFromXml2");
 			return r;
 		}
 		
-		trace("SymbolLoader.loadFromXml3");
+		log("SymbolLoader.loadFromXml3");
 		var symbolItemXml = src.findOne(">DOMSymbolItem");
 		if (symbolItemXml == null) symbolItemXml = src.findOne(">DOMDocument");
 		
@@ -113,7 +113,7 @@ class SymbolLoader
 		}
 		library.addItem(r);
 		
-		trace("SymbolLoader.loadFromXml " + namePath + " END");
+		log("SymbolLoader.loadFromXml " + namePath + " END");
 		
 		return r;
 	}
@@ -616,6 +616,6 @@ class SymbolLoader
 	
 	static function log(s:String, ?infos:haxe.PosInfos)
 	{
-		haxe.Log.trace(s, infos);
+		//haxe.Log.trace(s, infos);
 	}
 }
