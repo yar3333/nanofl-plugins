@@ -24,15 +24,14 @@ class DocumentImporter
 				fileApi, srcFilePath, destFilePath, destLibrary,
 				function(success)
 				{
-					if (success) importXmlFiles(fileApi, srcFilePath, destDocProp, destLibrary, fonts);
-					callb(success);
+					if (success) importXmlFiles(fileApi, srcFilePath, destDocProp, destLibrary, fonts, callb);
+					else         callb(false);
 				}
 			);
 		}
 		else
 		{
-			importXmlFiles(fileApi, srcFilePath, destDocProp, destLibrary, fonts);
-			callb(true);
+			importXmlFiles(fileApi, srcFilePath, destDocProp, destLibrary, fonts, callb);
 		}
 	}
 	
@@ -74,7 +73,7 @@ class DocumentImporter
 		});
 	}
 	
-	static function importXmlFiles(fileApi:FileApi, srcFilePath:String, destDocProp:DocumentProperties, destLibrary:Library, fonts:Array<String>)
+	static function importXmlFiles(fileApi:FileApi, srcFilePath:String, destDocProp:DocumentProperties, destLibrary:Library, fonts:Array<String>, callb:Bool->Void)
 	{
 		log("DocumentImporter.importXmlFiles BEGIN");
 		
@@ -119,7 +118,8 @@ class DocumentImporter
 		log("DocumentImporter.importXmlFiles load document");
 		symbolLoader.loadFromXml(Library.SCENE_NAME_PATH, srcDoc);
 		
-		log("DocumentImporter.importXmlFiles load library");
+		log("DocumentImporter.importXmlFiles search for library files");
+		var namePaths = [];
 		fileApi.findFiles(srcLibDir, function(file)
 		{
 			log("fileApi.findFiles vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
@@ -129,7 +129,32 @@ class DocumentImporter
 			log("fileApi.findFiles ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 		});
 		
-		log("DocumentImporter.importXmlFiles END");
+		log("DocumentImporter.importXmlFiles load library");
+		#if !sys
+			function loadNext()
+			{
+				if (namePaths.length == 0)
+				{
+					log("DocumentImporter.importXmlFiles END");
+					callb(true);
+				}
+				else
+				{
+					var namePath = namePaths.shift();
+					log("Process namePath = " + namePath);
+					symbolLoader.loadFromLibrary(namePath);
+					haxe.Timer.delay(loadNext, 0);
+				}
+			}
+			loadNext();
+		#else
+			for (namePath in namePaths)
+			{
+				symbolLoader.loadFromLibrary(namePath);
+			}
+			log("DocumentImporter.importXmlFiles END");
+			callb(true);
+		#end
 	}
 	
 	#if !sys
@@ -176,6 +201,6 @@ class DocumentImporter
 	
 	static function log(s:String, ?infos:haxe.PosInfos)
 	{
-		haxe.Log.trace(s, infos);
+		//haxe.Log.trace(s, infos);
 	}
 }
