@@ -20,6 +20,8 @@ class FontConvertor
 		
 		var style = n >= 0 ? removeSuffixes(font.substring(n + 1)).toLowerCase() : "";
 		if (style == "bolditalic") style = "bold italic";
+		style = style.replace("regular", "");
+		style = style.replace("semibold", "bold");
 		
 		return { face:face, style:style };
 	}

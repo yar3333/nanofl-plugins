@@ -122,11 +122,7 @@ class DocumentImporter
 		var namePaths = [];
 		fileApi.findFiles(srcLibDir, function(file)
 		{
-			log("fileApi.findFiles vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
-			var namePath = Path.withoutExtension(file.substr(srcLibDir.length + 1));
-			log(" ====> namePath = " + namePath);
-			symbolLoader.loadFromLibrary(namePath);
-			log("fileApi.findFiles ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+			namePaths.push(PathTools.unescape(Path.withoutExtension(file.substr(srcLibDir.length + 1))));
 		});
 		
 		log("DocumentImporter.importXmlFiles load library");
@@ -140,9 +136,7 @@ class DocumentImporter
 				}
 				else
 				{
-					var namePath = namePaths.shift();
-					log("Process namePath = " + namePath);
-					symbolLoader.loadFromLibrary(namePath);
+					symbolLoader.loadFromLibrary(namePaths.shift());
 					haxe.Timer.delay(loadNext, 0);
 				}
 			}

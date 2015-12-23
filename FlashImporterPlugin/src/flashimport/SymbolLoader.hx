@@ -70,7 +70,9 @@ class SymbolLoader
 	{
 		if (!library.hasItem(namePath))
 		{
-			var filePath = srcLibDir + "/" + namePath + ".xml";
+			log("Load item namePath = " + namePath);
+			
+			var filePath = srcLibDir + "/" + PathTools.escape(namePath) + ".xml";
 			if (fileApi.exists(filePath))
 			{
 				log("Load file " + filePath + "...");
@@ -200,7 +202,7 @@ class SymbolLoader
 				case "DOMSymbolInstance", "DOMBitmapInstance":
 					var instance = new Instance
 					(
-						element.getAttr("libraryItemName"),
+						PathTools.unescape(element.getAttr("libraryItemName")),
 						element.getAttr("name", ""),
 						loadColorEffect(element.findOne(">color>Color")),
 						element.find(">filters>*").map(function(f) return loadFilter(f))
