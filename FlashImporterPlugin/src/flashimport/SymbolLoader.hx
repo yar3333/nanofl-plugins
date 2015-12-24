@@ -1,6 +1,7 @@
 package flashimport;
 
 import haxe.ds.ObjectMap;
+import haxe.io.Path;
 import htmlparser.HtmlNodeElement;
 import htmlparser.XmlDocument;
 import nanofl.engine.coloreffects.ColorEffect;
@@ -66,31 +67,25 @@ class SymbolLoader
 		this.fontConvertor = new FontConvertor(fonts);
 	}
 	
-	public function loadFromLibrary(namePath:String) : LibraryItem
+	public function loadFromFile(href:String) : Void
 	{
+		var namePath = PathTools.unescape(Path.withoutExtension(href));
+		
 		if (!library.hasItem(namePath))
 		{
 			log("Load item \"" + namePath + "\"");
-			
-			var filePath = srcLibDir + "/" + PathTools.escape(namePath) + ".xml";
-			if (fileApi.exists(filePath))
+			if (fileApi.exists(srcLibDir + "/" + href))
 			{
-				loadFromXml(namePath, new XmlDocument(fileApi.getContent(filePath)));
-			}
-			else
-			{
-				library.addItem(loadBitmap(namePath));
+				loadFromXml(namePath, new XmlDocument(fileApi.getContent(srcLibDir + "/" + href)));
 			}
 		}
-		return library.getItem(namePath);
 	}
 	
 	public function loadFromXml(namePath:String, src:HtmlNodeElement) : MovieClipItem
 	{
 		if (library.hasItem(namePath))
 		{
-			var r = cast(library.getItem(namePath), MovieClipItem);
-			return r;
+			return cast(library.getItem(namePath), MovieClipItem);
 		}
 		
 		var symbolItemXml = src.findOne(">DOMSymbolItem");

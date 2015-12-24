@@ -118,33 +118,29 @@ class DocumentImporter
 		log("DocumentImporter.importXmlFiles load document");
 		symbolLoader.loadFromXml(Library.SCENE_NAME_PATH, srcDoc);
 		
-		log("DocumentImporter.importXmlFiles search for library files");
-		var namePaths = [];
-		fileApi.findFiles(srcLibDir, function(file)
-		{
-			namePaths.push(PathTools.unescape(Path.withoutExtension(file.substr(srcLibDir.length + 1))));
-		});
+		log("DocumentImporter.importXmlFiles load symbols");
+		var hrefs = docPropNode.find(">symbols>Include").map(function(node) return node.getAttrString("href"));
 		
 		log("DocumentImporter.importXmlFiles load library");
 		#if !sys
 			function loadNext()
 			{
-				if (namePaths.length == 0)
+				if (hrefs.length == 0)
 				{
 					log("DocumentImporter.importXmlFiles END");
 					callb(true);
 				}
 				else
 				{
-					symbolLoader.loadFromLibrary(namePaths.shift());
-					haxe.Timer.delay(loadNext, 0);
+					symbolLoader.loadFromFile(hrefs.shift());
+					haxe.Timer.delay(loadNext, 10);
 				}
 			}
 			loadNext();
 		#else
-			for (namePath in namePaths)
+			for (href in hrefs)
 			{
-				symbolLoader.loadFromLibrary(namePath);
+				symbolLoader.loadFromFile(href);
 			}
 			log("DocumentImporter.importXmlFiles END");
 			callb(true);

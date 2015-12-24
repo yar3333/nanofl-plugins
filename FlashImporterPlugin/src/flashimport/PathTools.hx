@@ -1,16 +1,13 @@
 package flashimport;
 
-using StringTools;
-
 class PathTools
 {
 	public static function unescape(s:String) : String
 	{
-		return s.replace("&#038", "&");
-	}
-	
-	public static function escape(s:String) : String
-	{
-		return s.replace("&", "&#038");
+		return ~/&#(\d\d\d)/g.map(s, function(re)
+		{
+			var code = Std.parseInt(re.matched(1));
+			return String.fromCharCode(code);
+		});
 	}
 }
