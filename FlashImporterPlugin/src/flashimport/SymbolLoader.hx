@@ -70,18 +70,12 @@ class SymbolLoader
 	{
 		if (!library.hasItem(namePath))
 		{
-			log("Load item namePath = " + namePath);
+			log("Load item \"" + namePath + "\"");
 			
 			var filePath = srcLibDir + "/" + PathTools.escape(namePath) + ".xml";
 			if (fileApi.exists(filePath))
 			{
-				log("Load file " + filePath + "...");
-				var data = fileApi.getContent(filePath);
-				log("Loaded");
-				log("Parse xml...");
-				var doc = new XmlDocument(data);
-				log("Parsed");
-				loadFromXml(namePath, doc);
+				loadFromXml(namePath, new XmlDocument(fileApi.getContent(filePath)));
 			}
 			else
 			{
@@ -93,16 +87,12 @@ class SymbolLoader
 	
 	public function loadFromXml(namePath:String, src:HtmlNodeElement) : MovieClipItem
 	{
-		log("SymbolLoader.loadFromXml " + namePath + " BEGIN");
 		if (library.hasItem(namePath))
 		{
-			log("SymbolLoader.loadFromXml1");
 			var r = cast(library.getItem(namePath), MovieClipItem);
-			log("SymbolLoader.loadFromXml2");
 			return r;
 		}
 		
-		log("SymbolLoader.loadFromXml3");
 		var symbolItemXml = src.findOne(">DOMSymbolItem");
 		if (symbolItemXml == null) symbolItemXml = src.findOne(">DOMDocument");
 		
@@ -114,8 +104,6 @@ class SymbolLoader
 			r.addLayer(loadLayer(namePath, layer));
 		}
 		library.addItem(r);
-		
-		log("SymbolLoader.loadFromXml " + namePath + " END");
 		
 		return r;
 	}
