@@ -1504,7 +1504,7 @@ stdlib_Utf8.htmlUnescapeChar = function(escape) {
 		r = this1.get(escape);
 		if(r != null) return r;
 	}
-	haxe_Log.trace("Unknow escape sequence: " + escape,{ fileName : "Utf8.hx", lineNumber : 129, className : "stdlib.Utf8", methodName : "htmlUnescapeChar"});
+	haxe_Log.trace("Unknow escape sequence: " + escape,{ fileName : "Utf8.hx", lineNumber : 131, className : "stdlib.Utf8", methodName : "htmlUnescapeChar"});
 	return null;
 };
 stdlib_Utf8.get_htmlEscapeMap = function() {
@@ -1515,7 +1515,7 @@ stdlib_Utf8.get_htmlEscapeMap = function() {
 		_g.h[60] = "&lt;";
 		_g.h[62] = "&gt;";
 		_g.h[34] = "&quot;";
-		_g.h[39] = "&#39;";
+		_g.h[39] = "&apos;";
 		_g.h[13] = "&#xD;";
 		_g.h[10] = "&#xA;";
 		stdlib_Utf8.htmlEscapeMap = _g;
@@ -1530,6 +1530,7 @@ stdlib_Utf8.get_htmlUnescapeMap = function() {
 		if(__map_reserved.lt != null) _g.setReserved("lt",60); else _g.h["lt"] = 60;
 		if(__map_reserved.gt != null) _g.setReserved("gt",62); else _g.h["gt"] = 62;
 		if(__map_reserved.quot != null) _g.setReserved("quot",34); else _g.h["quot"] = 34;
+		if(__map_reserved.apos != null) _g.setReserved("apos",39); else _g.h["apos"] = 39;
 		if(__map_reserved.euro != null) _g.setReserved("euro",8364); else _g.h["euro"] = 8364;
 		if(__map_reserved.iexcl != null) _g.setReserved("iexcl",161); else _g.h["iexcl"] = 161;
 		if(__map_reserved.cent != null) _g.setReserved("cent",162); else _g.h["cent"] = 162;

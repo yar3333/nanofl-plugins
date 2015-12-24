@@ -16,7 +16,11 @@ extern class HtmlNodeElement extends htmlparser.HtmlNode
 	function removeAttribute(name:String) : Void;
 	function hasAttribute(name:String) : Bool;
 	var innerHTML : String;
-	var innerText(default, never) : String;
+	var innerText : String;
+	/**
+	 * Replace all inner nodes to the text node w/o escaping and parsing.
+	 */
+	function fastSetInnerHTML(html:String) : Void;
 	override function toText() : String;
 	function find(selector:String) : Array<htmlparser.HtmlNodeElement>;
 	function replaceChild(node:htmlparser.HtmlNodeElement, newNode:htmlparser.HtmlNode) : Void;
@@ -24,5 +28,4 @@ extern class HtmlNodeElement extends htmlparser.HtmlNode
 	function removeChild(node:htmlparser.HtmlNode) : Void;
 	function getAttributesAssoc() : Map<String, String>;
 	function getAttributesObject() : Dynamic<String>;
-	function setInnerText(text:String) : Void;
 }

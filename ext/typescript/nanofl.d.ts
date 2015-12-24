@@ -1143,6 +1143,10 @@ declare module htmlparser
 		hasAttribute(name:string) : boolean;
 		innerHTML : string;
 		innerText : string;
+		/**
+		 * Replace all inner nodes to the text node w/o escaping and parsing.
+		 */
+		fastSetInnerHTML(html:string) : void;
 		toText() : string;
 		find(selector:string) : htmlparser.HtmlNodeElement[];
 		replaceChild(node:htmlparser.HtmlNodeElement, newNode:htmlparser.HtmlNode) : void;
@@ -1150,7 +1154,6 @@ declare module htmlparser
 		removeChild(node:htmlparser.HtmlNode) : void;
 		getAttributesAssoc() : Map<string, string>;
 		getAttributesObject() : any;
-		setInnerText(text:string) : void;
 	}
 	
 	export class HtmlDocument extends htmlparser.HtmlNodeElement
@@ -1163,9 +1166,6 @@ declare module htmlparser
 		constructor(text:string);
 		text : string;
 		toString() : string;
-		/**
-		 * Return decoded text.
-		 */
 		toText() : string;
 	}
 	
@@ -1185,6 +1185,12 @@ declare module htmlparser
 		static getAttrFloat(node:htmlparser.HtmlNodeElement, attrName:string, defaultValue?:number) : number;
 		static getAttrBool(node:htmlparser.HtmlNodeElement, attrName:string, defaultValue?:boolean) : boolean;
 		static findOne(node:htmlparser.HtmlNodeElement, selector:string) : htmlparser.HtmlNodeElement;
+	}
+	
+	export class HtmlTools
+	{
+		static escape(text:string, chars?:string) : string;
+		static unescape(text:string) : string;
 	}
 	
 	type XmlAttribute = htmlparser.HtmlAttribute;

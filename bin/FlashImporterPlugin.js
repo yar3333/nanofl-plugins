@@ -430,41 +430,40 @@ flashimport_DocumentImporter.importXmlFiles = function(fileApi,srcFilePath,destD
 	var _g = 0;
 	var _g1 = docPropNode.find(">media>DOMSoundItem");
 	while(_g < _g1.length) {
-		var node = _g1[_g];
+		var node1 = _g1[_g];
 		++_g;
-		var soundItem = destLibrary.getItem(htmlparser.HtmlParserTools.getAttr(node,"name"));
+		var soundItem = destLibrary.getItem(htmlparser.HtmlParserTools.getAttr(node1,"name"));
 		if(js_Boot.__instanceof(soundItem,nanofl.engine.libraryitems.SoundItem)) {
-			if(htmlparser.HtmlParserTools.getAttr(node,"linkageExportForAS",false)) soundItem.linkage = htmlparser.HtmlParserTools.getAttr(node,"linkageIdentifier");
+			if(htmlparser.HtmlParserTools.getAttr(node1,"linkageExportForAS",false)) soundItem.linkage = htmlparser.HtmlParserTools.getAttr(node1,"linkageIdentifier");
 		}
 	}
 	flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles load folders",{ fileName : "DocumentImporter.hx", lineNumber : 105, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
 	var _g2 = 0;
 	var _g11 = docPropNode.find(">folders>DOMFolderItem");
 	while(_g2 < _g11.length) {
-		var node1 = _g11[_g2];
+		var node2 = _g11[_g2];
 		++_g2;
-		if(node1.hasAttribute("name")) {
-			var namePath = htmlparser.HtmlParserTools.getAttr(node1,"name","");
+		if(node2.hasAttribute("name")) {
+			var namePath = htmlparser.HtmlParserTools.getAttr(node2,"name","");
 			if(namePath != "") destLibrary.addItem(new nanofl.engine.libraryitems.FolderItem(namePath));
 		}
 	}
 	flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles load document",{ fileName : "DocumentImporter.hx", lineNumber : 118, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
 	symbolLoader.loadFromXml(nanofl.engine.Library.SCENE_NAME_PATH,srcDoc);
-	flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles search for library files",{ fileName : "DocumentImporter.hx", lineNumber : 121, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
-	var namePaths = [];
-	fileApi.findFiles(srcLibDir,function(file) {
-		namePaths.push(flashimport_PathTools.unescape(haxe_io_Path.withoutExtension(HxOverrides.substr(file,srcLibDir.length + 1,null))));
+	flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles load symbols",{ fileName : "DocumentImporter.hx", lineNumber : 121, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
+	var hrefs = docPropNode.find(">symbols>Include").map(function(node) {
+		return htmlparser.HtmlParserTools.getAttrString(node,"href");
 	});
-	flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles load library",{ fileName : "DocumentImporter.hx", lineNumber : 128, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
+	flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles load library",{ fileName : "DocumentImporter.hx", lineNumber : 124, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
 	var loadNext;
 	var loadNext1 = null;
 	loadNext1 = function() {
-		if(namePaths.length == 0) {
-			flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles END",{ fileName : "DocumentImporter.hx", lineNumber : 134, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
+		if(hrefs.length == 0) {
+			flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles END",{ fileName : "DocumentImporter.hx", lineNumber : 130, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
 			callb(true);
 		} else {
-			symbolLoader.loadFromLibrary(namePaths.shift());
-			haxe_Timer.delay(loadNext1,0);
+			symbolLoader.loadFromFile(hrefs.shift());
+			haxe_Timer.delay(loadNext1,10);
 		}
 	};
 	loadNext = loadNext1;
@@ -655,10 +654,10 @@ flashimport_MatrixParser.load = function(node,divider,dx,dy) {
 var flashimport_PathTools = function() { };
 flashimport_PathTools.__name__ = ["flashimport","PathTools"];
 flashimport_PathTools.unescape = function(s) {
-	return StringTools.replace(s,"&#038","&");
-};
-flashimport_PathTools.escape = function(s) {
-	return StringTools.replace(s,"&","&#038");
+	return new EReg("&#(\\d\\d\\d)","g").map(s,function(re) {
+		var code = Std.parseInt(re.matched(1));
+		return String.fromCharCode(code);
+	});
 };
 var flashimport_ShapeConvertor = function(stokes,fills,edgeDatas) {
 	this.stokes = stokes;
@@ -835,32 +834,15 @@ flashimport_SymbolLoader.__name__ = ["flashimport","SymbolLoader"];
 flashimport_SymbolLoader.log = function(s,infos) {
 };
 flashimport_SymbolLoader.prototype = {
-	loadFromLibrary: function(namePath) {
+	loadFromFile: function(href) {
+		var namePath = flashimport_PathTools.unescape(haxe_io_Path.withoutExtension(href));
 		if(!this.library.hasItem(namePath)) {
-			flashimport_SymbolLoader.log("Load item namePath = " + namePath,{ fileName : "SymbolLoader.hx", lineNumber : 73, className : "flashimport.SymbolLoader", methodName : "loadFromLibrary"});
-			var filePath = this.srcLibDir + "/" + flashimport_PathTools.escape(namePath) + ".xml";
-			if(this.fileApi.exists(filePath)) {
-				flashimport_SymbolLoader.log("Load file " + filePath + "...",{ fileName : "SymbolLoader.hx", lineNumber : 78, className : "flashimport.SymbolLoader", methodName : "loadFromLibrary"});
-				var data = this.fileApi.getContent(filePath);
-				flashimport_SymbolLoader.log("Loaded",{ fileName : "SymbolLoader.hx", lineNumber : 80, className : "flashimport.SymbolLoader", methodName : "loadFromLibrary"});
-				flashimport_SymbolLoader.log("Parse xml...",{ fileName : "SymbolLoader.hx", lineNumber : 81, className : "flashimport.SymbolLoader", methodName : "loadFromLibrary"});
-				var doc = new htmlparser.XmlDocument(data);
-				flashimport_SymbolLoader.log("Parsed",{ fileName : "SymbolLoader.hx", lineNumber : 83, className : "flashimport.SymbolLoader", methodName : "loadFromLibrary"});
-				this.loadFromXml(namePath,doc);
-			} else this.library.addItem(this.loadBitmap(namePath));
+			flashimport_SymbolLoader.log("Load item \"" + namePath + "\"",{ fileName : "SymbolLoader.hx", lineNumber : 76, className : "flashimport.SymbolLoader", methodName : "loadFromFile"});
+			if(this.fileApi.exists(this.srcLibDir + "/" + href)) this.loadFromXml(namePath,new htmlparser.XmlDocument(this.fileApi.getContent(this.srcLibDir + "/" + href)));
 		}
-		return this.library.getItem(namePath);
 	}
 	,loadFromXml: function(namePath,src) {
-		flashimport_SymbolLoader.log("SymbolLoader.loadFromXml " + namePath + " BEGIN",{ fileName : "SymbolLoader.hx", lineNumber : 96, className : "flashimport.SymbolLoader", methodName : "loadFromXml"});
-		if(this.library.hasItem(namePath)) {
-			flashimport_SymbolLoader.log("SymbolLoader.loadFromXml1",{ fileName : "SymbolLoader.hx", lineNumber : 99, className : "flashimport.SymbolLoader", methodName : "loadFromXml"});
-			var r1;
-			r1 = js_Boot.__cast(this.library.getItem(namePath) , nanofl.engine.libraryitems.MovieClipItem);
-			flashimport_SymbolLoader.log("SymbolLoader.loadFromXml2",{ fileName : "SymbolLoader.hx", lineNumber : 101, className : "flashimport.SymbolLoader", methodName : "loadFromXml"});
-			return r1;
-		}
-		flashimport_SymbolLoader.log("SymbolLoader.loadFromXml3",{ fileName : "SymbolLoader.hx", lineNumber : 105, className : "flashimport.SymbolLoader", methodName : "loadFromXml"});
+		if(this.library.hasItem(namePath)) return js_Boot.__cast(this.library.getItem(namePath) , nanofl.engine.libraryitems.MovieClipItem);
 		var symbolItemXml = htmlparser.HtmlParserTools.findOne(src,">DOMSymbolItem");
 		if(symbolItemXml == null) symbolItemXml = htmlparser.HtmlParserTools.findOne(src,">DOMDocument");
 		var r = new nanofl.engine.libraryitems.MovieClipItem(namePath);
@@ -874,7 +856,6 @@ flashimport_SymbolLoader.prototype = {
 			r.addLayer(this.loadLayer(namePath,layer));
 		}
 		this.library.addItem(r);
-		flashimport_SymbolLoader.log("SymbolLoader.loadFromXml " + namePath + " END",{ fileName : "SymbolLoader.hx", lineNumber : 118, className : "flashimport.SymbolLoader", methodName : "loadFromXml"});
 		return r;
 	}
 	,loadBitmap: function(namePath) {
