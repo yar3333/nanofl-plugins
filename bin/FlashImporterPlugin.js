@@ -937,6 +937,13 @@ flashimport_SymbolLoader.prototype = {
 					};
 				})(element))));
 				break;
+			case "DOMOvalObject":
+				r.push(new nanofl.engine.elements.GroupElement(this.loadDrawing(namePath,element[0],parentMatrix,(function(element) {
+					return function(strokes1,fills1) {
+						return nanofl.engine.elements.ShapeElement.createOval(htmlparser.HtmlParserTools.getAttrFloat(element[0],"x") + htmlparser.HtmlParserTools.getAttrFloat(element[0],"objectWidth") / 2,htmlparser.HtmlParserTools.getAttrFloat(element[0],"y") + htmlparser.HtmlParserTools.getAttrFloat(element[0],"objectHeight") / 2,htmlparser.HtmlParserTools.getAttrFloat(element[0],"objectWidth") / 2,htmlparser.HtmlParserTools.getAttrFloat(element[0],"objectHeight") / 2,htmlparser.HtmlParserTools.getAttrFloat(element[0],"startAngle",0.0),htmlparser.HtmlParserTools.getAttrFloat(element[0],"endAngle",360.0),htmlparser.HtmlParserTools.getAttrFloat(element[0],"innerRadius",0.0),htmlparser.HtmlParserTools.getAttrBool(element[0],"closePath",true),strokes1.length > 0?strokes1[0]:null,fills1.length > 0?fills1[0]:null);
+					};
+				})(element))));
+				break;
 			case "DOMStaticText":case "DOMDynamicText":case "DOMInputText":
 				r.push(this.loadText(element[0],parentMatrix));
 				break;

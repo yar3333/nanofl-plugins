@@ -226,6 +226,24 @@ class SymbolLoader
 						);
 					})));
 					
+				case "DOMOvalObject":
+					r.push(new GroupElement(loadDrawing(namePath, element, parentMatrix, function(strokes, fills)
+					{
+						return ShapeElement.createOval
+						(
+							element.getAttrFloat("x") + element.getAttrFloat("objectWidth") / 2,
+							element.getAttrFloat("y") + element.getAttrFloat("objectHeight") / 2,
+							element.getAttrFloat("objectWidth") / 2,
+							element.getAttrFloat("objectHeight") / 2,
+							element.getAttrFloat("startAngle", 0.0),
+							element.getAttrFloat("endAngle", 360.0),
+							element.getAttrFloat("innerRadius", 0.0),
+							element.getAttrBool("closePath", true),
+							strokes.length > 0 ? strokes[0] : null,
+							fills.length > 0 ? fills[0] : null
+						);
+					})));
+					
 				case "DOMStaticText", "DOMDynamicText", "DOMInputText":
 					r.push(loadText(element, parentMatrix));
 					
