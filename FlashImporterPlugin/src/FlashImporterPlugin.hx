@@ -45,11 +45,14 @@ class FlashImporterPlugin implements IImporterPlugin
 			var dir = fileApi.getTempDirectory() + "/unsaved/" + Uuid.newUuid();
 			fileApi.unzip(srcFilePath, dir);
 			
+			var xflFiles = fileApi.readDirectory(dir).filter(function(s) return Path.extension(s).toLowerCase() == "xfl");
+			if (xflFiles.length == 0) throw "XFL file is not found";
+			
 			DocumentImporter.process
 			(
 				IMPORT_MEDIA_SCRIPT_TEMPLATE,
 				fileApi,
-				dir + "/" + Path.withoutDirectory(Path.withoutExtension(srcFilePath)) + ".xfl",
+				dir + "/" + xflFiles[0],
 				destFilePath,
 				documentProperties,
 				library,
