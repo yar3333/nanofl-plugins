@@ -89,7 +89,11 @@ FlashImporterPlugin.prototype = {
 		if(haxe_io_Path.extension(srcFilePath) == "fla") {
 			var dir = fileApi.getTempDirectory() + "/unsaved/" + stdlib_Uuid.newUuid();
 			fileApi.unzip(srcFilePath,dir);
-			flashimport_DocumentImporter.process(FlashImporterPlugin.IMPORT_MEDIA_SCRIPT_TEMPLATE,fileApi,dir + "/" + haxe_io_Path.withoutDirectory(haxe_io_Path.withoutExtension(srcFilePath)) + ".xfl",destFilePath,documentProperties,library,fonts,params.importMedia,function(success) {
+			var xflFiles = fileApi.readDirectory(dir).filter(function(s) {
+				return haxe_io_Path.extension(s).toLowerCase() == "xfl";
+			});
+			if(xflFiles.length == 0) throw new js__$Boot_HaxeError("XFL file is not found");
+			flashimport_DocumentImporter.process(FlashImporterPlugin.IMPORT_MEDIA_SCRIPT_TEMPLATE,fileApi,dir + "/" + xflFiles[0],destFilePath,documentProperties,library,fonts,params.importMedia,function(success) {
 				fileApi.remove(dir);
 				callb(success);
 			});
@@ -837,7 +841,7 @@ flashimport_SymbolLoader.prototype = {
 	loadFromFile: function(href) {
 		var namePath = flashimport_PathTools.unescape(haxe_io_Path.withoutExtension(href));
 		if(!this.library.hasItem(namePath)) {
-			flashimport_SymbolLoader.log("Load item \"" + namePath + "\"",{ fileName : "SymbolLoader.hx", lineNumber : 76, className : "flashimport.SymbolLoader", methodName : "loadFromFile"});
+			flashimport_SymbolLoader.log("Load item \"" + namePath + "\"",{ fileName : "SymbolLoader.hx", lineNumber : 78, className : "flashimport.SymbolLoader", methodName : "loadFromFile"});
 			if(this.fileApi.exists(this.srcLibDir + "/" + href)) this.loadFromXml(namePath,new htmlparser.XmlDocument(this.fileApi.getContent(this.srcLibDir + "/" + href)));
 		}
 	}
@@ -909,28 +913,37 @@ flashimport_SymbolLoader.prototype = {
 		var r = [];
 		var _g = 0;
 		while(_g < elements.length) {
-			var element = elements[_g];
+			var element = [elements[_g]];
 			++_g;
-			var _g1 = element.name;
+			var _g1 = element[0].name;
 			switch(_g1) {
 			case "DOMSymbolInstance":case "DOMBitmapInstance":
-				var instance = new nanofl.engine.elements.Instance(flashimport_PathTools.unescape(htmlparser.HtmlParserTools.getAttr(element,"libraryItemName")),htmlparser.HtmlParserTools.getAttr(element,"name",""),this.loadColorEffect(htmlparser.HtmlParserTools.findOne(element,">color>Color")),element.find(">filters>*").map(function(f) {
-					return _g2.loadFilter(f);
-				}));
-				instance.matrix = flashimport_MatrixParser.load(htmlparser.HtmlParserTools.findOne(element,">matrix>Matrix")).prependMatrix(parentMatrix);
-				this.loadRegPoint(instance,htmlparser.HtmlParserTools.findOne(element,">transformationPoint>Point"));
+				var instance = new nanofl.engine.elements.Instance(flashimport_PathTools.unescape(htmlparser.HtmlParserTools.getAttr(element[0],"libraryItemName")),htmlparser.HtmlParserTools.getAttr(element[0],"name",""),this.loadColorEffect(htmlparser.HtmlParserTools.findOne(element[0],">color>Color")),element[0].find(">filters>*").map((function() {
+					return function(f) {
+						return _g2.loadFilter(f);
+					};
+				})()));
+				instance.matrix = flashimport_MatrixParser.load(htmlparser.HtmlParserTools.findOne(element[0],">matrix>Matrix")).prependMatrix(parentMatrix);
+				this.loadRegPoint(instance,htmlparser.HtmlParserTools.findOne(element[0],">transformationPoint>Point"));
 				r.push(instance);
 				break;
 			case "DOMShape":
-				if(!htmlparser.HtmlParserTools.getAttr(element,"isDrawingObject",false)) r = r.concat(this.loadShape(namePath,element,parentMatrix)); else r.push(new nanofl.engine.elements.GroupElement(this.loadShape(namePath,element,parentMatrix)));
+				if(!htmlparser.HtmlParserTools.getAttr(element[0],"isDrawingObject",false)) r = r.concat(this.loadShape(namePath,element[0],parentMatrix)); else r.push(new nanofl.engine.elements.GroupElement(this.loadShape(namePath,element[0],parentMatrix)));
+				break;
+			case "DOMRectangleObject":
+				r.push(new nanofl.engine.elements.GroupElement(this.loadDrawing(namePath,element[0],parentMatrix,(function(element) {
+					return function(strokes,fills) {
+						return nanofl.engine.elements.ShapeElement.createRectangle(htmlparser.HtmlParserTools.getAttrFloat(element[0],"x"),htmlparser.HtmlParserTools.getAttrFloat(element[0],"y"),htmlparser.HtmlParserTools.getAttrFloat(element[0],"objectWidth"),htmlparser.HtmlParserTools.getAttrFloat(element[0],"objectHeight"),htmlparser.HtmlParserTools.getAttrFloat(element[0],"topLeftRadius",0.0),htmlparser.HtmlParserTools.getAttrFloat(element[0],"topRightRadius",0.0),htmlparser.HtmlParserTools.getAttrFloat(element[0],"bottomRightRadius",0.0),htmlparser.HtmlParserTools.getAttrFloat(element[0],"bottomLeftRadius",0.0),strokes.length > 0?strokes[0]:null,fills.length > 0?fills[0]:null);
+					};
+				})(element))));
 				break;
 			case "DOMStaticText":case "DOMDynamicText":case "DOMInputText":
-				r.push(this.loadText(element,parentMatrix));
+				r.push(this.loadText(element[0],parentMatrix));
 				break;
 			case "DOMGroup":
-				var elements1 = element.find(">members>*");
+				var elements1 = element[0].find(">members>*");
 				if(elements1.length > 0) {
-					var m = flashimport_MatrixParser.load(htmlparser.HtmlParserTools.findOne(element,">matrix>Matrix"));
+					var m = flashimport_MatrixParser.load(htmlparser.HtmlParserTools.findOne(element[0],">matrix>Matrix"));
 					var group = new nanofl.engine.elements.GroupElement(this.loadElements(namePath,elements1,m.clone().invert().prependMatrix(parentMatrix)));
 					group.matrix = m;
 					r.push(group);
@@ -940,14 +953,20 @@ flashimport_SymbolLoader.prototype = {
 				nanofl.engine.Debug.console.warn("DOMTLFText is not supported. Please, resave original document in Flash Pro CC.");
 				break;
 			default:
-				nanofl.engine.Debug.console.warn("Unknow element node: '" + element.name + "'.");
+				nanofl.engine.Debug.console.warn("Unknow element node: '" + element[0].name + "'.");
 			}
 		}
 		return r;
 	}
 	,loadShape: function(namePath,element,parentMatrix) {
-		var transformedStrokes = element.find(">strokes>StrokeStyle>*").map($bind(this,this.loadShapeStroke));
-		var transformedFills = element.find(">fills>FillStyle>*").map($bind(this,this.loadShapeFill));
+		var _g = this;
+		return this.loadDrawing(namePath,element,parentMatrix,function(strokes,fills) {
+			return new flashimport_ShapeConvertor(strokes,fills,_g.loadEdgeDatas(element)).convert();
+		});
+	}
+	,loadDrawing: function(namePath,element,parentMatrix,parseDrawData) {
+		var transformedStrokes = element.find(">strokes>StrokeStyle>*, >stroke>*").map($bind(this,this.loadShapeStroke));
+		var transformedFills = element.find(">fills>FillStyle>*, >fill>*").map($bind(this,this.loadShapeFill));
 		var matrixBy = new haxe_ds_ObjectMap();
 		var byMatrix = new flashimport_MatrixMap();
 		var _g = 0;
@@ -966,11 +985,11 @@ flashimport_SymbolLoader.prototype = {
 			if(!byMatrix.exists(z3.matrix)) byMatrix.set(z3.matrix,[]);
 			byMatrix.get(z3.matrix).push(z3.fill);
 		}
-		var shapeData = new flashimport_ShapeConvertor(transformedStrokes.map(function(z) {
+		var shapeData = parseDrawData(transformedStrokes.map(function(z) {
 			return z.stroke;
 		}),transformedFills.map(function(z1) {
 			return z1.fill;
-		}),this.loadEdgeDatas(element)).convert();
+		}));
 		var shape = new nanofl.engine.elements.ShapeElement(stdlib_LambdaArray.extract(shapeData.edges,function(edge) {
 			return matrixBy.h[edge.stroke.__id__].isIdentity();
 		}),stdlib_LambdaArray.extract(shapeData.polygons,function(polygon) {
@@ -1537,11 +1556,6 @@ haxe_io_Path.__name__ = ["haxe","io","Path"];
 haxe_io_Path.withoutExtension = function(path) {
 	var s = new haxe_io_Path(path);
 	s.ext = null;
-	return s.toString();
-};
-haxe_io_Path.withoutDirectory = function(path) {
-	var s = new haxe_io_Path(path);
-	s.dir = null;
 	return s.toString();
 };
 haxe_io_Path.directory = function(path) {

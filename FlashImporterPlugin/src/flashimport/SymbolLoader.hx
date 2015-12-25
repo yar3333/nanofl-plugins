@@ -25,6 +25,8 @@ import nanofl.engine.fills.SolidFill;
 import nanofl.engine.FilterDef;
 import nanofl.engine.geom.Matrix;
 import nanofl.engine.geom.PointTools;
+import nanofl.engine.geom.Polygon;
+import nanofl.engine.geom.StrokeEdge;
 import nanofl.engine.KeyFrame;
 import nanofl.engine.Layer;
 import nanofl.engine.Library;
@@ -204,6 +206,24 @@ class SymbolLoader
 						r.push(new GroupElement(loadShape(namePath, element, parentMatrix)));
 					}
 					
+				case "DOMRectangleObject":
+					r.push(new GroupElement(loadDrawing(namePath, element, parentMatrix, function(strokes, fills)
+					{
+						return ShapeElement.createRectangle
+						(
+							element.getAttrFloat("x"),
+							element.getAttrFloat("y"),
+							element.getAttrFloat("objectWidth"),
+							element.getAttrFloat("objectHeight"),
+							element.getAttrFloat("topLeftRadius", 0.0),
+							element.getAttrFloat("topRightRadius", 0.0),
+							element.getAttrFloat("bottomRightRadius", 0.0),
+							element.getAttrFloat("bottomLeftRadius", 0.0),
+							strokes.length > 0 ? strokes[0] : null,
+							fills.length > 0 ? fills[0] : null
+						);
+					})));
+					
 				case "DOMStaticText", "DOMDynamicText", "DOMInputText":
 					r.push(loadText(element, parentMatrix));
 					
@@ -229,8 +249,16 @@ class SymbolLoader
 	
 	function loadShape(namePath:String, element:HtmlNodeElement, parentMatrix:Matrix) : Array<Element>
 	{
-		var transformedStrokes = element.find(">strokes>StrokeStyle>*").map(loadShapeStroke);
-		var transformedFills = element.find(">fills>FillStyle>*").map(loadShapeFill);
+		return loadDrawing(namePath, element, parentMatrix, function(strokes, fills)
+		{
+			return new ShapeConvertor(strokes, fills, loadEdgeDatas(element)).convert();
+		});
+	}
+	
+	function loadDrawing(namePath:String, element:HtmlNodeElement, parentMatrix:Matrix, parseDrawData:Array<IStroke>->Array<IFill>->{ var edges(default, null):Array<StrokeEdge>; var polygons(default, null):Array<Polygon>; } ) : Array<Element>
+	{
+		var transformedStrokes = element.find(">strokes>StrokeStyle>*, >stroke>*").map(loadShapeStroke);
+		var transformedFills = element.find(">fills>FillStyle>*, >fill>*").map(loadShapeFill);
 		
 		var matrixBy = new ObjectMap<Dynamic, Matrix>();
 		var byMatrix = new MatrixMap<Array<Dynamic>>();
@@ -247,7 +275,11 @@ class SymbolLoader
 			byMatrix.get(z.matrix).push(z.fill);
 		}
 		
-		var shapeData = new ShapeConvertor(transformedStrokes.map(function(z) return z.stroke), transformedFills.map(function(z) return z.fill), loadEdgeDatas(element)).convert();
+		var shapeData = parseDrawData
+		(
+			transformedStrokes.map(function(z) return z.stroke),
+			transformedFills.map(function(z) return z.fill)
+		);
 		
 		var shape = new ShapeElement
 		(
