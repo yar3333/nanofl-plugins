@@ -2,11 +2,12 @@ package nanofl.engine.elements;
 
 extern class Instance extends nanofl.engine.elements.Element implements nanofl.engine.IPathElement
 {
-	function new(namePath:String, ?name:String, ?colorEffect:nanofl.engine.coloreffects.ColorEffect, ?filters:Array<nanofl.engine.FilterDef>) : Void;
+	function new(namePath:String, ?name:String, ?colorEffect:nanofl.engine.coloreffects.ColorEffect, ?filters:Array<nanofl.engine.FilterDef>, ?visible:Bool, ?blendMode:nanofl.engine.BlendModes) : Void;
 	var namePath : String;
 	var name : String;
 	var colorEffect : nanofl.engine.coloreffects.ColorEffect;
 	var filters : Array<nanofl.engine.FilterDef>;
+	var blendMode : nanofl.engine.BlendModes;
 	var symbol(default, never) : nanofl.engine.libraryitems.InstancableItem;
 	override function getType() : String;
 	override function save(out:htmlparser.XmlBuilder) : Void;

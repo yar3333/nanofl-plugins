@@ -190,7 +190,9 @@ class SymbolLoader
 						PathTools.unescape(element.getAttr("libraryItemName")),
 						element.getAttr("name", ""),
 						loadColorEffect(element.findOne(">color>Color")),
-						element.find(">filters>*").map(function(f) return loadFilter(f))
+						element.find(">filters>*").map(function(f) return loadFilter(f)),
+						element.getAttr("isVisible", true),
+						element.getAttr("blendMode", "normal")
 					);
 					instance.matrix = MatrixParser.load(element.findOne(">matrix>Matrix")).prependMatrix(parentMatrix);
 					loadRegPoint(instance, element.findOne(">transformationPoint>Point"));

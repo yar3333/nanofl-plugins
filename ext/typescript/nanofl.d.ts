@@ -850,11 +850,12 @@ declare module nanofl.engine.elements
 	
 	export class Instance extends nanofl.engine.elements.Element implements nanofl.engine.IPathElement
 	{
-		constructor(namePath:string, name?:string, colorEffect?:nanofl.engine.coloreffects.ColorEffect, filters?:nanofl.engine.FilterDef[]);
+		constructor(namePath:string, name?:string, colorEffect?:nanofl.engine.coloreffects.ColorEffect, filters?:nanofl.engine.FilterDef[], visible?:boolean, blendMode?:nanofl.engine.BlendModes);
 		namePath : string;
 		name : string;
 		colorEffect : nanofl.engine.coloreffects.ColorEffect;
 		filters : nanofl.engine.FilterDef[];
+		blendMode : nanofl.engine.BlendModes;
 		symbol : nanofl.engine.libraryitems.InstancableItem;
 		getType() : string;
 		save(out:htmlparser.XmlBuilder) : void;
@@ -9229,6 +9230,8 @@ declare module createjs.AbstractSoundInstance
 declare module nanofl.engine
 {
 	interface ArrayRO<T> extends Array<T> { }
+	
+	type BlendModes = string;
 	
 	type Bytes = haxe.io.Bytes;
 	
