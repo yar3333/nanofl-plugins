@@ -281,15 +281,19 @@ class SymbolLoader
 			transformedFills.map(function(z) return z.fill)
 		);
 		
-		var shape = new ShapeElement
-		(
-			shapeData.edges.extract(function(edge) return matrixBy.get(edge.stroke).isIdentity()),
-			shapeData.polygons.extract(function(polygon) return matrixBy.get(polygon.fill).isIdentity())
-		);
-		loadRegPoint(shape, element.findOne(">transformationPoint>Point"));
-		shape.transform(MatrixParser.load(element.findOne(">matrix>Matrix")).prependMatrix(parentMatrix), false);
+		var objectMatrix = MatrixParser.load(element.findOne(">matrix>Matrix")).prependMatrix(parentMatrix);
 		
-		var r : Array<Element> = [ shape ];
+		var r : Array<Element> = [];
+		
+		var edges = shapeData.edges.extract(function(edge) return matrixBy.get(edge.stroke).isIdentity());
+		var polygons = shapeData.polygons.extract(function(polygon) return matrixBy.get(polygon.fill).isIdentity());
+		if (edges.length > 0 || polygons.length > 0)
+		{
+			var shape = new ShapeElement(edges, polygons);
+			loadRegPoint(shape, element.findOne(">transformationPoint>Point"));
+			shape.transform(objectMatrix, false);
+			r.push(shape);
+		};
 		
 		for (matrix in byMatrix.keys())
 		{
@@ -302,7 +306,7 @@ class SymbolLoader
 			);
 			shape.transform(matrix.clone().invert(), false);
 			
-			r.push(wrapElements(namePath, [ shape ], matrix.clone()));
+			r.push(wrapElements(namePath, [ shape ], objectMatrix.clone().appendMatrix(matrix)));
 		}
 		
 		return r;

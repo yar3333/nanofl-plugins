@@ -990,14 +990,20 @@ flashimport_SymbolLoader.prototype = {
 		}),transformedFills.map(function(z1) {
 			return z1.fill;
 		}));
-		var shape = new nanofl.engine.elements.ShapeElement(stdlib_LambdaArray.extract(shapeData.edges,function(edge) {
+		var objectMatrix = flashimport_MatrixParser.load(htmlparser.HtmlParserTools.findOne(element,">matrix>Matrix")).prependMatrix(parentMatrix);
+		var r = [];
+		var edges = stdlib_LambdaArray.extract(shapeData.edges,function(edge) {
 			return matrixBy.h[edge.stroke.__id__].isIdentity();
-		}),stdlib_LambdaArray.extract(shapeData.polygons,function(polygon) {
+		});
+		var polygons = stdlib_LambdaArray.extract(shapeData.polygons,function(polygon) {
 			return matrixBy.h[polygon.fill.__id__].isIdentity();
-		}));
-		this.loadRegPoint(shape,htmlparser.HtmlParserTools.findOne(element,">transformationPoint>Point"));
-		shape.transform(flashimport_MatrixParser.load(htmlparser.HtmlParserTools.findOne(element,">matrix>Matrix")).prependMatrix(parentMatrix),false);
-		var r = [shape];
+		});
+		if(edges.length > 0 || polygons.length > 0) {
+			var shape = new nanofl.engine.elements.ShapeElement(edges,polygons);
+			this.loadRegPoint(shape,htmlparser.HtmlParserTools.findOne(element,">transformationPoint>Point"));
+			shape.transform(objectMatrix,false);
+			r.push(shape);
+		}
 		var $it0 = byMatrix.keys();
 		while( $it0.hasNext() ) {
 			var matrix = $it0.next();
@@ -1013,7 +1019,7 @@ flashimport_SymbolLoader.prototype = {
 				};
 			})(matrix1)));
 			shape1.transform(matrix1[0].clone().invert(),false);
-			r.push(this.wrapElements(namePath,[shape1],matrix1[0].clone()));
+			r.push(this.wrapElements(namePath,[shape1],objectMatrix.clone().appendMatrix(matrix1[0])));
 		}
 		return r;
 	}
