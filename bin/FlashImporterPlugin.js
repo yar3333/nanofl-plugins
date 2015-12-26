@@ -1008,7 +1008,7 @@ flashimport_SymbolLoader.prototype = {
 		if(edges.length > 0 || polygons.length > 0) {
 			var shape = new nanofl.engine.elements.ShapeElement(edges,polygons);
 			this.loadRegPoint(shape,htmlparser.HtmlParserTools.findOne(element,">transformationPoint>Point"));
-			shape.transform(objectMatrix,false);
+			shape.transform(objectMatrix,true);
 			r.push(shape);
 		}
 		var $it0 = byMatrix.keys();

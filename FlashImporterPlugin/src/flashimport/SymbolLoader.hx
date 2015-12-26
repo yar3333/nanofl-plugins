@@ -311,7 +311,7 @@ class SymbolLoader
 		{
 			var shape = new ShapeElement(edges, polygons);
 			loadRegPoint(shape, element.findOne(">transformationPoint>Point"));
-			shape.transform(objectMatrix, false);
+			shape.transform(objectMatrix, true);
 			r.push(shape);
 		};
 		
