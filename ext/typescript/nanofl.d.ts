@@ -931,7 +931,7 @@ declare module nanofl.engine.elements
 		getUsedSymbolNamePaths() : string[];
 		toString() : string;
 		static createRectangle(x:number, y:number, width:number, height:number, rTopLeft:number, rTopRight:number, rBottomRight:number, rBottomLeft:number, stroke:nanofl.engine.strokes.IStroke, fill:nanofl.engine.fills.IFill) : nanofl.engine.elements.ShapeElement;
-		static createOval(cx:number, cy:number, rx:number, ry:number, startAngle:number, endAngle:number, innerR:number, closePath:boolean, stroke:nanofl.engine.strokes.IStroke, fill:nanofl.engine.fills.IFill) : nanofl.engine.elements.ShapeElement;
+		static createOval(cx:number, cy:number, rx:number, ry:number, startAngle:number, endAngle:number, innerRadius:number, closePath:boolean, stroke:nanofl.engine.strokes.IStroke, fill:nanofl.engine.fills.IFill) : nanofl.engine.elements.ShapeElement;
 	}
 	
 	export class SpriteFrameElement extends nanofl.engine.elements.Element
