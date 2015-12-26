@@ -922,7 +922,7 @@ flashimport_SymbolLoader.prototype = {
 					return function(f) {
 						return _g2.loadFilter(f);
 					};
-				})()),htmlparser.HtmlParserTools.getAttr(element[0],"isVisible",true),htmlparser.HtmlParserTools.getAttr(element[0],"blendMode","normal"));
+				})()),htmlparser.HtmlParserTools.getAttr(element[0],"blendMode","normal"));
 				instance.matrix = flashimport_MatrixParser.load(htmlparser.HtmlParserTools.findOne(element[0],">matrix>Matrix")).prependMatrix(parentMatrix);
 				this.loadRegPoint(instance,htmlparser.HtmlParserTools.findOne(element[0],">transformationPoint>Point"));
 				r.push(instance);

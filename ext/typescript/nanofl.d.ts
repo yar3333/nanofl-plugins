@@ -850,7 +850,7 @@ declare module nanofl.engine.elements
 	
 	export class Instance extends nanofl.engine.elements.Element implements nanofl.engine.IPathElement
 	{
-		constructor(namePath:string, name?:string, colorEffect?:nanofl.engine.coloreffects.ColorEffect, filters?:nanofl.engine.FilterDef[], visible?:boolean, blendMode?:nanofl.engine.BlendModes);
+		constructor(namePath:string, name?:string, colorEffect?:nanofl.engine.coloreffects.ColorEffect, filters?:nanofl.engine.FilterDef[], blendMode?:nanofl.engine.BlendModes);
 		namePath : string;
 		name : string;
 		colorEffect : nanofl.engine.coloreffects.ColorEffect;
@@ -1625,10 +1625,11 @@ declare module nanofl.ide.undo.states
 	
 	export class InstanceState extends nanofl.ide.undo.states.ElementState
 	{
-		constructor(name:string, colorEffect:nanofl.engine.coloreffects.ColorEffect, filters:nanofl.engine.FilterDef[]);
+		constructor(name:string, colorEffect:nanofl.engine.coloreffects.ColorEffect, filters:nanofl.engine.FilterDef[], blendMode:nanofl.engine.BlendModes);
 		name : string;
 		colorEffect : nanofl.engine.coloreffects.ColorEffect;
 		filters : nanofl.engine.FilterDef[];
+		blendMode : nanofl.engine.BlendModes;
 		equ(_state:nanofl.ide.undo.states.ElementState) : boolean;
 	}
 	
