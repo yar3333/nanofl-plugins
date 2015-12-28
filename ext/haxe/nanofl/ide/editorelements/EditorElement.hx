@@ -15,4 +15,8 @@ extern class EditorElement implements nanofl.engine.ISelectable
 	function getBounds() : createjs.Rectangle;
 	function getTransformedBounds() : createjs.Rectangle;
 	function hitTest(pos:nanofl.engine.geom.Point) : Bool;
+	function onClick(e:createjs.MouseEvent) : Void;
+	function onMouseDown(e:createjs.MouseEvent) : Void;
+	function onMouseUp(e:createjs.MouseEvent) : Void;
+	function onDoubleClick(e:createjs.MouseEvent) : Void;
 }

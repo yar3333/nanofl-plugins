@@ -1891,6 +1891,7 @@ declare module nanofl.engine.libraryitems
 		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 		getUsedSymbolNamePaths() : string[];
 		toString() : string;
+		static load(fileApi:nanofl.engine.FileApi, relJsonFilePath:string, originalExt:string, files:Map<string, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.ThreeItem;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.ThreeItem;
 	}
 }
@@ -9115,7 +9116,7 @@ declare module nanofl.ide.plugins
 		 * Method must detect loadable files and return created LibraryItems.
 		 * Use file.exclude() for processed files (to prevent loading them from other loaders).
 		 */
-		load(files:nanofl.engine.MapRO<string, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.LibraryItem[];
+		load(fileApi:nanofl.engine.FileApi, baseDir:string, files:Map<string, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.LibraryItem[];
 	}
 	
 	export interface IPublisherPlugin
@@ -9658,8 +9659,6 @@ declare module nanofl.engine
 		static createWithScene(libraryDir?:string, elements?:nanofl.engine.elements.Element[], layerName?:string) : nanofl.engine.Library;
 	}
 	
-	type MapRO<K, T> = Map<K, T>;
-	
 	export class MotionTween
 	{
 		constructor(easing:number, rotateCount:number, orientToPath:boolean);
@@ -9793,11 +9792,19 @@ declare module nanofl.ide.editorelements
 		getBounds() : createjs.Rectangle;
 		getTransformedBounds() : createjs.Rectangle;
 		hitTest(pos:nanofl.engine.geom.Point) : boolean;
+		onClick(e:createjs.MouseEvent) : void;
+		onMouseDown(e:createjs.MouseEvent) : void;
+		onMouseUp(e:createjs.MouseEvent) : void;
+		onDoubleClick(e:createjs.MouseEvent) : void;
 	}
 	
 	export class EditorElementSelectBox extends nanofl.ide.editorelements.EditorElement
 	{
 		updateTransformations() : void;
+		onClick(e:createjs.MouseEvent) : void;
+		onMouseDown(e:createjs.MouseEvent) : void;
+		onMouseUp(e:createjs.MouseEvent) : void;
+		onDoubleClick(e:createjs.MouseEvent) : void;
 	}
 	
 	export class EditorElementGroup extends nanofl.ide.editorelements.EditorElementSelectBox

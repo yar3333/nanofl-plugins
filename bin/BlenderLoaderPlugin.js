@@ -6,105 +6,70 @@ function $extend(from, fields) {
 	if( fields.toString !== Object.prototype.toString ) proto.toString = fields.toString;
 	return proto;
 }
-var BitmapLoaderPlugin = function() {
-	this.priority = 100;
-	this.name = "BitmapLoader";
+var BlenderLoaderPlugin = function() {
+	this.priority = 700;
+	this.name = "BlenderLoader";
 };
-BitmapLoaderPlugin.__name__ = true;
-BitmapLoaderPlugin.__interfaces__ = [nanofl.ide.plugins.ILoaderPlugin];
-BitmapLoaderPlugin.prototype = {
+BlenderLoaderPlugin.__name__ = true;
+BlenderLoaderPlugin.__interfaces__ = [nanofl.ide.plugins.ILoaderPlugin];
+BlenderLoaderPlugin.main = function() {
+	nanofl.engine.Plugins.registerLoader(new BlenderLoaderPlugin());
+};
+BlenderLoaderPlugin.prototype = {
 	load: function(fileApi,baseDir,files) {
 		var r = [];
+		var scriptPath = fileApi.getPluginsDirectory() + "/BlenderLoaderPlugin/blend2threejs.py";
+		var blenderExePath = null;
 		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
 		while( $it0.hasNext() ) {
 			var file = $it0.next();
 			if(file.excluded) continue;
 			var ext = haxe_io_Path.extension(file.path);
-			if(ext != null && (function($this) {
-				var $r;
-				var x = ext.toLowerCase();
-				$r = HxOverrides.indexOf(BitmapLoaderPlugin.extensions,x,0);
-				return $r;
-			}(this)) >= 0) {
-				var namePath = [haxe_io_Path.withoutExtension(file.path)];
-				if(!Lambda.exists(r,(function(namePath) {
-					return function(item) {
-						return item.namePath == namePath[0];
-					};
-				})(namePath))) {
-					var item1 = new nanofl.engine.libraryitems.BitmapItem(namePath[0],ext);
-					var xmlFile = files.get(namePath[0] + ".xml");
-					if(xmlFile == null) xmlFile = files.get(namePath[0] + ".bitmap");
-					if(xmlFile != null && xmlFile.xml != null && xmlFile.xml.name == "bitmap") {
-						item1.loadProperties(xmlFile.xml);
-						xmlFile.exclude();
+			if(ext != null && ext.toLowerCase() == "blend") {
+				var namePath = haxe_io_Path.withoutExtension(file.path);
+				if(blenderExePath == null) {
+					blenderExePath = this.getBlenderExePath(fileApi);
+					if(blenderExePath == null) {
+						nanofl.engine.Debug.console.error("Blender3D is not found at standard paths.");
+						return r;
 					}
-					r.push(item1);
+				}
+				var relJsonFilePath = namePath + ".json";
+				var blendFilePath = baseDir + "/" + file.path;
+				var jsonFilePath = baseDir + "/" + relJsonFilePath;
+				if(!fileApi.exists(jsonFilePath) || fileApi.getLastModified(jsonFilePath).getTime() < fileApi.getLastModified(blendFilePath).getTime()) {
+					fileApi.run(blenderExePath,["-b",blendFilePath,"-P",scriptPath,"--",jsonFilePath],true);
+					if(fileApi.exists(jsonFilePath)) {
+						if(!(__map_reserved[relJsonFilePath] != null?files.existsReserved(relJsonFilePath):files.h.hasOwnProperty(relJsonFilePath))) {
+							var value = new nanofl.ide.CachedFile(fileApi,baseDir,relJsonFilePath);
+							if(__map_reserved[relJsonFilePath] != null) files.setReserved(relJsonFilePath,value); else files.h[relJsonFilePath] = value;
+						}
+					}
+				}
+				if(__map_reserved[relJsonFilePath] != null?files.existsReserved(relJsonFilePath):files.h.hasOwnProperty(relJsonFilePath)) {
+					var item = nanofl.engine.libraryitems.ThreeItem.load(fileApi,relJsonFilePath,ext,files);
+					if(item != null) r.push(item);
 				}
 				file.exclude();
 			}
 		}
 		return r;
 	}
-	,__class__: BitmapLoaderPlugin
-};
-var EReg = function(r,opt) {
-	opt = opt.split("u").join("");
-	this.r = new RegExp(r,opt);
-};
-EReg.__name__ = true;
-EReg.prototype = {
-	replace: function(s,by) {
-		return s.replace(this.r,by);
-	}
-	,__class__: EReg
-};
-var FontLoaderPlugin = function() {
-	this.priority = 400;
-	this.name = "FontLoader";
-};
-FontLoaderPlugin.__name__ = true;
-FontLoaderPlugin.__interfaces__ = [nanofl.ide.plugins.ILoaderPlugin];
-FontLoaderPlugin.prototype = {
-	load: function(fileApi,baseDir,files) {
-		var r = [];
-		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
-		while( $it0.hasNext() ) {
-			var file = $it0.next();
-			if(file.excluded) continue;
-			if((function($this) {
-				var $r;
-				var x = haxe_io_Path.extension(file.path);
-				$r = HxOverrides.indexOf(["xml","font"],x,0);
-				return $r;
-			}(this)) >= 0) {
-				var namePath = [haxe_io_Path.withoutExtension(file.path)];
-				if(!Lambda.exists(r,(function(namePath) {
-					return function(item) {
-						return item.namePath == namePath[0];
-					};
-				})(namePath))) {
-					if(file.xml != null) {
-						var font = nanofl.engine.libraryitems.FontItem.parse(namePath[0],file.xml);
-						if(font != null) {
-							r.push(font);
-							file.exclude();
-						}
-					}
-				}
-			}
+	,getBlenderExePath: function(fileApi) {
+		var _g = 0;
+		var _g1 = ["PROGRAMW6432","PROGRAMFILES","PROGRAMFILES(X86)"];
+		while(_g < _g1.length) {
+			var pfEnvVarName = _g1[_g];
+			++_g;
+			var pf = fileApi.getEnvironmentVariable(pfEnvVarName);
+			if(pf != null && pf != "" && fileApi.exists(pf + "\\Blender\\blender.exe")) return pf + "\\Blender\\blender.exe";
 		}
-		return r;
+		return null;
 	}
-	,__class__: FontLoaderPlugin
+	,__class__: BlenderLoaderPlugin
 };
 var HxOverrides = function() { };
 HxOverrides.__name__ = true;
-HxOverrides.cca = function(s,index) {
-	var x = s.charCodeAt(index);
-	if(x != x) return undefined;
-	return x;
-};
 HxOverrides.substr = function(s,pos,len) {
 	if(pos != null && pos != 0 && len != null && len < 0) return "";
 	if(len == null) len = s.length;
@@ -114,208 +79,11 @@ HxOverrides.substr = function(s,pos,len) {
 	} else if(len < 0) len = s.length + len - pos;
 	return s.substr(pos,len);
 };
-HxOverrides.indexOf = function(a,obj,i) {
-	var len = a.length;
-	if(i < 0) {
-		i += len;
-		if(i < 0) i = 0;
-	}
-	while(i < len) {
-		if(a[i] === obj) return i;
-		i++;
-	}
-	return -1;
-};
-HxOverrides.iter = function(a) {
-	return { cur : 0, arr : a, hasNext : function() {
-		return this.cur < this.arr.length;
-	}, next : function() {
-		return this.arr[this.cur++];
-	}};
-};
-var Lambda = function() { };
-Lambda.__name__ = true;
-Lambda.exists = function(it,f) {
-	var $it0 = $iterator(it)();
-	while( $it0.hasNext() ) {
-		var x = $it0.next();
-		if(f(x)) return true;
-	}
-	return false;
-};
 Math.__name__ = true;
-var MovieClipLoaderPlugin = function() {
-	this.priority = 200;
-	this.name = "MovieClipLoader";
-};
-MovieClipLoaderPlugin.__name__ = true;
-MovieClipLoaderPlugin.__interfaces__ = [nanofl.ide.plugins.ILoaderPlugin];
-MovieClipLoaderPlugin.prototype = {
-	load: function(fileApi,baseDir,files) {
-		var r = [];
-		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
-		while( $it0.hasNext() ) {
-			var file = $it0.next();
-			if(file.excluded) continue;
-			if((function($this) {
-				var $r;
-				var x = haxe_io_Path.extension(file.path);
-				$r = HxOverrides.indexOf(["xml","movieclip"],x,0);
-				return $r;
-			}(this)) >= 0) {
-				var namePath = [haxe_io_Path.withoutExtension(file.path)];
-				if(!Lambda.exists(r,(function(namePath) {
-					return function(item) {
-						return item.namePath == namePath[0];
-					};
-				})(namePath))) {
-					if(file.xml != null) {
-						var mc = nanofl.engine.libraryitems.MovieClipItem.parse(namePath[0],file.xml);
-						if(mc != null) {
-							r.push(mc);
-							file.exclude();
-						}
-					}
-				}
-			}
-		}
-		return r;
-	}
-	,__class__: MovieClipLoaderPlugin
-};
-var SoundLoaderPlugin = function() {
-	this.priority = 300;
-	this.name = "SoundLoader";
-};
-SoundLoaderPlugin.__name__ = true;
-SoundLoaderPlugin.__interfaces__ = [nanofl.ide.plugins.ILoaderPlugin];
-SoundLoaderPlugin.prototype = {
-	load: function(fileApi,baseDir,files) {
-		var r = [];
-		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
-		while( $it0.hasNext() ) {
-			var file = $it0.next();
-			if(file.excluded) continue;
-			var ext = haxe_io_Path.extension(file.path);
-			if(ext != null && (function($this) {
-				var $r;
-				var x = ext.toLowerCase();
-				$r = HxOverrides.indexOf(SoundLoaderPlugin.extensions,x,0);
-				return $r;
-			}(this)) >= 0) {
-				var namePath = [haxe_io_Path.withoutExtension(file.path)];
-				if(!Lambda.exists(r,(function(namePath) {
-					return function(item) {
-						return item.namePath == namePath[0];
-					};
-				})(namePath))) {
-					var item1 = new nanofl.engine.libraryitems.SoundItem(namePath[0],ext);
-					var xmlFile = files.get(namePath[0] + ".xml");
-					if(xmlFile == null) xmlFile = files.get(namePath[0] + ".sound");
-					if(xmlFile != null && xmlFile.xml != null && xmlFile.xml.name == "sound") {
-						item1.loadProperties(xmlFile.xml);
-						xmlFile.exclude();
-					}
-					r.push(item1);
-				}
-				file.exclude();
-			}
-		}
-		return r;
-	}
-	,__class__: SoundLoaderPlugin
-};
-var SpriteLoaderPlugin = function() {
-	this.priority = 500;
-	this.name = "SpriteLoader";
-};
-SpriteLoaderPlugin.__name__ = true;
-SpriteLoaderPlugin.__interfaces__ = [nanofl.ide.plugins.ILoaderPlugin];
-SpriteLoaderPlugin.prototype = {
-	load: function(fileApi,baseDir,files) {
-		var r = [];
-		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
-		while( $it0.hasNext() ) {
-			var file = $it0.next();
-			if(file.excluded) continue;
-			if(haxe_io_Path.extension(file.path) == "json") {
-				var namePath = [haxe_io_Path.withoutExtension(file.path)];
-				if(!Lambda.exists(r,(function(namePath) {
-					return function(item) {
-						return item.namePath == namePath[0];
-					};
-				})(namePath))) {
-					var json = [file.json];
-					if(json[0] != null && json[0].frames != null && json[0].images != null) {
-						r.push(new nanofl.engine.libraryitems.SpriteItem(namePath[0],json[0].frames.map((function(json) {
-							return function(frame) {
-								return { image : json[0].images[frame[4]], x : frame[0], y : frame[1], width : frame[2], height : frame[3], regX : frame[5], regY : frame[6]};
-							};
-						})(json))));
-						var _g = 0;
-						var _g1 = json[0].images;
-						while(_g < _g1.length) {
-							var image = _g1[_g];
-							++_g;
-							var p = haxe_io_Path.join([haxe_io_Path.directory(namePath[0]),image]);
-							if(__map_reserved[p] != null?files.existsReserved(p):files.h.hasOwnProperty(p)) (__map_reserved[p] != null?files.getReserved(p):files.h[p]).exclude();
-						}
-						file.exclude();
-					}
-				}
-			}
-		}
-		return r;
-	}
-	,__class__: SpriteLoaderPlugin
-};
 var Std = function() { };
 Std.__name__ = true;
 Std.string = function(s) {
 	return js_Boot.__string_rec(s,"");
-};
-var StdLoadersPlugin = function() { };
-StdLoadersPlugin.__name__ = true;
-StdLoadersPlugin.main = function() {
-	nanofl.engine.Plugins.registerLoader(new BitmapLoaderPlugin());
-	nanofl.engine.Plugins.registerLoader(new FontLoaderPlugin());
-	nanofl.engine.Plugins.registerLoader(new SoundLoaderPlugin());
-	nanofl.engine.Plugins.registerLoader(new MovieClipLoaderPlugin());
-	nanofl.engine.Plugins.registerLoader(new SpriteLoaderPlugin());
-	nanofl.engine.Plugins.registerLoader(new ThreeLoaderPlugin());
-};
-var StringBuf = function() {
-	this.b = "";
-};
-StringBuf.__name__ = true;
-StringBuf.prototype = {
-	add: function(x) {
-		this.b += Std.string(x);
-	}
-	,__class__: StringBuf
-};
-var ThreeLoaderPlugin = function() {
-	this.priority = 600;
-	this.name = "ThreeLoader";
-};
-ThreeLoaderPlugin.__name__ = true;
-ThreeLoaderPlugin.__interfaces__ = [nanofl.ide.plugins.ILoaderPlugin];
-ThreeLoaderPlugin.prototype = {
-	load: function(fileApi,baseDir,files) {
-		var r = [];
-		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
-		while( $it0.hasNext() ) {
-			var file = $it0.next();
-			if(file.excluded) continue;
-			var ext = haxe_io_Path.extension(file.path);
-			if(ext != null && ext.toLowerCase() == "json") {
-				var item = nanofl.engine.libraryitems.ThreeItem.load(fileApi,file.path,ext,files);
-				if(item != null) r.push(item);
-			}
-		}
-		return r;
-	}
-	,__class__: ThreeLoaderPlugin
 };
 var haxe_IMap = function() { };
 haxe_IMap.__name__ = true;
@@ -350,6 +118,10 @@ haxe_ds_StringMap.prototype = {
 	get: function(key) {
 		if(__map_reserved[key] != null) return this.getReserved(key);
 		return this.h[key];
+	}
+	,setReserved: function(key,value) {
+		if(this.rh == null) this.rh = { };
+		this.rh["$" + key] = value;
 	}
 	,getReserved: function(key) {
 		if(this.rh == null) return null; else return this.rh["$" + key];
@@ -461,96 +233,10 @@ haxe_io_Path.withoutExtension = function(path) {
 	s.ext = null;
 	return s.toString();
 };
-haxe_io_Path.directory = function(path) {
-	var s = new haxe_io_Path(path);
-	if(s.dir == null) return "";
-	return s.dir;
-};
 haxe_io_Path.extension = function(path) {
 	var s = new haxe_io_Path(path);
 	if(s.ext == null) return "";
 	return s.ext;
-};
-haxe_io_Path.join = function(paths) {
-	var paths1 = paths.filter(function(s) {
-		return s != null && s != "";
-	});
-	if(paths1.length == 0) return "";
-	var path = paths1[0];
-	var _g1 = 1;
-	var _g = paths1.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		path = haxe_io_Path.addTrailingSlash(path);
-		path += paths1[i];
-	}
-	return haxe_io_Path.normalize(path);
-};
-haxe_io_Path.normalize = function(path) {
-	var slash = "/";
-	path = path.split("\\").join("/");
-	if(path == null || path == slash) return slash;
-	var target = [];
-	var _g = 0;
-	var _g1 = path.split(slash);
-	while(_g < _g1.length) {
-		var token = _g1[_g];
-		++_g;
-		if(token == ".." && target.length > 0 && target[target.length - 1] != "..") target.pop(); else if(token != ".") target.push(token);
-	}
-	var tmp = target.join(slash);
-	var regex = new EReg("([^:])/+","g");
-	var result = regex.replace(tmp,"$1" + slash);
-	var acc = new StringBuf();
-	var colon = false;
-	var slashes = false;
-	var _g11 = 0;
-	var _g2 = tmp.length;
-	while(_g11 < _g2) {
-		var i = _g11++;
-		var _g21 = HxOverrides.cca(tmp,i);
-		var i1 = _g21;
-		if(_g21 != null) switch(_g21) {
-		case 58:
-			acc.b += ":";
-			colon = true;
-			break;
-		case 47:
-			if(colon == false) slashes = true; else {
-				colon = false;
-				if(slashes) {
-					acc.b += "/";
-					slashes = false;
-				}
-				acc.add(String.fromCharCode(i1));
-			}
-			break;
-		default:
-			colon = false;
-			if(slashes) {
-				acc.b += "/";
-				slashes = false;
-			}
-			acc.add(String.fromCharCode(i1));
-		} else {
-			colon = false;
-			if(slashes) {
-				acc.b += "/";
-				slashes = false;
-			}
-			acc.add(String.fromCharCode(i1));
-		}
-	}
-	var result1 = acc.b;
-	return result1;
-};
-haxe_io_Path.addTrailingSlash = function(path) {
-	if(path.length == 0) return "/";
-	var c1 = path.lastIndexOf("/");
-	var c2 = path.lastIndexOf("\\");
-	if(c1 < c2) {
-		if(c2 != path.length - 1) return path + "\\"; else return path;
-	} else if(c1 != path.length - 1) return path + "/"; else return path;
 };
 haxe_io_Path.prototype = {
 	toString: function() {
@@ -885,12 +571,6 @@ js_html_compat_Uint8Array._subarray = function(start,end) {
 	a.byteOffset = start;
 	return a;
 };
-function $iterator(o) { if( o instanceof Array ) return function() { return HxOverrides.iter(o); }; return typeof(o.iterator) == 'function' ? $bind(o,o.iterator) : o.iterator; }
-var $_, $fid = 0;
-function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }
-if(Array.prototype.indexOf) HxOverrides.indexOf = function(a,o,i) {
-	return Array.prototype.indexOf.call(a,o,i);
-};
 String.prototype.__class__ = String;
 String.__name__ = true;
 Array.__name__ = true;
@@ -904,34 +584,11 @@ var Bool = Boolean;
 Bool.__ename__ = ["Bool"];
 var Class = { __name__ : ["Class"]};
 var Enum = { };
-if(Array.prototype.map == null) Array.prototype.map = function(f) {
-	var a = [];
-	var _g1 = 0;
-	var _g = this.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		a[i] = f(this[i]);
-	}
-	return a;
-};
-if(Array.prototype.filter == null) Array.prototype.filter = function(f1) {
-	var a1 = [];
-	var _g11 = 0;
-	var _g2 = this.length;
-	while(_g11 < _g2) {
-		var i1 = _g11++;
-		var e = this[i1];
-		if(f1(e)) a1.push(e);
-	}
-	return a1;
-};
 var __map_reserved = {}
 var ArrayBuffer = (Function("return typeof ArrayBuffer != 'undefined' ? ArrayBuffer : null"))() || js_html_compat_ArrayBuffer;
 if(ArrayBuffer.prototype.slice == null) ArrayBuffer.prototype.slice = js_html_compat_ArrayBuffer.sliceImpl;
 var DataView = (Function("return typeof DataView != 'undefined' ? DataView : null"))() || js_html_compat_DataView;
 var Uint8Array = (Function("return typeof Uint8Array != 'undefined' ? Uint8Array : null"))() || js_html_compat_Uint8Array._new;
-BitmapLoaderPlugin.extensions = ["jpg","jpeg","png","gif","svg"];
-SoundLoaderPlugin.extensions = ["ogg","mp3","wav"];
 haxe_io_FPHelper.i64tmp = (function($this) {
 	var $r;
 	var x = new haxe__$Int64__$_$_$Int64(0,0);
@@ -940,5 +597,5 @@ haxe_io_FPHelper.i64tmp = (function($this) {
 }(this));
 js_Boot.__toStr = {}.toString;
 js_html_compat_Uint8Array.BYTES_PER_ELEMENT = 1;
-StdLoadersPlugin.main();
+BlenderLoaderPlugin.main();
 })(typeof console != "undefined" ? console : {log:function(){}});
