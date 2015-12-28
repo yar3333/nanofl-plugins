@@ -25,6 +25,7 @@ class ThreeLoaderPlugin implements ILoaderPlugin
 			var ext = Path.extension(file.path);
 			if (ext != null && ext.toLowerCase() == "json")
 			{
+				trace("Ready to load ThreeItem");
 				var item = ThreeItem.load(fileApi, file.path, ext, files);
 				if (item != null) r.push(item);
 			}

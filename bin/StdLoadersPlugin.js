@@ -309,6 +309,7 @@ ThreeLoaderPlugin.prototype = {
 			if(file.excluded) continue;
 			var ext = haxe_io_Path.extension(file.path);
 			if(ext != null && ext.toLowerCase() == "json") {
+				console.log("Ready to load ThreeItem");
 				var item = nanofl.engine.libraryitems.ThreeItem.load(fileApi,file.path,ext,files);
 				if(item != null) r.push(item);
 			}
