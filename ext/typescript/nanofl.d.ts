@@ -1867,6 +1867,32 @@ declare module nanofl.engine.libraryitems
 		toString() : string;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.SpriteItem;
 	}
+	
+	export class ThreeItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem
+	{
+		constructor(namePath:string, originalExt:string);
+		originalExt : string;
+		textureAtlas : string;
+		data : { geometry : THREE.Geometry; materials : THREE.Material[]; };
+		getType() : string;
+		clone() : nanofl.engine.libraryitems.ThreeItem;
+		getIcon() : string;
+		save(fileApi:nanofl.engine.FileApi) : void;
+		saveToXml(out:htmlparser.XmlBuilder) : void;
+		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
+		getUrl() : string;
+		preload(ready:() => void) : void;
+		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
+		getDisplayObjectClassName() : string;
+		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
+		getFilePathToRunWithEditor() : string;
+		getLibraryFilePaths() : string[];
+		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
+		getUsedSymbolNamePaths() : string[];
+		toString() : string;
+		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.ThreeItem;
+	}
 }
 
 declare module createjs
