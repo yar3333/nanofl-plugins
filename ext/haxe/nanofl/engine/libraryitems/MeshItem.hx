@@ -1,13 +1,15 @@
 package nanofl.engine.libraryitems;
 
-extern class ThreeItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem
+extern class MeshItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem
 {
-	function new(namePath:String, originalExt:String) : Void;
+	function new(namePath:String, ext:String, originalExt:String) : Void;
+	var ext : String;
 	var originalExt : String;
 	var textureAtlas : String;
+	var size : Int;
 	var data(default, null) : { var geometry : js.three.Geometry; var materials : Array<js.three.Material>; };
 	override function getType() : String;
-	override function clone() : nanofl.engine.libraryitems.ThreeItem;
+	override function clone() : nanofl.engine.libraryitems.MeshItem;
 	override function getIcon() : String;
 	override function save(fileApi:nanofl.engine.FileApi) : Void;
 	override function saveToXml(out:htmlparser.XmlBuilder) : Void;
@@ -23,6 +25,6 @@ extern class ThreeItem extends nanofl.engine.libraryitems.InstancableItem implem
 	override function getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 	override function getUsedSymbolNamePaths() : Array<String>;
 	override function toString() : String;
-	static function load(fileApi:nanofl.engine.FileApi, relJsonFilePath:String, originalExt:String, files:Map<String, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.ThreeItem;
-	static function parse(namePath:String, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.ThreeItem;
+	static function load(fileApi:nanofl.engine.FileApi, relFilePath:String, originalExt:String, files:Map<String, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.MeshItem;
+	static function parse(namePath:String, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MeshItem;
 }

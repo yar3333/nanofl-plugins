@@ -8,6 +8,8 @@ extern class Instance extends nanofl.engine.elements.Element implements nanofl.e
 	var colorEffect : nanofl.engine.coloreffects.ColorEffect;
 	var filters : Array<nanofl.engine.FilterDef>;
 	var blendMode : nanofl.engine.BlendModes;
+	var rotateX : Float;
+	var rotateY : Float;
 	var symbol(default, never) : nanofl.engine.libraryitems.InstancableItem;
 	override function getType() : String;
 	override function save(out:htmlparser.XmlBuilder) : Void;

@@ -47,7 +47,7 @@ BlenderLoaderPlugin.prototype = {
 					}
 				}
 				if(__map_reserved[relJsonFilePath] != null?files.existsReserved(relJsonFilePath):files.h.hasOwnProperty(relJsonFilePath)) {
-					var item = nanofl.engine.libraryitems.ThreeItem.load(fileApi,relJsonFilePath,ext,files);
+					var item = nanofl.engine.libraryitems.MeshItem.load(fileApi,relJsonFilePath,ext,files);
 					if(item != null) r.push(item);
 				}
 				file.exclude();

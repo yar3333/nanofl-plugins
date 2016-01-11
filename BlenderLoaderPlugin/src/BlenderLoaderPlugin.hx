@@ -1,7 +1,7 @@
 import haxe.io.Path;
 import nanofl.engine.Debug.console;
 import nanofl.engine.FileApi;
-import nanofl.engine.libraryitems.ThreeItem;
+import nanofl.engine.libraryitems.MeshItem;
 import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.engine.Plugins;
 import nanofl.ide.CachedFile;
@@ -69,7 +69,7 @@ class BlenderLoaderPlugin implements ILoaderPlugin
 				
 				if (files.exists(relJsonFilePath))
 				{
-					var item = ThreeItem.load(fileApi, relJsonFilePath, ext, files);
+					var item = MeshItem.load(fileApi, relJsonFilePath, ext, files);
 					if (item != null) r.push(item);
 				}
 				

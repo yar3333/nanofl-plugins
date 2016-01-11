@@ -9,6 +9,6 @@ class StdLoadersPlugin
 		Plugins.registerLoader(new SoundLoaderPlugin());
 		Plugins.registerLoader(new MovieClipLoaderPlugin());
 		Plugins.registerLoader(new SpriteLoaderPlugin());
-		Plugins.registerLoader(new ThreeLoaderPlugin());
+		Plugins.registerLoader(new MeshLoaderPlugin());
 	}
 }

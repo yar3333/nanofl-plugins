@@ -1,15 +1,15 @@
 import haxe.io.Path;
 import nanofl.engine.FileApi;
 import nanofl.engine.libraryitems.LibraryItem;
-import nanofl.engine.libraryitems.ThreeItem;
+import nanofl.engine.libraryitems.MeshItem;
 import nanofl.ide.CachedFile;
 import nanofl.ide.plugins.ILoaderPlugin;
 using StringTools;
 using Lambda;
 
-class ThreeLoaderPlugin implements ILoaderPlugin
+class MeshLoaderPlugin implements ILoaderPlugin
 {
-	public var name = "ThreeLoader";
+	public var name = "MeshLoader";
 	public var priority = 600;
 	
 	public function new() {}
@@ -25,8 +25,8 @@ class ThreeLoaderPlugin implements ILoaderPlugin
 			var ext = Path.extension(file.path);
 			if (ext != null && ext.toLowerCase() == "json")
 			{
-				trace("Ready to load ThreeItem");
-				var item = ThreeItem.load(fileApi, file.path, ext, files);
+				trace("Ready to load MeshItem");
+				var item = MeshItem.load(fileApi, file.path, ext, files);
 				if (item != null) r.push(item);
 			}
 		}

@@ -144,6 +144,30 @@ Lambda.exists = function(it,f) {
 	return false;
 };
 Math.__name__ = true;
+var MeshLoaderPlugin = function() {
+	this.priority = 600;
+	this.name = "MeshLoader";
+};
+MeshLoaderPlugin.__name__ = true;
+MeshLoaderPlugin.__interfaces__ = [nanofl.ide.plugins.ILoaderPlugin];
+MeshLoaderPlugin.prototype = {
+	load: function(fileApi,baseDir,files) {
+		var r = [];
+		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
+		while( $it0.hasNext() ) {
+			var file = $it0.next();
+			if(file.excluded) continue;
+			var ext = haxe_io_Path.extension(file.path);
+			if(ext != null && ext.toLowerCase() == "json") {
+				console.log("Ready to load MeshItem");
+				var item = nanofl.engine.libraryitems.MeshItem.load(fileApi,file.path,ext,files);
+				if(item != null) r.push(item);
+			}
+		}
+		return r;
+	}
+	,__class__: MeshLoaderPlugin
+};
 var MovieClipLoaderPlugin = function() {
 	this.priority = 200;
 	this.name = "MovieClipLoader";
@@ -282,7 +306,7 @@ StdLoadersPlugin.main = function() {
 	nanofl.engine.Plugins.registerLoader(new SoundLoaderPlugin());
 	nanofl.engine.Plugins.registerLoader(new MovieClipLoaderPlugin());
 	nanofl.engine.Plugins.registerLoader(new SpriteLoaderPlugin());
-	nanofl.engine.Plugins.registerLoader(new ThreeLoaderPlugin());
+	nanofl.engine.Plugins.registerLoader(new MeshLoaderPlugin());
 };
 var StringBuf = function() {
 	this.b = "";
@@ -293,30 +317,6 @@ StringBuf.prototype = {
 		this.b += Std.string(x);
 	}
 	,__class__: StringBuf
-};
-var ThreeLoaderPlugin = function() {
-	this.priority = 600;
-	this.name = "ThreeLoader";
-};
-ThreeLoaderPlugin.__name__ = true;
-ThreeLoaderPlugin.__interfaces__ = [nanofl.ide.plugins.ILoaderPlugin];
-ThreeLoaderPlugin.prototype = {
-	load: function(fileApi,baseDir,files) {
-		var r = [];
-		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
-		while( $it0.hasNext() ) {
-			var file = $it0.next();
-			if(file.excluded) continue;
-			var ext = haxe_io_Path.extension(file.path);
-			if(ext != null && ext.toLowerCase() == "json") {
-				console.log("Ready to load ThreeItem");
-				var item = nanofl.engine.libraryitems.ThreeItem.load(fileApi,file.path,ext,files);
-				if(item != null) r.push(item);
-			}
-		}
-		return r;
-	}
-	,__class__: ThreeLoaderPlugin
 };
 var haxe_IMap = function() { };
 haxe_IMap.__name__ = true;

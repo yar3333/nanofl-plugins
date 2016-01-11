@@ -856,6 +856,8 @@ declare module nanofl.engine.elements
 		colorEffect : nanofl.engine.coloreffects.ColorEffect;
 		filters : nanofl.engine.FilterDef[];
 		blendMode : nanofl.engine.BlendModes;
+		rotateX : number;
+		rotateY : number;
 		symbol : nanofl.engine.libraryitems.InstancableItem;
 		getType() : string;
 		save(out:htmlparser.XmlBuilder) : void;
@@ -1788,6 +1790,35 @@ declare module nanofl.engine.libraryitems
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.FontItem;
 	}
 	
+	export class MeshItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem
+	{
+		constructor(namePath:string, ext:string, originalExt:string);
+		ext : string;
+		originalExt : string;
+		textureAtlas : string;
+		size : number;
+		data : { geometry : THREE.Geometry; materials : THREE.Material[]; };
+		getType() : string;
+		clone() : nanofl.engine.libraryitems.MeshItem;
+		getIcon() : string;
+		save(fileApi:nanofl.engine.FileApi) : void;
+		saveToXml(out:htmlparser.XmlBuilder) : void;
+		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
+		getUrl() : string;
+		preload(ready:() => void) : void;
+		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
+		getDisplayObjectClassName() : string;
+		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
+		getFilePathToRunWithEditor() : string;
+		getLibraryFilePaths() : string[];
+		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
+		getUsedSymbolNamePaths() : string[];
+		toString() : string;
+		static load(fileApi:nanofl.engine.FileApi, relFilePath:string, originalExt:string, files:Map<string, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.MeshItem;
+		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MeshItem;
+	}
+	
 	export class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem, nanofl.engine.ISpriteSheetableItem, nanofl.engine.IFramedItem, nanofl.engine.ITimeline, nanofl.engine.ILayersContainer
 	{
 		constructor(namePath:string);
@@ -1866,33 +1897,6 @@ declare module nanofl.engine.libraryitems
 		getDisplayObjectClassName() : string;
 		toString() : string;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.SpriteItem;
-	}
-	
-	export class ThreeItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem
-	{
-		constructor(namePath:string, originalExt:string);
-		originalExt : string;
-		textureAtlas : string;
-		data : { geometry : THREE.Geometry; materials : THREE.Material[]; };
-		getType() : string;
-		clone() : nanofl.engine.libraryitems.ThreeItem;
-		getIcon() : string;
-		save(fileApi:nanofl.engine.FileApi) : void;
-		saveToXml(out:htmlparser.XmlBuilder) : void;
-		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
-		getUrl() : string;
-		preload(ready:() => void) : void;
-		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
-		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
-		getDisplayObjectClassName() : string;
-		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
-		getFilePathToRunWithEditor() : string;
-		getLibraryFilePaths() : string[];
-		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
-		getUsedSymbolNamePaths() : string[];
-		toString() : string;
-		static load(fileApi:nanofl.engine.FileApi, relJsonFilePath:string, originalExt:string, files:Map<string, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.ThreeItem;
-		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.ThreeItem;
 	}
 }
 
