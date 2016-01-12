@@ -7,7 +7,8 @@ import bpy
 import sys
 import addon_utils
 
-addon_utils.enable("io_three")
+if not addon_utils.check("io_three")[1]:
+	addon_utils.enable("io_three")
 
 for i in range(1, len(sys.argv)):
     if sys.argv[i] == "--":

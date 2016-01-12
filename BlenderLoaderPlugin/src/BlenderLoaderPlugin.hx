@@ -29,7 +29,7 @@ class BlenderLoaderPlugin implements ILoaderPlugin
 	{
 		var r = [];
 		
-		var scriptPath = fileApi.getPluginsDirectory() + "/BlenderLoaderPlugin/blend2threejs.py";
+		var scriptPath = fileApi.getPluginsDirectory() + "/BlenderLoaderPlugin/blend2three.py";
 		var blenderExePath : String = null;
 		
 		for (file in files)
