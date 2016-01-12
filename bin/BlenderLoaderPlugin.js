@@ -18,7 +18,7 @@ BlenderLoaderPlugin.main = function() {
 BlenderLoaderPlugin.prototype = {
 	load: function(fileApi,baseDir,files) {
 		var r = [];
-		var scriptPath = fileApi.getPluginsDirectory() + "/BlenderLoaderPlugin/blend2threejs.py";
+		var scriptPath = fileApi.getPluginsDirectory() + "/BlenderLoaderPlugin/blend2three.py";
 		var blenderExePath = null;
 		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
 		while( $it0.hasNext() ) {

@@ -163,8 +163,9 @@ declare module nanofl.ide.commands
 		removeUnused() : void;
 		selectUnused() : void;
 		importFont() : void;
-		importSounds() : void;
 		importImages() : void;
+		importSounds() : void;
+		importMeshes() : void;
 		properties() : void;
 		createFolder() : void;
 		cut() : void;
@@ -542,6 +543,7 @@ declare module nanofl.ide
 		importFiles(paths?:string[], folderPath?:string, ready?:() => void) : void;
 		importImages(folderPath?:string, ready?:() => void) : void;
 		importSounds(folderPath?:string, ready?:() => void) : void;
+		importMeshes(folderPath?:string, ready?:() => void) : void;
 		importFont() : void;
 		uploadFiles(files:File[], folderPath?:string, callb?:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
 		loadFilesFromClipboard(callb:(arg:boolean) => void) : void;
