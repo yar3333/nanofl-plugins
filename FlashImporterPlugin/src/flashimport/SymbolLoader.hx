@@ -160,7 +160,9 @@ class SymbolLoader
 				(
 					- frame.getAttrInt("acceleration", 0),
 					parseMotionTweenRotate(frame.getAttr("motionTweenRotate"), frame.getAttr("motionTweenRotateTimes", 1)),
-					frame.getAttr("motionTweenOrientToPath", false)
+					frame.getAttr("motionTweenOrientToPath", false),
+					0,
+					0
 				);
 				
 			case "shape":

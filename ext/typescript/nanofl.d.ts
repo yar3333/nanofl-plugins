@@ -856,8 +856,8 @@ declare module nanofl.engine.elements
 		colorEffect : nanofl.engine.coloreffects.ColorEffect;
 		filters : nanofl.engine.FilterDef[];
 		blendMode : nanofl.engine.BlendModes;
-		rotateX : number;
-		rotateY : number;
+		rotationX : number;
+		rotationY : number;
 		symbol : nanofl.engine.libraryitems.InstancableItem;
 		getType() : string;
 		save(out:htmlparser.XmlBuilder) : void;
@@ -1670,11 +1670,12 @@ declare module nanofl.ide.undo.states
 		layerStates : nanofl.engine.Layer[];
 	}
 	
-	export class TransformationsState
+	export class TransformationState
 	{
-		constructor(elementStates:nanofl.engine.geom.Matrix[]);
-		elementStates : nanofl.engine.geom.Matrix[];
-		equ(state:nanofl.ide.undo.states.TransformationsState) : boolean;
+		constructor(matrix:nanofl.engine.geom.Matrix, rotationX:number, rotationY:number);
+		equ(state:nanofl.ide.undo.states.TransformationState) : boolean;
+		toElement(element:nanofl.engine.elements.Element) : void;
+		static fromElement(element:nanofl.engine.elements.Element) : nanofl.ide.undo.states.TransformationState;
 	}
 }
 
@@ -9665,10 +9666,12 @@ declare module nanofl.engine
 	
 	export class MotionTween
 	{
-		constructor(easing:number, rotateCount:number, orientToPath:boolean);
+		constructor(easing:number, rotateCount:number, orientToPath:boolean, rotateCountX:number, rotateCountY:number);
 		easing : number;
 		rotateCount : number;
 		orientToPath : boolean;
+		rotateCountX : number;
+		rotateCountY : number;
 		save(out:htmlparser.XmlBuilder) : void;
 		apply(frameSubIndex:number) : nanofl.engine.TweenedElement[];
 		clone() : nanofl.engine.MotionTween;
