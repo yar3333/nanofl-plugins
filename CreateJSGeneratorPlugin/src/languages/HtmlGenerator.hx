@@ -8,8 +8,12 @@ import nanofl.ide.textureatlas.TextureAtlas;
 
 class HtmlGenerator extends TextureAtlasGenerator
 {
-	static var createjsUrl = "http://code.createjs.com/createjs-2014.12.12.combined.js";
-	static var playerUrl = "http://player.nanofl.com/nanofl-{version}.js";
+	static var scriptUrls =
+	{
+		createjs: { local:"createjs-0.8.0.js", remote:"http://code.createjs.com/createjs-2014.12.12.combined.js" },
+		threejs:  { local:"three-r73.js", remote:"http://cdnjs.cloudflare.com/ajax/libs/three.js/r73/three.min.js" },
+		player:   { local:"nanofl-" + Version.player + ".js", remote:"http://player.nanofl.com/nanofl-" + Version.player + ".js" }
+	};
 	
 	var serializedLibrary : String;
 	var filterCodes : Map<String, String>;
@@ -52,8 +56,6 @@ class HtmlGenerator extends TextureAtlasGenerator
 			template = template.split("{width}").join(untyped documentProperties.width);
 			template = template.split("{height}").join(untyped documentProperties.height);
 			template = template.split("{bodyStyle}").join("background-color:" + documentProperties.backgroundColor + "; margin:0; padding:0; font-size:0; overflow:hidden");
-			template = template.split("{createjsUrl}").join(createjsUrl);
-			template = template.split("{playerUrl}").join(playerUrl.split("{version}").join(Version.player));
 			template = template.split("{preCanvas}").join(params.urlOnClick != "" ? "<a href='" + params.urlOnClick + "' target='_blank'>\n\t\t\t" : "");
 			template = template.split("{postCanvas}").join(params.urlOnClick != "" ? "\n\t\t</a>" : "");
 			
@@ -71,6 +73,28 @@ class HtmlGenerator extends TextureAtlasGenerator
 			);
 			
 			fileApi.saveContent(file, template);
+		}
+		
+		prepareLocalScriptFiles(dir);
+	}
+	
+	function prepareLocalScriptFiles(dir:String)
+	{
+		var localScripts = [ scriptUrls.createjs.local, scriptUrls.player.local ];
+		if (params.forceThreeJS || library.getMeshes().length > 0)
+		{
+			localScripts.push(scriptUrls.threejs.local);
+		}
+		for (localScript in localScripts)
+		{
+			if (params.useLocalScripts)
+			{
+				fileApi.copy(supportDir + "/scripts/" + localScript, dir + "/bin/" + localScript);
+			}
+			else
+			{
+				fileApi.remove(dir + "/bin/" + localScript);
+			}
 		}
 	}
 	
@@ -131,6 +155,17 @@ class HtmlGenerator extends TextureAtlasGenerator
 	
 	function getScriptUrls(dir:String, name:String) : Array<String> 
 	{
-		return [];
+		var r = [];
+		
+		r.push(params.useLocalScripts ? "bin/" + scriptUrls.createjs.local : scriptUrls.createjs.remote);
+		
+		if (params.forceThreeJS || library.getMeshes().length > 0)
+		{
+			r.push(params.useLocalScripts ? "bin/" + scriptUrls.threejs.local : scriptUrls.threejs.remote);
+		}
+		
+		r.push(params.useLocalScripts ? "bin/" + scriptUrls.player.local : scriptUrls.player.remote);
+		
+		return r;
 	}
 }
