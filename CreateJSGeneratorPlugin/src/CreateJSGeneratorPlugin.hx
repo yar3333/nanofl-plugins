@@ -86,7 +86,14 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 			generator.generate(languageAndIde[0], dir, name);
 		}
 		
-		return [ "bin", name + ".html" ];
+		if (fileApi.exists(dir + "/bin") && fileApi.readDirectory(dir + "/bin").length == 0)
+		{
+			fileApi.remove(dir + "/bin");
+		}
+		
+		var r = [ name + ".html" ];
+		if (fileApi.exists(dir + "/bin")) r.push("bin");
+		return r;
 	}
 	
 	#if js
