@@ -3507,13 +3507,16 @@ nanofl_Mesh.prototype = $extend(createjs.Bitmap.prototype,{
 		this.get_canvas().height = this.symbol.size * 2;
 		var scene = new THREE.Scene();
 		var material;
-		if(this.symbol.data.materials != null) material = new THREE.MeshFaceMaterial(this.symbol.data.materials); else material = new THREE.MeshBasicMaterial({ color : 11184810});
+		if(this.symbol.data.materials != null) material = new THREE.MeshFaceMaterial(this.symbol.data.materials); else material = new THREE.MeshLambertMaterial({ color : 11184810, overdraw : 1});
 		var mesh = new THREE.Mesh(this.symbol.data.geometry,material);
 		mesh.rotateX(this.rotationX * Math.PI / 180);
 		mesh.rotateY(this.rotationY * Math.PI / 180);
 		scene.add(mesh);
-		scene.add(new THREE.DirectionalLight(16777215,1));
 		var r = this.symbol.data.geometry.boundingSphere.radius;
+		var light = new THREE.DirectionalLight(16777215,1);
+		light.position.z = -r * 2;
+		scene.add(light);
+		scene.add(new THREE.AmbientLight(11184810));
 		var camera = new THREE.PerspectiveCamera(70,1,1e-7,1e7);
 		camera.position.z = -r * 2;
 		camera.lookAt(new THREE.Vector3(0,0,0));

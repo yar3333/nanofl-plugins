@@ -2261,6 +2261,7 @@ declare module nanofl.engine.libraryitems
 		getLibraryFilePaths() : string[];
 		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 		getUsedSymbolNamePaths() : string[];
+		generateOptimizedFiles(fileApi:nanofl.engine.FileApi, optimizations:nanofl.ide.PublishOptimizations, destDir:string) : { relPath : string; baseDir : string; }[];
 		toString() : string;
 		static load(fileApi:nanofl.engine.FileApi, relFilePath:string, originalExt:string, files:Map<string, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.MeshItem;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MeshItem;
