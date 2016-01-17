@@ -33,4 +33,5 @@ extern class Edges
 	static function getTailPoints(edges:Array<nanofl.engine.geom.Edge>) : Array<nanofl.engine.geom.Point>;
 	static function smoothStraightLineSequence<T>(edges:Array<T>, power:Float) : Void;
 	static function assertHasNoIntersections<T>(edges:Array<T>) : Void;
+	static function simplificate<T>(sequence:Array<T>, eps:Float) : Array<T>;
 }

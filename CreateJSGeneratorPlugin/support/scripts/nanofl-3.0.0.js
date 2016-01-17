@@ -3513,10 +3513,10 @@ nanofl_Mesh.prototype = $extend(createjs.Bitmap.prototype,{
 		mesh.rotateY(this.rotationY * Math.PI / 180);
 		scene.add(mesh);
 		var r = this.symbol.data.geometry.boundingSphere.radius;
-		var light = new THREE.DirectionalLight(16777215,1);
+		var light = new THREE.DirectionalLight(8421504,1);
 		light.position.z = -r * 2;
 		scene.add(light);
-		scene.add(new THREE.AmbientLight(11184810));
+		scene.add(new THREE.AmbientLight(14737632));
 		var camera = new THREE.PerspectiveCamera(70,1,1e-7,1e7);
 		camera.position.z = -r * 2;
 		camera.lookAt(new THREE.Vector3(0,0,0));
@@ -10480,6 +10480,46 @@ nanofl_engine_geom_Edges.assertHasNoIntersections = function(edges) {
 		}
 	}
 };
+nanofl_engine_geom_Edges.simplificate = function(sequence,eps) {
+	if(sequence.length < 2) return sequence.slice();
+	var eps2 = eps * eps;
+	var r = [];
+	r.push(sequence[0]);
+	var _g1 = 1;
+	var _g = sequence.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var edgeA = r[r.length - 1];
+		var edgeB = sequence[i];
+		var equal = true;
+		var edgeC = nanofl_engine_geom_Edges.getAppoximated(edgeA,edgeB);
+		var _g2 = 0;
+		while(_g2 < 7) {
+			var i1 = _g2++;
+			var pt0 = edgeC.getPoint(i1 / 6);
+			var d1 = nanofl_engine_geom_PointTools.getSqrDistP(pt0,edgeA.getNearestPoint(pt0.x,pt0.y).point);
+			var d2 = nanofl_engine_geom_PointTools.getSqrDistP(pt0,edgeB.getNearestPoint(pt0.x,pt0.y).point);
+			if(d1 > eps2 && d2 > eps2) {
+				equal = false;
+				break;
+			}
+		}
+		if(equal) r[r.length - 1] = edgeC; else r.push(edgeB);
+	}
+	return r;
+};
+nanofl_engine_geom_Edges.getAppoximated = function(edgeA,edgeB) {
+	stdlib_Debug.assert(edgeA.x3 == edgeB.x1 && edgeA.y3 == edgeB.y1,null,{ fileName : "Edges.hx", lineNumber : 795, className : "nanofl.engine.geom.Edges", methodName : "getAppoximated"});
+	var lineA = new nanofl_engine_geom_StraightLine(edgeA.x1,edgeA.y1,edgeA.x2,edgeA.y2);
+	var lineB = new nanofl_engine_geom_StraightLine(edgeB.x3,edgeB.y3,edgeB.x2,edgeB.y2);
+	var I = lineA.getIntersection_infinityLine(lineB);
+	var r = edgeA.clone();
+	r.x3 = edgeB.x3;
+	r.y3 = edgeB.y3;
+	if(I == null) r.x2 = (r.x1 + r.x3) / 2; else r.x2 = I.x;
+	if(I == null) r.y2 = (r.y1 + r.y3) / 2; else r.y2 = I.y;
+	return r;
+};
 nanofl_engine_geom_Edges.log = function(v,infos) {
 };
 var nanofl_engine_geom_Equation = function() { };
@@ -12610,8 +12650,27 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 			switch(_g1) {
 			case "json":
 				var json = tjson_TJSON.parse(s);
+				if(Object.prototype.hasOwnProperty.call(json,"materials")) {
+					var _g2 = 0;
+					var _g3 = json.materials;
+					while(_g2 < _g3.length) {
+						var material = _g3[_g2];
+						++_g2;
+						if(Object.prototype.hasOwnProperty.call(material,"colorDiffuse")) Reflect.deleteField(material,"DbgColor");
+						if(Object.prototype.hasOwnProperty.call(material,"colorAmbient")) Reflect.deleteField(material,"colorAmbient");
+					}
+				}
 				var loader = new THREE.JSONLoader();
 				_g.data = loader.parse(json,_g.library.libraryDir);
+				if(_g.data.materials != null) {
+					var _g21 = 0;
+					var _g31 = _g.data.materials;
+					while(_g21 < _g31.length) {
+						var m = _g31[_g21];
+						++_g21;
+						m.overdraw = 1;
+					}
+				}
 				_g.data.geometry.computeBoundingSphere();
 				break;
 			}
@@ -12627,7 +12686,7 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 		return r;
 	}
 	,updateDisplayObject: function(dispObj,childFrameIndexes) {
-		stdlib_Debug.assert(js_Boot.__instanceof(dispObj,nanofl_Mesh),null,{ fileName : "MeshItem.hx", lineNumber : 186, className : "nanofl.engine.libraryitems.MeshItem", methodName : "updateDisplayObject"});
+		stdlib_Debug.assert(js_Boot.__instanceof(dispObj,nanofl_Mesh),null,{ fileName : "MeshItem.hx", lineNumber : 214, className : "nanofl.engine.libraryitems.MeshItem", methodName : "updateDisplayObject"});
 		dispObj.update();
 	}
 	,getDisplayObjectClassName: function() {

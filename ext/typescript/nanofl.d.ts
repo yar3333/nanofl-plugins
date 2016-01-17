@@ -9054,6 +9054,7 @@ declare module nanofl.engine.geom
 		static getTailPoints(edges:nanofl.engine.geom.Edge[]) : nanofl.engine.geom.Point[];
 		static smoothStraightLineSequence<T>(edges:T[], power:number) : void;
 		static assertHasNoIntersections<T>(edges:T[]) : void;
+		static simplificate<T>(sequence:T[], eps:number) : T[];
 	}
 	
 	export class Equation
