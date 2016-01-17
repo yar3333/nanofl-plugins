@@ -20,6 +20,7 @@ extern class Library
 	function getSceneInstance() : nanofl.engine.elements.Instance;
 	function getInstancableItems() : Array<nanofl.engine.libraryitems.InstancableItem>;
 	function getBitmaps() : Array<nanofl.engine.libraryitems.BitmapItem>;
+	function getMeshes() : Array<nanofl.engine.libraryitems.MeshItem>;
 	function getSounds() : Array<nanofl.engine.libraryitems.SoundItem>;
 	function getFonts() : Array<nanofl.engine.Font>;
 	function getItem(namePath:String) : nanofl.engine.libraryitems.LibraryItem;

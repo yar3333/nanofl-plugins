@@ -163,8 +163,9 @@ declare module nanofl.ide.commands
 		removeUnused() : void;
 		selectUnused() : void;
 		importFont() : void;
-		importSounds() : void;
 		importImages() : void;
+		importSounds() : void;
+		importMeshes() : void;
 		properties() : void;
 		createFolder() : void;
 		cut() : void;
@@ -542,6 +543,7 @@ declare module nanofl.ide
 		importFiles(paths?:string[], folderPath?:string, ready?:() => void) : void;
 		importImages(folderPath?:string, ready?:() => void) : void;
 		importSounds(folderPath?:string, ready?:() => void) : void;
+		importMeshes(folderPath?:string, ready?:() => void) : void;
 		importFont() : void;
 		uploadFiles(files:File[], folderPath?:string, callb?:(arg:nanofl.engine.libraryitems.LibraryItem[]) => void) : void;
 		loadFilesFromClipboard(callb:(arg:boolean) => void) : void;
@@ -856,6 +858,8 @@ declare module nanofl.engine.elements
 		colorEffect : nanofl.engine.coloreffects.ColorEffect;
 		filters : nanofl.engine.FilterDef[];
 		blendMode : nanofl.engine.BlendModes;
+		rotationX : number;
+		rotationY : number;
 		symbol : nanofl.engine.libraryitems.InstancableItem;
 		getType() : string;
 		save(out:htmlparser.XmlBuilder) : void;
@@ -1668,11 +1672,12 @@ declare module nanofl.ide.undo.states
 		layerStates : nanofl.engine.Layer[];
 	}
 	
-	export class TransformationsState
+	export class TransformationState
 	{
-		constructor(elementStates:nanofl.engine.geom.Matrix[]);
-		elementStates : nanofl.engine.geom.Matrix[];
-		equ(state:nanofl.ide.undo.states.TransformationsState) : boolean;
+		constructor(matrix:nanofl.engine.geom.Matrix, rotationX:number, rotationY:number);
+		equ(state:nanofl.ide.undo.states.TransformationState) : boolean;
+		toElement(element:nanofl.engine.elements.Element) : void;
+		static fromElement(element:nanofl.engine.elements.Element) : nanofl.ide.undo.states.TransformationState;
 	}
 }
 
@@ -1690,6 +1695,450 @@ declare module createjs.Sprite
 	{
 		target : any;
 		type : string;
+	}
+}
+
+declare module js.three
+{
+	type CanvasRendererParameters =
+	{
+		alpha : boolean;
+		canvas : HTMLCanvasElement;
+		devicePixelRatio : number;
+	}
+	
+	export class Embed
+	{
+	
+	}
+	
+	export class EmbedMin
+	{
+	
+	}
+	
+	type LineBasicMaterialParameters =
+	{
+		alphaTest : number;
+		blendDst : THREE;
+		blendEquation : THREE;
+		blendSrc : THREE;
+		blending : THREE;
+		color : number;
+		depthTest : boolean;
+		depthWrite : boolean;
+		fog : boolean;
+		linecap : string;
+		linejoin : string;
+		linewidth : number;
+		name : string;
+		needsUpdate : boolean;
+		opacity : number;
+		overdraw : number;
+		polygonOffset : boolean;
+		polygonOffsetFactor : number;
+		polygonOffsetUnits : number;
+		side : THREE;
+		transparent : boolean;
+		vertexColors : THREE;
+		visible : boolean;
+	}
+	
+	type LineDashedMaterialParameters =
+	{
+		alphaTest : number;
+		blendDst : THREE;
+		blendEquation : THREE;
+		blendSrc : THREE;
+		blending : THREE;
+		color : number;
+		dashSize : number;
+		depthTest : boolean;
+		depthWrite : boolean;
+		fog : boolean;
+		gapSize : number;
+		linewidth : number;
+		name : string;
+		needsUpdate : boolean;
+		opacity : number;
+		overdraw : number;
+		polygonOffset : boolean;
+		polygonOffsetFactor : number;
+		polygonOffsetUnits : number;
+		scale : number;
+		side : THREE;
+		transparent : boolean;
+		vertexColors : THREE;
+		visible : boolean;
+	}
+	
+	type MappingConstructor = () => THREE.Mapping;
+	
+	type MaterialParameters =
+	{
+		alphaTest : number;
+		blendDst : THREE;
+		blendEquation : THREE;
+		blendSrc : THREE;
+		blending : THREE;
+		depthTest : boolean;
+		depthWrite : boolean;
+		name : string;
+		needsUpdate : boolean;
+		opacity : number;
+		overdraw : number;
+		polygonOffset : boolean;
+		polygonOffsetFactor : number;
+		polygonOffsetUnits : number;
+		side : THREE;
+		transparent : boolean;
+		visible : boolean;
+	}
+	
+	/**
+	 * parameters is an object with one or more properties defining the material's appearance.
+	 */
+	type MeshBasicMaterialParameters =
+	{
+		alphaMap : THREE.Texture;
+		alphaTest : number;
+		aoMap : THREE.Texture;
+		aoMapIntensity : number;
+		blendDst : THREE;
+		blendEquation : THREE;
+		blendSrc : THREE;
+		blending : THREE;
+		color : number;
+		combine : THREE;
+		depthTest : boolean;
+		depthWrite : boolean;
+		envMap : THREE.Texture;
+		fog : boolean;
+		map : THREE.Texture;
+		morphTargets : boolean;
+		name : string;
+		needsUpdate : boolean;
+		opacity : number;
+		overdraw : number;
+		polygonOffset : boolean;
+		polygonOffsetFactor : number;
+		polygonOffsetUnits : number;
+		reflectivity : number;
+		refractionRatio : number;
+		shading : THREE;
+		side : THREE;
+		skinning : boolean;
+		specularMap : THREE.Texture;
+		transparent : boolean;
+		vertexColors : THREE;
+		visible : boolean;
+		wireframe : boolean;
+		wireframeLinewidth : number;
+	}
+	
+	type MeshDepthMaterialParameters =
+	{
+		alphaTest : number;
+		blendDst : THREE;
+		blendEquation : THREE;
+		blendSrc : THREE;
+		blending : THREE;
+		depthTest : boolean;
+		depthWrite : boolean;
+		name : string;
+		needsUpdate : boolean;
+		opacity : number;
+		overdraw : number;
+		polygonOffset : boolean;
+		polygonOffsetFactor : number;
+		polygonOffsetUnits : number;
+		side : THREE;
+		transparent : boolean;
+		visible : boolean;
+		wireframe : boolean;
+		wireframeLinewidth : number;
+	}
+	
+	type MeshLambertMaterialParameters =
+	{
+		alphaMap : THREE.Texture;
+		alphaTest : number;
+		blendDst : THREE;
+		blendEquation : THREE;
+		blendSrc : THREE;
+		blending : THREE;
+		color : number;
+		combine : THREE;
+		depthTest : boolean;
+		depthWrite : boolean;
+		emissive : number;
+		envMap : THREE.Texture;
+		fog : boolean;
+		map : THREE.Texture;
+		morphNormals : boolean;
+		morphTargets : boolean;
+		name : string;
+		needsUpdate : boolean;
+		opacity : number;
+		overdraw : number;
+		polygonOffset : boolean;
+		polygonOffsetFactor : number;
+		polygonOffsetUnits : number;
+		reflectivity : number;
+		refractionRatio : number;
+		side : THREE;
+		skinning : boolean;
+		specularMap : THREE.Texture;
+		transparent : boolean;
+		vertexColors : THREE;
+		visible : boolean;
+		wireframe : boolean;
+		wireframeLinewidth : number;
+	}
+	
+	type MeshNormalMaterialParameters =
+	{
+		alphaTest : number;
+		blendDst : THREE;
+		blendEquation : THREE;
+		blendSrc : THREE;
+		blending : THREE;
+		depthTest : boolean;
+		depthWrite : boolean;
+		name : string;
+		needsUpdate : boolean;
+		opacity : number;
+		overdraw : number;
+		polygonOffset : boolean;
+		polygonOffsetFactor : number;
+		polygonOffsetUnits : number;
+		shading : THREE;
+		side : THREE;
+		transparent : boolean;
+		visible : boolean;
+		/**
+		 Render geometry as wireframe. Default is false (i.e. render as smooth shaded).
+		 */
+		wireframe : boolean;
+		/**
+		 Controls wireframe thickness. Default is 1.
+		 */
+		wireframeLinewidth : number;
+	}
+	
+	type MeshPhongMaterialParameters =
+	{
+		alphaMap : THREE.Texture;
+		alphaTest : number;
+		aoMap : THREE.Texture;
+		aoMapIntensity : number;
+		blendDst : THREE;
+		blendEquation : THREE;
+		blendSrc : THREE;
+		blending : THREE;
+		bumpMap : THREE.Texture;
+		bumpScale : number;
+		/**
+		 geometry color in hexadecimal. Default is 0xffffff.
+		 */
+		color : number;
+		combine : THREE;
+		depthTest : boolean;
+		depthWrite : boolean;
+		displacementBias : number;
+		displacementMap : THREE.Texture;
+		displacementScale : number;
+		emissive : number;
+		emissiveMap : THREE.Texture;
+		envMap : THREE.Texture;
+		fog : boolean;
+		lightMap : THREE.Texture;
+		lightMapIntensity : number;
+		map : THREE.Texture;
+		morphNormals : boolean;
+		morphTargets : boolean;
+		name : string;
+		needsUpdate : boolean;
+		normalMap : THREE.Texture;
+		normalScale : THREE.Vector2;
+		opacity : number;
+		overdraw : number;
+		polygonOffset : boolean;
+		polygonOffsetFactor : number;
+		polygonOffsetUnits : number;
+		reflectivity : number;
+		refractionRatio : number;
+		shading : THREE;
+		shininess : number;
+		side : THREE;
+		skinning : boolean;
+		specular : number;
+		specularMap : THREE.Texture;
+		transparent : boolean;
+		vertexColors : THREE;
+		visible : boolean;
+		wireframe : string;
+		wireframeLinewidth : number;
+	}
+	
+	type PointsMaterialParameters =
+	{
+		alphaTest : number;
+		blendDst : THREE;
+		blendEquation : THREE;
+		blendSrc : THREE;
+		blending : THREE;
+		color : number;
+		depthTest : boolean;
+		depthWrite : boolean;
+		fog : boolean;
+		map : THREE.Texture;
+		name : string;
+		needsUpdate : boolean;
+		opacity : number;
+		overdraw : number;
+		polygonOffset : boolean;
+		polygonOffsetFactor : number;
+		polygonOffsetUnits : number;
+		side : THREE;
+		size : number;
+		sizeAttenuation : boolean;
+		transparent : boolean;
+		vertexColors : THREE;
+		visible : boolean;
+	}
+	
+	type RaycasterParameters =
+	{
+		LOD : any;
+		Line : any;
+		Mesh : any;
+		Points : any;
+		Sprite : any;
+	}
+	
+	type ShaderMaterialParameters =
+	{
+		alphaTest : number;
+		blendDst : THREE;
+		blendEquation : THREE;
+		blendSrc : THREE;
+		blending : THREE;
+		defines : any;
+		depthTest : boolean;
+		depthWrite : boolean;
+		fog : boolean;
+		fragmentShader : string;
+		lights : boolean;
+		morphNormals : boolean;
+		morphTargets : boolean;
+		name : string;
+		needsUpdate : boolean;
+		opacity : number;
+		overdraw : number;
+		polygonOffset : boolean;
+		polygonOffsetFactor : number;
+		polygonOffsetUnits : number;
+		shading : THREE;
+		side : THREE;
+		skinning : boolean;
+		transparent : boolean;
+		uniforms : any;
+		vertexColors : THREE;
+		vertexShader : string;
+		visible : boolean;
+		wireframe : boolean;
+		wireframeLinewidth : number;
+	}
+	
+	type SpriteCanvasMaterialParameters =
+	{
+		alphaTest : number;
+		blendDst : THREE;
+		blendEquation : THREE;
+		blendSrc : THREE;
+		blending : THREE;
+		color : number;
+		depthTest : boolean;
+		depthWrite : boolean;
+		name : string;
+		needsUpdate : boolean;
+		opacity : number;
+		overdraw : number;
+		polygonOffset : boolean;
+		polygonOffsetFactor : number;
+		polygonOffsetUnits : number;
+		program : (arg0:any, arg1:THREE.Color) => void;
+		side : THREE;
+		transparent : boolean;
+		visible : boolean;
+	}
+	
+	type SpriteMaterialParameters =
+	{
+		alphaTest : number;
+		blendDst : THREE;
+		blendEquation : THREE;
+		blendSrc : THREE;
+		blending : THREE;
+		color : number;
+		depthTest : boolean;
+		depthWrite : boolean;
+		fog : boolean;
+		map : THREE.Texture;
+		name : string;
+		needsUpdate : boolean;
+		opacity : number;
+		overdraw : number;
+		polygonOffset : boolean;
+		polygonOffsetFactor : number;
+		polygonOffsetUnits : number;
+		side : THREE;
+		transparent : boolean;
+		uvOffset : THREE.Vector2;
+		uvScale : THREE.Vector2;
+		visible : boolean;
+	}
+	
+	type WebGLRendererParameters =
+	{
+		/**
+		 * default is true.
+		 */
+		alpha : boolean;
+		/**
+		 * default is false.
+		 */
+		antialias : boolean;
+		/**
+		 * A Canvas where the renderer draws its output.
+		 */
+		canvas : HTMLCanvasElement;
+		/**
+		 * default is 0.
+		 */
+		clearAlpha : number;
+		/**
+		 * default is 0x000000.
+		 */
+		clearColor : number;
+		devicePixelRatio : number;
+		/**
+		 *  shader precision. Can be "highp", "mediump" or "lowp".
+		 */
+		precision : string;
+		/**
+		 * default is true.
+		 */
+		premultipliedAlpha : boolean;
+		/**
+		 * default is false.
+		 */
+		preserveDrawingBuffer : boolean;
+		/**
+		 * default is true.
+		 */
+		stencil : boolean;
 	}
 }
 
@@ -1786,6 +2235,36 @@ declare module nanofl.engine.libraryitems
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 		toString() : string;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.FontItem;
+	}
+	
+	export class MeshItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem
+	{
+		constructor(namePath:string, ext:string, originalExt:string);
+		ext : string;
+		originalExt : string;
+		textureAtlas : string;
+		size : number;
+		data : { geometry : THREE.Geometry; materials : THREE.Material[]; };
+		getType() : string;
+		clone() : nanofl.engine.libraryitems.MeshItem;
+		getIcon() : string;
+		save(fileApi:nanofl.engine.FileApi) : void;
+		saveToXml(out:htmlparser.XmlBuilder) : void;
+		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
+		getUrl() : string;
+		preload(ready:() => void) : void;
+		createDisplayObject(initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : createjs.DisplayObject;
+		updateDisplayObject(dispObj:createjs.DisplayObject, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]) : void;
+		getDisplayObjectClassName() : string;
+		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
+		getFilePathToRunWithEditor() : string;
+		getLibraryFilePaths() : string[];
+		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
+		getUsedSymbolNamePaths() : string[];
+		generateOptimizedFiles(fileApi:nanofl.engine.FileApi, optimizations:nanofl.ide.PublishOptimizations, destDir:string) : { relPath : string; baseDir : string; }[];
+		toString() : string;
+		static load(fileApi:nanofl.engine.FileApi, relFilePath:string, originalExt:string, files:Map<string, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.MeshItem;
+		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MeshItem;
 	}
 	
 	export class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem implements nanofl.engine.ITextureItem, nanofl.engine.ISpriteSheetableItem, nanofl.engine.IFramedItem, nanofl.engine.ITimeline, nanofl.engine.ILayersContainer
@@ -9089,7 +9568,7 @@ declare module nanofl.ide.plugins
 		 * Method must detect loadable files and return created LibraryItems.
 		 * Use file.exclude() for processed files (to prevent loading them from other loaders).
 		 */
-		load(files:nanofl.engine.MapRO<string, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.LibraryItem[];
+		load(fileApi:nanofl.engine.FileApi, baseDir:string, files:Map<string, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.LibraryItem[];
 	}
 	
 	export interface IPublisherPlugin
@@ -9616,6 +10095,7 @@ declare module nanofl.engine
 		getSceneInstance() : nanofl.engine.elements.Instance;
 		getInstancableItems() : nanofl.engine.libraryitems.InstancableItem[];
 		getBitmaps() : nanofl.engine.libraryitems.BitmapItem[];
+		getMeshes() : nanofl.engine.libraryitems.MeshItem[];
 		getSounds() : nanofl.engine.libraryitems.SoundItem[];
 		getFonts() : nanofl.engine.Font[];
 		getItem(namePath:string) : nanofl.engine.libraryitems.LibraryItem;
@@ -9632,14 +10112,14 @@ declare module nanofl.engine
 		static createWithScene(libraryDir?:string, elements?:nanofl.engine.elements.Element[], layerName?:string) : nanofl.engine.Library;
 	}
 	
-	type MapRO<K, T> = Map<K, T>;
-	
 	export class MotionTween
 	{
-		constructor(easing:number, rotateCount:number, orientToPath:boolean);
+		constructor(easing:number, rotateCount:number, orientToPath:boolean, rotateCountX:number, rotateCountY:number);
 		easing : number;
 		rotateCount : number;
 		orientToPath : boolean;
+		rotateCountX : number;
+		rotateCountY : number;
 		save(out:htmlparser.XmlBuilder) : void;
 		apply(frameSubIndex:number) : nanofl.engine.TweenedElement[];
 		clone() : nanofl.engine.MotionTween;
@@ -9767,11 +10247,19 @@ declare module nanofl.ide.editorelements
 		getBounds() : createjs.Rectangle;
 		getTransformedBounds() : createjs.Rectangle;
 		hitTest(pos:nanofl.engine.geom.Point) : boolean;
+		onClick(e:createjs.MouseEvent) : void;
+		onMouseDown(e:createjs.MouseEvent) : void;
+		onMouseUp(e:createjs.MouseEvent) : void;
+		onDoubleClick(e:createjs.MouseEvent) : void;
 	}
 	
 	export class EditorElementSelectBox extends nanofl.ide.editorelements.EditorElement
 	{
 		updateTransformations() : void;
+		onClick(e:createjs.MouseEvent) : void;
+		onMouseDown(e:createjs.MouseEvent) : void;
+		onMouseUp(e:createjs.MouseEvent) : void;
+		onDoubleClick(e:createjs.MouseEvent) : void;
 	}
 	
 	export class EditorElementGroup extends nanofl.ide.editorelements.EditorElementSelectBox

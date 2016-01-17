@@ -41,7 +41,15 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 		{
 			type:"string", name:"urlOnClick", label:"URL on click", defaultValue:"",
 			description:"Useful for Banner Ads. Keep field empty to disable this feature."
-		}
+		},
+		{
+			type:"bool", name:"forceThreeJS", label:"Force ThreeJS support.", defaultValue:false,
+			description:"Include ThreeJS support even there are no Meshes in the library."
+		},
+		{
+			type:"bool", name:"useLocalScripts", label:"Use local scripts for Player/CreateJS/ThreeJS.", defaultValue:false,
+			description:"Check to prevent loading scripts from CDN. Local copies will be used. This increase document folder size."
+		},
 	];
 	
 	public function generate(fileApi:FileApi, params:Params, filePath:String, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>) : Array<String>
@@ -78,7 +86,14 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 			generator.generate(languageAndIde[0], dir, name);
 		}
 		
-		return [ "bin", name + ".html" ];
+		if (fileApi.exists(dir + "/bin") && fileApi.readDirectory(dir + "/bin").length == 0)
+		{
+			fileApi.remove(dir + "/bin");
+		}
+		
+		var r = [ name + ".html" ];
+		if (fileApi.exists(dir + "/bin")) r.push("bin");
+		return r;
 	}
 	
 	#if js

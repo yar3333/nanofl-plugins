@@ -1,7 +1,7 @@
 import haxe.io.Path;
+import nanofl.engine.FileApi;
 import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.engine.libraryitems.MovieClipItem;
-import nanofl.engine.MapRO;
 import nanofl.ide.CachedFile;
 import nanofl.ide.plugins.ILoaderPlugin;
 using Lambda;
@@ -13,7 +13,7 @@ class MovieClipLoaderPlugin implements ILoaderPlugin
 	
 	public function new() {}
 	
-	public function load(files:MapRO<String, CachedFile>) : Array<LibraryItem>
+	public function load(fileApi:FileApi, baseDir:String, files:Map<String, CachedFile>) : Array<LibraryItem>
 	{
 		var r = new Array<LibraryItem>();
 		

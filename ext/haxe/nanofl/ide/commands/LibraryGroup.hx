@@ -18,8 +18,9 @@ extern class LibraryGroup extends nanofl.ide.commands.BaseGroup
 	function removeUnused() : Void;
 	function selectUnused() : Void;
 	function importFont() : Void;
-	function importSounds() : Void;
 	function importImages() : Void;
+	function importSounds() : Void;
+	function importMeshes() : Void;
 	function properties() : Void;
 	function createFolder() : Void;
 	function cut() : Void;

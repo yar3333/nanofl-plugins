@@ -34,6 +34,7 @@ extern class EditorLibrary
 	function importFiles(?paths:Array<String>, ?folderPath:String, ?ready:Void -> Void) : Void;
 	function importImages(?folderPath:String, ?ready:Void -> Void) : Void;
 	function importSounds(?folderPath:String, ?ready:Void -> Void) : Void;
+	function importMeshes(?folderPath:String, ?ready:Void -> Void) : Void;
 	function importFont() : Void;
 	function uploadFiles(files:Array<js.html.File>, ?folderPath:String, ?callb:Array<nanofl.engine.libraryitems.LibraryItem> -> Void) : Void;
 	function loadFilesFromClipboard(callb:Bool -> Void) : Void;

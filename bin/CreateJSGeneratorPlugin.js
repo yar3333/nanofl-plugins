@@ -7,7 +7,7 @@ function $extend(from, fields) {
 	return proto;
 }
 var CreateJSGeneratorPlugin = function() {
-	this.properties = [{ type : "list", name : "mode", label : "Mode", defaultValue : "HTML", values : ["HTML","JavaScript","JavaScript/FlashDevelop","JavaScript/MsVisualStudio2013","TypeScript","TypeScript/MsVisualStudio2013","Haxe","Haxe/FlashDevelop","TextureAtlas"]},{ type : "string", name : "urlOnClick", label : "URL on click", defaultValue : "", description : "Useful for Banner Ads. Keep field empty to disable this feature."}];
+	this.properties = [{ type : "list", name : "mode", label : "Mode", defaultValue : "HTML", values : ["HTML","JavaScript","JavaScript/FlashDevelop","JavaScript/MsVisualStudio2013","TypeScript","TypeScript/MsVisualStudio2013","Haxe","Haxe/FlashDevelop","TextureAtlas"]},{ type : "string", name : "urlOnClick", label : "URL on click", defaultValue : "", description : "Useful for Banner Ads. Keep field empty to disable this feature."},{ type : "bool", name : "forceThreeJS", label : "Force ThreeJS support.", defaultValue : false, description : "Include ThreeJS support even there are no Meshes in the library."},{ type : "bool", name : "useLocalScripts", label : "Use local scripts for Player/CreateJS/ThreeJS.", defaultValue : false, description : "Check to prevent loading scripts from CDN. Local copies will be used. This increase document folder size."}];
 	this.name = "CreateJS";
 };
 CreateJSGeneratorPlugin.__name__ = true;
@@ -64,7 +64,10 @@ CreateJSGeneratorPlugin.prototype = {
 			}
 			generator1.generate(languageAndIde[0],dir,name);
 		}
-		return ["bin",name + ".html"];
+		if(fileApi.exists(dir + "/bin") && fileApi.readDirectory(dir + "/bin").length == 0) fileApi.remove(dir + "/bin");
+		var r = [name + ".html"];
+		if(fileApi.exists(dir + "/bin")) r.push("bin");
+		return r;
 	}
 	,test: function(serverApi,fileApi,params,filePath) {
 		var htmlFilePath = haxe_io_Path.withoutExtension(filePath) + ".html";
@@ -869,8 +872,6 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 			template = template.split("{width}").join(this.documentProperties.width);
 			template = template.split("{height}").join(this.documentProperties.height);
 			template = template.split("{bodyStyle}").join("background-color:" + this.documentProperties.backgroundColor + "; margin:0; padding:0; font-size:0; overflow:hidden");
-			template = template.split("{createjsUrl}").join(languages_HtmlGenerator.createjsUrl);
-			template = template.split("{playerUrl}").join(languages_HtmlGenerator.playerUrl.split("{version}").join(nanofl.engine.Version.player));
 			template = template.split("{preCanvas}").join(this.params.urlOnClick != ""?"<a href='" + this.params.urlOnClick + "' target='_blank'>\n\t\t\t":"");
 			template = template.split("{postCanvas}").join(this.params.urlOnClick != ""?"\n\t\t</a>":"");
 			var scriptUrls = this.getScriptUrls(dir,name).map(function(s) {
@@ -884,6 +885,17 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 			}).join("\n\t\t\t\n\t\t\t");
 			template = template.split("{inlineScripts}").join(inlineScripts + (inlineScripts != ""?"\n\t\t\t\n\t\t\t":"") + this.getPlayerInitCode().split("\n").join("\n\t\t\t"));
 			this.fileApi.saveContent(file,template);
+		}
+		this.prepareLocalScriptFiles(dir);
+	}
+	,prepareLocalScriptFiles: function(dir) {
+		var localScripts = [languages_HtmlGenerator.scriptUrls.createjs.local,languages_HtmlGenerator.scriptUrls.player.local];
+		if(this.params.forceThreeJS || this.library.getMeshes().length > 0) localScripts.push(languages_HtmlGenerator.scriptUrls.threejs.local);
+		var _g = 0;
+		while(_g < localScripts.length) {
+			var localScript = localScripts[_g];
+			++_g;
+			if(this.params.useLocalScripts) this.fileApi.copy(this.supportDir + "/scripts/" + localScript,dir + "/bin/" + localScript); else this.fileApi.remove(dir + "/bin/" + localScript);
 		}
 	}
 	,getInlineScripts: function() {
@@ -927,7 +939,11 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 		return "nanofl.Player.init" + "(" + "document.getElementById(\"mainCanvas\")" + ", nanofl.DataTools.unserialize(serializedLibrary)" + ", " + this.documentProperties.framerate + ", '" + this.documentProperties.scaleMode + "'" + (textureAtlases != null?", " + textureAtlases:"") + ");";
 	}
 	,getScriptUrls: function(dir,name) {
-		return [];
+		var r = [];
+		r.push(this.params.useLocalScripts?"bin/" + languages_HtmlGenerator.scriptUrls.createjs.local:languages_HtmlGenerator.scriptUrls.createjs.remote);
+		if(this.params.forceThreeJS || this.library.getMeshes().length > 0) r.push(this.params.useLocalScripts?"bin/" + languages_HtmlGenerator.scriptUrls.threejs.local:languages_HtmlGenerator.scriptUrls.threejs.remote);
+		r.push(this.params.useLocalScripts?"bin/" + languages_HtmlGenerator.scriptUrls.player.local:languages_HtmlGenerator.scriptUrls.player.remote);
+		return r;
 	}
 	,__class__: languages_HtmlGenerator
 });
@@ -1251,7 +1267,6 @@ haxe_io_FPHelper.i64tmp = (function($this) {
 }(this));
 js_Boot.__toStr = {}.toString;
 js_html_compat_Uint8Array.BYTES_PER_ELEMENT = 1;
-languages_HtmlGenerator.createjsUrl = "http://code.createjs.com/createjs-2014.12.12.combined.js";
-languages_HtmlGenerator.playerUrl = "http://player.nanofl.com/nanofl-{version}.js";
+languages_HtmlGenerator.scriptUrls = { createjs : { local : "createjs-0.8.0.js", remote : "http://code.createjs.com/createjs-2014.12.12.combined.js"}, threejs : { local : "three-r73.js", remote : "http://cdnjs.cloudflare.com/ajax/libs/three.js/r73/three.min.js"}, player : { local : "nanofl-" + nanofl.engine.Version.player + ".js", remote : "http://player.nanofl.com/nanofl-" + nanofl.engine.Version.player + ".js"}};
 CreateJSGeneratorPlugin.main();
 })(typeof console != "undefined" ? console : {log:function(){}});
