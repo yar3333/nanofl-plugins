@@ -2193,9 +2193,12 @@ stdlib_Std.parseInt = function(x,defaultValue) {
 	} else return defaultValue;
 };
 stdlib_Std.parseFloat = function(x,defaultValue) {
-	if(x != null) {
-		if(new EReg("^\\s*[+-]?\\s*\\d{1,9}(?:[.]\\d+)?(?:e[+-]?\\d{1,9})?\\s*$","").match(x)) return parseFloat(x); else return defaultValue;
-	} else return defaultValue;
+	if(x == null) return defaultValue;
+	if(new EReg("^\\s*[+-]?\\s*\\d{1,20}(?:[.]\\d+)?(?:e[+-]?\\d{1,20})?\\s*$","").match(x)) {
+		var r = parseFloat(x);
+		if(!isNaN(r)) return r; else return defaultValue;
+	}
+	return defaultValue;
 };
 stdlib_Std.bool = function(v) {
 	return v != false && v != null && v != 0 && v != "" && v != "0" && (!(typeof(v) == "string") || (js_Boot.__cast(v , String)).toLowerCase() != "false" && (js_Boot.__cast(v , String)).toLowerCase() != "off" && (js_Boot.__cast(v , String)).toLowerCase() != "null");
