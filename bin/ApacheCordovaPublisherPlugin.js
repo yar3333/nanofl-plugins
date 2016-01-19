@@ -81,13 +81,13 @@ ApacheCordovaPublisherPlugin.prototype = {
 	,createProject: function(cordovaCLI,filePath,params) {
 		cordovaCLI.createApplication(params.domain,params.title != ""?params.title:haxe_io_Path.withoutDirectory(haxe_io_Path.withoutExtension(filePath)));
 	}
-	,removeDirectoryContent: function(fileApi,dir) {
+	,removeDirectoryContent: function(fileSystem,dir) {
 		var _g = 0;
-		var _g1 = fileApi.readDirectory(dir);
+		var _g1 = fileSystem.readDirectory(dir);
 		while(_g < _g1.length) {
 			var file = _g1[_g];
 			++_g;
-			fileApi.remove(dir + "/" + file);
+			fileSystem.remove(dir + "/" + file);
 		}
 	}
 	,trimNums: function(s) {
@@ -100,14 +100,14 @@ ApacheCordovaPublisherPlugin.prototype = {
 	}
 	,__class__: ApacheCordovaPublisherPlugin
 };
-var CordovaCLI = function(fileApi,directory) {
-	this.fileApi = fileApi;
+var CordovaCLI = function(fileSystem,directory) {
+	this.fileSystem = fileSystem;
 	this.directory = directory;
 };
 CordovaCLI.__name__ = true;
 CordovaCLI.prototype = {
 	run: function(args) {
-		var r = this.fileApi.runCaptured("cordova",args,null,this.directory);
+		var r = this.fileSystem.runCaptured("cordova",args,null,this.directory);
 		if(r.exitCode != 0) this.error("none zero exit code (" + r.exitCode + ") when run with args: " + args.join(" ") + (r.output != ""?"\n" + r.output:"") + (r.error != ""?"\n" + r.error:""),{ fileName : "CordovaCLI.hx", lineNumber : 19, className : "CordovaCLI", methodName : "run"});
 		return r;
 	}
@@ -134,7 +134,7 @@ CordovaCLI.prototype = {
 		this.run(["platform","remove",platform]);
 	}
 	,isProjectDirectory: function() {
-		var r = this.fileApi.runCaptured("cordova",["info"],null,this.directory);
+		var r = this.fileSystem.runCaptured("cordova",["info"],null,this.directory);
 		return r.exitCode == 0;
 	}
 	,build: function() {

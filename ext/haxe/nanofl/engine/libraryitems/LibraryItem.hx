@@ -7,12 +7,12 @@ extern class LibraryItem
 	function getIcon() : String;
 	function clone() : nanofl.engine.libraryitems.LibraryItem;
 	function loadProperties(xml:htmlparser.HtmlNodeElement) : Void;
-	function save(fileApi:nanofl.engine.FileApi) : Void;
+	function save(fileSystem:nanofl.engine.FileSystem) : Void;
 	function saveToXml(out:htmlparser.XmlBuilder) : Void;
 	function getFilePathToRunWithEditor() : String;
 	function getLibraryFilePaths() : Array<String>;
 	function getOptimized(optimizations:nanofl.ide.PublishOptimizations) : nanofl.engine.libraryitems.LibraryItem;
-	function generateOptimizedFiles(fileApi:nanofl.engine.FileApi, optimizations:nanofl.ide.PublishOptimizations, destDir:String) : Array<{ var relPath : String; var baseDir : String; }>;
+	function generateOptimizedFiles(fileSystem:nanofl.engine.FileSystem, optimizations:nanofl.ide.PublishOptimizations, destDir:String) : Array<{ var relPath : String; var baseDir : String; }>;
 	function preload(ready:Void -> Void) : Void;
 	function duplicate(newNamePath:String) : nanofl.engine.libraryitems.LibraryItem;
 	function remove() : Void;

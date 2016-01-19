@@ -16,7 +16,7 @@ import nanofl.engine.elements.GroupElement;
 import nanofl.engine.elements.Instance;
 import nanofl.engine.elements.ShapeElement;
 import nanofl.engine.elements.TextElement;
-import nanofl.engine.FileApi;
+import nanofl.engine.FileSystem;
 import nanofl.engine.fills.BitmapFill;
 import nanofl.engine.fills.IFill;
 import nanofl.engine.fills.LinearFill;
@@ -48,7 +48,7 @@ class SymbolLoader
 {
 	static var EPS = 1e-10;
 	
-	var fileApi : FileApi;
+	var fileSystem : FileSystem;
 	var doc : XmlDocument;
 	var srcLibDir : String;
 	var library : Library;
@@ -61,7 +61,7 @@ class SymbolLoader
 	
 	public function new(api:PluginApi, doc:XmlDocument, srcLibDir:String, library:Library)
 	{
-		this.fileApi = api.fileSystem;
+		this.fileSystem = api.fileSystem;
 		this.doc = doc;
 		this.srcLibDir = srcLibDir;
 		this.library = library;
@@ -76,9 +76,9 @@ class SymbolLoader
 		if (!library.hasItem(namePath))
 		{
 			log("Load item \"" + namePath + "\"");
-			if (fileApi.exists(srcLibDir + "/" + href))
+			if (fileSystem.exists(srcLibDir + "/" + href))
 			{
-				loadFromXml(namePath, new XmlDocument(fileApi.getContent(srcLibDir + "/" + href)));
+				loadFromXml(namePath, new XmlDocument(fileSystem.getContent(srcLibDir + "/" + href)));
 			}
 		}
 	}

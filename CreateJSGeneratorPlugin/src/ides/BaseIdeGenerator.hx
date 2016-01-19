@@ -1,15 +1,15 @@
 package ides;
 
-import nanofl.engine.FileApi;
+import nanofl.engine.FileSystem;
 
 class BaseIdeGenerator
 {
-	var fileApi : FileApi;
+	var fileSystem : FileSystem;
 	var supportDir : String;
 	
-	public function new(fileApi:FileApi, supportDir:String)
+	public function new(fileSystem:FileSystem, supportDir:String)
 	{
-		this.fileApi = fileApi;
+		this.fileSystem = fileSystem;
 		this.supportDir = supportDir;
 	}
 	

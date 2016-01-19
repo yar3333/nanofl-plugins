@@ -1,21 +1,21 @@
-import nanofl.engine.FileApi;
+import nanofl.engine.FileSystem;
 
 using StringTools;
 
 class CordovaCLI
 {
-	var fileApi : FileApi;
+	var fileSystem : FileSystem;
 	var directory : String;
 
-	public function new(fileApi:FileApi, directory:String) 
+	public function new(fileSystem:FileSystem, directory:String) 
 	{
-		this.fileApi = fileApi;
+		this.fileSystem = fileSystem;
 		this.directory = directory;
 	}
 	
 	public function run(args:Array<String>) : { exitCode:Int, output:String, error:String }
 	{
-		var r = fileApi.runCaptured("cordova", args, null, directory);
+		var r = fileSystem.runCaptured("cordova", args, null, directory);
 		if (r.exitCode != 0) error("none zero exit code (" + r.exitCode + ") when run with args: " + args.join(" ") + (r.output != "" ? "\n" + r.output : "") + (r.error != "" ? "\n" + r.error : ""));
 		return r;
 	}
@@ -53,7 +53,7 @@ class CordovaCLI
 	
 	public function isProjectDirectory() : Bool
 	{
-		var r = fileApi.runCaptured("cordova", [ "info" ], null, directory);
+		var r = fileSystem.runCaptured("cordova", [ "info" ], null, directory);
 		return r.exitCode == 0;
 	}
 	

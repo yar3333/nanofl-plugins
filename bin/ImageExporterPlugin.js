@@ -24,7 +24,7 @@ HxOverrides.substr = function(s,pos,len) {
 };
 var ImageExporter = function() { };
 ImageExporter.__name__ = true;
-ImageExporter.run = function(type,fileApi,destFilePath,documentProperties,library) {
+ImageExporter.run = function(type,fileSystem,destFilePath,documentProperties,library) {
 	var instance = library.getSceneInstance();
 	var scene = instance.createDisplayObject(null);
 	nanofl.DisplayObjectTools.smartCache(scene);
@@ -36,7 +36,7 @@ ImageExporter.run = function(type,fileApi,destFilePath,documentProperties,librar
 	ctx.fillRect(0,0,documentProperties.width,documentProperties.height);
 	scene.draw(ctx);
 	var data = canvas.toDataURL(type).split(",")[1];
-	fileApi.saveBinary(destFilePath,haxe_crypto_Base64.decode(data));
+	fileSystem.saveBinary(destFilePath,haxe_crypto_Base64.decode(data));
 	return true;
 };
 var JpegImageExporterPlugin = function() {

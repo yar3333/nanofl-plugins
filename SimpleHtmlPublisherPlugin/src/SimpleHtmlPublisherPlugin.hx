@@ -2,7 +2,7 @@ import haxe.io.Path;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.Debug.console;
 import nanofl.engine.DocumentProperties;
-import nanofl.engine.FileApi;
+import nanofl.engine.FileSystem;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IPublisherPlugin;
@@ -53,11 +53,11 @@ class SimpleHtmlPublisherPlugin implements IPublisherPlugin
 		}
 	}
 	
-	function removeDirectoryContent(fileApi:FileApi, dir:String)
+	function removeDirectoryContent(fileSystem:FileSystem, dir:String)
 	{
-		for (file in fileApi.readDirectory(dir))
+		for (file in fileSystem.readDirectory(dir))
 		{
-			fileApi.remove(dir + "/" + file);
+			fileSystem.remove(dir + "/" + file);
 		}
 	}
 	

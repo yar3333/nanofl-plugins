@@ -10,12 +10,12 @@ class MsVisualStudio2013Generator extends BaseIdeGenerator
 		for (ext in [".sln", ".csproj"])
 		{
 			var destFile = dir + "/" + name + ext;
-			if (!fileApi.exists(destFile))
+			if (!fileSystem.exists(destFile))
 			{
-				var template = fileApi.getContent(supportDir + "/ides/MsVisualStudio2013/" + language + "/project" + ext);
+				var template = fileSystem.getContent(supportDir + "/ides/MsVisualStudio2013/" + language + "/project" + ext);
 				template = template.split("{name}").join(name);
 				template = template.split("{guid}").join(guid);
-				fileApi.saveContent(destFile, template);
+				fileSystem.saveContent(destFile, template);
 			}
 		}
 	}

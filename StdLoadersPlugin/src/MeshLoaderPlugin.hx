@@ -1,6 +1,6 @@
 import nanofl.engine.CustomProperty;
 import haxe.io.Path;
-import nanofl.engine.FileApi;
+import nanofl.engine.FileSystem;
 import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.engine.libraryitems.MeshItem;
 import nanofl.ide.CachedFile;

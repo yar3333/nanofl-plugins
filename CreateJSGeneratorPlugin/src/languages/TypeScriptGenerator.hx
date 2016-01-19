@@ -21,14 +21,14 @@ class TypeScriptGenerator extends CodeGenerator
 	{
 		var linkedItems = library.getInstancableItems().filter(function(item) return item.linkedClass != "");
 		
-        fileApi.remove(dir + "/gen/*");
+        fileSystem.remove(dir + "/gen/*");
 		
 		if (linkedItems.length > 0)
 		{
-            fileApi.copy(supportDir + "/languages/typescript/files", dir);
+            fileSystem.copy(supportDir + "/languages/typescript/files", dir);
 			
-			var baseMovieClipTemplate = fileApi.getContent(supportDir + "/languages/typescript/BaseMovieClip.ts");
-			var movieClipTemplate = fileApi.getContent(supportDir + "/languages/typescript/MovieClip.ts");
+			var baseMovieClipTemplate = fileSystem.getContent(supportDir + "/languages/typescript/BaseMovieClip.ts");
+			var movieClipTemplate = fileSystem.getContent(supportDir + "/languages/typescript/MovieClip.ts");
 			
 			for (item in linkedItems)
 			{
@@ -44,10 +44,10 @@ class TypeScriptGenerator extends CodeGenerator
 						.split("{base}").join(item.getDisplayObjectClassName())
 						.split("{namePath}").join(item.namePath);
                 
-				fileApi.saveContent(dir + "/gen/base/" + linkedClass.split(".").join("/") + ".ts", text);
+				fileSystem.saveContent(dir + "/gen/base/" + linkedClass.split(".").join("/") + ".ts", text);
 				
 				var classFile = dir + "/src/" + linkedClass.split(".").join("/") + ".ts";
-                if (!fileApi.exists(classFile))
+                if (!fileSystem.exists(classFile))
 				{
                     var text = "";
 					if (pack != "") text += "module " + pack + "\n{\n";
@@ -56,7 +56,7 @@ class TypeScriptGenerator extends CodeGenerator
 								.split("{base}").join("base." + linkedClass);
 					if (pack != "") text += "\n}";
 					
-					fileApi.saveContent(classFile, text);
+					fileSystem.saveContent(classFile, text);
 				}
 			}
 		}
@@ -85,11 +85,11 @@ class TypeScriptGenerator extends CodeGenerator
 			}
 			
 			text.push("}");
-			fileApi.saveContent(classFilePath, text.join("\n"));
+			fileSystem.saveContent(classFilePath, text.join("\n"));
 		}
 		else
 		{
-            fileApi.remove(classFilePath);
+            fileSystem.remove(classFilePath);
 		}
 	}
 }

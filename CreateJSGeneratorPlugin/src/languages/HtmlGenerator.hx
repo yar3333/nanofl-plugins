@@ -1,7 +1,7 @@
 package languages;
 
 import nanofl.engine.DocumentProperties;
-import nanofl.engine.FileApi;
+import nanofl.engine.FileSystem;
 import nanofl.engine.Library;
 import nanofl.engine.Version;
 import nanofl.ide.textureatlas.TextureAtlas;
@@ -18,9 +18,9 @@ class HtmlGenerator extends TextureAtlasGenerator
 	var serializedLibrary : String;
 	var filterCodes : Map<String, String>;
 	
-	public function new(fileApi:FileApi, params:Params, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>, supportDir:String)
+	public function new(fileSystem:FileSystem, params:Params, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>, supportDir:String)
 	{
-		super(fileApi, params, documentProperties, library, textureAtlases, supportDir);
+		super(fileSystem, params, documentProperties, library, textureAtlases, supportDir);
 		
 		var data = library.compile("library");
 		serializedLibrary = data.serializedLibrary;
@@ -38,9 +38,9 @@ class HtmlGenerator extends TextureAtlasGenerator
 		var file = dir + "/" + name + ".html";
 		
 		var defines = [];
-		if (fileApi.exists(file))
+		if (fileSystem.exists(file))
 		{
-			var text = fileApi.getContent(file);
+			var text = fileSystem.getContent(file);
 			if (text.indexOf("<!--ALLOW_REGENERATION-->") >= 0) defines.push("ALLOW_REGENERATION");
 		}
 		else
@@ -50,7 +50,7 @@ class HtmlGenerator extends TextureAtlasGenerator
 		
 		if (defines.indexOf("ALLOW_REGENERATION") >= 0)
 		{
-			var template = fileApi.getContent(supportDir + "/languages/project.html");
+			var template = fileSystem.getContent(supportDir + "/languages/project.html");
 			template = template.split("{defines}").join(defines.map(function(s) return "<!--" + s + "-->\n").join(""));
 			template = template.split("{title}").join(documentProperties.title != "" ? documentProperties.title : name);
 			template = template.split("{width}").join(untyped documentProperties.width);
@@ -72,7 +72,7 @@ class HtmlGenerator extends TextureAtlasGenerator
 				+ getPlayerInitCode().split("\n").join("\n\t\t\t")
 			);
 			
-			fileApi.saveContent(file, template);
+			fileSystem.saveContent(file, template);
 		}
 		
 		prepareLocalScriptFiles(dir);
@@ -89,11 +89,11 @@ class HtmlGenerator extends TextureAtlasGenerator
 		{
 			if (params.useLocalScripts)
 			{
-				fileApi.copy(supportDir + "/scripts/" + localScript, dir + "/bin/" + localScript);
+				fileSystem.copy(supportDir + "/scripts/" + localScript, dir + "/bin/" + localScript);
 			}
 			else
 			{
-				fileApi.remove(dir + "/bin/" + localScript);
+				fileSystem.remove(dir + "/bin/" + localScript);
 			}
 		}
 	}

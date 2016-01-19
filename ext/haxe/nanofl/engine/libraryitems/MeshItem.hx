@@ -11,7 +11,7 @@ extern class MeshItem extends nanofl.engine.libraryitems.InstancableItem impleme
 	override function getType() : String;
 	override function clone() : nanofl.engine.libraryitems.MeshItem;
 	override function getIcon() : String;
-	override function save(fileApi:nanofl.engine.FileApi) : Void;
+	override function save(fileSystem:nanofl.engine.FileSystem) : Void;
 	override function saveToXml(out:htmlparser.XmlBuilder) : Void;
 	override function loadProperties(xml:htmlparser.HtmlNodeElement) : Void;
 	function getUrl() : String;
@@ -24,7 +24,7 @@ extern class MeshItem extends nanofl.engine.libraryitems.InstancableItem impleme
 	override function getLibraryFilePaths() : Array<String>;
 	override function getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 	override function getUsedSymbolNamePaths() : Array<String>;
-	override function generateOptimizedFiles(fileApi:nanofl.engine.FileApi, optimizations:nanofl.ide.PublishOptimizations, destDir:String) : Array<{ var relPath : String; var baseDir : String; }>;
+	override function generateOptimizedFiles(fileSystem:nanofl.engine.FileSystem, optimizations:nanofl.ide.PublishOptimizations, destDir:String) : Array<{ var relPath : String; var baseDir : String; }>;
 	override function toString() : String;
 	static function load(api:nanofl.ide.plugins.PluginApi, relFilePath:String, originalExt:String, files:Map<String, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.MeshItem;
 	static function parse(namePath:String, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MeshItem;

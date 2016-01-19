@@ -21,7 +21,7 @@ extern class MovieClipItem extends nanofl.engine.libraryitems.InstancableItem im
 	function removeLayerWithChildren(index:Int) : Array<nanofl.engine.Layer>;
 	function getFramesAt(frameIndex:Int) : Array<nanofl.engine.Frame>;
 	override function getIcon() : String;
-	override function save(fileApi:nanofl.engine.FileApi) : Void;
+	override function save(fileSystem:nanofl.engine.FileSystem) : Void;
 	override function loadProperties(xml:htmlparser.HtmlNodeElement) : Void;
 	override function saveToXml(out:htmlparser.XmlBuilder) : Void;
 	function getTotalFrames() : Int;

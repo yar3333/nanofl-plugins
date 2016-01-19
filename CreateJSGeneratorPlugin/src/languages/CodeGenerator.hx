@@ -6,15 +6,15 @@ class CodeGenerator extends HtmlGenerator
 {
 	function generateLibraryAndFilters(dir:String, name:String)
 	{
-		fileApi.saveContent(dir + "/bin/library.js", "var serializedLibrary = '" + serializedLibrary + "';");
+		fileSystem.saveContent(dir + "/bin/library.js", "var serializedLibrary = '" + serializedLibrary + "';");
 		
 		if (filterCodes.iterator().hasNext())
 		{
-			fileApi.saveContent(dir + "/bin/filters.js", filterCodes.array().join("\n\n"));
+			fileSystem.saveContent(dir + "/bin/filters.js", filterCodes.array().join("\n\n"));
 		}
 		else
 		{
-			fileApi.remove(dir + "/bin/filters.js");
+			fileSystem.remove(dir + "/bin/filters.js");
 		}
 	}
 	

@@ -14,11 +14,11 @@ extern class DocumentProperties
 	var useTextureAtlases : Bool;
 	var textureAtlases : Map<String, nanofl.ide.textureatlas.TextureAtlasParams>;
 	var publishSettings : Array<nanofl.ide.plugins.PublishSetting>;
-	function save(fileApi:nanofl.engine.FileApi, filePath:String) : Void;
+	function save(fileSystem:nanofl.engine.FileSystem, filePath:String) : Void;
 	function getGeneratorAsString() : String;
 	function equ(p:nanofl.engine.DocumentProperties) : Bool;
 	function clone() : nanofl.engine.DocumentProperties;
 	function getOptimized(optimizations:nanofl.ide.PublishOptimizations) : nanofl.engine.DocumentProperties;
-	static function load(filePath:String, fileApi:nanofl.engine.FileApi) : nanofl.engine.DocumentProperties;
+	static function load(filePath:String, fileSystem:nanofl.engine.FileSystem) : nanofl.engine.DocumentProperties;
 	static function parseGenerator(s:String) : { var name : String; var params : Dynamic; };
 }

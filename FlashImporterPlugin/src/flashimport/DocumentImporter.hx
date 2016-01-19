@@ -3,7 +3,7 @@ package flashimport;
 import haxe.io.Path;
 import htmlparser.XmlDocument;
 import nanofl.engine.DocumentProperties;
-import nanofl.engine.FileApi;
+import nanofl.engine.FileSystem;
 import nanofl.engine.Library;
 import nanofl.engine.libraryitems.FolderItem;
 import nanofl.engine.libraryitems.SoundItem;
@@ -37,9 +37,9 @@ class DocumentImporter
 		}
 	}
 	
-	static function hasMedia(fileApi:FileApi, srcFilePath:String) : Bool
+	static function hasMedia(fileSystem:FileSystem, srcFilePath:String) : Bool
 	{
-		var doc = new XmlDocument(fileApi.getContent(Path.directory(srcFilePath) + "/DOMDocument.xml"));
+		var doc = new XmlDocument(fileSystem.getContent(Path.directory(srcFilePath) + "/DOMDocument.xml"));
 		return doc.findOne(">DOMDocument>media>*") != null;
 	}
 	

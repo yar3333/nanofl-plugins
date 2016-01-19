@@ -20,7 +20,7 @@ class JavaScriptGenerator extends CodeGenerator
 	
 	function generateClasses(dir:String, name:String)
 	{
-		fileApi.remove(dir + "/gen/base.js");
+		fileSystem.remove(dir + "/gen/base.js");
 		
 		var linkedItems = library.getInstancableItems().filter(function(item) return item.linkedClass != "");
 		if (linkedItems.length > 0)
@@ -38,7 +38,7 @@ class JavaScriptGenerator extends CodeGenerator
 				classes.push(text.join("\n"));
 				
 				var classFile = dir + "/src/" + linkedClass.split(".").join("/") + ".js";
-				if (!fileApi.exists(classFile))
+				if (!fileSystem.exists(classFile))
 				{
 					var text = [];
 					generatePack(linkedClass, text);
@@ -65,17 +65,17 @@ class JavaScriptGenerator extends CodeGenerator
 					text.push("\t\t// your code for mouse down");
 					text.push("\t}");
 					text.push("});");
-					fileApi.saveContent(classFile, text.join("\n"));
+					fileSystem.saveContent(classFile, text.join("\n"));
 				}
 			}
 			
-			fileApi.saveContent(dir + "/gen/base.js", classes.join("\n\n"));
+			fileSystem.saveContent(dir + "/gen/base.js", classes.join("\n\n"));
 		}
 	}
 	
 	function generateSoundsClass(dir:String, name:String)
 	{
-		fileApi.remove(dir + "/gen/Sounds.js");
+		fileSystem.remove(dir + "/gen/Sounds.js");
 		
 		var sounds = library.getSounds();
 		if (sounds.length > 0)
@@ -92,14 +92,14 @@ class JavaScriptGenerator extends CodeGenerator
 					.join("\n\t,")
 			);
 			text.push("}");
-			fileApi.saveContent(dir + "/gen/Sounds.js", text.join("\n"));
+			fileSystem.saveContent(dir + "/gen/Sounds.js", text.join("\n"));
 		}
 	}
 	
 	function findFiles(baseDir, relativePath:String, ext:String) : Array<String>
 	{
 		var r = [];
-		fileApi.findFiles(baseDir + "/" + relativePath, function(s) if (s.length > ext.length && s.substring(s.length - ext.length) == ext) r.push(s));
+		fileSystem.findFiles(baseDir + "/" + relativePath, function(s) if (s.length > ext.length && s.substring(s.length - ext.length) == ext) r.push(s));
 		return r.map(function(s) return s.substring(baseDir.length + 1));
 	}
 	

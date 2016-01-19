@@ -4,7 +4,7 @@ class HaxeGenerator extends CodeGenerator
 {
 	override public function generate(dir:String, name:String)
 	{
-		fileApi.remove(dir + "/gen/*");
+		fileSystem.remove(dir + "/gen/*");
 		
 		generateLibraryAndFilters(dir, name);
 		generateHtml(dir, name);
@@ -25,10 +25,10 @@ class HaxeGenerator extends CodeGenerator
 		
 		if (linkedItems.length > 0)
 		{
-			fileApi.copy(supportDir + "/languages/haxe/files", dir);
+			fileSystem.copy(supportDir + "/languages/haxe/files", dir);
 			
-			var baseMovieClipTemplate = fileApi.getContent(supportDir + "/languages/haxe/BaseMovieClip.hx");
-			var movieClipTemplate = fileApi.getContent(supportDir + "/languages/haxe/MovieClip.hx");
+			var baseMovieClipTemplate = fileSystem.getContent(supportDir + "/languages/haxe/BaseMovieClip.hx");
+			var movieClipTemplate = fileSystem.getContent(supportDir + "/languages/haxe/MovieClip.hx");
 			
 			for (item in linkedItems)
 			{
@@ -38,7 +38,7 @@ class HaxeGenerator extends CodeGenerator
 				var pack = dotPos >= 0 ? linkedClass.substring(0, dotPos) : "";
 				var klass = dotPos >= 0 ? linkedClass.substring(dotPos + 1) : linkedClass;
 				
-				fileApi.saveContent
+				fileSystem.saveContent
 				(
 					dir + "/gen/base/" + linkedClass.split(".").join("/") + ".hx",
 					baseMovieClipTemplate
@@ -49,9 +49,9 @@ class HaxeGenerator extends CodeGenerator
 				);
 				
 				var classFile = dir + "/src/" + linkedClass.split(".").join("/") + ".hx";
-				if (!fileApi.exists(classFile))
+				if (!fileSystem.exists(classFile))
 				{
-					fileApi.saveContent
+					fileSystem.saveContent
 					(
 						classFile,
 						(pack != "" ? "package " + pack + ";\n\n" : "") +
@@ -88,11 +88,11 @@ class HaxeGenerator extends CodeGenerator
 			}
 			
 			text.push("}");
-			fileApi.saveContent(classFilePath, text.join("\n"));
+			fileSystem.saveContent(classFilePath, text.join("\n"));
 		}
 		else
 		{
-			fileApi.remove(classFilePath);
+			fileSystem.remove(classFilePath);
 		}
 	}
 }

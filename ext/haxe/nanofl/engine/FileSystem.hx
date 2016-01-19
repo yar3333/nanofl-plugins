@@ -1,6 +1,6 @@
 package nanofl.engine;
 
-extern interface FileApi
+extern interface FileSystem
 {
 	function getTempDirectory() : String;
 	function getPluginsDirectory() : String;

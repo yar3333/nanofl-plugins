@@ -1,6 +1,6 @@
 import haxe.io.Path;
 import nanofl.engine.CustomProperty;
-import nanofl.engine.FileApi;
+import nanofl.engine.FileSystem;
 import nanofl.engine.libraryitems.BitmapItem;
 import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.ide.CachedFile;

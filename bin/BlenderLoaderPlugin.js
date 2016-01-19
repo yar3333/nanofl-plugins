@@ -58,14 +58,14 @@ BlenderLoaderPlugin.prototype = {
 		}
 		return r;
 	}
-	,getBlenderExePath: function(fileApi) {
+	,getBlenderExePath: function(fileSystem) {
 		var _g = 0;
 		var _g1 = ["PROGRAMW6432","PROGRAMFILES","PROGRAMFILES(X86)"];
 		while(_g < _g1.length) {
 			var pfEnvVarName = _g1[_g];
 			++_g;
-			var pf = fileApi.getEnvironmentVariable(pfEnvVarName);
-			if(pf != null && pf != "" && fileApi.exists(pf + "\\Blender\\blender.exe")) return pf + "\\Blender\\blender.exe";
+			var pf = fileSystem.getEnvironmentVariable(pfEnvVarName);
+			if(pf != null && pf != "" && fileSystem.exists(pf + "\\Blender\\blender.exe")) return pf + "\\Blender\\blender.exe";
 		}
 		return null;
 	}

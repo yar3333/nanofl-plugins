@@ -5,7 +5,7 @@ typedef PluginApi =
 	/**
 	 * FileSystem functions.
 	 */
-	var fileSystem(default, null) : nanofl.engine.FileApi;
+	var fileSystem(default, null) : nanofl.engine.FileSystem;
 	/**
 	 * Known font names.
 	 */

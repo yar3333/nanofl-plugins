@@ -382,8 +382,8 @@ haxe_io_Path.prototype = {
 	}
 	,__class__: haxe_io_Path
 };
-var ides_BaseIdeGenerator = function(fileApi,supportDir) {
-	this.fileApi = fileApi;
+var ides_BaseIdeGenerator = function(fileSystem,supportDir) {
+	this.fileSystem = fileSystem;
 	this.supportDir = supportDir;
 };
 ides_BaseIdeGenerator.__name__ = true;
@@ -392,8 +392,8 @@ ides_BaseIdeGenerator.prototype = {
 	}
 	,__class__: ides_BaseIdeGenerator
 };
-var ides_FlashDevelopGenerator = function(fileApi,supportDir) {
-	ides_BaseIdeGenerator.call(this,fileApi,supportDir);
+var ides_FlashDevelopGenerator = function(fileSystem,supportDir) {
+	ides_BaseIdeGenerator.call(this,fileSystem,supportDir);
 };
 ides_FlashDevelopGenerator.__name__ = true;
 ides_FlashDevelopGenerator.__super__ = ides_BaseIdeGenerator;
@@ -412,17 +412,17 @@ ides_FlashDevelopGenerator.prototype = $extend(ides_BaseIdeGenerator.prototype,{
 			ext = null;
 		}
 		var destProjectFile = dir + "/" + name + ext;
-		if(!this.fileApi.exists(destProjectFile)) {
-			var template = this.fileApi.getContent(this.supportDir + "/ides/FlashDevelop/" + language + "/project" + ext);
+		if(!this.fileSystem.exists(destProjectFile)) {
+			var template = this.fileSystem.getContent(this.supportDir + "/ides/FlashDevelop/" + language + "/project" + ext);
 			template = template.split("{name}").join(name);
-			this.fileApi.saveContent(destProjectFile,template);
-			this.fileApi.copy(this.supportDir + "/ides/FlashDevelop/" + language + "/files",dir);
+			this.fileSystem.saveContent(destProjectFile,template);
+			this.fileSystem.copy(this.supportDir + "/ides/FlashDevelop/" + language + "/files",dir);
 		}
 	}
 	,__class__: ides_FlashDevelopGenerator
 });
-var ides_MsVisualStudio2013Generator = function(fileApi,supportDir) {
-	ides_BaseIdeGenerator.call(this,fileApi,supportDir);
+var ides_MsVisualStudio2013Generator = function(fileSystem,supportDir) {
+	ides_BaseIdeGenerator.call(this,fileSystem,supportDir);
 };
 ides_MsVisualStudio2013Generator.__name__ = true;
 ides_MsVisualStudio2013Generator.__super__ = ides_BaseIdeGenerator;
@@ -436,11 +436,11 @@ ides_MsVisualStudio2013Generator.prototype = $extend(ides_BaseIdeGenerator.proto
 			var ext = _g1[_g];
 			++_g;
 			var destFile = dir + "/" + name + ext;
-			if(!this.fileApi.exists(destFile)) {
-				var template = this.fileApi.getContent(this.supportDir + "/ides/MsVisualStudio2013/" + language + "/project" + ext);
+			if(!this.fileSystem.exists(destFile)) {
+				var template = this.fileSystem.getContent(this.supportDir + "/ides/MsVisualStudio2013/" + language + "/project" + ext);
 				template = template.split("{name}").join(name);
 				template = template.split("{guid}").join(guid);
-				this.fileApi.saveContent(destFile,template);
+				this.fileSystem.saveContent(destFile,template);
 			}
 		}
 	}
@@ -782,8 +782,8 @@ js_html_compat_Uint8Array._subarray = function(start,end) {
 	a.byteOffset = start;
 	return a;
 };
-var languages_BaseGenerator = function(fileApi,params,documentProperties,library,textureAtlases,supportDir) {
-	this.fileApi = fileApi;
+var languages_BaseGenerator = function(fileSystem,params,documentProperties,library,textureAtlases,supportDir) {
+	this.fileSystem = fileSystem;
 	this.params = params;
 	this.documentProperties = documentProperties;
 	this.library = library;
@@ -796,8 +796,8 @@ languages_BaseGenerator.prototype = {
 	}
 	,__class__: languages_BaseGenerator
 };
-var languages_TextureAtlasGenerator = function(fileApi,params,documentProperties,library,textureAtlases,supportDir) {
-	languages_BaseGenerator.call(this,fileApi,params,documentProperties,library,textureAtlases,supportDir);
+var languages_TextureAtlasGenerator = function(fileSystem,params,documentProperties,library,textureAtlases,supportDir) {
+	languages_BaseGenerator.call(this,fileSystem,params,documentProperties,library,textureAtlases,supportDir);
 };
 languages_TextureAtlasGenerator.__name__ = true;
 languages_TextureAtlasGenerator.__super__ = languages_BaseGenerator;
@@ -811,7 +811,7 @@ languages_TextureAtlasGenerator.prototype = $extend(languages_BaseGenerator.prot
 			var textureAtlasName = $it0.next();
 			var textureAtlas = this.textureAtlases.get(textureAtlasName);
 			var imageUrl = "bin/" + textureAtlasName + ".png";
-			this.fileApi.saveBinary(dir + "/" + imageUrl,textureAtlas.imagePng);
+			this.fileSystem.saveBinary(dir + "/" + imageUrl,textureAtlas.imagePng);
 			var spriteSheetJsons = [];
 			var namePaths = Reflect.fields(textureAtlas.itemFrames);
 			namePaths.sort(Reflect.compare);
@@ -821,7 +821,7 @@ languages_TextureAtlasGenerator.prototype = $extend(languages_BaseGenerator.prot
 				++_g;
 				spriteSheetJsons.push("\t'" + namePath + "': { 'images':[ \"" + imageUrl + "\" ], 'frames':[ " + this.getSpriteSheetFrames(textureAtlas,namePath).join(", ") + " ] }");
 			}
-			this.fileApi.saveContent(dir + "/" + this.getTextureAtlasJsonUrl(textureAtlasName),"{\n" + spriteSheetJsons.join(",\n") + "\n}");
+			this.fileSystem.saveContent(dir + "/" + this.getTextureAtlasJsonUrl(textureAtlasName),"{\n" + spriteSheetJsons.join(",\n") + "\n}");
 		}
 	}
 	,getTextureAtlasJsonUrl: function(textureAtlasName) {
@@ -843,8 +843,8 @@ languages_TextureAtlasGenerator.prototype = $extend(languages_BaseGenerator.prot
 	}
 	,__class__: languages_TextureAtlasGenerator
 });
-var languages_HtmlGenerator = function(fileApi,params,documentProperties,library,textureAtlases,supportDir) {
-	languages_TextureAtlasGenerator.call(this,fileApi,params,documentProperties,library,textureAtlases,supportDir);
+var languages_HtmlGenerator = function(fileSystem,params,documentProperties,library,textureAtlases,supportDir) {
+	languages_TextureAtlasGenerator.call(this,fileSystem,params,documentProperties,library,textureAtlases,supportDir);
 	var data = library.compile("library");
 	this.serializedLibrary = data.serializedLibrary;
 	this.filterCodes = data.filterCodes;
@@ -859,12 +859,12 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 	,generateHtml: function(dir,name) {
 		var file = dir + "/" + name + ".html";
 		var defines = [];
-		if(this.fileApi.exists(file)) {
-			var text = this.fileApi.getContent(file);
+		if(this.fileSystem.exists(file)) {
+			var text = this.fileSystem.getContent(file);
 			if(text.indexOf("<!--ALLOW_REGENERATION-->") >= 0) defines.push("ALLOW_REGENERATION");
 		} else defines.push("ALLOW_REGENERATION");
 		if(HxOverrides.indexOf(defines,"ALLOW_REGENERATION",0) >= 0) {
-			var template = this.fileApi.getContent(this.supportDir + "/languages/project.html");
+			var template = this.fileSystem.getContent(this.supportDir + "/languages/project.html");
 			template = template.split("{defines}").join(defines.map(function(s3) {
 				return "<!--" + s3 + "-->\n";
 			}).join(""));
@@ -884,7 +884,7 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 				return s2.split("\n").join("\n\t\t\t");
 			}).join("\n\t\t\t\n\t\t\t");
 			template = template.split("{inlineScripts}").join(inlineScripts + (inlineScripts != ""?"\n\t\t\t\n\t\t\t":"") + this.getPlayerInitCode().split("\n").join("\n\t\t\t"));
-			this.fileApi.saveContent(file,template);
+			this.fileSystem.saveContent(file,template);
 		}
 		this.prepareLocalScriptFiles(dir);
 	}
@@ -895,7 +895,7 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 		while(_g < localScripts.length) {
 			var localScript = localScripts[_g];
 			++_g;
-			if(this.params.useLocalScripts) this.fileApi.copy(this.supportDir + "/scripts/" + localScript,dir + "/bin/" + localScript); else this.fileApi.remove(dir + "/bin/" + localScript);
+			if(this.params.useLocalScripts) this.fileSystem.copy(this.supportDir + "/scripts/" + localScript,dir + "/bin/" + localScript); else this.fileSystem.remove(dir + "/bin/" + localScript);
 		}
 	}
 	,getInlineScripts: function() {
@@ -947,15 +947,15 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 	}
 	,__class__: languages_HtmlGenerator
 });
-var languages_CodeGenerator = function(fileApi,params,documentProperties,library,textureAtlases,supportDir) {
-	languages_HtmlGenerator.call(this,fileApi,params,documentProperties,library,textureAtlases,supportDir);
+var languages_CodeGenerator = function(fileSystem,params,documentProperties,library,textureAtlases,supportDir) {
+	languages_HtmlGenerator.call(this,fileSystem,params,documentProperties,library,textureAtlases,supportDir);
 };
 languages_CodeGenerator.__name__ = true;
 languages_CodeGenerator.__super__ = languages_HtmlGenerator;
 languages_CodeGenerator.prototype = $extend(languages_HtmlGenerator.prototype,{
 	generateLibraryAndFilters: function(dir,name) {
-		this.fileApi.saveContent(dir + "/bin/library.js","var serializedLibrary = '" + this.serializedLibrary + "';");
-		if(this.filterCodes.iterator().hasNext()) this.fileApi.saveContent(dir + "/bin/filters.js",Lambda.array(this.filterCodes).join("\n\n")); else this.fileApi.remove(dir + "/bin/filters.js");
+		this.fileSystem.saveContent(dir + "/bin/library.js","var serializedLibrary = '" + this.serializedLibrary + "';");
+		if(this.filterCodes.iterator().hasNext()) this.fileSystem.saveContent(dir + "/bin/filters.js",Lambda.array(this.filterCodes).join("\n\n")); else this.fileSystem.remove(dir + "/bin/filters.js");
 	}
 	,capitalizeClassName: function(fullClassName) {
 		var n = fullClassName.lastIndexOf(".");
@@ -975,14 +975,14 @@ languages_CodeGenerator.prototype = $extend(languages_HtmlGenerator.prototype,{
 	}
 	,__class__: languages_CodeGenerator
 });
-var languages_HaxeGenerator = function(fileApi,params,documentProperties,library,textureAtlases,supportDir) {
-	languages_CodeGenerator.call(this,fileApi,params,documentProperties,library,textureAtlases,supportDir);
+var languages_HaxeGenerator = function(fileSystem,params,documentProperties,library,textureAtlases,supportDir) {
+	languages_CodeGenerator.call(this,fileSystem,params,documentProperties,library,textureAtlases,supportDir);
 };
 languages_HaxeGenerator.__name__ = true;
 languages_HaxeGenerator.__super__ = languages_CodeGenerator;
 languages_HaxeGenerator.prototype = $extend(languages_CodeGenerator.prototype,{
 	generate: function(dir,name) {
-		this.fileApi.remove(dir + "/gen/*");
+		this.fileSystem.remove(dir + "/gen/*");
 		this.generateLibraryAndFilters(dir,name);
 		this.generateHtml(dir,name);
 		this.generateClasses(dir,name);
@@ -997,9 +997,9 @@ languages_HaxeGenerator.prototype = $extend(languages_CodeGenerator.prototype,{
 			return item.linkedClass != "";
 		});
 		if(linkedItems.length > 0) {
-			this.fileApi.copy(this.supportDir + "/languages/haxe/files",dir);
-			var baseMovieClipTemplate = this.fileApi.getContent(this.supportDir + "/languages/haxe/BaseMovieClip.hx");
-			var movieClipTemplate = this.fileApi.getContent(this.supportDir + "/languages/haxe/MovieClip.hx");
+			this.fileSystem.copy(this.supportDir + "/languages/haxe/files",dir);
+			var baseMovieClipTemplate = this.fileSystem.getContent(this.supportDir + "/languages/haxe/BaseMovieClip.hx");
+			var movieClipTemplate = this.fileSystem.getContent(this.supportDir + "/languages/haxe/MovieClip.hx");
 			var _g = 0;
 			while(_g < linkedItems.length) {
 				var item1 = linkedItems[_g];
@@ -1010,9 +1010,9 @@ languages_HaxeGenerator.prototype = $extend(languages_CodeGenerator.prototype,{
 				if(dotPos >= 0) pack = linkedClass.substring(0,dotPos); else pack = "";
 				var klass;
 				if(dotPos >= 0) klass = linkedClass.substring(dotPos + 1); else klass = linkedClass;
-				this.fileApi.saveContent(dir + "/gen/base/" + linkedClass.split(".").join("/") + ".hx",baseMovieClipTemplate.split("{pack}").join("base" + (pack != ""?"." + pack:"")).split("{klass}").join(klass).split("{base}").join(item1.getDisplayObjectClassName()).split("{namePath}").join(item1.namePath));
+				this.fileSystem.saveContent(dir + "/gen/base/" + linkedClass.split(".").join("/") + ".hx",baseMovieClipTemplate.split("{pack}").join("base" + (pack != ""?"." + pack:"")).split("{klass}").join(klass).split("{base}").join(item1.getDisplayObjectClassName()).split("{namePath}").join(item1.namePath));
 				var classFile = dir + "/src/" + linkedClass.split(".").join("/") + ".hx";
-				if(!this.fileApi.exists(classFile)) this.fileApi.saveContent(classFile,(pack != ""?"package " + pack + ";\n\n":"") + movieClipTemplate.split("{klass}").join(klass).split("{base}").join("base." + linkedClass));
+				if(!this.fileSystem.exists(classFile)) this.fileSystem.saveContent(classFile,(pack != ""?"package " + pack + ";\n\n":"") + movieClipTemplate.split("{klass}").join(klass).split("{base}").join("base." + linkedClass));
 			}
 		}
 	}
@@ -1034,13 +1034,13 @@ languages_HaxeGenerator.prototype = $extend(languages_CodeGenerator.prototype,{
 				if(sound.linkage != "" && sound.linkage != null) text.push("\tpublic static function " + sound.linkage + "(?options:SoundOptions) : AbstractSoundInstance return Sound.play(\"" + sound.linkage + "\", options);");
 			}
 			text.push("}");
-			this.fileApi.saveContent(classFilePath,text.join("\n"));
-		} else this.fileApi.remove(classFilePath);
+			this.fileSystem.saveContent(classFilePath,text.join("\n"));
+		} else this.fileSystem.remove(classFilePath);
 	}
 	,__class__: languages_HaxeGenerator
 });
-var languages_JavaScriptGenerator = function(fileApi,params,documentProperties,library,textureAtlases,supportDir) {
-	languages_CodeGenerator.call(this,fileApi,params,documentProperties,library,textureAtlases,supportDir);
+var languages_JavaScriptGenerator = function(fileSystem,params,documentProperties,library,textureAtlases,supportDir) {
+	languages_CodeGenerator.call(this,fileSystem,params,documentProperties,library,textureAtlases,supportDir);
 };
 languages_JavaScriptGenerator.__name__ = true;
 languages_JavaScriptGenerator.__super__ = languages_CodeGenerator;
@@ -1056,7 +1056,7 @@ languages_JavaScriptGenerator.prototype = $extend(languages_CodeGenerator.protot
 		return languages_CodeGenerator.prototype.getScriptUrls.call(this,dir,name).concat(this.findFiles(dir,"gen",".js")).concat(this.findFiles(dir,"src",".js"));
 	}
 	,generateClasses: function(dir,name) {
-		this.fileApi.remove(dir + "/gen/base.js");
+		this.fileSystem.remove(dir + "/gen/base.js");
 		var linkedItems = this.library.getInstancableItems().filter(function(item) {
 			return item.linkedClass != "";
 		});
@@ -1073,7 +1073,7 @@ languages_JavaScriptGenerator.prototype = $extend(languages_CodeGenerator.protot
 				text.push("base." + linkedClass + ".prototype = $extend(" + item1.getDisplayObjectClassName() + ".prototype, {});");
 				classes.push(text.join("\n"));
 				var classFile = dir + "/src/" + linkedClass.split(".").join("/") + ".js";
-				if(!this.fileApi.exists(classFile)) {
+				if(!this.fileSystem.exists(classFile)) {
 					var text1 = [];
 					this.generatePack(linkedClass,text1);
 					text1.push("function " + linkedClass + "()");
@@ -1099,14 +1099,14 @@ languages_JavaScriptGenerator.prototype = $extend(languages_CodeGenerator.protot
 					text1.push("\t\t// your code for mouse down");
 					text1.push("\t}");
 					text1.push("});");
-					this.fileApi.saveContent(classFile,text1.join("\n"));
+					this.fileSystem.saveContent(classFile,text1.join("\n"));
 				}
 			}
-			this.fileApi.saveContent(dir + "/gen/base.js",classes.join("\n\n"));
+			this.fileSystem.saveContent(dir + "/gen/base.js",classes.join("\n\n"));
 		}
 	}
 	,generateSoundsClass: function(dir,name) {
-		this.fileApi.remove(dir + "/gen/Sounds.js");
+		this.fileSystem.remove(dir + "/gen/Sounds.js");
 		var sounds = this.library.getSounds();
 		if(sounds.length > 0) {
 			var text = [];
@@ -1119,12 +1119,12 @@ languages_JavaScriptGenerator.prototype = $extend(languages_CodeGenerator.protot
 				return sound1.linkage + ": function(options) { return Sound.play(\"" + sound1.linkage + "\", options);";
 			}).join("\n\t,"));
 			text.push("}");
-			this.fileApi.saveContent(dir + "/gen/Sounds.js",text.join("\n"));
+			this.fileSystem.saveContent(dir + "/gen/Sounds.js",text.join("\n"));
 		}
 	}
 	,findFiles: function(baseDir,relativePath,ext) {
 		var r = [];
-		this.fileApi.findFiles(baseDir + "/" + relativePath,function(s) {
+		this.fileSystem.findFiles(baseDir + "/" + relativePath,function(s) {
 			if(s.length > ext.length && s.substring(s.length - ext.length) == ext) r.push(s);
 		});
 		return r.map(function(s1) {
@@ -1144,8 +1144,8 @@ languages_JavaScriptGenerator.prototype = $extend(languages_CodeGenerator.protot
 	}
 	,__class__: languages_JavaScriptGenerator
 });
-var languages_TypeScriptGenerator = function(fileApi,params,documentProperties,library,textureAtlases,supportDir) {
-	languages_CodeGenerator.call(this,fileApi,params,documentProperties,library,textureAtlases,supportDir);
+var languages_TypeScriptGenerator = function(fileSystem,params,documentProperties,library,textureAtlases,supportDir) {
+	languages_CodeGenerator.call(this,fileSystem,params,documentProperties,library,textureAtlases,supportDir);
 };
 languages_TypeScriptGenerator.__name__ = true;
 languages_TypeScriptGenerator.__super__ = languages_CodeGenerator;
@@ -1164,11 +1164,11 @@ languages_TypeScriptGenerator.prototype = $extend(languages_CodeGenerator.protot
 		var linkedItems = this.library.getInstancableItems().filter(function(item) {
 			return item.linkedClass != "";
 		});
-		this.fileApi.remove(dir + "/gen/*");
+		this.fileSystem.remove(dir + "/gen/*");
 		if(linkedItems.length > 0) {
-			this.fileApi.copy(this.supportDir + "/languages/typescript/files",dir);
-			var baseMovieClipTemplate = this.fileApi.getContent(this.supportDir + "/languages/typescript/BaseMovieClip.ts");
-			var movieClipTemplate = this.fileApi.getContent(this.supportDir + "/languages/typescript/MovieClip.ts");
+			this.fileSystem.copy(this.supportDir + "/languages/typescript/files",dir);
+			var baseMovieClipTemplate = this.fileSystem.getContent(this.supportDir + "/languages/typescript/BaseMovieClip.ts");
+			var movieClipTemplate = this.fileSystem.getContent(this.supportDir + "/languages/typescript/MovieClip.ts");
 			var _g = 0;
 			while(_g < linkedItems.length) {
 				var item1 = linkedItems[_g];
@@ -1180,14 +1180,14 @@ languages_TypeScriptGenerator.prototype = $extend(languages_CodeGenerator.protot
 				var klass;
 				if(dotPos >= 0) klass = linkedClass.substring(dotPos + 1); else klass = linkedClass;
 				var text = baseMovieClipTemplate.split("{pack}").join("base" + (pack != ""?"." + pack:"")).split("{klass}").join(klass).split("{base}").join(item1.getDisplayObjectClassName()).split("{namePath}").join(item1.namePath);
-				this.fileApi.saveContent(dir + "/gen/base/" + linkedClass.split(".").join("/") + ".ts",text);
+				this.fileSystem.saveContent(dir + "/gen/base/" + linkedClass.split(".").join("/") + ".ts",text);
 				var classFile = dir + "/src/" + linkedClass.split(".").join("/") + ".ts";
-				if(!this.fileApi.exists(classFile)) {
+				if(!this.fileSystem.exists(classFile)) {
 					var text1 = "";
 					if(pack != "") text1 += "module " + pack + "\n{\n";
 					text1 += movieClipTemplate.split("{klass}").join(klass).split("{base}").join("base." + linkedClass);
 					if(pack != "") text1 += "\n}";
-					this.fileApi.saveContent(classFile,text1);
+					this.fileSystem.saveContent(classFile,text1);
 				}
 			}
 		}
@@ -1209,8 +1209,8 @@ languages_TypeScriptGenerator.prototype = $extend(languages_CodeGenerator.protot
 				if(sound.linkage != "" && sound.linkage != null) text.push("\tpublic static " + sound.linkage + "(options?:SoundOptions) : AbstractSoundInstance { return createjs.Sound.play(\"" + sound.linkage + "\", options); }");
 			}
 			text.push("}");
-			this.fileApi.saveContent(classFilePath,text.join("\n"));
-		} else this.fileApi.remove(classFilePath);
+			this.fileSystem.saveContent(classFilePath,text.join("\n"));
+		} else this.fileSystem.remove(classFilePath);
 	}
 	,__class__: languages_TypeScriptGenerator
 });

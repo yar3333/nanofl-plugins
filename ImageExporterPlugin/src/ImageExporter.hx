@@ -2,12 +2,12 @@ import haxe.crypto.Base64;
 import js.html.CanvasElement;
 import nanofl.DisplayObjectTools;
 import nanofl.engine.DocumentProperties;
-import nanofl.engine.FileApi;
+import nanofl.engine.FileSystem;
 import nanofl.engine.Library;
 
 class ImageExporter
 {
-	public static function run(type:String, fileApi:FileApi, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
+	public static function run(type:String, fileSystem:FileSystem, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
 	{
 		var instance = library.getSceneInstance();
 		var scene : createjs.DisplayObject = instance.createDisplayObject(null);
@@ -23,7 +23,7 @@ class ImageExporter
 		scene.draw(ctx);
 		
 		var data = canvas.toDataURL(type).split(",")[1];
-		fileApi.saveBinary(destFilePath, Base64.decode(data));
+		fileSystem.saveBinary(destFilePath, Base64.decode(data));
 		
 		return true;
 	}

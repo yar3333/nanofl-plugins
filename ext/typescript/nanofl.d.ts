@@ -314,7 +314,7 @@ declare module nanofl.ide
 		createNewEmptyDocument(callb?:(arg:nanofl.ide.Document) => void) : void;
 		document : nanofl.ide.Document;
 		dragAndDrop : nanofl.ide.draganddrop.DragAndDrop;
-		fileSystem : nanofl.engine.FileApi;
+		fileSystem : nanofl.engine.FileSystem;
 		fonts : string[];
 		importDocument(path?:string, plugin?:nanofl.ide.plugins.IImporterPlugin, callb?:(arg:nanofl.ide.Document) => void) : void;
 		keyboard : nanofl.ide.keyboard.Keyboard;
@@ -329,7 +329,7 @@ declare module nanofl.ide
 	
 	export class CachedFile
 	{
-		constructor(fileApi:nanofl.engine.FileApi, libraryDir:string, path:string);
+		constructor(fileSystem:nanofl.engine.FileSystem, libraryDir:string, path:string);
 		text : string;
 		xml : htmlparser.HtmlNodeElement;
 		json : any;
@@ -699,11 +699,11 @@ declare module nanofl.ide
 		static loadDocument(api:nanofl.ide.plugins.PluginApi, path:string, lastModified:Date) : { lastModified : Date; library : nanofl.engine.Library; properties : nanofl.engine.DocumentProperties; };
 		static saveDocument(api:nanofl.ide.plugins.PluginApi, path:string, properties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>, fileActions:nanofl.ide.FileAction[]) : { generatorError : string; lastModified : Date; };
 		static publishDocument(api:nanofl.ide.plugins.PluginApi, path:string, originalProperties:nanofl.engine.DocumentProperties, originalLibrary:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : { message : string; success : boolean; };
-		static copyLibraryFiles(fileApi:nanofl.engine.FileApi, srcLibraryDir:string, relativePaths:string[], destLibraryDir:string) : void;
-		static renameFiles(fileApi:nanofl.engine.FileApi, files:{ src : string; dest : string; }[]) : void;
-		static remove(fileApi:nanofl.engine.FileApi, paths:string[]) : void;
-		static loadFilesFromClipboard(fileApi:nanofl.engine.FileApi, destDir:string) : boolean;
-		static saveFilesIntoClipboard(fileApi:nanofl.engine.FileApi, baseDir:string, relativePaths:string[]) : void;
+		static copyLibraryFiles(fileSystem:nanofl.engine.FileSystem, srcLibraryDir:string, relativePaths:string[], destLibraryDir:string) : void;
+		static renameFiles(fileSystem:nanofl.engine.FileSystem, files:{ src : string; dest : string; }[]) : void;
+		static remove(fileSystem:nanofl.engine.FileSystem, paths:string[]) : void;
+		static loadFilesFromClipboard(fileSystem:nanofl.engine.FileSystem, destDir:string) : boolean;
+		static saveFilesIntoClipboard(fileSystem:nanofl.engine.FileSystem, baseDir:string, relativePaths:string[]) : void;
 	}
 	
 	export interface ServerUtils
@@ -731,38 +731,6 @@ declare module nanofl.ide
 		showRoundRadiusPane() : nanofl.ide.ShapePropertiesOptions;
 		disallowNoneStroke() : nanofl.ide.ShapePropertiesOptions;
 		disallowNoneFill() : nanofl.ide.ShapePropertiesOptions;
-	}
-	
-	export class XpcomFileApi implements nanofl.engine.FileApi
-	{
-		constructor();
-		getTempDirectory() : string;
-		getPluginsDirectory() : string;
-		getToolPath(windowsRelativePath:string, linuxCommand:string) : string;
-		createDirectory(path:string) : void;
-		readDirectory(path:string) : string[];
-		exists(path:string) : boolean;
-		getContent(filePath:string) : string;
-		saveContent(filePath:string, text:string, append?:boolean) : void;
-		getBinary(filePath:string) : nanofl.engine.Bytes;
-		saveBinary(filePath:string, data:nanofl.engine.Bytes) : void;
-		isDirectory(path:string) : boolean;
-		run(filePath:string, args:string[], blocking:boolean, directory?:string) : number;
-		runCaptured(filePath:string, args:string[], input?:string, directory?:string) : { error : string; exitCode : number; output : string; };
-		copy(srcPath:string, destPath:string) : boolean;
-		syncDirectory(src:string, dest:string) : void;
-		rename(srcPath:string, destPath:string) : void;
-		remove(path:string) : void;
-		findFiles(dirPath:string, onFile?:(arg:string) => void, onDir?:(arg:string) => boolean) : void;
-		getPluginPaths() : string[];
-		nativePath(path:string, makeAbsolute?:boolean) : string;
-		getLastModified(path:string) : Date;
-		getSize(path:string) : number;
-		zip(srcDir:string, destZip:string) : boolean;
-		unzip(srcZip:string, destDir:string) : boolean;
-		getEnvironmentVariable(name:string) : string;
-		convertImage(srcFile:string, destFile:string, quality:number) : boolean;
-		convertAudio(srcFile:string, destFile:string, quality:number) : boolean;
 	}
 }
 
@@ -2149,12 +2117,12 @@ declare module nanofl.engine.libraryitems
 		getIcon() : string;
 		clone() : nanofl.engine.libraryitems.LibraryItem;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
-		save(fileApi:nanofl.engine.FileApi) : void;
+		save(fileSystem:nanofl.engine.FileSystem) : void;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		getFilePathToRunWithEditor() : string;
 		getLibraryFilePaths() : string[];
 		getOptimized(optimizations:nanofl.ide.PublishOptimizations) : nanofl.engine.libraryitems.LibraryItem;
-		generateOptimizedFiles(fileApi:nanofl.engine.FileApi, optimizations:nanofl.ide.PublishOptimizations, destDir:string) : { relPath : string; baseDir : string; }[];
+		generateOptimizedFiles(fileSystem:nanofl.engine.FileSystem, optimizations:nanofl.ide.PublishOptimizations, destDir:string) : { relPath : string; baseDir : string; }[];
 		preload(ready:() => void) : void;
 		duplicate(newNamePath:string) : nanofl.engine.libraryitems.LibraryItem;
 		remove() : void;
@@ -2184,7 +2152,7 @@ declare module nanofl.engine.libraryitems
 		getType() : string;
 		clone() : nanofl.engine.libraryitems.BitmapItem;
 		getIcon() : string;
-		save(fileApi:nanofl.engine.FileApi) : void;
+		save(fileSystem:nanofl.engine.FileSystem) : void;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		getUrl() : string;
@@ -2196,7 +2164,7 @@ declare module nanofl.engine.libraryitems
 		getFilePathToRunWithEditor() : string;
 		getLibraryFilePaths() : string[];
 		getOptimized(optimizations:nanofl.ide.PublishOptimizations) : nanofl.engine.libraryitems.BitmapItem;
-		generateOptimizedFiles(fileApi:nanofl.engine.FileApi, optimizations:nanofl.ide.PublishOptimizations, destDir:string) : { relPath : string; baseDir : string; }[];
+		generateOptimizedFiles(fileSystem:nanofl.engine.FileSystem, optimizations:nanofl.ide.PublishOptimizations, destDir:string) : { relPath : string; baseDir : string; }[];
 		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 		getUsedSymbolNamePaths() : string[];
 		toString() : string;
@@ -2208,7 +2176,7 @@ declare module nanofl.engine.libraryitems
 		constructor(namePath:string);
 		opened : boolean;
 		clone() : nanofl.engine.libraryitems.FolderItem;
-		save(fileApi:nanofl.engine.FileApi) : void;
+		save(fileSystem:nanofl.engine.FileSystem) : void;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		getIcon() : string;
 		toString() : string;
@@ -2224,12 +2192,12 @@ declare module nanofl.engine.libraryitems
 		getType() : string;
 		clone() : nanofl.engine.libraryitems.FontItem;
 		getIcon() : string;
-		save(fileApi:nanofl.engine.FileApi) : void;
+		save(fileSystem:nanofl.engine.FileSystem) : void;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		toFont() : nanofl.engine.Font;
 		preload(ready:() => void) : void;
 		addVariant(v:nanofl.engine.FontVariant) : void;
-		generateOptimizedFiles(fileApi:nanofl.engine.FileApi, optimizations:nanofl.ide.PublishOptimizations, destDir:string) : { relPath : string; baseDir : string; }[];
+		generateOptimizedFiles(fileSystem:nanofl.engine.FileSystem, optimizations:nanofl.ide.PublishOptimizations, destDir:string) : { relPath : string; baseDir : string; }[];
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 		toString() : string;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.FontItem;
@@ -2246,7 +2214,7 @@ declare module nanofl.engine.libraryitems
 		getType() : string;
 		clone() : nanofl.engine.libraryitems.MeshItem;
 		getIcon() : string;
-		save(fileApi:nanofl.engine.FileApi) : void;
+		save(fileSystem:nanofl.engine.FileSystem) : void;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		getUrl() : string;
@@ -2259,7 +2227,7 @@ declare module nanofl.engine.libraryitems
 		getLibraryFilePaths() : string[];
 		getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 		getUsedSymbolNamePaths() : string[];
-		generateOptimizedFiles(fileApi:nanofl.engine.FileApi, optimizations:nanofl.ide.PublishOptimizations, destDir:string) : { relPath : string; baseDir : string; }[];
+		generateOptimizedFiles(fileSystem:nanofl.engine.FileSystem, optimizations:nanofl.ide.PublishOptimizations, destDir:string) : { relPath : string; baseDir : string; }[];
 		toString() : string;
 		static load(api:nanofl.ide.plugins.PluginApi, relFilePath:string, originalExt:string, files:Map<string, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.MeshItem;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MeshItem;
@@ -2286,7 +2254,7 @@ declare module nanofl.engine.libraryitems
 		removeLayerWithChildren(index:number) : nanofl.engine.Layer[];
 		getFramesAt(frameIndex:number) : nanofl.engine.Frame[];
 		getIcon() : string;
-		save(fileApi:nanofl.engine.FileApi) : void;
+		save(fileSystem:nanofl.engine.FileSystem) : void;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		getTotalFrames() : number;
@@ -2312,11 +2280,11 @@ declare module nanofl.engine.libraryitems
 		getType() : string;
 		clone() : nanofl.engine.libraryitems.SoundItem;
 		getIcon() : string;
-		save(fileApi:nanofl.engine.FileApi) : void;
+		save(fileSystem:nanofl.engine.FileSystem) : void;
 		saveToXml(out:htmlparser.XmlBuilder) : void;
 		loadProperties(xml:htmlparser.HtmlNodeElement) : void;
 		getUrl() : string;
-		generateOptimizedFiles(fileApi:nanofl.engine.FileApi, optimizations:nanofl.ide.PublishOptimizations, destDir:string) : { relPath : string; baseDir : string; }[];
+		generateOptimizedFiles(fileSystem:nanofl.engine.FileSystem, optimizations:nanofl.ide.PublishOptimizations, destDir:string) : { relPath : string; baseDir : string; }[];
 		equ(item:nanofl.engine.libraryitems.LibraryItem) : boolean;
 		toString() : string;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.SoundItem;
@@ -9613,7 +9581,7 @@ declare module nanofl.ide.plugins
 		/**
 		 * FileSystem functions.
 		 */
-		fileSystem : nanofl.engine.FileApi;
+		fileSystem : nanofl.engine.FileSystem;
 		/**
 		 * Known font names.
 		 */
@@ -9884,16 +9852,16 @@ declare module nanofl.engine
 		useTextureAtlases : boolean;
 		textureAtlases : Map<string, nanofl.ide.textureatlas.TextureAtlasParams>;
 		publishSettings : nanofl.ide.plugins.PublishSetting[];
-		save(fileApi:nanofl.engine.FileApi, filePath:string) : void;
+		save(fileSystem:nanofl.engine.FileSystem, filePath:string) : void;
 		getGeneratorAsString() : string;
 		equ(p:nanofl.engine.DocumentProperties) : boolean;
 		clone() : nanofl.engine.DocumentProperties;
 		getOptimized(optimizations:nanofl.ide.PublishOptimizations) : nanofl.engine.DocumentProperties;
-		static load(filePath:string, fileApi:nanofl.engine.FileApi) : nanofl.engine.DocumentProperties;
+		static load(filePath:string, fileSystem:nanofl.engine.FileSystem) : nanofl.engine.DocumentProperties;
 		static parseGenerator(s:string) : { name : string; params : any; };
 	}
 	
-	export interface FileApi
+	export interface FileSystem
 	{
 		getTempDirectory() : string;
 		getPluginsDirectory() : string;
@@ -10129,7 +10097,7 @@ declare module nanofl.engine
 		getFonts() : nanofl.engine.Font[];
 		getItem(namePath:string) : nanofl.engine.libraryitems.LibraryItem;
 		hasItem(namePath:string) : boolean;
-		save(fileApi:nanofl.engine.FileApi) : void;
+		save(fileSystem:nanofl.engine.FileSystem) : void;
 		realUrl(url:string) : string;
 		getItems(includeScene?:boolean) : nanofl.engine.libraryitems.LibraryItem[];
 		preload(ready:() => void) : void;

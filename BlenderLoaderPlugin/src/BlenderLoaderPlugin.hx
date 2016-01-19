@@ -1,7 +1,7 @@
 import haxe.io.Path;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.Debug.console;
-import nanofl.engine.FileApi;
+import nanofl.engine.FileSystem;
 import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.engine.libraryitems.MeshItem;
 import nanofl.engine.Plugins;
@@ -93,12 +93,12 @@ class BlenderLoaderPlugin implements ILoaderPlugin
 		return r; 
 	}
 	
-	function getBlenderExePath(fileApi:FileApi)
+	function getBlenderExePath(fileSystem:FileSystem)
 	{
 		for (pfEnvVarName in [ "PROGRAMW6432", "PROGRAMFILES", "PROGRAMFILES(X86)" ])
 		{
-			var pf = fileApi.getEnvironmentVariable(pfEnvVarName);
-			if (pf != null && pf != "" && fileApi.exists(pf + "\\Blender\\blender.exe"))
+			var pf = fileSystem.getEnvironmentVariable(pfEnvVarName);
+			if (pf != null && pf != "" && fileSystem.exists(pf + "\\Blender\\blender.exe"))
 			{
 				return pf + "\\Blender\\blender.exe";
 			}

@@ -2,14 +2,14 @@ import haxe.crypto.Base64;
 import haxe.io.Path;
 import js.html.CanvasElement;
 import nanofl.engine.DocumentProperties;
-import nanofl.engine.FileApi;
+import nanofl.engine.FileSystem;
 import nanofl.engine.Library;
 import nanofl.MovieClip;
 using StringTools;
 
 class ImageSequenceExporter
 {
-	public static function run(type:String, fileApi:FileApi, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
+	public static function run(type:String, fileSystem:FileSystem, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
 	{
 		var totalFrames = library.getSceneItem().getTotalFrames();
 		var digits = Std.string(totalFrames - 1).length;
@@ -32,7 +32,7 @@ class ImageSequenceExporter
 			scene.draw(ctx);
 			
 			var data = canvas.toDataURL(type).split(",")[1];
-			fileApi.saveBinary(baseDestFilePath + Std.string(i).lpad("0", digits) + ext, Base64.decode(data));
+			fileSystem.saveBinary(baseDestFilePath + Std.string(i).lpad("0", digits) + ext, Base64.decode(data));
 		}
 		
 		return true;

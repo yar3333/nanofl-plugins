@@ -9,7 +9,7 @@ extern class BitmapItem extends nanofl.engine.libraryitems.InstancableItem imple
 	override function getType() : String;
 	override function clone() : nanofl.engine.libraryitems.BitmapItem;
 	override function getIcon() : String;
-	override function save(fileApi:nanofl.engine.FileApi) : Void;
+	override function save(fileSystem:nanofl.engine.FileSystem) : Void;
 	override function saveToXml(out:htmlparser.XmlBuilder) : Void;
 	override function loadProperties(xml:htmlparser.HtmlNodeElement) : Void;
 	function getUrl() : String;
@@ -21,7 +21,7 @@ extern class BitmapItem extends nanofl.engine.libraryitems.InstancableItem imple
 	override function getFilePathToRunWithEditor() : String;
 	override function getLibraryFilePaths() : Array<String>;
 	override function getOptimized(optimizations:nanofl.ide.PublishOptimizations) : nanofl.engine.libraryitems.BitmapItem;
-	override function generateOptimizedFiles(fileApi:nanofl.engine.FileApi, optimizations:nanofl.ide.PublishOptimizations, destDir:String) : Array<{ var relPath : String; var baseDir : String; }>;
+	override function generateOptimizedFiles(fileSystem:nanofl.engine.FileSystem, optimizations:nanofl.ide.PublishOptimizations, destDir:String) : Array<{ var relPath : String; var baseDir : String; }>;
 	override function getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 	override function getUsedSymbolNamePaths() : Array<String>;
 	override function toString() : String;

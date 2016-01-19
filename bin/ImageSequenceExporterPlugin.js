@@ -24,7 +24,7 @@ HxOverrides.substr = function(s,pos,len) {
 };
 var ImageSequenceExporter = function() { };
 ImageSequenceExporter.__name__ = true;
-ImageSequenceExporter.run = function(type,fileApi,destFilePath,documentProperties,library) {
+ImageSequenceExporter.run = function(type,fileSystem,destFilePath,documentProperties,library) {
 	var totalFrames = library.getSceneItem().getTotalFrames();
 	var digits = Std.string(totalFrames - 1).length;
 	var canvas = window.document.createElement("canvas");
@@ -41,7 +41,7 @@ ImageSequenceExporter.run = function(type,fileApi,destFilePath,documentPropertie
 		ctx.fillRect(0,0,documentProperties.width,documentProperties.height);
 		scene.draw(ctx);
 		var data = canvas.toDataURL(type).split(",")[1];
-		fileApi.saveBinary(baseDestFilePath + StringTools.lpad(i == null?"null":"" + i,"0",digits) + ext,haxe_crypto_Base64.decode(data));
+		fileSystem.saveBinary(baseDestFilePath + StringTools.lpad(i == null?"null":"" + i,"0",digits) + ext,haxe_crypto_Base64.decode(data));
 	}
 	return true;
 };

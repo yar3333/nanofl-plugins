@@ -72,13 +72,13 @@ SimpleHtmlPublisherPlugin.prototype = {
 			api.fileSystem.copy(file1.baseDir + "/" + file1.relPath,outPath + "/" + file1.relPath);
 		}
 	}
-	,removeDirectoryContent: function(fileApi,dir) {
+	,removeDirectoryContent: function(fileSystem,dir) {
 		var _g = 0;
-		var _g1 = fileApi.readDirectory(dir);
+		var _g1 = fileSystem.readDirectory(dir);
 		while(_g < _g1.length) {
 			var file = _g1[_g];
 			++_g;
-			fileApi.remove(dir + "/" + file);
+			fileSystem.remove(dir + "/" + file);
 		}
 	}
 	,__class__: SimpleHtmlPublisherPlugin

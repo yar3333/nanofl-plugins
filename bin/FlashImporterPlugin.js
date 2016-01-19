@@ -396,8 +396,8 @@ flashimport_DocumentImporter.process = function(api,importMediaScriptTemplate,sr
 		if(success) flashimport_DocumentImporter.importXmlFiles(api,srcFilePath,destDocProp,destLibrary,callb); else callb(false);
 	}); else flashimport_DocumentImporter.importXmlFiles(api,srcFilePath,destDocProp,destLibrary,callb);
 };
-flashimport_DocumentImporter.hasMedia = function(fileApi,srcFilePath) {
-	var doc = new htmlparser.XmlDocument(fileApi.getContent(haxe_io_Path.directory(srcFilePath) + "/DOMDocument.xml"));
+flashimport_DocumentImporter.hasMedia = function(fileSystem,srcFilePath) {
+	var doc = new htmlparser.XmlDocument(fileSystem.getContent(haxe_io_Path.directory(srcFilePath) + "/DOMDocument.xml"));
 	return htmlparser.HtmlParserTools.findOne(doc,">DOMDocument>media>*") != null;
 };
 flashimport_DocumentImporter.importMedia = function(api,importMediaScriptTemplate,srcFilePath,destFilePath,destLibrary,callb) {
@@ -828,7 +828,7 @@ var flashimport_SymbolLoader = function(api,doc,srcLibDir,library) {
 	this.generatedAutoIDs = [];
 	this.morphingNotSupported = [];
 	this.fontMap = new haxe_ds_StringMap();
-	this.fileApi = api.fileSystem;
+	this.fileSystem = api.fileSystem;
 	this.doc = doc;
 	this.srcLibDir = srcLibDir;
 	this.library = library;
@@ -842,7 +842,7 @@ flashimport_SymbolLoader.prototype = {
 		var namePath = flashimport_PathTools.unescape(haxe_io_Path.withoutExtension(href));
 		if(!this.library.hasItem(namePath)) {
 			flashimport_SymbolLoader.log("Load item \"" + namePath + "\"",{ fileName : "SymbolLoader.hx", lineNumber : 78, className : "flashimport.SymbolLoader", methodName : "loadFromFile"});
-			if(this.fileApi.exists(this.srcLibDir + "/" + href)) this.loadFromXml(namePath,new htmlparser.XmlDocument(this.fileApi.getContent(this.srcLibDir + "/" + href)));
+			if(this.fileSystem.exists(this.srcLibDir + "/" + href)) this.loadFromXml(namePath,new htmlparser.XmlDocument(this.fileSystem.getContent(this.srcLibDir + "/" + href)));
 		}
 	}
 	,loadFromXml: function(namePath,src) {

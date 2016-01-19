@@ -25,7 +25,7 @@ extern class Library
 	function getFonts() : Array<nanofl.engine.Font>;
 	function getItem(namePath:String) : nanofl.engine.libraryitems.LibraryItem;
 	function hasItem(namePath:String) : Bool;
-	function save(fileApi:nanofl.engine.FileApi) : Void;
+	function save(fileSystem:nanofl.engine.FileSystem) : Void;
 	function realUrl(url:String) : String;
 	function getItems(?includeScene:Bool) : Array<nanofl.engine.libraryitems.LibraryItem>;
 	function preload(ready:Void -> Void) : Void;

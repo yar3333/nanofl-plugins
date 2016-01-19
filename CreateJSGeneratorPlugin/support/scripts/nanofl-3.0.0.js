@@ -4641,10 +4641,10 @@ nanofl_engine_CustomPropertiesTools.resetToNeutral = function(params,properties)
 var nanofl_engine_Debug = function() { };
 $hxClasses["nanofl.engine.Debug"] = nanofl_engine_Debug;
 nanofl_engine_Debug.__name__ = ["nanofl","engine","Debug"];
-var nanofl_engine_FileApi = function() { };
-$hxClasses["nanofl.engine.FileApi"] = nanofl_engine_FileApi;
-nanofl_engine_FileApi.__name__ = ["nanofl","engine","FileApi"];
-nanofl_engine_FileApi.prototype = {
+var nanofl_engine_FileSystem = function() { };
+$hxClasses["nanofl.engine.FileSystem"] = nanofl_engine_FileSystem;
+nanofl_engine_FileSystem.__name__ = ["nanofl","engine","FileSystem"];
+nanofl_engine_FileSystem.prototype = {
 	getTempDirectory: null
 	,getPluginsDirectory: null
 	,getToolPath: null
@@ -4672,7 +4672,7 @@ nanofl_engine_FileApi.prototype = {
 	,convertImage: null
 	,convertAudio: null
 	,nativePath: null
-	,__class__: nanofl_engine_FileApi
+	,__class__: nanofl_engine_FileSystem
 };
 var nanofl_engine_FilterDef = function(name,params) {
 	var _g = this;
@@ -5595,12 +5595,12 @@ nanofl_engine_Library.prototype = {
 	,hasItem: function(namePath) {
 		return this.items.exists(namePath);
 	}
-	,save: function(fileApi) {
+	,save: function(fileSystem) {
 		stdlib_Debug.assert(this.libraryDir != null,null,{ fileName : "Library.hx", lineNumber : 339, className : "nanofl.engine.Library", methodName : "save"});
 		var $it0 = this.items.iterator();
 		while( $it0.hasNext() ) {
 			var item = $it0.next();
-			item.save(fileApi);
+			item.save(fileSystem);
 		}
 	}
 	,realUrl: function(url) {
@@ -12136,7 +12136,7 @@ nanofl_engine_libraryitems_LibraryItem.prototype = {
 	}
 	,saveProperties: function(xml) {
 	}
-	,save: function(fileApi) {
+	,save: function(fileSystem) {
 	}
 	,hasXmlToSave: function() {
 		return false;
@@ -12277,13 +12277,13 @@ nanofl_engine_libraryitems_BitmapItem.prototype = $extend(nanofl_engine_libraryi
 	,getIcon: function() {
 		return "custom-icon-picture";
 	}
-	,save: function(fileApi) {
+	,save: function(fileSystem) {
 		var xmlPath = this.library.libraryDir + "/" + this.namePath + ".xml";
 		if(this.hasXmlToSave()) {
 			var out = new htmlparser_XmlBuilder();
 			this.saveToXml(out);
-			fileApi.saveContent(xmlPath,out.toString());
-		} else fileApi.remove(xmlPath);
+			fileSystem.saveContent(xmlPath,out.toString());
+		} else fileSystem.remove(xmlPath);
 	}
 	,hasXmlToSave: function() {
 		return nanofl_engine_libraryitems_InstancableItem.prototype.hasXmlToSave.call(this) || this.textureAtlas != null && this.textureAtlas != "";
@@ -12364,8 +12364,8 @@ nanofl_engine_libraryitems_FolderItem.prototype = $extend(nanofl_engine_libraryi
 		this.copyBaseProperties(obj);
 		return obj;
 	}
-	,save: function(fileApi) {
-		fileApi.createDirectory(this.library.libraryDir + "/" + this.namePath);
+	,save: function(fileSystem) {
+		fileSystem.createDirectory(this.library.libraryDir + "/" + this.namePath);
 	}
 	,hasXmlToSave: function() {
 		return true;
@@ -12473,10 +12473,10 @@ nanofl_engine_libraryitems_FontItem.prototype = $extend(nanofl_engine_libraryite
 	,getIcon: function() {
 		return "icon-font";
 	}
-	,save: function(fileApi) {
+	,save: function(fileSystem) {
 		var out = new htmlparser_XmlBuilder();
 		this.saveToXml(out);
-		fileApi.saveContent(this.library.libraryDir + "/" + this.namePath + ".xml",out.toString());
+		fileSystem.saveContent(this.library.libraryDir + "/" + this.namePath + ".xml",out.toString());
 	}
 	,hasXmlToSave: function() {
 		return true;
@@ -12610,13 +12610,13 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 	,getIcon: function() {
 		return "custom-icon-cube";
 	}
-	,save: function(fileApi) {
+	,save: function(fileSystem) {
 		var xmlPath = this.library.libraryDir + "/" + this.namePath + ".xml";
 		if(this.hasXmlToSave()) {
 			var out = new htmlparser_XmlBuilder();
 			this.saveToXml(out);
-			fileApi.saveContent(xmlPath,out.toString());
-		} else fileApi.remove(xmlPath);
+			fileSystem.saveContent(xmlPath,out.toString());
+		} else fileSystem.remove(xmlPath);
 	}
 	,hasXmlToSave: function() {
 		return nanofl_engine_libraryitems_InstancableItem.prototype.hasXmlToSave.call(this) || this.originalExt != null && this.originalExt != "" || this.textureAtlas != null && this.textureAtlas != "";
@@ -12855,10 +12855,10 @@ nanofl_engine_libraryitems_MovieClipItem.prototype = $extend(nanofl_engine_libra
 		if(this.likeButton) return "custom-icon-button";
 		return "custom-icon-film";
 	}
-	,save: function(fileApi) {
+	,save: function(fileSystem) {
 		var out = new htmlparser_XmlBuilder();
 		this.saveToXml(out);
-		fileApi.saveContent(this.library.libraryDir + "/" + this.namePath + ".xml",out.toString());
+		fileSystem.saveContent(this.library.libraryDir + "/" + this.namePath + ".xml",out.toString());
 	}
 	,loadProperties: function(xml) {
 		this.likeButton = htmlparser_HtmlParserTools.getAttr(xml,"likeButton",false);
@@ -13051,13 +13051,13 @@ nanofl_engine_libraryitems_SoundItem.prototype = $extend(nanofl_engine_libraryit
 	,getIcon: function() {
 		return "custom-icon-sound";
 	}
-	,save: function(fileApi) {
+	,save: function(fileSystem) {
 		var xmlPath = this.library.libraryDir + "/" + this.namePath + ".xml";
 		if(this.hasXmlToSave()) {
 			var out = new htmlparser_XmlBuilder();
 			this.saveToXml(out);
-			fileApi.saveContent(xmlPath,out.toString());
-		} else fileApi.remove(xmlPath);
+			fileSystem.saveContent(xmlPath,out.toString());
+		} else fileSystem.remove(xmlPath);
 	}
 	,hasXmlToSave: function() {
 		return nanofl_engine_libraryitems_LibraryItem.prototype.hasXmlToSave.call(this) || this.linkage != "";

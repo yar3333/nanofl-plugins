@@ -16,7 +16,7 @@ class TextureAtlasGenerator extends BaseGenerator
 			var textureAtlas = textureAtlases.get(textureAtlasName);
 			
 			var imageUrl = "bin/" + textureAtlasName + ".png";
-			fileApi.saveBinary(dir + "/" + imageUrl, textureAtlas.imagePng);
+			fileSystem.saveBinary(dir + "/" + imageUrl, textureAtlas.imagePng);
 			
 			var spriteSheetJsons = [];
 			var namePaths = Reflect.fields(textureAtlas.itemFrames);
@@ -25,7 +25,7 @@ class TextureAtlasGenerator extends BaseGenerator
 			{
 				spriteSheetJsons.push("\t'" + namePath + "': { 'images':[ \"" + imageUrl + "\" ], 'frames':[ " + getSpriteSheetFrames(textureAtlas, namePath).join(", ") + " ] }");
 			}
-			fileApi.saveContent(dir + "/" + getTextureAtlasJsonUrl(textureAtlasName), "{\n" + spriteSheetJsons.join(",\n") + "\n}");
+			fileSystem.saveContent(dir + "/" + getTextureAtlasJsonUrl(textureAtlasName), "{\n" + spriteSheetJsons.join(",\n") + "\n}");
 		}
 	}
 	

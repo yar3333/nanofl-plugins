@@ -1,22 +1,22 @@
 package languages;
 
 import nanofl.engine.DocumentProperties;
-import nanofl.engine.FileApi;
+import nanofl.engine.FileSystem;
 import nanofl.engine.Library;
 import nanofl.ide.textureatlas.TextureAtlas;
 
 class BaseGenerator
 {
-	var fileApi : FileApi;
+	var fileSystem : FileSystem;
 	var params : Params;
 	var documentProperties : DocumentProperties;
 	var library : Library;
 	var textureAtlases : Map<String, TextureAtlas>;
 	var supportDir : String;
 	
-	public function new(fileApi:FileApi, params:Params, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>, supportDir:String)
+	public function new(fileSystem:FileSystem, params:Params, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>, supportDir:String)
 	{
-		this.fileApi = fileApi;
+		this.fileSystem = fileSystem;
 		this.params = params;
 		this.documentProperties = documentProperties;
 		this.library = library;

@@ -2,7 +2,7 @@ package nanofl.ide;
 
 extern class CachedFile
 {
-	function new(fileApi:nanofl.engine.FileApi, libraryDir:String, path:String) : Void;
+	function new(fileSystem:nanofl.engine.FileSystem, libraryDir:String, path:String) : Void;
 	var text(default, never) : String;
 	var xml(default, never) : htmlparser.HtmlNodeElement;
 	var json(default, never) : Dynamic;
