@@ -324,7 +324,7 @@ declare module nanofl.ide
 		plugins : nanofl.ide.IPlugins;
 		preferences : nanofl.ide.Preferences;
 		quit(force?:boolean, exitCode?:number) : void;
-		serverApi : nanofl.ide.ServerApi;
+		serverUtils : nanofl.ide.ServerUtils;
 	}
 	
 	export class CachedFile
@@ -694,18 +694,6 @@ declare module nanofl.ide
 		static load(s:string) : nanofl.ide.PublishOptimizations;
 	}
 	
-	export interface ServerApi
-	{
-		getTempDirectory() : string;
-		syncDirectory(src:string, dest:string, callb:() => void) : void;
-		copyLibraryFiles(srcLibraryDir:string, relativePaths:string[], destLibraryDir:string, callb:() => void) : void;
-		requestUrl(url:string, headers?:{ value : string; name : string; }[], callb:(arg:string) => void) : void;
-		openInBrowser(url:string) : void;
-		uploadFiles(files:File[], destDir:string, callb:() => void) : void;
-		loadFilesFromClipboard(destDir:string, callb:(arg:boolean) => void) : void;
-		saveFilesIntoClipboard(baseDir:string, relativePaths:string[], callb:() => void) : void;
-	}
-	
 	export class ServerApiTools
 	{
 		static loadDocument(api:nanofl.ide.plugins.PluginApi, path:string, lastModified:Date) : { lastModified : Date; library : nanofl.engine.Library; properties : nanofl.engine.DocumentProperties; };
@@ -716,6 +704,18 @@ declare module nanofl.ide
 		static remove(fileApi:nanofl.engine.FileApi, paths:string[]) : void;
 		static loadFilesFromClipboard(fileApi:nanofl.engine.FileApi, destDir:string) : boolean;
 		static saveFilesIntoClipboard(fileApi:nanofl.engine.FileApi, baseDir:string, relativePaths:string[]) : void;
+	}
+	
+	export interface ServerUtils
+	{
+		getTempDirectory() : string;
+		syncDirectory(src:string, dest:string, callb:() => void) : void;
+		copyLibraryFiles(srcLibraryDir:string, relativePaths:string[], destLibraryDir:string, callb:() => void) : void;
+		requestUrl(url:string, headers?:{ value : string; name : string; }[], callb:(arg:string) => void) : void;
+		openInBrowser(url:string) : void;
+		uploadFiles(files:File[], destDir:string, callb:() => void) : void;
+		loadFilesFromClipboard(destDir:string, callb:(arg:boolean) => void) : void;
+		saveFilesIntoClipboard(baseDir:string, relativePaths:string[], callb:() => void) : void;
 	}
 	
 	export class ShapePropertiesOptions
@@ -9622,7 +9622,7 @@ declare module nanofl.ide.plugins
 		 * User preferences.
 		 */
 		preferences : nanofl.ide.Preferences;
-		serverApi : nanofl.ide.ServerApi;
+		serverUtils : nanofl.ide.ServerUtils;
 	}
 	
 	type PluginType = string;

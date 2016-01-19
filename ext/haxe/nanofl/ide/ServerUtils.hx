@@ -1,6 +1,6 @@
 package nanofl.ide;
 
-extern interface ServerApi
+extern interface ServerUtils
 {
 	function getTempDirectory() : String;
 	function syncDirectory(src:String, dest:String, callb:Void -> Void) : Void;

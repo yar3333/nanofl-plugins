@@ -14,5 +14,5 @@ typedef PluginApi =
 	 * User preferences.
 	 */
 	var preferences(default, null) : nanofl.ide.Preferences;
-	var serverApi(default, null) : nanofl.ide.ServerApi;
+	var serverUtils(default, null) : nanofl.ide.ServerUtils;
 };

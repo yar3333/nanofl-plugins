@@ -18,5 +18,5 @@ typedef Application =
 	var plugins : nanofl.ide.IPlugins;
 	var preferences : nanofl.ide.Preferences;
 	function quit(?force:Bool, ?exitCode:Int) : Void;
-	var serverApi : nanofl.ide.ServerApi;
+	var serverUtils : nanofl.ide.ServerUtils;
 };

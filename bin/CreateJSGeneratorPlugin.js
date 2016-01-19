@@ -72,7 +72,7 @@ CreateJSGeneratorPlugin.prototype = {
 	,test: function(api,params,filePath) {
 		var htmlFilePath = haxe_io_Path.withoutExtension(filePath) + ".html";
 		if(api.fileSystem != null && !api.fileSystem.exists(htmlFilePath)) return "File \"" + htmlFilePath + "\" not found.";
-		api.serverApi.openInBrowser(htmlFilePath);
+		api.serverUtils.openInBrowser(htmlFilePath);
 		return null;
 	}
 	,__class__: CreateJSGeneratorPlugin
