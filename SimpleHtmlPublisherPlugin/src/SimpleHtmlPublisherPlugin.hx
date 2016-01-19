@@ -6,7 +6,7 @@ import nanofl.engine.FileSystem;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IPublisherPlugin;
-import nanofl.ide.plugins.PluginApi;
+import nanofl.ide.NanoApi;
 
 class SimpleHtmlPublisherPlugin implements IPublisherPlugin
 {
@@ -24,7 +24,7 @@ class SimpleHtmlPublisherPlugin implements IPublisherPlugin
 		{ type:"string", name:"outPath", label:"Output folder", defaultValue:"publish/html", description:"Folder to store cordova files." }
 	];
 	
-	public function publish(api:PluginApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, files:Array<{ baseDir:String, relPath:String }>) : Void
+	public function publish(api:NanoApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, files:Array<{ baseDir:String, relPath:String }>) : Void
 	{
 		console.log("SimpleHtmlPublisherPlugin.publish " + files);
 		

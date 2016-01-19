@@ -6,7 +6,7 @@ import nanofl.engine.FileSystem;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IPublisherPlugin;
-import nanofl.ide.plugins.PluginApi;
+import nanofl.ide.NanoApi;
 using Lambda;
 using StringTools;
 
@@ -38,7 +38,7 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		{ type:"bool", name:"platform_wp8", 			label:"Windows Phone 8", 		defaultValue:false },
 	];
 	
-	public function publish(api:PluginApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, files:Array<{ baseDir:String, relPath:String }>) : Void
+	public function publish(api:NanoApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, files:Array<{ baseDir:String, relPath:String }>) : Void
 	{
 		console.log("ApacheCordovaPublisherPlugin.publish " + files);
 		

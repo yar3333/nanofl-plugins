@@ -5,7 +5,7 @@ import nanofl.engine.FileSystem;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IImporterPlugin;
-import nanofl.ide.plugins.PluginApi;
+import nanofl.ide.NanoApi;
 import nanofl.ide.ServerApiTools;
 using StringTools;
 
@@ -24,7 +24,7 @@ class ZippedNanoFLImporterPlugin implements IImporterPlugin
 	
 	public var properties : Array<CustomProperty> = null;
 	
-	public function importDocument(api:PluginApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, callb:Bool->Void)
+	public function importDocument(api:NanoApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, callb:Bool->Void)
 	{
 		var destDir = Path.directory(destFilePath);
 		

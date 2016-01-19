@@ -5,7 +5,7 @@ import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.LibraryTools;
 import nanofl.ide.plugins.IImporterPlugin;
-import nanofl.ide.plugins.PluginApi;
+import nanofl.ide.NanoApi;
 import stdlib.Debug;
 import svgimport.Svg;
 import svgimport.SvgElement;
@@ -35,7 +35,7 @@ class SvgImporterPlugin implements IImporterPlugin
 		}
 	];
 	
-	public function importDocument(api:PluginApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, callb:Bool->Void)
+	public function importDocument(api:NanoApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, callb:Bool->Void)
 	{
 		trace("Load");
 		

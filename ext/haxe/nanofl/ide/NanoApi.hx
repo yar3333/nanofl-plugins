@@ -1,6 +1,6 @@
-package nanofl.ide.plugins;
+package nanofl.ide;
 
-typedef PluginApi =
+typedef NanoApi =
 {
 	/**
 	 * FileSystem functions.

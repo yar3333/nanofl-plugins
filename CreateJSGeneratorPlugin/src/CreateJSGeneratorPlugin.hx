@@ -7,7 +7,7 @@ import nanofl.engine.FileSystem;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IGeneratorPlugin;
-import nanofl.ide.plugins.PluginApi;
+import nanofl.ide.NanoApi;
 import nanofl.ide.textureatlas.TextureAtlas;
 
 class CreateJSGeneratorPlugin implements IGeneratorPlugin
@@ -53,7 +53,7 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 		},
 	];
 	
-	public function generate(api:PluginApi, params:Params, filePath:String, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>) : Array<String>
+	public function generate(api:NanoApi, params:Params, filePath:String, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>) : Array<String>
 	{
 		var supportDir = api.fileSystem.getPluginsDirectory() + "/CreateJSGeneratorPlugin";
 		
@@ -98,7 +98,7 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 	}
 	
 	#if js
-	public function test(api:PluginApi, params:Dynamic, filePath:String) : String
+	public function test(api:NanoApi, params:Dynamic, filePath:String) : String
 	{
 		var htmlFilePath = Path.withoutExtension(filePath) + ".html";
 		if (api.fileSystem != null && !api.fileSystem.exists(htmlFilePath)) return "File \"" + htmlFilePath + "\" not found.";

@@ -5,7 +5,7 @@ import nanofl.engine.DocumentProperties;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IExporterPlugin;
-import nanofl.ide.plugins.PluginApi;
+import nanofl.ide.NanoApi;
 import svgexporter.SvgExporter;
 
 class SvgExporterPlugin implements IExporterPlugin
@@ -23,7 +23,7 @@ class SvgExporterPlugin implements IExporterPlugin
 	
 	public var properties : Array<CustomProperty> = null;
 	
-	public function exportDocument(api:PluginApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
+	public function exportDocument(api:NanoApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
 	{
 		console.log("Plugin.exportDocument " + srcFilePath + " => " + destFilePath);
 		

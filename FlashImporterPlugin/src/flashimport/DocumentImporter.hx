@@ -7,13 +7,13 @@ import nanofl.engine.FileSystem;
 import nanofl.engine.Library;
 import nanofl.engine.libraryitems.FolderItem;
 import nanofl.engine.libraryitems.SoundItem;
-import nanofl.ide.plugins.PluginApi;
+import nanofl.ide.NanoApi;
 using htmlparser.HtmlParserTools;
 using StringTools;
 
 class DocumentImporter
 {
-	public static function process(api:PluginApi, importMediaScriptTemplate:String, srcFilePath:String, destFilePath:String, destDocProp:DocumentProperties, destLibrary:Library, runFlashToImportMedia:Bool, callb:Bool->Void) : Void
+	public static function process(api:NanoApi, importMediaScriptTemplate:String, srcFilePath:String, destFilePath:String, destDocProp:DocumentProperties, destLibrary:Library, runFlashToImportMedia:Bool, callb:Bool->Void) : Void
 	{
 		log("DocumentImporter.process");
 		
@@ -43,7 +43,7 @@ class DocumentImporter
 		return doc.findOne(">DOMDocument>media>*") != null;
 	}
 	
-	static function importMedia(api:PluginApi, importMediaScriptTemplate:String, srcFilePath:String, destFilePath:String, destLibrary:Library, callb:Bool->Void)
+	static function importMedia(api:NanoApi, importMediaScriptTemplate:String, srcFilePath:String, destFilePath:String, destLibrary:Library, callb:Bool->Void)
 	{
 		log("DocumentImporter.importMedia");
 		
@@ -75,7 +75,7 @@ class DocumentImporter
 		});
 	}
 	
-	static function importXmlFiles(api:PluginApi, srcFilePath:String, destDocProp:DocumentProperties, destLibrary:Library, callb:Bool->Void)
+	static function importXmlFiles(api:NanoApi, srcFilePath:String, destDocProp:DocumentProperties, destLibrary:Library, callb:Bool->Void)
 	{
 		log("DocumentImporter.importXmlFiles BEGIN");
 		

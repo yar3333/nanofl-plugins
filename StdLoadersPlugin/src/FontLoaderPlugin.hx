@@ -4,7 +4,7 @@ import nanofl.engine.libraryitems.FontItem;
 import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.ide.CachedFile;
 import nanofl.ide.plugins.ILoaderPlugin;
-import nanofl.ide.plugins.PluginApi;
+import nanofl.ide.NanoApi;
 using Lambda;
 
 class FontLoaderPlugin implements ILoaderPlugin
@@ -17,7 +17,7 @@ class FontLoaderPlugin implements ILoaderPlugin
 	
 	public function new() {}
 	
-	public function load(api:PluginApi, params:Dynamic, baseDir:String, files:Map<String, CachedFile>) : Array<LibraryItem>
+	public function load(api:NanoApi, params:Dynamic, baseDir:String, files:Map<String, CachedFile>) : Array<LibraryItem>
 	{
 		var r = new Array<LibraryItem>();
 		

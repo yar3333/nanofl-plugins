@@ -4,7 +4,7 @@ import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.engine.libraryitems.SoundItem;
 import nanofl.ide.CachedFile;
 import nanofl.ide.plugins.ILoaderPlugin;
-import nanofl.ide.plugins.PluginApi;
+import nanofl.ide.NanoApi;
 using Lambda;
 
 class SoundLoaderPlugin implements ILoaderPlugin
@@ -20,7 +20,7 @@ class SoundLoaderPlugin implements ILoaderPlugin
 	
 	public function new() {}
 	
-	public function load(api:PluginApi, params:Dynamic, baseDir:String, files:Map<String, CachedFile>) : Array<LibraryItem>
+	public function load(api:NanoApi, params:Dynamic, baseDir:String, files:Map<String, CachedFile>) : Array<LibraryItem>
 	{
 		var r = new Array<LibraryItem>();
 		

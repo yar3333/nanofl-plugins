@@ -2,7 +2,7 @@ import nanofl.engine.CustomProperty;
 import nanofl.engine.DocumentProperties;
 import nanofl.engine.Library;
 import nanofl.ide.plugins.IExporterPlugin;
-import nanofl.ide.plugins.PluginApi;
+import nanofl.ide.NanoApi;
 
 class JpegImageSequenceExporterPlugin implements IExporterPlugin
 {
@@ -17,7 +17,7 @@ class JpegImageSequenceExporterPlugin implements IExporterPlugin
 	public var fileDefaultExtension = "jpg";
 	public var properties : Array<CustomProperty> = null;
 	
-	public function exportDocument(api:PluginApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
+	public function exportDocument(api:NanoApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
 	{
 		ImageSequenceExporter.run("image/jpeg", api.fileSystem, destFilePath, documentProperties, library);
 		return true;

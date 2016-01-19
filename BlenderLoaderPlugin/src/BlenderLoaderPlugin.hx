@@ -7,7 +7,7 @@ import nanofl.engine.libraryitems.MeshItem;
 import nanofl.engine.Plugins;
 import nanofl.ide.CachedFile;
 import nanofl.ide.plugins.ILoaderPlugin;
-import nanofl.ide.plugins.PluginApi;
+import nanofl.ide.NanoApi;
 using StringTools;
 using Lambda;
 
@@ -38,7 +38,7 @@ class BlenderLoaderPlugin implements ILoaderPlugin
 	 * Not really load items, just convert Blender's `*.blend` files into ThreeJS's `*.json`
 	 * and let StdLoaders plugin to load *.json.
 	 */
-	public function load(api:PluginApi, params:Dynamic, baseDir:String, files:Map<String, CachedFile>) : Array<LibraryItem>
+	public function load(api:NanoApi, params:Dynamic, baseDir:String, files:Map<String, CachedFile>) : Array<LibraryItem>
 	{
 		var r = [];
 		

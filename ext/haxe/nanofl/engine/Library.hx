@@ -5,7 +5,7 @@ extern class Library
 	function new(libraryDir:String, ?items:Array<nanofl.engine.libraryitems.LibraryItem>) : Void;
 	var libraryDir(default, null) : String;
 	function addSceneWithFrame(?elements:Array<nanofl.engine.elements.Element>, ?layerName:String) : nanofl.engine.libraryitems.MovieClipItem;
-	function loadItems(api:nanofl.ide.plugins.PluginApi) : Void;
+	function loadItems(api:nanofl.ide.NanoApi) : Void;
 	function parseItems(base:htmlparser.HtmlNodeElement) : Void;
 	function addFont(family:String, variants:Array<nanofl.engine.FontVariant>) : Void;
 	function canRenameItem(oldNamePath:String, newNamePath:String) : Bool;

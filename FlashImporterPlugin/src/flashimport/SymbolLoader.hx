@@ -36,7 +36,7 @@ import nanofl.engine.libraryitems.MovieClipItem;
 import nanofl.engine.MotionTween;
 import nanofl.engine.strokes.IStroke;
 import nanofl.engine.strokes.SolidStroke;
-import nanofl.ide.plugins.PluginApi;
+import nanofl.ide.NanoApi;
 import nanofl.TextRun;
 import stdlib.Std;
 import stdlib.Utf8;
@@ -59,7 +59,7 @@ class SymbolLoader
 	
 	var generatedAutoIDs = new Array<String>();
 	
-	public function new(api:PluginApi, doc:XmlDocument, srcLibDir:String, library:Library)
+	public function new(api:NanoApi, doc:XmlDocument, srcLibDir:String, library:Library)
 	{
 		this.fileSystem = api.fileSystem;
 		this.doc = doc;
