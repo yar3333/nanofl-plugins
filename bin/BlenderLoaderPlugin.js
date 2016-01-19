@@ -7,8 +7,8 @@ function $extend(from, fields) {
 	return proto;
 }
 var BlenderLoaderPlugin = function() {
-	this.properties = [{ type : "string", name : "blenderPath", label : "Path to the blender.exe (leave blank to autodetect).", defaultValue : ""}];
-	this.menuItemIcon = "";
+	this.properties = [{ type : "string", name : "blenderPath", label : "Path to the blender.exe", description : "Leave blank to autodetect", defaultValue : ""}];
+	this.menuItemIcon = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAACXBIWXMAADXTAAA10wEMIUN3AAAC20lEQVQoz23JTWxUVRgG4Pd859x756+97dBOW+jUpEwqUAEppAiTNKRqJ2BMGg1hgSwIEHeGjRsNkjTRBXFhJDEpGoNuFDYNYMRosDTWmIJRws+Ean/uUAhT2qnTdjq3M/fM+Vy589k+gojwf5gFmGsCAEtJEgzDAP/3Kp1OAwBIQAohBAlIX1Nlu1scPLE//vXlqbqjo9nCtagNRUTGGDYAILu7u2HbDjQ5bIQyRkhDUmFV2zPtoVLnqQPt55pbN8lsvnqDiBCNONKybFbGMMAa+xLVYy3xWAoyrEnZFDCVn2i+M5Vfm3lze+OZDrd9z6c3nh6bL5YLUZukeDVzEGH48aFdj/7uaNsQ9znEVsQVbnIbIG0ETpxr66UaLXvqWdGf+3hs9Y1sPvhdZDIZMACX/GQ10OvJcGnv232Jzzd1bm2N9RwJKhteUOsaIi4Kujp+Xi3msksf3BT9siu1mSCIFipOcWdTZeCdV9outsXrmyM7BnmuqV9+dv2BuDQxh+mySy/t7tFq/KNoTBeeowpbpqa1OtmZu/BhenmkMci7FX+V7dat4vtf7+G7W1P44c8choav4nGtSYn6jXienvSphPxny8lU7quXU9Q7PIHhlnAheXAPHSovPDLtLV3014yHNT/A4f4X0UBl6JU8QhFLInu6bnHlTJTfPRAbAhROp0Nn+XyK8+d2VOfvj/LPdzz+5uYD9rxZLlw8ovV74OvH638RnxzvOXvXW7r75ag3AqDBdbBt7FR4ZGdzJbEcRGuys09YERdV7zeuW5uVRdmgM1+UBmWlbe/YH7PFh8tLi1FJ1OJrjvw0ZR7v6oj1diUQtlbuQy7dE44MKFdurL717er7415wTbz+2iH1bGGBJ27dFgBcIbCRGQ0WYUvfZqe/tyOUtBSZ7Hww++PD8pWVdXObBMpiYGAASilMT09jcnJSAnBIIAbAMgwJwAKgAZSEQCAYNSsU8v8FJek74SxGiM4AAAAASUVORK5CYII=)";
 	this.menuItemName = "Blender";
 	this.priority = 700;
 	this.name = "BlenderLoader";
