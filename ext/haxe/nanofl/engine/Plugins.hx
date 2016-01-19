@@ -16,5 +16,4 @@ extern class Plugins
 	static function registerPublisher(plugin:nanofl.ide.plugins.IPublisherPlugin) : Void;
 	static function getImporterByExtension(ext:String) : nanofl.ide.plugins.IImporterPlugin;
 	static function getExporterByExtension(ext:String) : nanofl.ide.plugins.IExporterPlugin;
-	static function getPrefKey(type:nanofl.ide.plugins.PluginType, pluginName:String) : String;
 }

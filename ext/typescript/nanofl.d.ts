@@ -9433,6 +9433,12 @@ declare module nanofl.ide.plugins
 		properties : nanofl.engine.CustomProperty[];
 	}
 	
+	export class CustomizablePluginTools
+	{
+		static getPreferenceKey(plugin:nanofl.ide.plugins.CustomizablePlugin) : string;
+		static getParams(plugin:nanofl.ide.plugins.CustomizablePlugin, preferences:nanofl.ide.Preferences) : any;
+	}
+	
 	export interface IExporterPlugin
 	{
 		/**
@@ -9601,8 +9607,6 @@ declare module nanofl.ide.plugins
 		 */
 		publish(api:nanofl.ide.NanoApi, params:any, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, files:{ relPath : string; baseDir : string; }[]) : void;
 	}
-	
-	type PluginType = string;
 	
 	export class PublishSetting
 	{
@@ -10160,7 +10164,6 @@ declare module nanofl.engine
 		static registerPublisher(plugin:nanofl.ide.plugins.IPublisherPlugin) : void;
 		static getImporterByExtension(ext:string) : nanofl.ide.plugins.IImporterPlugin;
 		static getExporterByExtension(ext:string) : nanofl.ide.plugins.IExporterPlugin;
-		static getPrefKey(type:nanofl.ide.plugins.PluginType, pluginName:string) : string;
 	}
 	
 	type Render =

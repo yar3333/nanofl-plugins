@@ -7,7 +7,7 @@ function $extend(from, fields) {
 	return proto;
 }
 var BlenderLoaderPlugin = function() {
-	this.properties = [{ type : "string", name : "blenderPath", label : "Path to the Blender", defaultValue : ""}];
+	this.properties = [{ type : "string", name : "blenderPath", label : "Path to the blender.exe (leave blank to autodetect).", defaultValue : ""}];
 	this.menuItemIcon = "";
 	this.menuItemName = "Blender";
 	this.priority = 700;
@@ -31,7 +31,7 @@ BlenderLoaderPlugin.prototype = {
 			if(ext != null && ext.toLowerCase() == "blend") {
 				var namePath = haxe_io_Path.withoutExtension(file.path);
 				if(blenderExePath == null) {
-					blenderExePath = this.getBlenderExePath(api.fileSystem);
+					blenderExePath = this.getBlenderExePath(api.fileSystem,params);
 					if(blenderExePath == null) {
 						nanofl.engine.Debug.console.error("Blender3D is not found at standard paths.");
 						return r;
@@ -58,7 +58,8 @@ BlenderLoaderPlugin.prototype = {
 		}
 		return r;
 	}
-	,getBlenderExePath: function(fileSystem) {
+	,getBlenderExePath: function(fileSystem,params) {
+		if(params.blenderPath != null && params.blenderPath != "" && fileSystem.exists(params.blenderPath)) return params.blenderPath;
 		var _g = 0;
 		var _g1 = ["PROGRAMW6432","PROGRAMFILES","PROGRAMFILES(X86)"];
 		while(_g < _g1.length) {

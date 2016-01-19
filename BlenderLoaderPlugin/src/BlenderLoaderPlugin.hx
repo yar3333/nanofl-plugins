@@ -27,7 +27,7 @@ class BlenderLoaderPlugin implements ILoaderPlugin
 		{
 			type: "string",
 			name: "blenderPath",
-			label: "Path to the Blender",
+			label: "Path to the blender.exe (leave blank to autodetect).",
 			defaultValue: ""
 		}
 	];
@@ -55,7 +55,7 @@ class BlenderLoaderPlugin implements ILoaderPlugin
 				var namePath = Path.withoutExtension(file.path);
 				if (blenderExePath == null)
 				{
-					blenderExePath = getBlenderExePath(api.fileSystem);
+					blenderExePath = getBlenderExePath(api.fileSystem, params);
 					if (blenderExePath == null)
 					{
 						console.error("Blender3D is not found at standard paths.");
@@ -93,8 +93,13 @@ class BlenderLoaderPlugin implements ILoaderPlugin
 		return r; 
 	}
 	
-	function getBlenderExePath(fileSystem:FileSystem)
+	function getBlenderExePath(fileSystem:FileSystem, params:{ blenderPath:String })
 	{
+		if (params.blenderPath != null && params.blenderPath != "" && fileSystem.exists(params.blenderPath))
+		{
+			return params.blenderPath;
+		}
+		
 		for (pfEnvVarName in [ "PROGRAMW6432", "PROGRAMFILES", "PROGRAMFILES(X86)" ])
 		{
 			var pf = fileSystem.getEnvironmentVariable(pfEnvVarName);
