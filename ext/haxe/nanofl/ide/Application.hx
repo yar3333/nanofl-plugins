@@ -8,7 +8,8 @@ typedef Application =
 	function createNewEmptyDocument(?callb:nanofl.ide.Document -> Void) : Void;
 	var document : nanofl.ide.Document;
 	var dragAndDrop : nanofl.ide.draganddrop.DragAndDrop;
-	var fileApi : nanofl.ide.XpcomFileApi;
+	var fileSystem : nanofl.engine.FileApi;
+	var fonts : Array<String>;
 	function importDocument(?path:String, ?plugin:nanofl.ide.plugins.IImporterPlugin, ?callb:nanofl.ide.Document -> Void) : Void;
 	var keyboard : nanofl.ide.keyboard.Keyboard;
 	var newObjectParams : nanofl.ide.NewObjectParams;

@@ -1,10 +1,10 @@
 import htmlparser.XmlBuilder;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.DocumentProperties;
-import nanofl.engine.FileApi;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IExporterPlugin;
+import nanofl.ide.plugins.PluginApi;
 
 class FlashExporterPlugin implements IExporterPlugin
 {
@@ -21,7 +21,7 @@ class FlashExporterPlugin implements IExporterPlugin
 	
 	public var properties : Array<CustomProperty> = null;
 	
-	public function exportDocument(fileApi:FileApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
+	public function exportDocument(api:PluginApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
 	{
 		trace("Plugin.exportDocument " + srcFilePath + " => " + destFilePath);
 		var scene = library.getSceneItem();
@@ -34,7 +34,7 @@ class FlashExporterPlugin implements IExporterPlugin
 			xml.end();
 		xml.end();
 		
-		fileApi.saveContent(destFilePath, xml.toString());
+		api.fileSystem.saveContent(destFilePath, xml.toString());
 		
 		return true;
 	}

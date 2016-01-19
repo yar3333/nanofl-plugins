@@ -85,19 +85,19 @@ FlashImporterPlugin.main = function() {
 	nanofl.engine.Plugins.registerImporter(new FlashImporterPlugin());
 };
 FlashImporterPlugin.prototype = {
-	importDocument: function(fileApi,params,srcFilePath,destFilePath,documentProperties,library,fonts,callb) {
+	importDocument: function(api,params,srcFilePath,destFilePath,documentProperties,library,callb) {
 		if(haxe_io_Path.extension(srcFilePath) == "fla") {
-			var dir = fileApi.getTempDirectory() + "/unsaved/" + stdlib_Uuid.newUuid();
-			fileApi.unzip(srcFilePath,dir);
-			var xflFiles = fileApi.readDirectory(dir).filter(function(s) {
+			var dir = api.fileSystem.getTempDirectory() + "/unsaved/" + stdlib_Uuid.newUuid();
+			api.fileSystem.unzip(srcFilePath,dir);
+			var xflFiles = api.fileSystem.readDirectory(dir).filter(function(s) {
 				return haxe_io_Path.extension(s).toLowerCase() == "xfl";
 			});
 			if(xflFiles.length == 0) throw new js__$Boot_HaxeError("XFL file is not found");
-			flashimport_DocumentImporter.process(FlashImporterPlugin.IMPORT_MEDIA_SCRIPT_TEMPLATE,fileApi,dir + "/" + xflFiles[0],destFilePath,documentProperties,library,fonts,params.importMedia,function(success) {
-				fileApi.remove(dir);
+			flashimport_DocumentImporter.process(api,FlashImporterPlugin.IMPORT_MEDIA_SCRIPT_TEMPLATE,dir + "/" + xflFiles[0],destFilePath,documentProperties,library,params.importMedia,function(success) {
+				api.fileSystem.remove(dir);
 				callb(success);
 			});
-		} else flashimport_DocumentImporter.process(FlashImporterPlugin.IMPORT_MEDIA_SCRIPT_TEMPLATE,fileApi,srcFilePath,destFilePath,documentProperties,library,fonts,params.importMedia,callb);
+		} else flashimport_DocumentImporter.process(api,FlashImporterPlugin.IMPORT_MEDIA_SCRIPT_TEMPLATE,srcFilePath,destFilePath,documentProperties,library,params.importMedia,callb);
 	}
 	,__class__: FlashImporterPlugin
 };
@@ -390,47 +390,47 @@ Type.enumConstructor = function(e) {
 };
 var flashimport_DocumentImporter = function() { };
 flashimport_DocumentImporter.__name__ = ["flashimport","DocumentImporter"];
-flashimport_DocumentImporter.process = function(importMediaScriptTemplate,fileApi,srcFilePath,destFilePath,destDocProp,destLibrary,fonts,runFlashToImportMedia,callb) {
-	flashimport_DocumentImporter.log("DocumentImporter.process",{ fileName : "DocumentImporter.hx", lineNumber : 17, className : "flashimport.DocumentImporter", methodName : "process"});
-	if(runFlashToImportMedia && flashimport_DocumentImporter.hasMedia(fileApi,srcFilePath)) flashimport_DocumentImporter.importMedia(importMediaScriptTemplate,fileApi,srcFilePath,destFilePath,destLibrary,function(success) {
-		if(success) flashimport_DocumentImporter.importXmlFiles(fileApi,srcFilePath,destDocProp,destLibrary,fonts,callb); else callb(false);
-	}); else flashimport_DocumentImporter.importXmlFiles(fileApi,srcFilePath,destDocProp,destLibrary,fonts,callb);
+flashimport_DocumentImporter.process = function(api,importMediaScriptTemplate,srcFilePath,destFilePath,destDocProp,destLibrary,runFlashToImportMedia,callb) {
+	flashimport_DocumentImporter.log("DocumentImporter.process",{ fileName : "DocumentImporter.hx", lineNumber : 18, className : "flashimport.DocumentImporter", methodName : "process"});
+	if(runFlashToImportMedia && flashimport_DocumentImporter.hasMedia(api.fileSystem,srcFilePath)) flashimport_DocumentImporter.importMedia(api,importMediaScriptTemplate,srcFilePath,destFilePath,destLibrary,function(success) {
+		if(success) flashimport_DocumentImporter.importXmlFiles(api,srcFilePath,destDocProp,destLibrary,callb); else callb(false);
+	}); else flashimport_DocumentImporter.importXmlFiles(api,srcFilePath,destDocProp,destLibrary,callb);
 };
 flashimport_DocumentImporter.hasMedia = function(fileApi,srcFilePath) {
 	var doc = new htmlparser.XmlDocument(fileApi.getContent(haxe_io_Path.directory(srcFilePath) + "/DOMDocument.xml"));
 	return htmlparser.HtmlParserTools.findOne(doc,">DOMDocument>media>*") != null;
 };
-flashimport_DocumentImporter.importMedia = function(importMediaScriptTemplate,fileApi,srcFilePath,destFilePath,destLibrary,callb) {
-	flashimport_DocumentImporter.log("DocumentImporter.importMedia",{ fileName : "DocumentImporter.hx", lineNumber : 46, className : "flashimport.DocumentImporter", methodName : "importMedia"});
+flashimport_DocumentImporter.importMedia = function(api,importMediaScriptTemplate,srcFilePath,destFilePath,destLibrary,callb) {
+	flashimport_DocumentImporter.log("DocumentImporter.importMedia",{ fileName : "DocumentImporter.hx", lineNumber : 48, className : "flashimport.DocumentImporter", methodName : "importMedia"});
 	var destDir = haxe_io_Path.directory(destFilePath);
-	var scriptFilePath = fileApi.getTempDirectory() + "/flashImporter.jsfl";
+	var scriptFilePath = api.fileSystem.getTempDirectory() + "/flashImporter.jsfl";
 	var script = StringTools.replace(StringTools.replace(importMediaScriptTemplate,"{SRC_FILE}",StringTools.replace(srcFilePath,"\\","/")),"{DEST_DIR}",StringTools.replace(destDir,"\\","/"));
-	fileApi.saveContent(scriptFilePath,script);
+	api.fileSystem.saveContent(scriptFilePath,script);
 	var doneFile = destDir + "/.done-import-media";
-	fileApi.remove(doneFile);
-	fileApi.run(scriptFilePath,[],false);
+	api.fileSystem.remove(doneFile);
+	api.fileSystem.run(scriptFilePath,[],false);
 	flashimport_DocumentImporter.waitFor(600,function() {
-		return fileApi.exists(doneFile);
+		return api.fileSystem.exists(doneFile);
 	},function(success) {
 		if(success) {
-			fileApi.remove(doneFile);
-			destLibrary.loadItems(fileApi);
+			api.fileSystem.remove(doneFile);
+			destLibrary.loadItems(api);
 			callb(true);
 		} else callb(false);
 	});
 };
-flashimport_DocumentImporter.importXmlFiles = function(fileApi,srcFilePath,destDocProp,destLibrary,fonts,callb) {
-	flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles BEGIN",{ fileName : "DocumentImporter.hx", lineNumber : 78, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
+flashimport_DocumentImporter.importXmlFiles = function(api,srcFilePath,destDocProp,destLibrary,callb) {
+	flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles BEGIN",{ fileName : "DocumentImporter.hx", lineNumber : 80, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
 	var srcDir = haxe_io_Path.directory(srcFilePath);
-	var srcDoc = new htmlparser.XmlDocument(fileApi.getContent(srcDir + "/DOMDocument.xml"));
+	var srcDoc = new htmlparser.XmlDocument(api.fileSystem.getContent(srcDir + "/DOMDocument.xml"));
 	var srcLibDir = srcDir + "/LIBRARY";
-	var symbolLoader = new flashimport_SymbolLoader(fileApi,srcDoc,srcLibDir,destLibrary,fonts);
+	var symbolLoader = new flashimport_SymbolLoader(api,srcDoc,srcLibDir,destLibrary);
 	var docPropNode = htmlparser.HtmlParserTools.findOne(srcDoc,">DOMDocument");
 	destDocProp.width = htmlparser.HtmlParserTools.getAttr(docPropNode,"width",550);
 	destDocProp.height = htmlparser.HtmlParserTools.getAttr(docPropNode,"height",400);
 	destDocProp.backgroundColor = htmlparser.HtmlParserTools.getAttr(docPropNode,"backgroundColor","#ffffff");
 	destDocProp.framerate = htmlparser.HtmlParserTools.getAttr(docPropNode,"frameRate",24);
-	flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles load media",{ fileName : "DocumentImporter.hx", lineNumber : 92, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
+	flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles load media",{ fileName : "DocumentImporter.hx", lineNumber : 94, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
 	var _g = 0;
 	var _g1 = docPropNode.find(">media>DOMSoundItem");
 	while(_g < _g1.length) {
@@ -441,7 +441,7 @@ flashimport_DocumentImporter.importXmlFiles = function(fileApi,srcFilePath,destD
 			if(htmlparser.HtmlParserTools.getAttr(node1,"linkageExportForAS",false)) soundItem.linkage = htmlparser.HtmlParserTools.getAttr(node1,"linkageIdentifier");
 		}
 	}
-	flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles load folders",{ fileName : "DocumentImporter.hx", lineNumber : 105, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
+	flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles load folders",{ fileName : "DocumentImporter.hx", lineNumber : 107, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
 	var _g2 = 0;
 	var _g11 = docPropNode.find(">folders>DOMFolderItem");
 	while(_g2 < _g11.length) {
@@ -452,18 +452,18 @@ flashimport_DocumentImporter.importXmlFiles = function(fileApi,srcFilePath,destD
 			if(namePath != "") destLibrary.addItem(new nanofl.engine.libraryitems.FolderItem(namePath));
 		}
 	}
-	flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles load document",{ fileName : "DocumentImporter.hx", lineNumber : 118, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
+	flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles load document",{ fileName : "DocumentImporter.hx", lineNumber : 120, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
 	symbolLoader.loadFromXml(nanofl.engine.Library.SCENE_NAME_PATH,srcDoc);
-	flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles load symbols",{ fileName : "DocumentImporter.hx", lineNumber : 121, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
+	flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles load symbols",{ fileName : "DocumentImporter.hx", lineNumber : 123, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
 	var hrefs = docPropNode.find(">symbols>Include").map(function(node) {
 		return htmlparser.HtmlParserTools.getAttrString(node,"href");
 	});
-	flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles load library",{ fileName : "DocumentImporter.hx", lineNumber : 124, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
+	flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles load library",{ fileName : "DocumentImporter.hx", lineNumber : 126, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
 	var loadNext;
 	var loadNext1 = null;
 	loadNext1 = function() {
 		if(hrefs.length == 0) {
-			flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles END",{ fileName : "DocumentImporter.hx", lineNumber : 130, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
+			flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles END",{ fileName : "DocumentImporter.hx", lineNumber : 132, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
 			callb(true);
 		} else {
 			symbolLoader.loadFromFile(hrefs.shift());
@@ -824,15 +824,15 @@ flashimport_ShapeConvertor.prototype = {
 	}
 	,__class__: flashimport_ShapeConvertor
 };
-var flashimport_SymbolLoader = function(fileApi,doc,srcLibDir,library,fonts) {
+var flashimport_SymbolLoader = function(api,doc,srcLibDir,library) {
 	this.generatedAutoIDs = [];
 	this.morphingNotSupported = [];
 	this.fontMap = new haxe_ds_StringMap();
-	this.fileApi = fileApi;
+	this.fileApi = api.fileSystem;
 	this.doc = doc;
 	this.srcLibDir = srcLibDir;
 	this.library = library;
-	this.fontConvertor = new flashimport_FontConvertor(fonts);
+	this.fontConvertor = new flashimport_FontConvertor(api.fonts);
 };
 flashimport_SymbolLoader.__name__ = ["flashimport","SymbolLoader"];
 flashimport_SymbolLoader.log = function(s,infos) {

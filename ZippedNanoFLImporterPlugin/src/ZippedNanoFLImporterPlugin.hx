@@ -5,6 +5,7 @@ import nanofl.engine.FileApi;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IImporterPlugin;
+import nanofl.ide.plugins.PluginApi;
 import nanofl.ide.ServerApiTools;
 using StringTools;
 
@@ -23,18 +24,18 @@ class ZippedNanoFLImporterPlugin implements IImporterPlugin
 	
 	public var properties : Array<CustomProperty> = null;
 	
-	public function importDocument(fileApi:FileApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, fonts:Array<String>, callb:Bool->Void)
+	public function importDocument(api:PluginApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, callb:Bool->Void)
 	{
 		var destDir = Path.directory(destFilePath);
 		
-		fileApi.unzip(srcFilePath, destDir);
+		api.fileSystem.unzip(srcFilePath, destDir);
 		
-		var docFiles = fileApi.readDirectory(destDir).filter(function(s) return s.endsWith(".nfl") && !fileApi.isDirectory(destDir + "/" + s));
+		var docFiles = api.fileSystem.readDirectory(destDir).filter(function(s) return s.endsWith(".nfl") && !api.fileSystem.isDirectory(destDir + "/" + s));
 		if (docFiles.length > 0)
 		{
-			fileApi.rename(destDir + "/" + Path.withoutExtension(docFiles[0]) + ".*", Path.withoutExtension(destFilePath) + ".*");
+			api.fileSystem.rename(destDir + "/" + Path.withoutExtension(docFiles[0]) + ".*", Path.withoutExtension(destFilePath) + ".*");
 			
-			var e = ServerApiTools.loadDocument(fileApi, destFilePath, null);
+			var e = ServerApiTools.loadDocument(api, destFilePath, null);
 			
 			if (e != null)
 			{

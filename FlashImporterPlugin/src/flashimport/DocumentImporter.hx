@@ -7,31 +7,33 @@ import nanofl.engine.FileApi;
 import nanofl.engine.Library;
 import nanofl.engine.libraryitems.FolderItem;
 import nanofl.engine.libraryitems.SoundItem;
+import nanofl.ide.plugins.PluginApi;
 using htmlparser.HtmlParserTools;
 using StringTools;
 
 class DocumentImporter
 {
-	public static function process(importMediaScriptTemplate:String, fileApi:FileApi, srcFilePath:String, destFilePath:String, destDocProp:DocumentProperties, destLibrary:Library, fonts:Array<String>, runFlashToImportMedia:Bool, callb:Bool->Void) : Void
+	public static function process(api:PluginApi, importMediaScriptTemplate:String, srcFilePath:String, destFilePath:String, destDocProp:DocumentProperties, destLibrary:Library, runFlashToImportMedia:Bool, callb:Bool->Void) : Void
 	{
 		log("DocumentImporter.process");
 		
-		if (runFlashToImportMedia && hasMedia(fileApi, srcFilePath))
+		if (runFlashToImportMedia && hasMedia(api.fileSystem, srcFilePath))
 		{
 			importMedia
 			(
+				api,
 				importMediaScriptTemplate,
-				fileApi, srcFilePath, destFilePath, destLibrary,
+				srcFilePath, destFilePath, destLibrary,
 				function(success)
 				{
-					if (success) importXmlFiles(fileApi, srcFilePath, destDocProp, destLibrary, fonts, callb);
+					if (success) importXmlFiles(api, srcFilePath, destDocProp, destLibrary, callb);
 					else         callb(false);
 				}
 			);
 		}
 		else
 		{
-			importXmlFiles(fileApi, srcFilePath, destDocProp, destLibrary, fonts, callb);
+			importXmlFiles(api, srcFilePath, destDocProp, destLibrary, callb);
 		}
 	}
 	
@@ -41,29 +43,29 @@ class DocumentImporter
 		return doc.findOne(">DOMDocument>media>*") != null;
 	}
 	
-	static function importMedia(importMediaScriptTemplate:String, fileApi:FileApi, srcFilePath:String, destFilePath:String, destLibrary:Library, callb:Bool->Void)
+	static function importMedia(api:PluginApi, importMediaScriptTemplate:String, srcFilePath:String, destFilePath:String, destLibrary:Library, callb:Bool->Void)
 	{
 		log("DocumentImporter.importMedia");
 		
 		var destDir = Path.directory(destFilePath);
 		
-		var scriptFilePath = fileApi.getTempDirectory() + "/flashImporter.jsfl";
+		var scriptFilePath = api.fileSystem.getTempDirectory() + "/flashImporter.jsfl";
 		
 		var script = importMediaScriptTemplate
 			.replace("{SRC_FILE}", srcFilePath.replace("\\", "/"))
 			.replace("{DEST_DIR}", destDir.replace("\\", "/"));
 		
-		fileApi.saveContent(scriptFilePath, script);
+		api.fileSystem.saveContent(scriptFilePath, script);
 		
 		var doneFile = destDir + "/.done-import-media";
-		fileApi.remove(doneFile);
-		fileApi.run(scriptFilePath, [], false);
-		waitFor(600, function() return fileApi.exists(doneFile), function(success:Bool)
+		api.fileSystem.remove(doneFile);
+		api.fileSystem.run(scriptFilePath, [], false);
+		waitFor(600, function() return api.fileSystem.exists(doneFile), function(success:Bool)
 		{
 			if (success)
 			{
-				fileApi.remove(doneFile);
-				destLibrary.loadItems(fileApi);
+				api.fileSystem.remove(doneFile);
+				destLibrary.loadItems(api);
 				callb(true);
 			}
 			else
@@ -73,16 +75,16 @@ class DocumentImporter
 		});
 	}
 	
-	static function importXmlFiles(fileApi:FileApi, srcFilePath:String, destDocProp:DocumentProperties, destLibrary:Library, fonts:Array<String>, callb:Bool->Void)
+	static function importXmlFiles(api:PluginApi, srcFilePath:String, destDocProp:DocumentProperties, destLibrary:Library, callb:Bool->Void)
 	{
 		log("DocumentImporter.importXmlFiles BEGIN");
 		
 		var srcDir = Path.directory(srcFilePath);
 		
-		var srcDoc = new XmlDocument(fileApi.getContent(srcDir + "/DOMDocument.xml"));
+		var srcDoc = new XmlDocument(api.fileSystem.getContent(srcDir + "/DOMDocument.xml"));
 		
 		var srcLibDir = srcDir + "/LIBRARY";
-		var symbolLoader = new SymbolLoader(fileApi, srcDoc, srcLibDir, destLibrary, fonts);
+		var symbolLoader = new SymbolLoader(api, srcDoc, srcLibDir, destLibrary);
 		var docPropNode = srcDoc.findOne(">DOMDocument");
 		destDocProp.width = docPropNode.getAttr("width", 550);
 		destDocProp.height = docPropNode.getAttr("height", 400);

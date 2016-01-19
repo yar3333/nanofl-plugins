@@ -7,13 +7,16 @@ function $extend(from, fields) {
 	return proto;
 }
 var BitmapLoaderPlugin = function() {
+	this.properties = null;
+	this.menuItemIcon = "";
+	this.menuItemName = "Bitmap";
 	this.priority = 100;
 	this.name = "BitmapLoader";
 };
 BitmapLoaderPlugin.__name__ = true;
 BitmapLoaderPlugin.__interfaces__ = [nanofl.ide.plugins.ILoaderPlugin];
 BitmapLoaderPlugin.prototype = {
-	load: function(fileApi,baseDir,files) {
+	load: function(api,params,baseDir,files) {
 		var r = [];
 		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
 		while( $it0.hasNext() ) {
@@ -60,13 +63,16 @@ EReg.prototype = {
 	,__class__: EReg
 };
 var FontLoaderPlugin = function() {
+	this.properties = null;
+	this.menuItemIcon = "";
+	this.menuItemName = "Font";
 	this.priority = 400;
 	this.name = "FontLoader";
 };
 FontLoaderPlugin.__name__ = true;
 FontLoaderPlugin.__interfaces__ = [nanofl.ide.plugins.ILoaderPlugin];
 FontLoaderPlugin.prototype = {
-	load: function(fileApi,baseDir,files) {
+	load: function(api,params,baseDir,files) {
 		var r = [];
 		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
 		while( $it0.hasNext() ) {
@@ -145,13 +151,16 @@ Lambda.exists = function(it,f) {
 };
 Math.__name__ = true;
 var MeshLoaderPlugin = function() {
+	this.properties = null;
+	this.menuItemIcon = "";
+	this.menuItemName = "Mesh";
 	this.priority = 600;
 	this.name = "MeshLoader";
 };
 MeshLoaderPlugin.__name__ = true;
 MeshLoaderPlugin.__interfaces__ = [nanofl.ide.plugins.ILoaderPlugin];
 MeshLoaderPlugin.prototype = {
-	load: function(fileApi,baseDir,files) {
+	load: function(api,params,baseDir,files) {
 		var r = [];
 		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
 		while( $it0.hasNext() ) {
@@ -160,7 +169,7 @@ MeshLoaderPlugin.prototype = {
 			var ext = haxe_io_Path.extension(file.path);
 			if(ext != null && ext.toLowerCase() == "json") {
 				console.log("Ready to load MeshItem");
-				var item = nanofl.engine.libraryitems.MeshItem.load(fileApi,file.path,ext,files);
+				var item = nanofl.engine.libraryitems.MeshItem.load(api,file.path,ext,files);
 				if(item != null) r.push(item);
 			}
 		}
@@ -169,13 +178,16 @@ MeshLoaderPlugin.prototype = {
 	,__class__: MeshLoaderPlugin
 };
 var MovieClipLoaderPlugin = function() {
+	this.properties = null;
+	this.menuItemIcon = "";
+	this.menuItemName = "MovieClip";
 	this.priority = 200;
 	this.name = "MovieClipLoader";
 };
 MovieClipLoaderPlugin.__name__ = true;
 MovieClipLoaderPlugin.__interfaces__ = [nanofl.ide.plugins.ILoaderPlugin];
 MovieClipLoaderPlugin.prototype = {
-	load: function(fileApi,baseDir,files) {
+	load: function(api,params,baseDir,files) {
 		var r = [];
 		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
 		while( $it0.hasNext() ) {
@@ -208,13 +220,16 @@ MovieClipLoaderPlugin.prototype = {
 	,__class__: MovieClipLoaderPlugin
 };
 var SoundLoaderPlugin = function() {
+	this.properties = null;
+	this.menuItemIcon = "";
+	this.menuItemName = "Sound";
 	this.priority = 300;
 	this.name = "SoundLoader";
 };
 SoundLoaderPlugin.__name__ = true;
 SoundLoaderPlugin.__interfaces__ = [nanofl.ide.plugins.ILoaderPlugin];
 SoundLoaderPlugin.prototype = {
-	load: function(fileApi,baseDir,files) {
+	load: function(api,params,baseDir,files) {
 		var r = [];
 		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
 		while( $it0.hasNext() ) {
@@ -250,13 +265,16 @@ SoundLoaderPlugin.prototype = {
 	,__class__: SoundLoaderPlugin
 };
 var SpriteLoaderPlugin = function() {
+	this.properties = null;
+	this.menuItemIcon = "";
+	this.menuItemName = "Sprite";
 	this.priority = 500;
 	this.name = "SpriteLoader";
 };
 SpriteLoaderPlugin.__name__ = true;
 SpriteLoaderPlugin.__interfaces__ = [nanofl.ide.plugins.ILoaderPlugin];
 SpriteLoaderPlugin.prototype = {
-	load: function(fileApi,baseDir,files) {
+	load: function(api,params,baseDir,files) {
 		var r = [];
 		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
 		while( $it0.hasNext() ) {

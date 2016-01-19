@@ -1,8 +1,8 @@
 import nanofl.engine.CustomProperty;
 import nanofl.engine.DocumentProperties;
-import nanofl.engine.FileApi;
 import nanofl.engine.Library;
 import nanofl.ide.plugins.IExporterPlugin;
+import nanofl.ide.plugins.PluginApi;
 
 class PngImageExporterPlugin implements IExporterPlugin
 {
@@ -17,9 +17,9 @@ class PngImageExporterPlugin implements IExporterPlugin
 	public var fileDefaultExtension = "png";
 	public var properties : Array<CustomProperty> = null;
 	
-	public function exportDocument(fileApi:FileApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
+	public function exportDocument(api:PluginApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
 	{
-		ImageExporter.run("image/png", fileApi, destFilePath, documentProperties, library);
+		ImageExporter.run("image/png", api.fileSystem, destFilePath, documentProperties, library);
 		return true;
 	}
 }

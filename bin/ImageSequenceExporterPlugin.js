@@ -57,8 +57,8 @@ var JpegImageSequenceExporterPlugin = function() {
 JpegImageSequenceExporterPlugin.__name__ = true;
 JpegImageSequenceExporterPlugin.__interfaces__ = [nanofl.ide.plugins.IExporterPlugin];
 JpegImageSequenceExporterPlugin.prototype = {
-	exportDocument: function(fileApi,params,srcFilePath,destFilePath,documentProperties,library) {
-		ImageSequenceExporter.run("image/jpeg",fileApi,destFilePath,documentProperties,library);
+	exportDocument: function(api,params,srcFilePath,destFilePath,documentProperties,library) {
+		ImageSequenceExporter.run("image/jpeg",api.fileSystem,destFilePath,documentProperties,library);
 		return true;
 	}
 	,__class__: JpegImageSequenceExporterPlugin
@@ -82,8 +82,8 @@ var PngImageSequenceExporterPlugin = function() {
 PngImageSequenceExporterPlugin.__name__ = true;
 PngImageSequenceExporterPlugin.__interfaces__ = [nanofl.ide.plugins.IExporterPlugin];
 PngImageSequenceExporterPlugin.prototype = {
-	exportDocument: function(fileApi,params,srcFilePath,destFilePath,documentProperties,library) {
-		ImageSequenceExporter.run("image/png",fileApi,destFilePath,documentProperties,library);
+	exportDocument: function(api,params,srcFilePath,destFilePath,documentProperties,library) {
+		ImageSequenceExporter.run("image/png",api.fileSystem,destFilePath,documentProperties,library);
 		return true;
 	}
 	,__class__: PngImageSequenceExporterPlugin

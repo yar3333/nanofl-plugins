@@ -63,13 +63,13 @@ ZippedNanoFLExporterPlugin.main = function() {
 	nanofl.engine.Plugins.registerExporter(new ZippedNanoFLExporterPlugin());
 };
 ZippedNanoFLExporterPlugin.prototype = {
-	exportDocument: function(fileApi,params,srcFilePath,destFilePath,documentProperties,library) {
+	exportDocument: function(api,params,srcFilePath,destFilePath,documentProperties,library) {
 		console.log("ZippedNanoFLExporter " + srcFilePath + " => " + destFilePath);
 		var renSrc = haxe_io_Path.withoutExtension(srcFilePath) + ".*";
 		var renDest = haxe_io_Path.join([haxe_io_Path.directory(srcFilePath),haxe_io_Path.withoutDirectory(haxe_io_Path.withoutExtension(destFilePath))]) + ".*";
-		fileApi.rename(renSrc,renDest);
-		var success = fileApi.zip(haxe_io_Path.directory(srcFilePath),destFilePath);
-		fileApi.rename(renDest,renSrc);
+		api.fileSystem.rename(renSrc,renDest);
+		var success = api.fileSystem.zip(haxe_io_Path.directory(srcFilePath),destFilePath);
+		api.fileSystem.rename(renDest,renSrc);
 		return success;
 	}
 	,__class__: ZippedNanoFLExporterPlugin

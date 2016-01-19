@@ -28,4 +28,5 @@ extern interface FileApi
 	function getEnvironmentVariable(name:String) : String;
 	function convertImage(srcFile:String, destFile:String, quality:Int) : Bool;
 	function convertAudio(srcFile:String, destFile:String, quality:Int) : Bool;
+	function nativePath(path:String, ?makeAbsolute:Bool) : String;
 }

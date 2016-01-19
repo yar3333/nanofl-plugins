@@ -67,15 +67,15 @@ ZippedNanoFLImporterPlugin.main = function() {
 	nanofl.engine.Plugins.registerImporter(new ZippedNanoFLImporterPlugin());
 };
 ZippedNanoFLImporterPlugin.prototype = {
-	importDocument: function(fileApi,params,srcFilePath,destFilePath,documentProperties,library,fonts,callb) {
+	importDocument: function(api,params,srcFilePath,destFilePath,documentProperties,library,callb) {
 		var destDir = haxe_io_Path.directory(destFilePath);
-		fileApi.unzip(srcFilePath,destDir);
-		var docFiles = fileApi.readDirectory(destDir).filter(function(s) {
-			return StringTools.endsWith(s,".nfl") && !fileApi.isDirectory(destDir + "/" + s);
+		api.fileSystem.unzip(srcFilePath,destDir);
+		var docFiles = api.fileSystem.readDirectory(destDir).filter(function(s) {
+			return StringTools.endsWith(s,".nfl") && !api.fileSystem.isDirectory(destDir + "/" + s);
 		});
 		if(docFiles.length > 0) {
-			fileApi.rename(destDir + "/" + haxe_io_Path.withoutExtension(docFiles[0]) + ".*",haxe_io_Path.withoutExtension(destFilePath) + ".*");
-			var e = nanofl.ide.ServerApiTools.loadDocument(fileApi,destFilePath,null);
+			api.fileSystem.rename(destDir + "/" + haxe_io_Path.withoutExtension(docFiles[0]) + ".*",haxe_io_Path.withoutExtension(destFilePath) + ".*");
+			var e = nanofl.ide.ServerApiTools.loadDocument(api,destFilePath,null);
 			if(e != null) {
 				var _g = 0;
 				var _g1 = Reflect.fields(e.properties);

@@ -69,13 +69,13 @@ SvgExporterPlugin.main = function() {
 	nanofl.engine.Plugins.registerExporter(new SvgExporterPlugin());
 };
 SvgExporterPlugin.prototype = {
-	exportDocument: function(fileApi,params,srcFilePath,destFilePath,documentProperties,library) {
+	exportDocument: function(api,params,srcFilePath,destFilePath,documentProperties,library) {
 		nanofl.engine.Debug.console.log("Plugin.exportDocument " + srcFilePath + " => " + destFilePath);
 		var xml = new htmlparser.XmlBuilder();
 		xml.begin("svg").attr("xmlns","http://www.w3.org/2000/svg").attr("width",documentProperties.width).attr("height",documentProperties.height).attr("xmlns:xlink","http://www.w3.org/1999/xlink");
 		new svgexporter_SvgExporter(library)["export"](xml);
 		xml.end();
-		fileApi.saveContent(destFilePath,xml.toString());
+		api.fileSystem.saveContent(destFilePath,xml.toString());
 		return true;
 	}
 	,__class__: SvgExporterPlugin

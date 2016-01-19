@@ -1,9 +1,10 @@
 import haxe.io.Path;
-import nanofl.engine.FileApi;
+import nanofl.engine.CustomProperty;
 import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.engine.libraryitems.SoundItem;
 import nanofl.ide.CachedFile;
 import nanofl.ide.plugins.ILoaderPlugin;
+import nanofl.ide.plugins.PluginApi;
 using Lambda;
 
 class SoundLoaderPlugin implements ILoaderPlugin
@@ -13,9 +14,13 @@ class SoundLoaderPlugin implements ILoaderPlugin
 	public var name = "SoundLoader";
 	public var priority = 300;
 	
+	public var menuItemName = "Sound";
+	public var menuItemIcon = "";
+	public var properties : Array<CustomProperty> = null;
+	
 	public function new() {}
 	
-	public function load(fileApi:FileApi, baseDir:String, files:Map<String, CachedFile>) : Array<LibraryItem>
+	public function load(api:PluginApi, params:Dynamic, baseDir:String, files:Map<String, CachedFile>) : Array<LibraryItem>
 	{
 		var r = new Array<LibraryItem>();
 		

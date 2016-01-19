@@ -6,6 +6,7 @@ import nanofl.engine.FileApi;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IPublisherPlugin;
+import nanofl.ide.plugins.PluginApi;
 using Lambda;
 using StringTools;
 
@@ -37,7 +38,7 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		{ type:"bool", name:"platform_wp8", 			label:"Windows Phone 8", 		defaultValue:false },
 	];
 	
-	public function publish(fileApi:FileApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, files:Array<{ baseDir:String, relPath:String }>) : Void
+	public function publish(api:PluginApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, files:Array<{ baseDir:String, relPath:String }>) : Void
 	{
 		console.log("ApacheCordovaPublisherPlugin.publish " + files);
 		
@@ -46,18 +47,18 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		var baseSrcDir = Path.directory(filePath);
 		var outPath = Path.join([ baseSrcDir, params.outPath ]);
 		
-		var cordovaCLI = new CordovaCLI(fileApi, outPath);
+		var cordovaCLI = new CordovaCLI(api.fileSystem, outPath);
 		
-		if (!fileApi.exists(outPath)
-		 || fileApi.readDirectory(outPath).length == 0)
+		if (!api.fileSystem.exists(outPath)
+		 || api.fileSystem.readDirectory(outPath).length == 0)
 		{
-			fileApi.createDirectory(outPath);
+			api.fileSystem.createDirectory(outPath);
 			createProject(cordovaCLI, filePath, params);
 		}
 		else
 		if (!cordovaCLI.isProjectDirectory())
 		{
-			removeDirectoryContent(fileApi, outPath);
+			removeDirectoryContent(api.fileSystem, outPath);
 			createProject(cordovaCLI, filePath, params);
 		}
 		
@@ -99,10 +100,10 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		
 		log("COPY");
 		var destDir = outPath + "/www";
-		removeDirectoryContent(fileApi, destDir);
+		removeDirectoryContent(api.fileSystem, destDir);
 		for (file in files)
 		{
-			fileApi.copy(file.baseDir + "/" + file.relPath, destDir + "/" + file.relPath);
+			api.fileSystem.copy(file.baseDir + "/" + file.relPath, destDir + "/" + file.relPath);
 		}
 		log("BUILD");
 		cordovaCLI.build();

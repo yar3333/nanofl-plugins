@@ -7,6 +7,7 @@ import nanofl.engine.FileApi;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IGeneratorPlugin;
+import nanofl.ide.plugins.PluginApi;
 import nanofl.ide.textureatlas.TextureAtlas;
 
 class CreateJSGeneratorPlugin implements IGeneratorPlugin
@@ -52,9 +53,9 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 		},
 	];
 	
-	public function generate(fileApi:FileApi, params:Params, filePath:String, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>) : Array<String>
+	public function generate(api:PluginApi, params:Params, filePath:String, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>) : Array<String>
 	{
-		var supportDir = fileApi.getPluginsDirectory() + "/CreateJSGeneratorPlugin";
+		var supportDir = api.fileSystem.getPluginsDirectory() + "/CreateJSGeneratorPlugin";
 		
 		var languageAndIde = params.mode.split("/");
 		
@@ -65,11 +66,11 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 		
 		var generator : BaseGenerator = switch (languageAndIde[0])
 		{
-			case "HTML":		new HtmlGenerator(fileApi, params, documentProperties, library, textureAtlases, supportDir);
-			case "JavaScript":	new JavaScriptGenerator(fileApi, params, documentProperties, library, textureAtlases, supportDir);
-			case "TypeScript":	new TypeScriptGenerator(fileApi, params, documentProperties, library, textureAtlases, supportDir);
-			case "Haxe":		new HaxeGenerator(fileApi, params, documentProperties, library, textureAtlases, supportDir);
-			case "TextureAtlas":new TextureAtlasGenerator(fileApi, params, documentProperties, library, textureAtlases, supportDir);
+			case "HTML":		new HtmlGenerator(api.fileSystem, params, documentProperties, library, textureAtlases, supportDir);
+			case "JavaScript":	new JavaScriptGenerator(api.fileSystem, params, documentProperties, library, textureAtlases, supportDir);
+			case "TypeScript":	new TypeScriptGenerator(api.fileSystem, params, documentProperties, library, textureAtlases, supportDir);
+			case "Haxe":		new HaxeGenerator(api.fileSystem, params, documentProperties, library, textureAtlases, supportDir);
+			case "TextureAtlas":new TextureAtlasGenerator(api.fileSystem, params, documentProperties, library, textureAtlases, supportDir);
 			case _: throw "Unsupported language '" + languageAndIde[0] + "'."; null;
 		}
 		trace("CreateJSGeneratorPlugin.generate filePath = " + filePath + "; supportDir = " + supportDir + "; dir= " + dir + "; name = " + name);
@@ -79,29 +80,29 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 		{
 			var generator : BaseIdeGenerator = switch (languageAndIde[1])
 			{
-				case "FlashDevelop": new FlashDevelopGenerator(fileApi, supportDir);
-				case "MsVisualStudio2013": new MsVisualStudio2013Generator(fileApi, supportDir);
+				case "FlashDevelop": new FlashDevelopGenerator(api.fileSystem, supportDir);
+				case "MsVisualStudio2013": new MsVisualStudio2013Generator(api.fileSystem, supportDir);
 				case _: throw "Unsupported IDE '" + languageAndIde[1] + "'."; null;
 			};
 			generator.generate(languageAndIde[0], dir, name);
 		}
 		
-		if (fileApi.exists(dir + "/bin") && fileApi.readDirectory(dir + "/bin").length == 0)
+		if (api.fileSystem.exists(dir + "/bin") && api.fileSystem.readDirectory(dir + "/bin").length == 0)
 		{
-			fileApi.remove(dir + "/bin");
+			api.fileSystem.remove(dir + "/bin");
 		}
 		
 		var r = [ name + ".html" ];
-		if (fileApi.exists(dir + "/bin")) r.push("bin");
+		if (api.fileSystem.exists(dir + "/bin")) r.push("bin");
 		return r;
 	}
 	
 	#if js
-	public function test(serverApi:nanofl.ide.ServerApi, fileApi:FileApi, params:Dynamic, filePath:String) : String
+	public function test(api:PluginApi, params:Dynamic, filePath:String) : String
 	{
 		var htmlFilePath = Path.withoutExtension(filePath) + ".html";
-		if (fileApi != null && !fileApi.exists(htmlFilePath)) return "File \"" + htmlFilePath + "\" not found.";
-		serverApi.openInBrowser(htmlFilePath);
+		if (api.fileSystem != null && !api.fileSystem.exists(htmlFilePath)) return "File \"" + htmlFilePath + "\" not found.";
+		api.serverApi.openInBrowser(htmlFilePath);
 		return null;
 	}
 	#end

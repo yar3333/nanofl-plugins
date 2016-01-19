@@ -12,7 +12,7 @@ extern interface IFilterPlugin
 	 */
 	var label : String;
 	/**
-	 * Custom properties for tune by user. Can be null or empty array if you have no customizable parameters.
+	 * Custom properties for tune by user. Can be null or empty array if there are no customizable parameters.
 	 */
 	var properties : Array<nanofl.engine.CustomProperty>;
 	function getFilter(params:Dynamic) : createjs.Filter;

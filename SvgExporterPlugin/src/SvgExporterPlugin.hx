@@ -2,10 +2,10 @@ import htmlparser.XmlBuilder;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.Debug.console;
 import nanofl.engine.DocumentProperties;
-import nanofl.engine.FileApi;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IExporterPlugin;
+import nanofl.ide.plugins.PluginApi;
 import svgexporter.SvgExporter;
 
 class SvgExporterPlugin implements IExporterPlugin
@@ -23,7 +23,7 @@ class SvgExporterPlugin implements IExporterPlugin
 	
 	public var properties : Array<CustomProperty> = null;
 	
-	public function exportDocument(fileApi:FileApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
+	public function exportDocument(api:PluginApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
 	{
 		console.log("Plugin.exportDocument " + srcFilePath + " => " + destFilePath);
 		
@@ -38,7 +38,7 @@ class SvgExporterPlugin implements IExporterPlugin
 			
 		xml.end();
 		
-		fileApi.saveContent(destFilePath, xml.toString());
+		api.fileSystem.saveContent(destFilePath, xml.toString());
 		
 		return true;
 	}

@@ -1,11 +1,13 @@
 import haxe.io.Path;
+import nanofl.engine.CustomProperty;
 import nanofl.engine.Debug.console;
 import nanofl.engine.FileApi;
-import nanofl.engine.libraryitems.MeshItem;
 import nanofl.engine.libraryitems.LibraryItem;
+import nanofl.engine.libraryitems.MeshItem;
 import nanofl.engine.Plugins;
 import nanofl.ide.CachedFile;
 import nanofl.ide.plugins.ILoaderPlugin;
+import nanofl.ide.plugins.PluginApi;
 using StringTools;
 using Lambda;
 
@@ -18,6 +20,17 @@ class BlenderLoaderPlugin implements ILoaderPlugin
 	
 	public var name = "BlenderLoader";
 	public var priority = 700;
+	public var menuItemName = "Blender";
+	public var menuItemIcon = "";
+	public var properties : Array<CustomProperty> =
+	[
+		{
+			type: "string",
+			name: "blenderPath",
+			label: "Path to the Blender",
+			defaultValue: ""
+		}
+	];
 	
 	public function new() {}
 	
@@ -25,11 +38,11 @@ class BlenderLoaderPlugin implements ILoaderPlugin
 	 * Not really load items, just convert Blender's `*.blend` files into ThreeJS's `*.json`
 	 * and let StdLoaders plugin to load *.json.
 	 */
-	public function load(fileApi:FileApi, baseDir:String, files:Map<String, CachedFile>) : Array<LibraryItem>
+	public function load(api:PluginApi, params:Dynamic, baseDir:String, files:Map<String, CachedFile>) : Array<LibraryItem>
 	{
 		var r = [];
 		
-		var scriptPath = fileApi.getPluginsDirectory() + "/BlenderLoaderPlugin/blend2three.py";
+		var scriptPath = api.fileSystem.getPluginsDirectory() + "/BlenderLoaderPlugin/blend2three.py";
 		var blenderExePath : String = null;
 		
 		for (file in files)
@@ -42,7 +55,7 @@ class BlenderLoaderPlugin implements ILoaderPlugin
 				var namePath = Path.withoutExtension(file.path);
 				if (blenderExePath == null)
 				{
-					blenderExePath = getBlenderExePath(fileApi);
+					blenderExePath = getBlenderExePath(api.fileSystem);
 					if (blenderExePath == null)
 					{
 						console.error("Blender3D is not found at standard paths.");
@@ -55,21 +68,21 @@ class BlenderLoaderPlugin implements ILoaderPlugin
 				var blendFilePath = baseDir + "/" + file.path;
 				var jsonFilePath = baseDir + "/" + relJsonFilePath;
 				
-				if (!fileApi.exists(jsonFilePath) || fileApi.getLastModified(jsonFilePath).getTime() < fileApi.getLastModified(blendFilePath).getTime())
+				if (!api.fileSystem.exists(jsonFilePath) || api.fileSystem.getLastModified(jsonFilePath).getTime() < api.fileSystem.getLastModified(blendFilePath).getTime())
 				{
-					fileApi.run(blenderExePath, [ "-b", blendFilePath, "-P", scriptPath, "--", jsonFilePath ], true);
-					if (fileApi.exists(jsonFilePath))
+					api.fileSystem.run(blenderExePath, [ "-b", blendFilePath, "-P", scriptPath, "--", jsonFilePath ], true);
+					if (api.fileSystem.exists(jsonFilePath))
 					{
 						if (!files.exists(relJsonFilePath))
 						{
-							files.set(relJsonFilePath, new CachedFile(fileApi, baseDir, relJsonFilePath));
+							files.set(relJsonFilePath, new CachedFile(api.fileSystem, baseDir, relJsonFilePath));
 						}
 					}
 				}
 				
 				if (files.exists(relJsonFilePath))
 				{
-					var item = MeshItem.load(fileApi, relJsonFilePath, ext, files);
+					var item = MeshItem.load(api, relJsonFilePath, ext, files);
 					if (item != null) r.push(item);
 				}
 				

@@ -16,8 +16,8 @@ CreateJSGeneratorPlugin.main = function() {
 	nanofl.engine.Plugins.registerGenerator(new CreateJSGeneratorPlugin());
 };
 CreateJSGeneratorPlugin.prototype = {
-	generate: function(fileApi,params,filePath,documentProperties,library,textureAtlases) {
-		var supportDir = fileApi.getPluginsDirectory() + "/CreateJSGeneratorPlugin";
+	generate: function(api,params,filePath,documentProperties,library,textureAtlases) {
+		var supportDir = api.fileSystem.getPluginsDirectory() + "/CreateJSGeneratorPlugin";
 		var languageAndIde = params.mode.split("/");
 		var pathParts = filePath.split("/");
 		var dir = pathParts.slice(0,pathParts.length - 1).join("/");
@@ -28,19 +28,19 @@ CreateJSGeneratorPlugin.prototype = {
 		var _g = languageAndIde[0];
 		switch(_g) {
 		case "HTML":
-			generator = new languages_HtmlGenerator(fileApi,params,documentProperties,library,textureAtlases,supportDir);
+			generator = new languages_HtmlGenerator(api.fileSystem,params,documentProperties,library,textureAtlases,supportDir);
 			break;
 		case "JavaScript":
-			generator = new languages_JavaScriptGenerator(fileApi,params,documentProperties,library,textureAtlases,supportDir);
+			generator = new languages_JavaScriptGenerator(api.fileSystem,params,documentProperties,library,textureAtlases,supportDir);
 			break;
 		case "TypeScript":
-			generator = new languages_TypeScriptGenerator(fileApi,params,documentProperties,library,textureAtlases,supportDir);
+			generator = new languages_TypeScriptGenerator(api.fileSystem,params,documentProperties,library,textureAtlases,supportDir);
 			break;
 		case "Haxe":
-			generator = new languages_HaxeGenerator(fileApi,params,documentProperties,library,textureAtlases,supportDir);
+			generator = new languages_HaxeGenerator(api.fileSystem,params,documentProperties,library,textureAtlases,supportDir);
 			break;
 		case "TextureAtlas":
-			generator = new languages_TextureAtlasGenerator(fileApi,params,documentProperties,library,textureAtlases,supportDir);
+			generator = new languages_TextureAtlasGenerator(api.fileSystem,params,documentProperties,library,textureAtlases,supportDir);
 			break;
 		default:
 			throw new js__$Boot_HaxeError("Unsupported language '" + languageAndIde[0] + "'.");
@@ -53,10 +53,10 @@ CreateJSGeneratorPlugin.prototype = {
 			var _g1 = languageAndIde[1];
 			switch(_g1) {
 			case "FlashDevelop":
-				generator1 = new ides_FlashDevelopGenerator(fileApi,supportDir);
+				generator1 = new ides_FlashDevelopGenerator(api.fileSystem,supportDir);
 				break;
 			case "MsVisualStudio2013":
-				generator1 = new ides_MsVisualStudio2013Generator(fileApi,supportDir);
+				generator1 = new ides_MsVisualStudio2013Generator(api.fileSystem,supportDir);
 				break;
 			default:
 				throw new js__$Boot_HaxeError("Unsupported IDE '" + languageAndIde[1] + "'.");
@@ -64,15 +64,15 @@ CreateJSGeneratorPlugin.prototype = {
 			}
 			generator1.generate(languageAndIde[0],dir,name);
 		}
-		if(fileApi.exists(dir + "/bin") && fileApi.readDirectory(dir + "/bin").length == 0) fileApi.remove(dir + "/bin");
+		if(api.fileSystem.exists(dir + "/bin") && api.fileSystem.readDirectory(dir + "/bin").length == 0) api.fileSystem.remove(dir + "/bin");
 		var r = [name + ".html"];
-		if(fileApi.exists(dir + "/bin")) r.push("bin");
+		if(api.fileSystem.exists(dir + "/bin")) r.push("bin");
 		return r;
 	}
-	,test: function(serverApi,fileApi,params,filePath) {
+	,test: function(api,params,filePath) {
 		var htmlFilePath = haxe_io_Path.withoutExtension(filePath) + ".html";
-		if(fileApi != null && !fileApi.exists(htmlFilePath)) return "File \"" + htmlFilePath + "\" not found.";
-		serverApi.openInBrowser(htmlFilePath);
+		if(api.fileSystem != null && !api.fileSystem.exists(htmlFilePath)) return "File \"" + htmlFilePath + "\" not found.";
+		api.serverApi.openInBrowser(htmlFilePath);
 		return null;
 	}
 	,__class__: CreateJSGeneratorPlugin

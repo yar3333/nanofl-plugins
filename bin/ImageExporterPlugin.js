@@ -51,8 +51,8 @@ var JpegImageExporterPlugin = function() {
 JpegImageExporterPlugin.__name__ = true;
 JpegImageExporterPlugin.__interfaces__ = [nanofl.ide.plugins.IExporterPlugin];
 JpegImageExporterPlugin.prototype = {
-	exportDocument: function(fileApi,params,srcFilePath,destFilePath,documentProperties,library) {
-		ImageExporter.run("image/jpeg",fileApi,destFilePath,documentProperties,library);
+	exportDocument: function(api,params,srcFilePath,destFilePath,documentProperties,library) {
+		ImageExporter.run("image/jpeg",api.fileSystem,destFilePath,documentProperties,library);
 		return true;
 	}
 	,__class__: JpegImageExporterPlugin
@@ -76,8 +76,8 @@ var PngImageExporterPlugin = function() {
 PngImageExporterPlugin.__name__ = true;
 PngImageExporterPlugin.__interfaces__ = [nanofl.ide.plugins.IExporterPlugin];
 PngImageExporterPlugin.prototype = {
-	exportDocument: function(fileApi,params,srcFilePath,destFilePath,documentProperties,library) {
-		ImageExporter.run("image/png",fileApi,destFilePath,documentProperties,library);
+	exportDocument: function(api,params,srcFilePath,destFilePath,documentProperties,library) {
+		ImageExporter.run("image/png",api.fileSystem,destFilePath,documentProperties,library);
 		return true;
 	}
 	,__class__: PngImageExporterPlugin

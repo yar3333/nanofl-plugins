@@ -1,19 +1,23 @@
 import haxe.io.Path;
-import nanofl.engine.FileApi;
+import nanofl.engine.CustomProperty;
 import nanofl.engine.libraryitems.FontItem;
 import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.ide.CachedFile;
 import nanofl.ide.plugins.ILoaderPlugin;
+import nanofl.ide.plugins.PluginApi;
 using Lambda;
 
 class FontLoaderPlugin implements ILoaderPlugin
 {
 	public var name = "FontLoader";
 	public var priority = 400;
+	public var menuItemName = "Font";
+	public var menuItemIcon = "";
+	public var properties : Array<CustomProperty> = null;
 	
 	public function new() {}
 	
-	public function load(fileApi:FileApi, baseDir:String, files:Map<String, CachedFile>) : Array<LibraryItem>
+	public function load(api:PluginApi, params:Dynamic, baseDir:String, files:Map<String, CachedFile>) : Array<LibraryItem>
 	{
 		var r = new Array<LibraryItem>();
 		

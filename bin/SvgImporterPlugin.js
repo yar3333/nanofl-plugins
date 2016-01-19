@@ -305,9 +305,9 @@ SvgImporterPlugin.main = function() {
 	nanofl.engine.Plugins.registerImporter(new SvgImporterPlugin());
 };
 SvgImporterPlugin.prototype = {
-	importDocument: function(fileApi,params,srcFilePath,destFilePath,documentProperties,library,fonts,callb) {
+	importDocument: function(api,params,srcFilePath,destFilePath,documentProperties,library,callb) {
 		haxe_Log.trace("Load",{ fileName : "SvgImporterPlugin.hx", lineNumber : 40, className : "SvgImporterPlugin", methodName : "importDocument"});
-		var xml = new htmlparser.XmlDocument(fileApi.getContent(srcFilePath));
+		var xml = new htmlparser.XmlDocument(api.fileSystem.getContent(srcFilePath));
 		haxe_Log.trace("Parse",{ fileName : "SvgImporterPlugin.hx", lineNumber : 44, className : "SvgImporterPlugin", methodName : "importDocument"});
 		var svg = new svgimport_Svg(xml);
 		documentProperties.width = Math.round(svg.width);

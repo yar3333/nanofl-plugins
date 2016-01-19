@@ -1,11 +1,11 @@
 import htmlparser.XmlDocument;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.DocumentProperties;
-import nanofl.engine.FileApi;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.LibraryTools;
 import nanofl.ide.plugins.IImporterPlugin;
+import nanofl.ide.plugins.PluginApi;
 import stdlib.Debug;
 import svgimport.Svg;
 import svgimport.SvgElement;
@@ -35,11 +35,11 @@ class SvgImporterPlugin implements IImporterPlugin
 		}
 	];
 	
-	public function importDocument(fileApi:FileApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, fonts:Array<String>, callb:Bool->Void)
+	public function importDocument(api:PluginApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, callb:Bool->Void)
 	{
 		trace("Load");
 		
-		var xml = new XmlDocument(fileApi.getContent(srcFilePath));
+		var xml = new XmlDocument(api.fileSystem.getContent(srcFilePath));
 		
 		trace("Parse");
 		

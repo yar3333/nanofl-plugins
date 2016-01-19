@@ -7,6 +7,9 @@ function $extend(from, fields) {
 	return proto;
 }
 var BlenderLoaderPlugin = function() {
+	this.properties = [{ type : "string", name : "blenderPath", label : "Path to the Blender", defaultValue : ""}];
+	this.menuItemIcon = "";
+	this.menuItemName = "Blender";
 	this.priority = 700;
 	this.name = "BlenderLoader";
 };
@@ -16,9 +19,9 @@ BlenderLoaderPlugin.main = function() {
 	nanofl.engine.Plugins.registerLoader(new BlenderLoaderPlugin());
 };
 BlenderLoaderPlugin.prototype = {
-	load: function(fileApi,baseDir,files) {
+	load: function(api,params,baseDir,files) {
 		var r = [];
-		var scriptPath = fileApi.getPluginsDirectory() + "/BlenderLoaderPlugin/blend2three.py";
+		var scriptPath = api.fileSystem.getPluginsDirectory() + "/BlenderLoaderPlugin/blend2three.py";
 		var blenderExePath = null;
 		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
 		while( $it0.hasNext() ) {
@@ -28,7 +31,7 @@ BlenderLoaderPlugin.prototype = {
 			if(ext != null && ext.toLowerCase() == "blend") {
 				var namePath = haxe_io_Path.withoutExtension(file.path);
 				if(blenderExePath == null) {
-					blenderExePath = this.getBlenderExePath(fileApi);
+					blenderExePath = this.getBlenderExePath(api.fileSystem);
 					if(blenderExePath == null) {
 						nanofl.engine.Debug.console.error("Blender3D is not found at standard paths.");
 						return r;
@@ -37,17 +40,17 @@ BlenderLoaderPlugin.prototype = {
 				var relJsonFilePath = namePath + ".json";
 				var blendFilePath = baseDir + "/" + file.path;
 				var jsonFilePath = baseDir + "/" + relJsonFilePath;
-				if(!fileApi.exists(jsonFilePath) || fileApi.getLastModified(jsonFilePath).getTime() < fileApi.getLastModified(blendFilePath).getTime()) {
-					fileApi.run(blenderExePath,["-b",blendFilePath,"-P",scriptPath,"--",jsonFilePath],true);
-					if(fileApi.exists(jsonFilePath)) {
+				if(!api.fileSystem.exists(jsonFilePath) || api.fileSystem.getLastModified(jsonFilePath).getTime() < api.fileSystem.getLastModified(blendFilePath).getTime()) {
+					api.fileSystem.run(blenderExePath,["-b",blendFilePath,"-P",scriptPath,"--",jsonFilePath],true);
+					if(api.fileSystem.exists(jsonFilePath)) {
 						if(!(__map_reserved[relJsonFilePath] != null?files.existsReserved(relJsonFilePath):files.h.hasOwnProperty(relJsonFilePath))) {
-							var value = new nanofl.ide.CachedFile(fileApi,baseDir,relJsonFilePath);
+							var value = new nanofl.ide.CachedFile(api.fileSystem,baseDir,relJsonFilePath);
 							if(__map_reserved[relJsonFilePath] != null) files.setReserved(relJsonFilePath,value); else files.h[relJsonFilePath] = value;
 						}
 					}
 				}
 				if(__map_reserved[relJsonFilePath] != null?files.existsReserved(relJsonFilePath):files.h.hasOwnProperty(relJsonFilePath)) {
-					var item = nanofl.engine.libraryitems.MeshItem.load(fileApi,relJsonFilePath,ext,files);
+					var item = nanofl.engine.libraryitems.MeshItem.load(api,relJsonFilePath,ext,files);
 					if(item != null) r.push(item);
 				}
 				file.exclude();

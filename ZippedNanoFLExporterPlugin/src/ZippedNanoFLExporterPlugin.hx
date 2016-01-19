@@ -1,10 +1,10 @@
 import haxe.io.Path;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.DocumentProperties;
-import nanofl.engine.FileApi;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IExporterPlugin;
+import nanofl.ide.plugins.PluginApi;
 
 class ZippedNanoFLExporterPlugin implements IExporterPlugin
 {
@@ -21,16 +21,16 @@ class ZippedNanoFLExporterPlugin implements IExporterPlugin
 	
 	public var properties : Array<CustomProperty> = null;
 	
-	public function exportDocument(fileApi:FileApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
+	public function exportDocument(api:PluginApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library) : Bool
 	{
 		trace("ZippedNanoFLExporter " + srcFilePath + " => " + destFilePath);
 		
 		var renSrc  = Path.withoutExtension(srcFilePath) + ".*";
 		var renDest = Path.join([ Path.directory(srcFilePath), Path.withoutDirectory(Path.withoutExtension(destFilePath)) ]) + ".*";
 		
-		fileApi.rename(renSrc, renDest);
-		var success = fileApi.zip(Path.directory(srcFilePath), destFilePath);
-		fileApi.rename(renDest, renSrc);
+		api.fileSystem.rename(renSrc, renDest);
+		var success = api.fileSystem.zip(Path.directory(srcFilePath), destFilePath);
+		api.fileSystem.rename(renDest, renSrc);
 		
 		return success;
 	}

@@ -6,6 +6,7 @@ import nanofl.engine.FileApi;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IPublisherPlugin;
+import nanofl.ide.plugins.PluginApi;
 
 class SimpleHtmlPublisherPlugin implements IPublisherPlugin
 {
@@ -23,7 +24,7 @@ class SimpleHtmlPublisherPlugin implements IPublisherPlugin
 		{ type:"string", name:"outPath", label:"Output folder", defaultValue:"publish/html", description:"Folder to store cordova files." }
 	];
 	
-	public function publish(fileApi:FileApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, files:Array<{ baseDir:String, relPath:String }>) : Void
+	public function publish(api:PluginApi, params:Dynamic, filePath:String, documentProperties:DocumentProperties, library:Library, files:Array<{ baseDir:String, relPath:String }>) : Void
 	{
 		console.log("SimpleHtmlPublisherPlugin.publish " + files);
 		
@@ -32,23 +33,23 @@ class SimpleHtmlPublisherPlugin implements IPublisherPlugin
 		var baseSrcDir = Path.directory(filePath);
 		var outPath = Path.join([ baseSrcDir, params.outPath ]);
 		
-		if (fileApi.exists(outPath))
+		if (api.fileSystem.exists(outPath))
 		{
-			for (file in fileApi.readDirectory(outPath))
+			for (file in api.fileSystem.readDirectory(outPath))
 			{
-				fileApi.remove(outPath + "/" + file);
+				api.fileSystem.remove(outPath + "/" + file);
 			}
 		}
 		else
 		{
-			fileApi.createDirectory(outPath);
+			api.fileSystem.createDirectory(outPath);
 		}
 		
 		log("COPY");
-		removeDirectoryContent(fileApi, outPath);
+		removeDirectoryContent(api.fileSystem, outPath);
 		for (file in files)
 		{
-			fileApi.copy(file.baseDir + "/" + file.relPath, outPath + "/" + file.relPath);
+			api.fileSystem.copy(file.baseDir + "/" + file.relPath, outPath + "/" + file.relPath);
 		}
 	}
 	

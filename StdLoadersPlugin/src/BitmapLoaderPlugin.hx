@@ -1,9 +1,11 @@
 import haxe.io.Path;
+import nanofl.engine.CustomProperty;
 import nanofl.engine.FileApi;
 import nanofl.engine.libraryitems.BitmapItem;
 import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.ide.CachedFile;
 import nanofl.ide.plugins.ILoaderPlugin;
+import nanofl.ide.plugins.PluginApi;
 using StringTools;
 using Lambda;
 
@@ -14,9 +16,13 @@ class BitmapLoaderPlugin implements ILoaderPlugin
 	public var name = "BitmapLoader";
 	public var priority = 100;
 	
+	public var menuItemName = "Bitmap";
+	public var menuItemIcon = "";
+	public var properties : Array<CustomProperty> = null;
+	
 	public function new() {}
 	
-	public function load(fileApi:FileApi, baseDir:String, files:Map<String, CachedFile>) : Array<LibraryItem>
+	public function load(api:PluginApi, params:Dynamic, baseDir:String, files:Map<String, CachedFile>) : Array<LibraryItem>
 	{
 		var r = new Array<LibraryItem>();
 		

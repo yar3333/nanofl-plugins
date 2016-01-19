@@ -15,15 +15,15 @@ extern interface IPublisherPlugin
 	 */
 	var menuItemIcon : String;
 	/**
-	 * Custom properties for tune by user. Can be null or empty array if you have no customizable parameters.
+	 * Custom properties for tune by user. Can be null or empty array if there are no customizable parameters.
 	 */
 	var properties : Array<nanofl.engine.CustomProperty>;
 	/**
 	 * This method must publish document.
-	 * @param	fileApi		Use this object to work with file system.
+	 * @param	api			Use this object to access to system functions.
 	 * @param	params		Custom parameters specified by user (produced from `properties`).
 	 * @param	filePath	Path to `*.nfl` file.
 	 * @param	files		Files to publish.
 	 */
-	function publish(fileApi:nanofl.engine.FileApi, params:Dynamic, filePath:String, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, files:Array<{ var relPath : String; var baseDir : String; }>) : Void;
+	function publish(api:nanofl.ide.plugins.PluginApi, params:Dynamic, filePath:String, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, files:Array<{ var relPath : String; var baseDir : String; }>) : Void;
 }

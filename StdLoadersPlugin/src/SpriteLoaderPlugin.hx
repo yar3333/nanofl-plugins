@@ -1,19 +1,23 @@
 import haxe.io.Path;
-import nanofl.engine.FileApi;
+import nanofl.engine.CustomProperty;
 import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.engine.libraryitems.SpriteItem;
 import nanofl.ide.CachedFile;
 import nanofl.ide.plugins.ILoaderPlugin;
+import nanofl.ide.plugins.PluginApi;
 using Lambda;
 
 class SpriteLoaderPlugin implements ILoaderPlugin
 {
 	public var name = "SpriteLoader";
 	public var priority = 500;
+	public var menuItemName = "Sprite";
+	public var menuItemIcon = "";
+	public var properties : Array<CustomProperty> = null;
 	
 	public function new() {}
 	
-	public function load(fileApi:FileApi, baseDir:String, files:Map<String, CachedFile>) : Array<LibraryItem>
+	public function load(api:PluginApi, params:Dynamic, baseDir:String, files:Map<String, CachedFile>) : Array<LibraryItem>
 	{
 		var r = new Array<LibraryItem>();
 		

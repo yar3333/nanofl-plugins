@@ -4671,6 +4671,7 @@ nanofl_engine_FileApi.prototype = {
 	,getEnvironmentVariable: null
 	,convertImage: null
 	,convertAudio: null
+	,nativePath: null
 	,__class__: nanofl_engine_FileApi
 };
 var nanofl_engine_FilterDef = function(name,params) {
@@ -5584,18 +5585,18 @@ nanofl_engine_Library.prototype = {
 		return fonts;
 	}
 	,getItem: function(namePath) {
-		stdlib_Debug.assert(namePath != null,null,{ fileName : "Library.hx", lineNumber : 322, className : "nanofl.engine.Library", methodName : "getItem"});
-		stdlib_Debug.assert(namePath != "",null,{ fileName : "Library.hx", lineNumber : 323, className : "nanofl.engine.Library", methodName : "getItem"});
+		stdlib_Debug.assert(namePath != null,null,{ fileName : "Library.hx", lineNumber : 324, className : "nanofl.engine.Library", methodName : "getItem"});
+		stdlib_Debug.assert(namePath != "",null,{ fileName : "Library.hx", lineNumber : 325, className : "nanofl.engine.Library", methodName : "getItem"});
 		var r = this.items.get(namePath);
 		if(r != null) return r;
-		haxe_Log.trace("Symbol '" + namePath + "' is not found.",{ fileName : "Library.hx", lineNumber : 326, className : "nanofl.engine.Library", methodName : "getItem"});
+		haxe_Log.trace("Symbol '" + namePath + "' is not found.",{ fileName : "Library.hx", lineNumber : 328, className : "nanofl.engine.Library", methodName : "getItem"});
 		return nanofl_engine_libraryitems_MovieClipItem.createWithFrame(namePath,[new nanofl_engine_elements_TextElement("",0,0,false,true,[new nanofl_TextRun("Symbol '" + namePath + "' is not found.")])],"temp");
 	}
 	,hasItem: function(namePath) {
 		return this.items.exists(namePath);
 	}
 	,save: function(fileApi) {
-		stdlib_Debug.assert(this.libraryDir != null,null,{ fileName : "Library.hx", lineNumber : 337, className : "nanofl.engine.Library", methodName : "save"});
+		stdlib_Debug.assert(this.libraryDir != null,null,{ fileName : "Library.hx", lineNumber : 339, className : "nanofl.engine.Library", methodName : "save"});
 		var $it0 = this.items.iterator();
 		while( $it0.hasNext() ) {
 			var item = $it0.next();

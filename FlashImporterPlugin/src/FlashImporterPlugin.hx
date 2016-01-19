@@ -7,6 +7,8 @@ import nanofl.engine.FileApi;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
 import nanofl.ide.plugins.IImporterPlugin;
+import nanofl.ide.plugins.PluginApi;
+import nanofl.ide.Preferences;
 import stdlib.Uuid;
 
 class FlashImporterPlugin implements IImporterPlugin
@@ -38,29 +40,28 @@ class FlashImporterPlugin implements IImporterPlugin
 		}
 	];
 	
-	public function importDocument(fileApi:FileApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, fonts:Array<String>, callb:Bool->Void)
+	public function importDocument(api:PluginApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:DocumentProperties, library:Library, callb:Bool->Void)
 	{
 		if (Path.extension(srcFilePath) == "fla")
 		{
-			var dir = fileApi.getTempDirectory() + "/unsaved/" + Uuid.newUuid();
-			fileApi.unzip(srcFilePath, dir);
+			var dir = api.fileSystem.getTempDirectory() + "/unsaved/" + Uuid.newUuid();
+			api.fileSystem.unzip(srcFilePath, dir);
 			
-			var xflFiles = fileApi.readDirectory(dir).filter(function(s) return Path.extension(s).toLowerCase() == "xfl");
+			var xflFiles = api.fileSystem.readDirectory(dir).filter(function(s) return Path.extension(s).toLowerCase() == "xfl");
 			if (xflFiles.length == 0) throw "XFL file is not found";
 			
 			DocumentImporter.process
 			(
+				api,
 				IMPORT_MEDIA_SCRIPT_TEMPLATE,
-				fileApi,
 				dir + "/" + xflFiles[0],
 				destFilePath,
 				documentProperties,
 				library,
-				fonts,
 				params.importMedia,
 				function(success:Bool)
 				{
-					fileApi.remove(dir);
+					api.fileSystem.remove(dir);
 					callb(success);
 				}
 			);
@@ -69,13 +70,12 @@ class FlashImporterPlugin implements IImporterPlugin
 		{
 			DocumentImporter.process
 			(
+				api,
 				IMPORT_MEDIA_SCRIPT_TEMPLATE,
-				fileApi,
 				srcFilePath,
 				destFilePath,
 				documentProperties,
 				library,
-				fonts,
 				params.importMedia,
 				callb
 			);

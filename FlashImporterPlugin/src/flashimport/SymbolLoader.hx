@@ -32,11 +32,11 @@ import nanofl.engine.Layer;
 import nanofl.engine.Library;
 import nanofl.engine.libraryitems.BitmapItem;
 import nanofl.engine.libraryitems.InstancableItem;
-import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.engine.libraryitems.MovieClipItem;
 import nanofl.engine.MotionTween;
 import nanofl.engine.strokes.IStroke;
 import nanofl.engine.strokes.SolidStroke;
+import nanofl.ide.plugins.PluginApi;
 import nanofl.TextRun;
 import stdlib.Std;
 import stdlib.Utf8;
@@ -59,14 +59,14 @@ class SymbolLoader
 	
 	var generatedAutoIDs = new Array<String>();
 	
-	public function new(fileApi:FileApi, doc:XmlDocument, srcLibDir:String, library:Library, fonts:Array<String>)
+	public function new(api:PluginApi, doc:XmlDocument, srcLibDir:String, library:Library)
 	{
-		this.fileApi = fileApi;
+		this.fileApi = api.fileSystem;
 		this.doc = doc;
 		this.srcLibDir = srcLibDir;
 		this.library = library;
 		
-		this.fontConvertor = new FontConvertor(fonts);
+		this.fontConvertor = new FontConvertor(api.fonts);
 	}
 	
 	public function loadFromFile(href:String) : Void

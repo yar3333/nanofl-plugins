@@ -13,8 +13,20 @@ extern interface ILoaderPlugin
 	 */
 	var priority : Int;
 	/**
+	 * Like "Blender".
+	 */
+	var menuItemName : String;
+	/**
+	 * Css class or image url in "url(pathToImage)" format.
+	 */
+	var menuItemIcon : String;
+	/**
+	 * Custom properties for tune by user. Can be null or empty array if there are no customizable parameters.
+	 */
+	var properties : Array<nanofl.engine.CustomProperty>;
+	/**
 	 * Method must detect loadable files and return created LibraryItems.
 	 * Use file.exclude() for processed files (to prevent loading them from other loaders).
 	 */
-	function load(fileApi:nanofl.engine.FileApi, baseDir:String, files:Map<String, nanofl.ide.CachedFile>) : Array<nanofl.engine.libraryitems.LibraryItem>;
+	function load(api:nanofl.ide.plugins.PluginApi, params:Dynamic, baseDir:String, files:Map<String, nanofl.ide.CachedFile>) : Array<nanofl.engine.libraryitems.LibraryItem>;
 }

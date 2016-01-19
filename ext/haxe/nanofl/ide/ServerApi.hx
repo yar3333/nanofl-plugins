@@ -8,7 +8,6 @@ extern interface ServerApi
 	function requestUrl(url:String, ?headers:Array<{ var value : String; var name : String; }>, callb:String -> Void) : Void;
 	function openInBrowser(url:String) : Void;
 	function uploadFiles(files:Array<js.html.File>, destDir:String, callb:Void -> Void) : Void;
-	function getFonts() : Array<String>;
 	function loadFilesFromClipboard(destDir:String, callb:Bool -> Void) : Void;
 	function saveFilesIntoClipboard(baseDir:String, relativePaths:Array<String>, callb:Void -> Void) : Void;
 }
