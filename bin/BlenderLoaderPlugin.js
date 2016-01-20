@@ -28,12 +28,12 @@ BlenderLoaderPlugin.prototype = {
 			var file = $it0.next();
 			if(file.excluded) continue;
 			var ext = haxe_io_Path.extension(file.path);
-			if(ext != null && ext.toLowerCase() == "blend") {
+			if(ext != null && ext == "blend") {
 				var namePath = haxe_io_Path.withoutExtension(file.path);
 				if(blenderExePath == null) {
 					blenderExePath = this.getBlenderExePath(api.fileSystem,params);
 					if(blenderExePath == null) {
-						nanofl.engine.Debug.console.error("Blender3D is not found at standard paths.");
+						nanofl.engine.Debug.console.error("Blender is not found. Ensure Blender installed and check the path to the blender.exe in Preferences.");
 						return r;
 					}
 				}
@@ -50,7 +50,7 @@ BlenderLoaderPlugin.prototype = {
 					}
 				}
 				if(__map_reserved[relJsonFilePath] != null?files.existsReserved(relJsonFilePath):files.h.hasOwnProperty(relJsonFilePath)) {
-					var item = nanofl.engine.libraryitems.MeshItem.load(api,relJsonFilePath,ext,files);
+					var item = nanofl.engine.libraryitems.MeshItem.load(api,namePath,ext,files);
 					if(item != null) r.push(item);
 				}
 				file.exclude();

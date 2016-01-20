@@ -52,7 +52,7 @@ class BlenderLoaderPlugin implements ILoaderPlugin
 			if (file.excluded) continue;
 			
 			var ext = Path.extension(file.path);
-			if (ext != null && ext.toLowerCase() == "blend")
+			if (ext != null && ext == "blend")
 			{
 				var namePath = Path.withoutExtension(file.path);
 				if (blenderExePath == null)
@@ -60,7 +60,7 @@ class BlenderLoaderPlugin implements ILoaderPlugin
 					blenderExePath = getBlenderExePath(api.fileSystem, params);
 					if (blenderExePath == null)
 					{
-						console.error("Blender3D is not found at standard paths.");
+						console.error("Blender is not found. Ensure Blender installed and check the path to the blender.exe in Preferences.");
 						return r;
 					}
 				}
@@ -84,7 +84,7 @@ class BlenderLoaderPlugin implements ILoaderPlugin
 				
 				if (files.exists(relJsonFilePath))
 				{
-					var item = MeshItem.load(api, relJsonFilePath, ext, files);
+					var item = MeshItem.load(api, namePath, ext, files);
 					if (item != null) r.push(item);
 				}
 				

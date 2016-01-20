@@ -162,14 +162,14 @@ MeshLoaderPlugin.__interfaces__ = [nanofl.ide.plugins.ILoaderPlugin];
 MeshLoaderPlugin.prototype = {
 	load: function(api,params,baseDir,files) {
 		var r = [];
+		var extensions = ["xml"].concat(nanofl.engine.libraryitems.MeshItem.extensions);
 		var $it0 = new haxe_ds__$StringMap_StringMapIterator(files,files.arrayKeys());
 		while( $it0.hasNext() ) {
 			var file = $it0.next();
 			if(file.excluded) continue;
 			var ext = haxe_io_Path.extension(file.path);
-			if(ext != null && ext.toLowerCase() == "json") {
-				console.log("Ready to load MeshItem");
-				var item = nanofl.engine.libraryitems.MeshItem.load(api,file.path,ext,files);
+			if(HxOverrides.indexOf(extensions,ext,0) >= 0) {
+				var item = nanofl.engine.libraryitems.MeshItem.load(api,haxe_io_Path.withoutExtension(file.path),ext,files);
 				if(item != null) r.push(item);
 			}
 		}

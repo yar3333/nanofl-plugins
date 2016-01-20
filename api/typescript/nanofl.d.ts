@@ -2255,7 +2255,8 @@ declare module nanofl.engine.libraryitems
 		getUsedSymbolNamePaths() : string[];
 		generateOptimizedFiles(fileSystem:nanofl.engine.FileSystem, optimizations:nanofl.ide.PublishOptimizations, destDir:string) : { relPath : string; baseDir : string; }[];
 		toString() : string;
-		static load(api:nanofl.ide.NanoApi, relFilePath:string, originalExt:string, files:Map<string, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.MeshItem;
+		static extensions : string[];
+		static load(api:nanofl.ide.NanoApi, namePath:string, originalExt:string, files:Map<string, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.MeshItem;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MeshItem;
 	}
 	

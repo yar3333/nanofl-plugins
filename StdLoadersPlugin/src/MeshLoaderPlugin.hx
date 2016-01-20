@@ -1,11 +1,10 @@
-import nanofl.engine.CustomProperty;
 import haxe.io.Path;
-import nanofl.engine.FileSystem;
+import nanofl.engine.CustomProperty;
 import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.engine.libraryitems.MeshItem;
 import nanofl.ide.CachedFile;
-import nanofl.ide.plugins.ILoaderPlugin;
 import nanofl.ide.NanoApi;
+import nanofl.ide.plugins.ILoaderPlugin;
 using StringTools;
 using Lambda;
 
@@ -23,15 +22,16 @@ class MeshLoaderPlugin implements ILoaderPlugin
 	{
 		var r = new Array<LibraryItem>();
 		
+		var extensions = [ "xml" ].concat(MeshItem.extensions);
+		
 		for (file in files)
 		{
 			if (file.excluded) continue;
 			
 			var ext = Path.extension(file.path);
-			if (ext != null && ext.toLowerCase() == "json")
+			if (extensions.indexOf(ext) >= 0)
 			{
-				trace("Ready to load MeshItem");
-				var item = MeshItem.load(api, file.path, ext, files);
+				var item = MeshItem.load(api, Path.withoutExtension(file.path), ext, files);
 				if (item != null) r.push(item);
 			}
 		}

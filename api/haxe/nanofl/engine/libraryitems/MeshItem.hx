@@ -26,6 +26,7 @@ extern class MeshItem extends nanofl.engine.libraryitems.InstancableItem impleme
 	override function getUsedSymbolNamePaths() : Array<String>;
 	override function generateOptimizedFiles(fileSystem:nanofl.engine.FileSystem, optimizations:nanofl.ide.PublishOptimizations, destDir:String) : Array<{ var relPath : String; var baseDir : String; }>;
 	override function toString() : String;
-	static function load(api:nanofl.ide.NanoApi, relFilePath:String, originalExt:String, files:Map<String, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.MeshItem;
+	static var extensions(default, null) : Array<String>;
+	static function load(api:nanofl.ide.NanoApi, namePath:String, originalExt:String, files:Map<String, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.MeshItem;
 	static function parse(namePath:String, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MeshItem;
 }
