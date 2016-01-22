@@ -7694,21 +7694,21 @@ nanofl_engine_elements_ShapeElement.prototype = $extend(nanofl_engine_elements_E
 			++_g;
 			p.getEdges(r);
 		}
-		stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(r),null,{ fileName : "ShapeElement.hx", lineNumber : 1013, className : "nanofl.engine.elements.ShapeElement", methodName : "getEdges"});
+		stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(r),null,{ fileName : "ShapeElement.hx", lineNumber : 1027, className : "nanofl.engine.elements.ShapeElement", methodName : "getEdges"});
 		return r;
 	}
 	,replaceEdge: function(search,replacement) {
 		nanofl_engine_geom_StrokeEdges.replace(this.edges,search,replacement);
-		stdlib_Debug.assert(search.indexIn(this.edges) < 0,"\nsearch = " + Std.string(search) + "\nreplacement = " + Std.string(replacement),{ fileName : "ShapeElement.hx", lineNumber : 1020, className : "nanofl.engine.elements.ShapeElement", methodName : "replaceEdge"});
+		stdlib_Debug.assert(search.indexIn(this.edges) < 0,"\nsearch = " + Std.string(search) + "\nreplacement = " + Std.string(replacement),{ fileName : "ShapeElement.hx", lineNumber : 1034, className : "nanofl.engine.elements.ShapeElement", methodName : "replaceEdge"});
 		var _g = 0;
 		var _g1 = this.polygons;
 		while(_g < _g1.length) {
 			var p = _g1[_g];
 			++_g;
 			p.replaceEdge(search,replacement);
-			stdlib_Debug.assert(search.indexIn(p.getEdges()) < 0,"\nsearch = " + Std.string(search) + "\nreplacement = " + Std.string(replacement),{ fileName : "ShapeElement.hx", lineNumber : 1025, className : "nanofl.engine.elements.ShapeElement", methodName : "replaceEdge"});
+			stdlib_Debug.assert(search.indexIn(p.getEdges()) < 0,"\nsearch = " + Std.string(search) + "\nreplacement = " + Std.string(replacement),{ fileName : "ShapeElement.hx", lineNumber : 1039, className : "nanofl.engine.elements.ShapeElement", methodName : "replaceEdge"});
 		}
-		stdlib_Debug.assert(search.indexIn(this.getEdges()) < 0,"\nsearch = " + Std.string(search) + "\nreplacement = " + Std.string(replacement),{ fileName : "ShapeElement.hx", lineNumber : 1028, className : "nanofl.engine.elements.ShapeElement", methodName : "replaceEdge"});
+		stdlib_Debug.assert(search.indexIn(this.getEdges()) < 0,"\nsearch = " + Std.string(search) + "\nreplacement = " + Std.string(replacement),{ fileName : "ShapeElement.hx", lineNumber : 1042, className : "nanofl.engine.elements.ShapeElement", methodName : "replaceEdge"});
 	}
 	,normalize: function() {
 		nanofl_engine_geom_Edges.normalize(this.edges);
@@ -9780,18 +9780,23 @@ nanofl_engine_geom_Edge.prototype = {
 		}
 	}
 	,splitByClosePoint: function(x,y) {
+		var _g = this;
 		if(this.x1 == x && this.y1 == y) return null;
 		if(this.x3 == x && this.y3 == y) return null;
 		if(!nanofl_engine_geom_BoundsTools.isPointInside(this.getBoundsRO(),x,y,nanofl_engine_geom_Edge.GAP)) return null;
 		var np = this.getNearestPoint(x,y);
 		var pt = nanofl_engine_geom_PointTools.roundGapP(np.point);
 		if(pt.x == x && pt.y == y && (pt.x != this.x1 || pt.y != this.y1) && (pt.x != this.x3 || pt.y != this.y3)) {
-			stdlib_Debug.assert(np.t > 0 && np.t < 1,"t = " + np.t,{ fileName : "Edge.hx", lineNumber : 373, className : "nanofl.engine.geom.Edge", methodName : "splitByClosePoint"});
+			stdlib_Debug.assert(np.t > 0 && np.t < 1,function() {
+				return "edge = " + _g.toString() + "\n\t(x,y) = (" + x + "," + y + ")" + "\n\tnp = " + nanofl_engine_geom_PointTools.toString(np.point) + "\n\tpt = " + nanofl_engine_geom_PointTools.toString(pt) + "\n\tt = " + np.t;
+			},{ fileName : "Edge.hx", lineNumber : 373, className : "nanofl.engine.geom.Edge", methodName : "splitByClosePoint"});
 			var r = this.split([np.t]);
 			r[0].x3 = r[1].x1 = x;
 			r[0].y3 = r[1].y1 = y;
 			nanofl_engine_geom_Edges.normalize(r);
-			stdlib_Debug.assert(r.length > 1,"this = " + this.toString() + "; r = " + Std.string(r),{ fileName : "Edge.hx", lineNumber : 380, className : "nanofl.engine.geom.Edge", methodName : "splitByClosePoint"});
+			stdlib_Debug.assert(r.length > 1,function() {
+				return "edge = " + _g.toString() + "\n\t(x,y) = (" + x + "," + y + ")" + "\n\tnp = " + nanofl_engine_geom_PointTools.toString(np.point) + "\n\tpt = " + nanofl_engine_geom_PointTools.toString(pt) + "\n\tt = " + np.t + "\n\tr = " + Std.string(r);
+			},{ fileName : "Edge.hx", lineNumber : 386, className : "nanofl.engine.geom.Edge", methodName : "splitByClosePoint"});
 			return r;
 		}
 		return null;
@@ -10122,16 +10127,18 @@ nanofl_engine_geom_Edges.replaceAt = function(edges,n,replacement,reverse) {
 	stdlib_LambdaArray.insertRange(edges,n,replacement);
 };
 nanofl_engine_geom_Edges.intersect = function(edgesA,edgesB,onReplace) {
-	stdlib_Debug.assert(edgesA != edgesB,"Must not be the same edges array.",{ fileName : "Edges.hx", lineNumber : 326, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
-	stdlib_Debug.assert(HxOverrides.indexOf(edgesA,null,0) < 0,null,{ fileName : "Edges.hx", lineNumber : 327, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
-	stdlib_Debug.assert(HxOverrides.indexOf(edgesB,null,0) < 0,null,{ fileName : "Edges.hx", lineNumber : 328, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
-	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(edgesA),"Must not have duplicated in edgesA.",{ fileName : "Edges.hx", lineNumber : 329, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
-	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(edgesB),"Must not have duplicated in edgesB.",{ fileName : "Edges.hx", lineNumber : 330, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
-	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDegenerated(edgesA),"Must not have degenerated in edgesA.",{ fileName : "Edges.hx", lineNumber : 331, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
-	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDegenerated(edgesB),"Must not have degenerated in edgesB.",{ fileName : "Edges.hx", lineNumber : 332, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
+	nanofl_engine_geom_Edges.normalize(edgesA);
+	nanofl_engine_geom_Edges.normalize(edgesB);
+	stdlib_Debug.assert(edgesA != edgesB,"Must not be the same edges array.",{ fileName : "Edges.hx", lineNumber : 329, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
+	stdlib_Debug.assert(HxOverrides.indexOf(edgesA,null,0) < 0,null,{ fileName : "Edges.hx", lineNumber : 330, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
+	stdlib_Debug.assert(HxOverrides.indexOf(edgesB,null,0) < 0,null,{ fileName : "Edges.hx", lineNumber : 331, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
+	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(edgesA),"Must not have duplicated in edgesA.",{ fileName : "Edges.hx", lineNumber : 332, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
+	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(edgesB),"Must not have duplicated in edgesB.",{ fileName : "Edges.hx", lineNumber : 333, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
+	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDegenerated(edgesA),"Must not have degenerated in edgesA.",{ fileName : "Edges.hx", lineNumber : 334, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
+	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDegenerated(edgesB),"Must not have degenerated in edgesB.",{ fileName : "Edges.hx", lineNumber : 335, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
 	nanofl_engine_geom_Edges.intersectByClosePoints(edgesA,edgesB,onReplace);
-	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(edgesA),"Must not have duplicated in edgesA.",{ fileName : "Edges.hx", lineNumber : 342, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
-	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(edgesB),"Must not have duplicated in edgesB.",{ fileName : "Edges.hx", lineNumber : 343, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
+	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(edgesA),"Must not have duplicated in edgesA.",{ fileName : "Edges.hx", lineNumber : 345, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
+	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(edgesB),"Must not have duplicated in edgesB.",{ fileName : "Edges.hx", lineNumber : 346, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
 	var i = 0;
 	while(i < edgesA.length) {
 		var j = [0];
@@ -10140,12 +10147,12 @@ nanofl_engine_geom_Edges.intersect = function(edgesA,edgesB,onReplace) {
 				return function() {
 					return "i = " + i + "; edgesA.length = " + edgesA.length;
 				};
-			})(),{ fileName : "Edges.hx", lineNumber : 351, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
+			})(),{ fileName : "Edges.hx", lineNumber : 354, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
 			stdlib_Debug.assert(j[0] < edgesB.length,(function(j) {
 				return function() {
 					return "j = " + j[0] + "; edgesB.length = " + edgesB.length;
 				};
-			})(j),{ fileName : "Edges.hx", lineNumber : 352, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
+			})(j),{ fileName : "Edges.hx", lineNumber : 355, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
 			var edgeA = edgesA[i];
 			var edgeB = edgesB[j[0]];
 			var I = nanofl_engine_geom_Edge.getIntersection(edgeA,edgeB);
@@ -10208,27 +10215,27 @@ nanofl_engine_geom_Edges.intersect = function(edgesA,edgesB,onReplace) {
 		}
 		i++;
 	}
-	stdlib_Debug.assert(edgesA != edgesB,"Must not be the same edges array.",{ fileName : "Edges.hx", lineNumber : 413, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
-	stdlib_Debug.assert(HxOverrides.indexOf(edgesA,null,0) < 0,null,{ fileName : "Edges.hx", lineNumber : 414, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
-	stdlib_Debug.assert(HxOverrides.indexOf(edgesB,null,0) < 0,null,{ fileName : "Edges.hx", lineNumber : 415, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
-	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(edgesA),"Must not have duplicated in edgesA.",{ fileName : "Edges.hx", lineNumber : 416, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
-	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(edgesB),"Must not have duplicated in edgesB.",{ fileName : "Edges.hx", lineNumber : 417, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
-	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasIntersections(edgesA,edgesB),"After intersection must not be intersections (" + nanofl_engine_geom_Edges.getFirstIntersectionString(edgesA,edgesB) + ").",{ fileName : "Edges.hx", lineNumber : 418, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
-	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDegenerated(edgesA),"Must not have degenerated in edgesA.",{ fileName : "Edges.hx", lineNumber : 419, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
-	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDegenerated(edgesB),"Must not have degenerated in edgesB.",{ fileName : "Edges.hx", lineNumber : 420, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
+	stdlib_Debug.assert(edgesA != edgesB,"Must not be the same edges array.",{ fileName : "Edges.hx", lineNumber : 416, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
+	stdlib_Debug.assert(HxOverrides.indexOf(edgesA,null,0) < 0,null,{ fileName : "Edges.hx", lineNumber : 417, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
+	stdlib_Debug.assert(HxOverrides.indexOf(edgesB,null,0) < 0,null,{ fileName : "Edges.hx", lineNumber : 418, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
+	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(edgesA),"Must not have duplicated in edgesA.",{ fileName : "Edges.hx", lineNumber : 419, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
+	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(edgesB),"Must not have duplicated in edgesB.",{ fileName : "Edges.hx", lineNumber : 420, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
+	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasIntersections(edgesA,edgesB),"After intersection must not be intersections (" + nanofl_engine_geom_Edges.getFirstIntersectionString(edgesA,edgesB) + ").",{ fileName : "Edges.hx", lineNumber : 421, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
+	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDegenerated(edgesA),"Must not have degenerated in edgesA.",{ fileName : "Edges.hx", lineNumber : 422, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
+	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDegenerated(edgesB),"Must not have degenerated in edgesB.",{ fileName : "Edges.hx", lineNumber : 423, className : "nanofl.engine.geom.Edges", methodName : "intersect"});
 };
 nanofl_engine_geom_Edges.intersectByClosePoints = function(edgesA,edgesB,onReplace) {
 	nanofl_engine_geom_Edges.intersectByClosePointsInner(edgesA,edgesB,onReplace);
 	nanofl_engine_geom_Edges.intersectByClosePointsInner(edgesB,edgesA,onReplace);
 };
 nanofl_engine_geom_Edges.intersectByClosePointsInner = function(edgesA,edgesB,onReplace) {
-	stdlib_Debug.assert(edgesA != edgesB,"Must not be the same edges array.",{ fileName : "Edges.hx", lineNumber : 432, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
-	stdlib_Debug.assert(HxOverrides.indexOf(edgesA,null,0) < 0,null,{ fileName : "Edges.hx", lineNumber : 433, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
-	stdlib_Debug.assert(HxOverrides.indexOf(edgesB,null,0) < 0,null,{ fileName : "Edges.hx", lineNumber : 434, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
-	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(edgesA),"Must not have duplicated in edgesA.",{ fileName : "Edges.hx", lineNumber : 435, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
-	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(edgesB),"Must not have duplicated in edgesB.",{ fileName : "Edges.hx", lineNumber : 436, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
-	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDegenerated(edgesA),"Must not have degenerated in edgesA.",{ fileName : "Edges.hx", lineNumber : 437, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
-	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDegenerated(edgesB),"Must not have degenerated in edgesB.",{ fileName : "Edges.hx", lineNumber : 438, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
+	stdlib_Debug.assert(edgesA != edgesB,"Must not be the same edges array.",{ fileName : "Edges.hx", lineNumber : 435, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
+	stdlib_Debug.assert(HxOverrides.indexOf(edgesA,null,0) < 0,null,{ fileName : "Edges.hx", lineNumber : 436, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
+	stdlib_Debug.assert(HxOverrides.indexOf(edgesB,null,0) < 0,null,{ fileName : "Edges.hx", lineNumber : 437, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
+	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(edgesA),"Must not have duplicated in edgesA.",{ fileName : "Edges.hx", lineNumber : 438, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
+	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(edgesB),"Must not have duplicated in edgesB.",{ fileName : "Edges.hx", lineNumber : 439, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
+	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDegenerated(edgesA),"Must not have degenerated in edgesA.",{ fileName : "Edges.hx", lineNumber : 440, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
+	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDegenerated(edgesB),"Must not have degenerated in edgesB.",{ fileName : "Edges.hx", lineNumber : 441, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
 	var _g = 0;
 	while(_g < edgesA.length) {
 		var edgeA = edgesA[_g];
@@ -10254,13 +10261,13 @@ nanofl_engine_geom_Edges.intersectByClosePointsInner = function(edgesA,edgesB,on
 			i++;
 		}
 	}
-	stdlib_Debug.assert(edgesA != edgesB,"Must not be the same edges array.",{ fileName : "Edges.hx", lineNumber : 465, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
-	stdlib_Debug.assert(HxOverrides.indexOf(edgesA,null,0) < 0,null,{ fileName : "Edges.hx", lineNumber : 466, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
-	stdlib_Debug.assert(HxOverrides.indexOf(edgesB,null,0) < 0,null,{ fileName : "Edges.hx", lineNumber : 467, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
-	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(edgesA),"Must not have duplicated in edgesA.",{ fileName : "Edges.hx", lineNumber : 468, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
-	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(edgesB),"Must not have duplicated in edgesB.",{ fileName : "Edges.hx", lineNumber : 469, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
-	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDegenerated(edgesA),"Must not have degenerated in edgesA.",{ fileName : "Edges.hx", lineNumber : 470, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
-	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDegenerated(edgesB),"Must not have degenerated in edgesB.",{ fileName : "Edges.hx", lineNumber : 471, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
+	stdlib_Debug.assert(edgesA != edgesB,"Must not be the same edges array.",{ fileName : "Edges.hx", lineNumber : 468, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
+	stdlib_Debug.assert(HxOverrides.indexOf(edgesA,null,0) < 0,null,{ fileName : "Edges.hx", lineNumber : 469, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
+	stdlib_Debug.assert(HxOverrides.indexOf(edgesB,null,0) < 0,null,{ fileName : "Edges.hx", lineNumber : 470, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
+	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(edgesA),"Must not have duplicated in edgesA.",{ fileName : "Edges.hx", lineNumber : 471, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
+	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDuplicates(edgesB),"Must not have duplicated in edgesB.",{ fileName : "Edges.hx", lineNumber : 472, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
+	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDegenerated(edgesA),"Must not have degenerated in edgesA.",{ fileName : "Edges.hx", lineNumber : 473, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
+	stdlib_Debug.assert(!nanofl_engine_geom_Edges.hasDegenerated(edgesB),"Must not have degenerated in edgesB.",{ fileName : "Edges.hx", lineNumber : 474, className : "nanofl.engine.geom.Edges", methodName : "intersectByClosePointsInner"});
 };
 nanofl_engine_geom_Edges.intersectSelf = function(edges,onReplace) {
 	nanofl_engine_geom_Edges.intersect(edges,edges.slice(),onReplace);
@@ -10477,7 +10484,7 @@ nanofl_engine_geom_Edges.assertHasNoIntersections = function(edges) {
 			var j = _g3++;
 			var hasCV = edges[i].hasCommonVertices(edges[j]);
 			var I = nanofl_engine_geom_Edge.getIntersection(edges[i],edges[j]);
-			stdlib_Debug.assert(hasCV || I == null || I.a.length == 1 || I.b.length == 1,"hasCV = " + (hasCV == null?"null":"" + hasCV) + "\n" + "I = " + Std.string(I != null) + "\n" + "edges[" + i + "] = " + Std.string(edges[i]) + "\n" + "edges[" + j + "] = " + Std.string(edges[j]),{ fileName : "Edges.hx", lineNumber : 742, className : "nanofl.engine.geom.Edges", methodName : "assertHasNoIntersections"});
+			stdlib_Debug.assert(hasCV || I == null || I.a.length == 1 || I.b.length == 1,"hasCV = " + (hasCV == null?"null":"" + hasCV) + "\n" + "I = " + Std.string(I != null) + "\n" + "edges[" + i + "] = " + Std.string(edges[i]) + "\n" + "edges[" + j + "] = " + Std.string(edges[j]),{ fileName : "Edges.hx", lineNumber : 745, className : "nanofl.engine.geom.Edges", methodName : "assertHasNoIntersections"});
 		}
 	}
 };
@@ -10510,7 +10517,7 @@ nanofl_engine_geom_Edges.simplificate = function(sequence,eps) {
 	return r;
 };
 nanofl_engine_geom_Edges.getAppoximated = function(edgeA,edgeB) {
-	stdlib_Debug.assert(edgeA.x3 == edgeB.x1 && edgeA.y3 == edgeB.y1,null,{ fileName : "Edges.hx", lineNumber : 795, className : "nanofl.engine.geom.Edges", methodName : "getAppoximated"});
+	stdlib_Debug.assert(edgeA.x3 == edgeB.x1 && edgeA.y3 == edgeB.y1,null,{ fileName : "Edges.hx", lineNumber : 798, className : "nanofl.engine.geom.Edges", methodName : "getAppoximated"});
 	var lineA = new nanofl_engine_geom_StraightLine(edgeA.x1,edgeA.y1,edgeA.x2,edgeA.y2);
 	var lineB = new nanofl_engine_geom_StraightLine(edgeB.x3,edgeB.y3,edgeB.x2,edgeB.y2);
 	var I = lineA.getIntersection_infinityLine(lineB);
@@ -17193,7 +17200,7 @@ nanofl_engine_ScaleMode.fit = "fit";
 nanofl_engine_ScaleMode.fill = "fill";
 nanofl_engine_ScaleMode.stretch = "stretch";
 nanofl_engine_ScaleMode.custom = "custom";
-nanofl_engine_Version.ide = "3.0.0";
+nanofl_engine_Version.ide = "3.0.1";
 nanofl_engine_Version.player = "3.0.0";
 nanofl_engine_Version.document = "2.1.0";
 nanofl_engine_geom_BezierCurve.EPS = 1e-10;
