@@ -3544,17 +3544,17 @@ nanofl_Mesh.prototype = $extend(nanofl_SolidContainer.prototype,{
 		mesh.rotateX(this.rotationX * Math.PI / 180);
 		mesh.rotateY(this.rotationY * Math.PI / 180);
 		scene.add(mesh);
-		var r = this.symbol.data.geometry.boundingSphere.radius;
 		var light = new THREE.DirectionalLight(8421504,1);
-		light.position.z = -r * 2;
 		scene.add(light);
 		scene.add(new THREE.AmbientLight(14737632));
 		var camera = new THREE.PerspectiveCamera(70,1,1e-7,1e7);
-		camera.position.z = -r * 2;
+		scene.add(camera);
+		var posZ = this.symbol.boundingRadius / Math.sin(camera.fov / 2 * Math.PI / 180);
+		light.position.z = -posZ;
+		camera.position.z = -posZ;
 		camera.lookAt(new THREE.Vector3(0,0,0));
 		camera.updateMatrix();
 		camera.updateProjectionMatrix();
-		scene.add(camera);
 		if(this.renderer == null) {
 			if(!nanofl_Mesh.forceSoftwareRenderer && nanofl_Mesh.isWebGLSupported()) this.renderer = new THREE.WebGLRenderer({ canvas : this.canvas, alpha : true}); else this.renderer = new THREE.CanvasRenderer({ canvas : this.canvas, alpha : true});
 		}
@@ -12647,8 +12647,9 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 	,textureAtlas: null
 	,size: null
 	,data: null
+	,boundingRadius: null
 	,getNotSerializableFields: function() {
-		return nanofl_engine_libraryitems_InstancableItem.prototype.getNotSerializableFields.call(this).concat(["data"]);
+		return nanofl_engine_libraryitems_InstancableItem.prototype.getNotSerializableFields.call(this).concat(["data","boundingRadius"]);
 	}
 	,getType: function() {
 		return "mesh";
@@ -12695,7 +12696,7 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 		return this.library.realUrl(this.namePath + "." + this.ext);
 	}
 	,preload: function(ready) {
-		stdlib_Debug.assert(this.library != null,"You need to add item '" + this.namePath + "' to the library before preload call.",{ fileName : "MeshItem.hx", lineNumber : 148, className : "nanofl.engine.libraryitems.MeshItem", methodName : "preload"});
+		stdlib_Debug.assert(this.library != null,"You need to add item '" + this.namePath + "' to the library before preload call.",{ fileName : "MeshItem.hx", lineNumber : 149, className : "nanofl.engine.libraryitems.MeshItem", methodName : "preload"});
 		if(nanofl_engine_TextureItemTools.getSpriteSheet(this) == null) this.preloadInner(ready); else nanofl_engine_TextureItemTools.preload(this,ready);
 	}
 	,preloadInner: function(ready) {
@@ -12726,7 +12727,15 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 						m.overdraw = 1;
 					}
 				}
-				_g.data.geometry.computeBoundingSphere();
+				_g.boundingRadius = 0.0;
+				var _g22 = 0;
+				var _g32 = _g.data.geometry.vertices;
+				while(_g22 < _g32.length) {
+					var v = _g32[_g22];
+					++_g22;
+					_g.boundingRadius = Math.max(_g.boundingRadius,v.lengthSq());
+				}
+				_g.boundingRadius = Math.sqrt(_g.boundingRadius);
 				break;
 			}
 			ready();
@@ -12741,7 +12750,7 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 		return r;
 	}
 	,updateDisplayObject: function(dispObj,childFrameIndexes) {
-		stdlib_Debug.assert(js_Boot.__instanceof(dispObj,nanofl_Mesh),null,{ fileName : "MeshItem.hx", lineNumber : 228, className : "nanofl.engine.libraryitems.MeshItem", methodName : "updateDisplayObject"});
+		stdlib_Debug.assert(js_Boot.__instanceof(dispObj,nanofl_Mesh),null,{ fileName : "MeshItem.hx", lineNumber : 234, className : "nanofl.engine.libraryitems.MeshItem", methodName : "updateDisplayObject"});
 		dispObj.update();
 	}
 	,getDisplayObjectClassName: function() {

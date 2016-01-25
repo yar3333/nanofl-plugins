@@ -2245,6 +2245,7 @@ declare module nanofl.engine.libraryitems
 		textureAtlas : string;
 		size : number;
 		data : { geometry : THREE.Geometry; materials : THREE.Material[]; };
+		boundingRadius : number;
 		getType() : string;
 		clone() : nanofl.engine.libraryitems.MeshItem;
 		getIcon() : string;

@@ -8,6 +8,7 @@ extern class MeshItem extends nanofl.engine.libraryitems.InstancableItem impleme
 	var textureAtlas : String;
 	var size : Int;
 	var data(default, null) : { var geometry : js.three.Geometry; var materials : Array<js.three.Material>; };
+	var boundingRadius : Float;
 	override function getType() : String;
 	override function clone() : nanofl.engine.libraryitems.MeshItem;
 	override function getIcon() : String;
