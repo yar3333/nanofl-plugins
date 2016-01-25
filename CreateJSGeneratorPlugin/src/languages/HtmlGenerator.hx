@@ -131,6 +131,7 @@ class HtmlGenerator extends TextureAtlasGenerator
 			r.push("");
 			r.push("function run()");
 			r.push("{");
+			if (params.forceSoftwareRenderer) r.push("nanofl.Mesh.forceSoftwareRenderer = true;");
 			r.push("\t" + getBasePlayerInitCode("[ " + textureAtlasJsonUrls.map(function(url) return "loader.getResult('" + url + "')").join(", ") + " ]"));
 			r.push("}");
 		}

@@ -30,7 +30,7 @@ class SvgImporterPlugin implements IImporterPlugin
 		{
 			type: "bool",
 			name: "optimize",
-			label: "Remove unused items and simplificate document after loading.",
+			label: "Remove unused items and simplificate document after loading",
 			defaultValue: true
 		}
 	];

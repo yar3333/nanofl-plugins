@@ -5,4 +5,5 @@ typedef Params =
 	var urlOnClick : String;
 	var forceThreeJS : Bool;
 	var useLocalScripts : Bool;
+	var forceSoftwareRenderer : Bool;
 }

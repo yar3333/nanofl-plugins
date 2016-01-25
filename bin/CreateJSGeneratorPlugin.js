@@ -7,7 +7,7 @@ function $extend(from, fields) {
 	return proto;
 }
 var CreateJSGeneratorPlugin = function() {
-	this.properties = [{ type : "list", name : "mode", label : "Mode", defaultValue : "HTML", values : ["HTML","JavaScript","JavaScript/FlashDevelop","JavaScript/MsVisualStudio2013","TypeScript","TypeScript/MsVisualStudio2013","Haxe","Haxe/FlashDevelop","TextureAtlas"]},{ type : "string", name : "urlOnClick", label : "URL on click", defaultValue : "", description : "Useful for Banner Ads. Keep field empty to disable this feature."},{ type : "bool", name : "forceThreeJS", label : "Force ThreeJS support.", defaultValue : false, description : "Include ThreeJS support even there are no Meshes in the library."},{ type : "bool", name : "useLocalScripts", label : "Use local scripts for Player/CreateJS/ThreeJS.", defaultValue : false, description : "Check to prevent loading scripts from CDN. Local copies will be used. This increase document folder size."}];
+	this.properties = [{ type : "list", name : "mode", label : "Mode", defaultValue : "HTML", values : ["HTML","JavaScript","JavaScript/FlashDevelop","JavaScript/MsVisualStudio2013","TypeScript","TypeScript/MsVisualStudio2013","Haxe","Haxe/FlashDevelop","TextureAtlas"]},{ type : "string", name : "urlOnClick", label : "URL on click", defaultValue : "", description : "Useful for Banner Ads. Keep field empty to disable this feature."},{ type : "bool", name : "forceThreeJS", label : "Force ThreeJS support", defaultValue : false, description : "Include ThreeJS support even there are no Meshes in the library."},{ type : "bool", name : "useLocalScripts", label : "Use local scripts for Player/CreateJS/ThreeJS", defaultValue : false, description : "Check to prevent loading scripts from CDN. Local copies will be used. This increase document folder size."},{ type : "bool", name : "forceSoftwareRenderer", label : "Force software renderer for ThreeJS", defaultValue : false, description : "Don't check to have 3D acceleration autodetection. In code: nanofl.Mesh.forceSoftwareRenderer."}];
 	this.name = "CreateJS";
 };
 CreateJSGeneratorPlugin.__name__ = true;
@@ -928,6 +928,7 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 			r.push("");
 			r.push("function run()");
 			r.push("{");
+			if(this.params.forceSoftwareRenderer) r.push("nanofl.Mesh.forceSoftwareRenderer = true;");
 			r.push("\t" + this.getBasePlayerInitCode("[ " + textureAtlasJsonUrls.map(function(url) {
 				return "loader.getResult('" + url + "')";
 			}).join(", ") + " ]"));

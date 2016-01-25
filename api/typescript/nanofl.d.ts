@@ -1249,6 +1249,14 @@ declare module nanofl
 		static dump(obj:createjs.DisplayObject, level?:number) : void;
 	}
 	
+	/**
+	 * Extend from this class to prevent automatic children processing.
+	 */
+	export class SolidContainer extends createjs.Container
+	{
+		constructor();
+	}
+	
 	export class MovieClip extends createjs.Container
 	{
 		constructor(symbol:nanofl.engine.libraryitems.MovieClipItem, initFrameIndex:number, childFrameIndexes:{ frameIndex : number; element : nanofl.engine.IPathElement; }[]);
@@ -1276,7 +1284,7 @@ declare module nanofl
 		update(params?:any) : void;
 	}
 	
-	export class TextField extends createjs.Container
+	export class TextField extends nanofl.SolidContainer
 	{
 		constructor(width?:number, height?:number, selectable?:boolean, border?:boolean, dashedBorder?:boolean, textRuns?:nanofl.TextRun[], newTextFormat?:nanofl.TextRun);
 		minWidth : number;

@@ -3334,7 +3334,7 @@ $hxClasses["nanofl.DisplayObjectTools"] = nanofl_DisplayObjectTools;
 nanofl_DisplayObjectTools.__name__ = ["nanofl","DisplayObjectTools"];
 nanofl_DisplayObjectTools.smartCache = function(obj) {
 	if(obj.visible && obj.cacheCanvas == null) {
-		if(js_Boot.__instanceof(obj,createjs.Container) && !js_Boot.__instanceof(obj,nanofl_TextField)) {
+		if(js_Boot.__instanceof(obj,createjs.Container) && !js_Boot.__instanceof(obj,nanofl_SolidContainer)) {
 			var _g = 0;
 			var _g1 = obj.children;
 			while(_g < _g1.length) {
@@ -3374,7 +3374,7 @@ nanofl_DisplayObjectTools.smartUncache = function(obj) {
 nanofl_DisplayObjectTools.getOuterBounds = function(obj,ignoreSelf) {
 	if(ignoreSelf == null) ignoreSelf = false;
 	var r = null;
-	if(js_Boot.__instanceof(obj,createjs.Container) && !js_Boot.__instanceof(obj,nanofl_TextField)) {
+	if(js_Boot.__instanceof(obj,createjs.Container) && !js_Boot.__instanceof(obj,nanofl_SolidContainer)) {
 		var _g = 0;
 		var _g1 = obj.children;
 		while(_g < _g1.length) {
@@ -3400,7 +3400,7 @@ nanofl_DisplayObjectTools.getOuterBounds = function(obj,ignoreSelf) {
 };
 nanofl_DisplayObjectTools.getInnerBounds = function(obj) {
 	var r = null;
-	if(js_Boot.__instanceof(obj,createjs.Container) && !js_Boot.__instanceof(obj,nanofl_TextField)) {
+	if(js_Boot.__instanceof(obj,createjs.Container) && !js_Boot.__instanceof(obj,nanofl_SolidContainer)) {
 		var _g = 0;
 		var _g1 = obj.children;
 		while(_g < _g1.length) {
@@ -3450,14 +3450,14 @@ nanofl_DisplayObjectTools.smartHitTest = function(obj,x,y,minAlpha) {
 nanofl_DisplayObjectTools.dump = function(obj,level) {
 	if(level == null) level = 0;
 	var s = StringTools.rpad("","\t",level);
-	if(js_Boot.__instanceof(obj,nanofl_MovieClip)) s += "MovieClip(" + obj.symbol.namePath + ")"; else if(js_Boot.__instanceof(obj,nanofl_TextField)) s += "TextField"; else if(js_Boot.__instanceof(obj,nanofl_Bitmap)) s += "Bitmap(" + obj.symbol.namePath + ")"; else if(js_Boot.__instanceof(obj,createjs.Container)) s += "Container"; else if(js_Boot.__instanceof(obj,createjs.Shape)) s += "Shape"; else s += "Unknow";
+	if(js_Boot.__instanceof(obj,nanofl_MovieClip)) s += "MovieClip(" + obj.symbol.namePath + ")"; else if(js_Boot.__instanceof(obj,nanofl_Mesh)) s += "Mesh(" + obj.symbol.namePath + ")"; else if(js_Boot.__instanceof(obj,nanofl_TextField)) s += "TextField"; else if(js_Boot.__instanceof(obj,nanofl_Bitmap)) s += "Bitmap(" + obj.symbol.namePath + ")"; else if(js_Boot.__instanceof(obj,createjs.Container)) s += "Container"; else if(js_Boot.__instanceof(obj,createjs.Shape)) s += "Shape"; else s += "Unknow";
 	if(obj.cacheCanvas != null) s += " cached";
 	if(obj._bounds != null) s += " fixed";
 	s += " bounds(" + nanofl_DisplayObjectTools.rectToString(obj.getBounds()) + ")";
 	s += " outers(" + nanofl_DisplayObjectTools.rectToString(nanofl_DisplayObjectTools.getOuterBounds(obj)) + ")";
 	if(js_Boot.__instanceof(obj,nanofl_TextField)) s += " '" + StringTools.replace(StringTools.replace(obj.text,"\r"," "),"\n"," ") + "'";
-	haxe_Log.trace(s,{ fileName : "DisplayObjectTools.hx", lineNumber : 211, className : "nanofl.DisplayObjectTools", methodName : "dump"});
-	if(js_Boot.__instanceof(obj,createjs.Container) && !js_Boot.__instanceof(obj,nanofl_TextField)) {
+	haxe_Log.trace(s,{ fileName : "DisplayObjectTools.hx", lineNumber : 216, className : "nanofl.DisplayObjectTools", methodName : "dump"});
+	if(js_Boot.__instanceof(obj,createjs.Container) && !js_Boot.__instanceof(obj,nanofl_SolidContainer)) {
 		var _g = 0;
 		var _g1 = obj.children;
 		while(_g < _g1.length) {
@@ -3471,23 +3471,55 @@ nanofl_DisplayObjectTools.rectToString = function(rect) {
 	if(rect == null) return "null";
 	return rect.x + "," + rect.y + " " + rect.width + " x " + rect.height;
 };
+var nanofl_SolidContainer = function() {
+	createjs.Container.call(this);
+};
+$hxClasses["nanofl.SolidContainer"] = nanofl_SolidContainer;
+nanofl_SolidContainer.__name__ = ["nanofl","SolidContainer"];
+nanofl_SolidContainer.__super__ = createjs.Container;
+nanofl_SolidContainer.prototype = $extend(createjs.Container.prototype,{
+	__class__: nanofl_SolidContainer
+});
 var nanofl_Mesh = $hx_exports.nanofl.Mesh = function(symbol) {
 	this.rotationY = 0.0;
 	this.rotationX = 0.0;
-	createjs.Bitmap.call(this,null);
+	var _g = this;
+	Object.defineProperty(this,"bitmap",{ get : function() {
+		return _g.get_bitmap();
+	}});
+	Object.defineProperty(this,"canvas",{ get : function() {
+		return _g.get_canvas();
+	}});
+	nanofl_SolidContainer.call(this);
 	this.symbol = symbol;
+	this.addChild(new createjs.Bitmap(null));
 	symbol.updateDisplayObject(this,null);
+	this.bitmap.x = -symbol.size;
+	this.bitmap.y = -symbol.size;
 };
 $hxClasses["nanofl.Mesh"] = nanofl_Mesh;
 nanofl_Mesh.__name__ = ["nanofl","Mesh"];
-nanofl_Mesh.__super__ = createjs.Bitmap;
-nanofl_Mesh.prototype = $extend(createjs.Bitmap.prototype,{
+nanofl_Mesh.isWebGLSupported = function() {
+	if(nanofl_Mesh._isWebGLSupported == null) {
+		var canvas = window.document.createElement("canvas");
+		nanofl_Mesh._isWebGLSupported = !(!(window.WebGLRenderingContext && (canvas.getContext("webgl") || canvas.getContext("experimental-webgl"))));
+	}
+	return nanofl_Mesh._isWebGLSupported;
+};
+nanofl_Mesh.__super__ = nanofl_SolidContainer;
+nanofl_Mesh.prototype = $extend(nanofl_SolidContainer.prototype,{
 	symbol: null
 	,rotationX: null
 	,rotationY: null
-	,get_canvas: function() {
-		return this.image;
+	,bitmap: null
+	,get_bitmap: function() {
+		return this.getChildAt(0);
 	}
+	,canvas: null
+	,get_canvas: function() {
+		return this.bitmap.image;
+	}
+	,renderer: null
 	,clone: function(recursive) {
 		return this._cloneProps(new nanofl_Mesh(this.symbol));
 	}
@@ -3495,16 +3527,16 @@ nanofl_Mesh.prototype = $extend(createjs.Bitmap.prototype,{
 		return this.symbol.toString();
 	}
 	,getBounds: function() {
-		return new createjs.Rectangle(0,0,this.symbol.size * 2,this.symbol.size * 2);
+		return new createjs.Rectangle(-this.symbol.size,-this.symbol.size,this.symbol.size * 2,this.symbol.size * 2);
 	}
 	,draw: function(ctx,ignoreCache) {
 		this.update();
-		return createjs.Bitmap.prototype.draw.call(this,ctx,ignoreCache);
+		return nanofl_SolidContainer.prototype.draw.call(this,ctx,ignoreCache);
 	}
 	,update: function() {
-		if(this.image == null) this.image = window.document.createElement("canvas");
-		this.get_canvas().width = this.symbol.size * 2;
-		this.get_canvas().height = this.symbol.size * 2;
+		if(this.bitmap.image == null) this.bitmap.image = window.document.createElement("canvas");
+		this.canvas.width = this.symbol.size * 2;
+		this.canvas.height = this.symbol.size * 2;
 		var scene = new THREE.Scene();
 		var material;
 		if(this.symbol.data.materials != null) material = new THREE.MeshFaceMaterial(this.symbol.data.materials); else material = new THREE.MeshLambertMaterial({ color : 11184810, overdraw : 1});
@@ -3523,9 +3555,24 @@ nanofl_Mesh.prototype = $extend(createjs.Bitmap.prototype,{
 		camera.updateMatrix();
 		camera.updateProjectionMatrix();
 		scene.add(camera);
-		var renderer = new THREE.CanvasRenderer({ canvas : this.get_canvas(), alpha : true});
-		renderer.setSize(this.symbol.size * 2,this.symbol.size * 2);
-		renderer.render(scene,camera);
+		if(this.renderer == null) {
+			if(!nanofl_Mesh.forceSoftwareRenderer && nanofl_Mesh.isWebGLSupported()) this.renderer = new THREE.WebGLRenderer({ canvas : this.canvas, alpha : true}); else this.renderer = new THREE.CanvasRenderer({ canvas : this.canvas, alpha : true});
+		}
+		this.renderer.setSize(this.symbol.size * 2,this.symbol.size * 2);
+		this.renderer.render(scene,camera);
+	}
+	,hxUnserialize: function(s) {
+		var _g = this;
+		Object.defineProperty(this,"bitmap",{ get : function() {
+			return _g.get_bitmap();
+		}});
+		Object.defineProperty(this,"canvas",{ get : function() {
+			return _g.get_canvas();
+		}});
+		s.unserializeObject(this);
+	}
+	,hxSerialize: function(s) {
+		s.serializeFields(this);
 	}
 	,__class__: nanofl_Mesh
 });
@@ -3743,7 +3790,7 @@ var nanofl_TextField = $hx_exports.nanofl.TextField = function(width,height,sele
 	}, set : function(v5) {
 		_g.set_text(v5);
 	}});
-	createjs.Container.call(this);
+	nanofl_SolidContainer.call(this);
 	this.width = width;
 	this.height = height;
 	this.selectable = selectable;
@@ -3825,8 +3872,8 @@ nanofl_TextField.measureFontBaselineCoef = function(family,style) {
 };
 nanofl_TextField.log = function(v,infos) {
 };
-nanofl_TextField.__super__ = createjs.Container;
-nanofl_TextField.prototype = $extend(createjs.Container.prototype,{
+nanofl_TextField.__super__ = nanofl_SolidContainer;
+nanofl_TextField.prototype = $extend(nanofl_SolidContainer.prototype,{
 	_minWidth: null
 	,minWidth: null
 	,get_minWidth: function() {
@@ -4143,7 +4190,7 @@ nanofl_TextField.prototype = $extend(createjs.Container.prototype,{
 	}
 	,draw: function(ctx,ignoreCache) {
 		this.update();
-		return createjs.Container.prototype.draw.call(this,ctx,ignoreCache);
+		return nanofl_SolidContainer.prototype.draw.call(this,ctx,ignoreCache);
 	}
 	,drawBorders: function(pt0,pt1) {
 		if(this.border) {
@@ -17184,6 +17231,7 @@ htmlparser_HtmlParser.reParseAttrs = new EReg("(" + htmlparser_HtmlParser.reName
 js_Boot.__toStr = {}.toString;
 js_html_compat_Uint8Array.BYTES_PER_ELEMENT = 1;
 nanofl_DisplayObjectTools.autoHitArea = false;
+nanofl_Mesh.forceSoftwareRenderer = false;
 nanofl_Player.spriteSheets = { };
 nanofl_TextField.PADDING = 2.0;
 nanofl_TextField.fontHeightCache = new haxe_ds_StringMap();

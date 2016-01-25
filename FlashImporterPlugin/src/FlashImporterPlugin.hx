@@ -35,7 +35,7 @@ class FlashImporterPlugin implements IImporterPlugin
 		{
 			type: "bool",
 			name: "importMedia",
-			label: "Import media (Adobe Flash CS5+ must be installed).",
+			label: "Import media (Adobe Flash CS5+ must be installed)",
 			defaultValue: true
 		}
 	];

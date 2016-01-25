@@ -1,6 +1,6 @@
 package nanofl;
 
-extern class TextField extends createjs.Container
+extern class TextField extends nanofl.SolidContainer
 {
 	function new(?width:Float, ?height:Float, ?selectable:Bool, ?border:Bool, ?dashedBorder:Bool, ?textRuns:Array<nanofl.TextRun>, ?newTextFormat:nanofl.TextRun) : Void;
 	var minWidth(default, never) : Float;

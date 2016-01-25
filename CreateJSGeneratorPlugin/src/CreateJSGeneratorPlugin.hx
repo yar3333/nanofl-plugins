@@ -44,12 +44,16 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 			description:"Useful for Banner Ads. Keep field empty to disable this feature."
 		},
 		{
-			type:"bool", name:"forceThreeJS", label:"Force ThreeJS support.", defaultValue:false,
+			type:"bool", name:"forceThreeJS", label:"Force ThreeJS support", defaultValue:false,
 			description:"Include ThreeJS support even there are no Meshes in the library."
 		},
 		{
-			type:"bool", name:"useLocalScripts", label:"Use local scripts for Player/CreateJS/ThreeJS.", defaultValue:false,
+			type:"bool", name:"useLocalScripts", label:"Use local scripts for Player/CreateJS/ThreeJS", defaultValue:false,
 			description:"Check to prevent loading scripts from CDN. Local copies will be used. This increase document folder size."
+		},
+		{
+			type:"bool", name:"forceSoftwareRenderer", label:"Force software renderer for ThreeJS", defaultValue:false,
+			description:"Don't check to have 3D acceleration autodetection. In code: nanofl.Mesh.forceSoftwareRenderer."
 		},
 	];
 	
