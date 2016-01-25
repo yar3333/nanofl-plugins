@@ -12659,6 +12659,7 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 		obj.textureAtlas = this.textureAtlas;
 		obj.size = this.size;
 		obj.data = this.data;
+		obj.boundingRadius = this.boundingRadius;
 		this.copyBaseProperties(obj);
 		return obj;
 	}
@@ -12696,7 +12697,7 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 		return this.library.realUrl(this.namePath + "." + this.ext);
 	}
 	,preload: function(ready) {
-		stdlib_Debug.assert(this.library != null,"You need to add item '" + this.namePath + "' to the library before preload call.",{ fileName : "MeshItem.hx", lineNumber : 149, className : "nanofl.engine.libraryitems.MeshItem", methodName : "preload"});
+		stdlib_Debug.assert(this.library != null,"You need to add item '" + this.namePath + "' to the library before preload call.",{ fileName : "MeshItem.hx", lineNumber : 150, className : "nanofl.engine.libraryitems.MeshItem", methodName : "preload"});
 		if(nanofl_engine_TextureItemTools.getSpriteSheet(this) == null) this.preloadInner(ready); else nanofl_engine_TextureItemTools.preload(this,ready);
 	}
 	,preloadInner: function(ready) {
@@ -12750,7 +12751,7 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 		return r;
 	}
 	,updateDisplayObject: function(dispObj,childFrameIndexes) {
-		stdlib_Debug.assert(js_Boot.__instanceof(dispObj,nanofl_Mesh),null,{ fileName : "MeshItem.hx", lineNumber : 234, className : "nanofl.engine.libraryitems.MeshItem", methodName : "updateDisplayObject"});
+		stdlib_Debug.assert(js_Boot.__instanceof(dispObj,nanofl_Mesh),null,{ fileName : "MeshItem.hx", lineNumber : 235, className : "nanofl.engine.libraryitems.MeshItem", methodName : "updateDisplayObject"});
 		dispObj.update();
 	}
 	,getDisplayObjectClassName: function() {
