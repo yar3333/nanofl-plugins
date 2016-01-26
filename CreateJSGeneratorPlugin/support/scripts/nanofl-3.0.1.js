@@ -3549,6 +3549,7 @@ nanofl_Mesh.prototype = $extend(nanofl_SolidContainer.prototype,{
 	}
 	,update: function() {
 		var scene = new THREE.Scene();
+		this.mesh.setRotationFromAxisAngle(new THREE.Vector3(1,1,1),0);
 		this.mesh.rotateX(this.rotationX * Math.PI / 180);
 		this.mesh.rotateY(this.rotationY * Math.PI / 180);
 		scene.add(this.mesh);

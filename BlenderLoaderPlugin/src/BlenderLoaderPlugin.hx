@@ -6,8 +6,8 @@ import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.engine.libraryitems.MeshItem;
 import nanofl.engine.Plugins;
 import nanofl.ide.CachedFile;
-import nanofl.ide.plugins.ILoaderPlugin;
 import nanofl.ide.NanoApi;
+import nanofl.ide.plugins.ILoaderPlugin;
 using StringTools;
 using Lambda;
 
@@ -25,13 +25,10 @@ class BlenderLoaderPlugin implements ILoaderPlugin
 	
 	public var properties : Array<CustomProperty> =
 	[
-		{
-			type: "string",
-			name: "blenderPath",
-			label: "Path to the blender.exe",
-			description: "Leave blank to autodetect",
-			defaultValue: ""
-		}
+		{ type:"info", label:"This plugin automatically convert *.blend in your library into *.json (supported by NanoFL)."
+						   + " Ensure you have <a href='http://blender.org/'>Blender</a>"
+						   + " with <a href='https://github.com/mrdoob/three.js/tree/master/utils/exporters/blender'>ThreeJS Blender Export addon</a> installed." },
+		{ type:"string", name:"blenderPath", label:"Path to the blender.exe", description:"Leave blank to autodetect", defaultValue:"" }
 	];
 	
 	public function new() {}
