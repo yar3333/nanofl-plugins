@@ -96,7 +96,7 @@ class SvgTextExporter extends BaseExporter
 		switch (strokeType)
 		{
 			case StrokeType.StrokeNone: return "rgba(0,0,0,0)";
-			case StrokeType.StrokeSolid(color): return ColorTools.colorToString(color, alpha);
+			case StrokeType.StrokeSolid(color): return ColorTools.joinStringAndAlpha(color, alpha);
 			case StrokeType.StrokeGrad(grad): return gradientToColor(grad);
 		}
 		return null;
@@ -107,7 +107,7 @@ class SvgTextExporter extends BaseExporter
 		switch (fillType)
 		{
 			case FillType.FillNone: return "rgba(0,0,0,0)";
-			case FillType.FillSolid(color): return ColorTools.colorToString(color, alpha);
+			case FillType.FillSolid(color): return ColorTools.joinStringAndAlpha(color, alpha);
 			case FillType.FillGrad(grad): return gradientToColor(grad);
 		}
 		return null;
@@ -118,9 +118,9 @@ class SvgTextExporter extends BaseExporter
 		switch (grad)
 		{
 			case GradientType.LINEAR(grad):
-				return ColorTools.colorToString(grad.colors[0], grad.alphas[0]);
+				return ColorTools.joinStringAndAlpha(grad.colors[0], grad.alphas[0]);
 			case GradientType.RADIAL(grad):
-				return ColorTools.colorToString(grad.colors[0], grad.alphas[0]);
+				return ColorTools.joinStringAndAlpha(grad.colors[0], grad.alphas[0]);
 		}
 		return null;
 	}

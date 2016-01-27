@@ -364,7 +364,7 @@ class SymbolLoader
 			case "SolidColor":
 				return
 				{
-					fill: new SolidFill(ColorTools.colorToString(fill.getAttr("color", "#000000"), fill.getAttr("alpha", 1.0))),
+					fill: new SolidFill(ColorTools.joinStringAndAlpha(fill.getAttr("color", "#000000"), fill.getAttr("alpha", 1.0))),
 					matrix: new Matrix()
 				};
 				
@@ -377,7 +377,7 @@ class SymbolLoader
 				{
 					fill: new LinearFill
 					(
-						gradients.map(function(g) return ColorTools.colorToString(g.getAttr("color", "#000000"), g.getAttr("alpha", 1.0))),
+						gradients.map(function(g) return ColorTools.joinStringAndAlpha(g.getAttr("color", "#000000"), g.getAttr("alpha", 1.0))),
 						gradients.map(function(g) return g.getAttr("ratio")),
 						p0.x,
 						p0.y,
@@ -404,7 +404,7 @@ class SymbolLoader
 					{
 						fill: new RadialFill
 						(
-							gradients.map(function(g) return ColorTools.colorToString(g.getAttr("color", "#000000"), g.getAttr("alpha", 1.0))),
+							gradients.map(function(g) return ColorTools.joinStringAndAlpha(g.getAttr("color", "#000000"), g.getAttr("alpha", 1.0))),
 							gradients.map(function(g) return g.getAttr("ratio")),
 							p0.x,
 							p0.y,
@@ -422,7 +422,7 @@ class SymbolLoader
 					{
 						fill: new RadialFill
 						(
-							gradients.map(function(g) return ColorTools.colorToString(g.getAttr("color", "#000000"), g.getAttr("alpha", 1.0))),
+							gradients.map(function(g) return ColorTools.joinStringAndAlpha(g.getAttr("color", "#000000"), g.getAttr("alpha", 1.0))),
 							gradients.map(function(g) return g.getAttr("ratio")),
 							0,
 							0,
@@ -470,7 +470,7 @@ class SymbolLoader
 				{
 					stroke: new SolidStroke
 					(
-						ColorTools.colorToString(colorElem.getAttr("color", "#000000"), colorElem.getAttr("alpha", 1.0)),
+						ColorTools.joinStringAndAlpha(colorElem.getAttr("color", "#000000"), colorElem.getAttr("alpha", 1.0)),
 						!isHairline ? stroke.getAttr("weight", 1.0) : 1.0,
 						stroke.getAttr("caps", "round"),
 						stroke.getAttr("joins", "round"),

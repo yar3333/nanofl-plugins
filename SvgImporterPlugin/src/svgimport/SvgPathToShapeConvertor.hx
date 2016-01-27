@@ -281,7 +281,7 @@ class SvgPathToShapeConvertor
 	
 	function getGradientRgbaColors(grad:Gradient) : Array<String>
 	{
-		return grad.colors.mapi(function(i, c) return ColorTools.colorToString(c, grad.alphas[i])).array();
+		return grad.colors.mapi(function(i, c) return ColorTools.joinStringAndAlpha(c, grad.alphas[i])).array();
 	}
 	
 	static function log(v:Dynamic, ?infos:haxe.PosInfos) : Void
