@@ -162,6 +162,8 @@ class SymbolLoader
 					parseMotionTweenRotate(frame.getAttr("motionTweenRotate"), frame.getAttr("motionTweenRotateTimes", 1)),
 					frame.getAttr("motionTweenOrientToPath", false),
 					0,
+					0,
+					0,
 					0
 				);
 				
