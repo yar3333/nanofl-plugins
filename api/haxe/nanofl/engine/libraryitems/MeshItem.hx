@@ -6,7 +6,7 @@ extern class MeshItem extends nanofl.engine.libraryitems.InstancableItem impleme
 	var ext : String;
 	var originalExt : String;
 	var textureAtlas : String;
-	var size : Int;
+	var renderAreaSize : Int;
 	var data(default, null) : { var geometry : js.three.Geometry; var materials : Array<js.three.Material>; };
 	var boundingRadius : Float;
 	override function getType() : String;
@@ -27,6 +27,7 @@ extern class MeshItem extends nanofl.engine.libraryitems.InstancableItem impleme
 	override function getUsedSymbolNamePaths() : Array<String>;
 	override function generateOptimizedFiles(fileSystem:nanofl.engine.FileSystem, optimizations:nanofl.ide.PublishOptimizations, destDir:String) : Array<{ var relPath : String; var baseDir : String; }>;
 	override function toString() : String;
+	static var DEFAULT_RENDER_AREA_SIZE(default, never) : Int;
 	static var extensions(default, null) : Array<String>;
 	static function load(api:nanofl.ide.NanoApi, namePath:String, originalExt:String, files:Map<String, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.MeshItem;
 	static function parse(namePath:String, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MeshItem;

@@ -3481,7 +3481,7 @@ nanofl_SolidContainer.prototype = $extend(createjs.Container.prototype,{
 	__class__: nanofl_SolidContainer
 });
 var nanofl_Mesh = $hx_exports.nanofl.Mesh = function(symbol) {
-	this.camera = new THREE.PerspectiveCamera(70,1,1e-7,1e7);
+	this.camera = new THREE.PerspectiveCamera(70,1,0,1e7);
 	this.directionalLight = new THREE.DirectionalLight(8421504,1);
 	this.ambientLight = new THREE.AmbientLight(14737632);
 	this.rotationY = 0.0;
@@ -3496,15 +3496,15 @@ var nanofl_Mesh = $hx_exports.nanofl.Mesh = function(symbol) {
 	nanofl_SolidContainer.call(this);
 	this.symbol = symbol;
 	this.addChild(new createjs.Bitmap(window.document.createElement("canvas")));
-	this.canvas.width = symbol.size * 2;
-	this.canvas.height = symbol.size * 2;
-	this.bitmap.x = -symbol.size;
-	this.bitmap.y = -symbol.size;
+	this.canvas.width = symbol.renderAreaSize;
+	this.canvas.height = symbol.renderAreaSize;
+	this.bitmap.x = -symbol.renderAreaSize / 2;
+	this.bitmap.y = -symbol.renderAreaSize / 2;
 	var material;
 	if(symbol.data.materials != null) material = new THREE.MeshFaceMaterial(symbol.data.materials); else material = new THREE.MeshLambertMaterial({ color : 11184810, overdraw : 1});
 	this.mesh = new THREE.Mesh(symbol.data.geometry,material);
 	if(!nanofl_Mesh.forceSoftwareRenderer && nanofl_Mesh.isWebGLSupported()) this.renderer = new THREE.WebGLRenderer({ canvas : this.canvas, alpha : true}); else this.renderer = new THREE.CanvasRenderer({ canvas : this.canvas, alpha : true});
-	this.renderer.setSize(symbol.size * 2,symbol.size * 2);
+	this.renderer.setSize(symbol.renderAreaSize,symbol.renderAreaSize);
 	symbol.updateDisplayObject(this,null);
 };
 $hxClasses["nanofl.Mesh"] = nanofl_Mesh;
@@ -3541,7 +3541,8 @@ nanofl_Mesh.prototype = $extend(nanofl_SolidContainer.prototype,{
 		return this.symbol.toString();
 	}
 	,getBounds: function() {
-		return new createjs.Rectangle(-this.symbol.size,-this.symbol.size,this.symbol.size * 2,this.symbol.size * 2);
+		var d = this.symbol.renderAreaSize / 2;
+		return new createjs.Rectangle(-d,-d,this.symbol.renderAreaSize,this.symbol.renderAreaSize);
 	}
 	,draw: function(ctx,ignoreCache) {
 		this.update();
@@ -3556,10 +3557,15 @@ nanofl_Mesh.prototype = $extend(nanofl_SolidContainer.prototype,{
 		var posZ = this.symbol.boundingRadius / Math.sin(this.camera.fov / 2 * Math.PI / 180);
 		if(this.ambientLight != null) scene.add(this.ambientLight);
 		if(this.directionalLight != null) {
+			this.directionalLight.position.x = 0.0;
+			this.directionalLight.position.y = 0.0;
 			this.directionalLight.position.z = -posZ;
+			this.directionalLight.position.applyEuler(new THREE.Euler(this.directionalLight.rotation.x,this.directionalLight.rotation.y));
 			scene.add(this.directionalLight);
 		}
 		this.camera.position.z = -posZ;
+		this.camera.near = posZ - this.symbol.boundingRadius;
+		this.camera.far = posZ + this.symbol.boundingRadius;
 		this.camera.lookAt(new THREE.Vector3(0,0,0));
 		this.camera.updateMatrix();
 		this.camera.updateProjectionMatrix();
@@ -4463,7 +4469,7 @@ nanofl_engine_ColorTools.parse = function(s) {
 	if(r >= 0 && g >= 0 && b >= 0) return { r : r, g : g, b : b, a : a};
 	return null;
 };
-nanofl_engine_ColorTools.colorToString = function(color,alpha) {
+nanofl_engine_ColorTools.joinStringAndAlpha = function(color,alpha) {
 	var rgba = nanofl_engine_ColorTools.parse(color);
 	if(rgba != null) {
 		if(alpha != null) rgba.a = alpha;
@@ -4471,8 +4477,15 @@ nanofl_engine_ColorTools.colorToString = function(color,alpha) {
 	}
 	return null;
 };
+nanofl_engine_ColorTools.stringToNumber = function(color,defValue) {
+	var rgba = nanofl_engine_ColorTools.parse(color);
+	if(rgba != null) return nanofl_engine_ColorTools.rgbaToNumber(rgba); else return defValue;
+};
 nanofl_engine_ColorTools.rgbaToString = function(rgba) {
 	if(rgba.a == null || rgba.a == 1.0) return "#" + StringTools.hex(rgba.r,2) + StringTools.hex(rgba.g,2) + StringTools.hex(rgba.b,2); else return "rgba(" + rgba.r + "," + rgba.g + "," + rgba.b + "," + rgba.a + ")";
+};
+nanofl_engine_ColorTools.rgbaToNumber = function(rgba) {
+	if(rgba.a == null || rgba.a == 1.0) return rgba.r << 16 | rgba.g << 8 | rgba.b; else return Math.round(rgba.a * 255) << 24 | rgba.r << 16 | rgba.g << 8 | rgba.b;
 };
 nanofl_engine_ColorTools.rgbToHsl = function(rgb) {
 	var r = rgb.r / 255;
@@ -4591,6 +4604,11 @@ nanofl_engine_ColorTools.normalize = function(s) {
 	if(s == null) return null;
 	if(s == "") return "";
 	return nanofl_engine_ColorTools.rgbaToString(nanofl_engine_ColorTools.parse(s));
+};
+nanofl_engine_ColorTools.getTweened = function(start,k,finish) {
+	var rgbaStart = nanofl_engine_ColorTools.parse(start);
+	var rgbaFinish = nanofl_engine_ColorTools.parse(finish);
+	return nanofl_engine_ColorTools.rgbaToString({ r : rgbaStart.r + Math.round((rgbaFinish.r - rgbaStart.r) * k), g : rgbaStart.g + Math.round((rgbaFinish.g - rgbaStart.g) * k), b : rgbaStart.b + Math.round((rgbaFinish.b - rgbaStart.b) * k), a : rgbaStart.a + (rgbaFinish.a - rgbaStart.a) * k});
 };
 nanofl_engine_ColorTools.log = function(v,infos) {
 };
@@ -5817,18 +5835,84 @@ nanofl_engine_MapTools.equCustom = function(a,b,cmp) {
 	}
 	return true;
 };
-var nanofl_engine_MotionTween = function(easing,rotateCount,orientToPath,rotateCountX,rotateCountY) {
+var nanofl_engine_MeshParams = function() {
+	this.directionalLightRotationY = 0.0;
+	this.directionalLightRotationX = 0.0;
+	this.directionalLightColor = "#808080";
+	this.ambientLightColor = "#E0E0E0";
+	this.cameraFov = 70;
+	this.rotationY = 0.0;
+	this.rotationX = 0.0;
+};
+$hxClasses["nanofl.engine.MeshParams"] = nanofl_engine_MeshParams;
+nanofl_engine_MeshParams.__name__ = ["nanofl","engine","MeshParams"];
+nanofl_engine_MeshParams.load = function(node) {
+	var r = new nanofl_engine_MeshParams();
+	r.rotationX = htmlparser_HtmlParserTools.getAttrFloat(node,"rotationX",r.rotationX);
+	r.rotationY = htmlparser_HtmlParserTools.getAttrFloat(node,"rotationY",r.rotationY);
+	r.cameraFov = htmlparser_HtmlParserTools.getAttrInt(node,"cameraFov",r.cameraFov);
+	r.ambientLightColor = htmlparser_HtmlParserTools.getAttrString(node,"ambientLightColor",r.ambientLightColor);
+	r.directionalLightColor = htmlparser_HtmlParserTools.getAttrString(node,"directionalLightColor",r.directionalLightColor);
+	r.directionalLightRotationX = htmlparser_HtmlParserTools.getAttrFloat(node,"directionalLightRotationX",r.directionalLightRotationX);
+	r.directionalLightRotationY = htmlparser_HtmlParserTools.getAttrFloat(node,"directionalLightRotationY",r.directionalLightRotationY);
+	return r;
+};
+nanofl_engine_MeshParams.prototype = {
+	rotationX: null
+	,rotationY: null
+	,cameraFov: null
+	,ambientLightColor: null
+	,directionalLightColor: null
+	,directionalLightRotationX: null
+	,directionalLightRotationY: null
+	,save: function(out) {
+		var def = new nanofl_engine_MeshParams();
+		out.attr("rotationX",this.rotationX,def.rotationX);
+		out.attr("rotationY",this.rotationY,def.rotationY);
+		out.attr("cameraFov",this.cameraFov,def.cameraFov);
+		out.attr("ambientLightColor",this.ambientLightColor,def.ambientLightColor);
+		out.attr("directionalLightColor",this.directionalLightColor,def.directionalLightColor);
+		out.attr("directionalLightRotationX",this.directionalLightRotationX,def.directionalLightRotationX);
+		out.attr("directionalLightRotationY",this.directionalLightRotationY,def.directionalLightRotationY);
+	}
+	,equ: function(obj) {
+		return obj.rotationX == this.rotationX && obj.rotationY == this.rotationY && obj.cameraFov == this.cameraFov && obj.ambientLightColor == this.ambientLightColor && obj.directionalLightColor == this.directionalLightColor && obj.directionalLightRotationX == this.directionalLightRotationX && obj.directionalLightRotationY == this.directionalLightRotationY;
+	}
+	,clone: function() {
+		var r = new nanofl_engine_MeshParams();
+		r.rotationX = this.rotationX;
+		r.rotationY = this.rotationY;
+		r.cameraFov = this.cameraFov;
+		r.ambientLightColor = this.ambientLightColor;
+		r.directionalLightColor = this.directionalLightColor;
+		r.directionalLightRotationX = this.directionalLightRotationX;
+		r.directionalLightRotationY = this.directionalLightRotationY;
+		return r;
+	}
+	,applyToMesh: function(mesh) {
+		mesh.rotationX = this.rotationX;
+		mesh.rotationY = this.rotationY;
+		mesh.camera.fov = this.cameraFov;
+		mesh.ambientLight.color = new THREE.Color(nanofl_engine_ColorTools.stringToNumber(this.ambientLightColor));
+		mesh.directionalLight.color = new THREE.Color(nanofl_engine_ColorTools.stringToNumber(this.directionalLightColor));
+		mesh.directionalLight.setRotationFromEuler(new THREE.Euler(this.directionalLightRotationX * Math.PI / 180,this.directionalLightRotationY * Math.PI / 180));
+	}
+	,__class__: nanofl_engine_MeshParams
+};
+var nanofl_engine_MotionTween = function(easing,rotateCount,orientToPath,rotateCountX,rotateCountY,directionalLightRotateCountX,directionalLightRotateCountY) {
 	this.easing = easing;
 	this.rotateCount = rotateCount;
 	this.orientToPath = orientToPath;
 	this.rotateCountX = rotateCountX;
 	this.rotateCountY = rotateCountY;
+	this.directionalLightRotateCountX = directionalLightRotateCountX;
+	this.directionalLightRotateCountY = directionalLightRotateCountY;
 };
 $hxClasses["nanofl.engine.MotionTween"] = nanofl_engine_MotionTween;
 nanofl_engine_MotionTween.__name__ = ["nanofl","engine","MotionTween"];
 nanofl_engine_MotionTween.load = function(node) {
 	if(htmlparser_HtmlParserTools.getAttr(node,"tweenType") != "motion") return null;
-	return new nanofl_engine_MotionTween(htmlparser_HtmlParserTools.getAttr(node,"motionTweenEasing",0),htmlparser_HtmlParserTools.getAttr(node,"motionTweenRotateCount",0),htmlparser_HtmlParserTools.getAttr(node,"motionTweenOrientToPath",false),htmlparser_HtmlParserTools.getAttr(node,"motionTweenRotateCountX",0),htmlparser_HtmlParserTools.getAttr(node,"motionTweenRotateCountY",0));
+	return new nanofl_engine_MotionTween(htmlparser_HtmlParserTools.getAttr(node,"motionTweenEasing",0),htmlparser_HtmlParserTools.getAttr(node,"motionTweenRotateCount",0),htmlparser_HtmlParserTools.getAttr(node,"motionTweenOrientToPath",false),htmlparser_HtmlParserTools.getAttr(node,"motionTweenRotateCountX",0),htmlparser_HtmlParserTools.getAttr(node,"motionTweenRotateCountY",0),htmlparser_HtmlParserTools.getAttr(node,"motionTweenDirectionalLightRotateCountX",0),htmlparser_HtmlParserTools.getAttr(node,"motionTweenDirectionalLightRotateCountY",0));
 };
 nanofl_engine_MotionTween.fixFilterSequence = function(src,dst) {
 	var _g1 = 0;
@@ -5877,6 +5961,8 @@ nanofl_engine_MotionTween.prototype = {
 	,orientToPath: null
 	,rotateCountX: null
 	,rotateCountY: null
+	,directionalLightRotateCountX: null
+	,directionalLightRotateCountY: null
 	,save: function(out) {
 		out.attr("tweenType","motion");
 		out.attr("motionTweenEasing",this.easing,0);
@@ -5884,6 +5970,8 @@ nanofl_engine_MotionTween.prototype = {
 		out.attr("motionTweenOrientToPath",this.orientToPath,false);
 		out.attr("motionTweenRotateCountX",this.rotateCountX,0);
 		out.attr("motionTweenRotateCountY",this.rotateCountY,0);
+		out.attr("motionTweenDirectionalLightRotateCountX",this.directionalLightRotateCountX,0);
+		out.attr("motionTweenDirectionalLightRotateCountY",this.directionalLightRotateCountY,0);
 	}
 	,apply: function(frameSubIndex) {
 		var startElements = this.keyFrame.elements;
@@ -5917,8 +6005,15 @@ nanofl_engine_MotionTween.prototype = {
 					var props = guide.get(startProps,finishProps,this.orientToPath,k);
 					targetInstance.matrix.setTransform(props.x,props.y,startProps.scaleX + (finishProps.scaleX - startProps.scaleX) * k,startProps.scaleY + (finishProps.scaleY - startProps.scaleY) * k,props.rotation + this.rotateCount * 360 * k,startProps.skewX + (finishProps.skewX - startProps.skewX) * k,startProps.skewY + (finishProps.skewY - startProps.skewY) * k);
 					this.translatedMatrixByLocalVector(targetInstance.matrix,-startInstance.regX,-startInstance.regY);
-					targetInstance.rotationX += (finishInstance.rotationX - startInstance.rotationX) * k + this.rotateCountX * 360 * k;
-					targetInstance.rotationY += (finishInstance.rotationY - startInstance.rotationY) * k + this.rotateCountY * 360 * k;
+					if(js_Boot.__instanceof(startInstance.symbol,nanofl_engine_libraryitems_MeshItem) && js_Boot.__instanceof(finishInstance.symbol,nanofl_engine_libraryitems_MeshItem)) {
+						targetInstance.meshParams.rotationX += (finishInstance.meshParams.rotationX - startInstance.meshParams.rotationX) * k + this.rotateCountX * 360 * k;
+						targetInstance.meshParams.rotationY += (finishInstance.meshParams.rotationY - startInstance.meshParams.rotationY) * k + this.rotateCountY * 360 * k;
+						targetInstance.meshParams.cameraFov += Math.round((finishInstance.meshParams.cameraFov - startInstance.meshParams.cameraFov) * k);
+						targetInstance.meshParams.ambientLightColor = nanofl_engine_ColorTools.getTweened(startInstance.meshParams.ambientLightColor,k,finishInstance.meshParams.ambientLightColor);
+						targetInstance.meshParams.directionalLightColor = nanofl_engine_ColorTools.getTweened(startInstance.meshParams.directionalLightColor,k,finishInstance.meshParams.directionalLightColor);
+						targetInstance.meshParams.directionalLightRotationX += (finishInstance.meshParams.directionalLightRotationX - startInstance.meshParams.directionalLightRotationX) * k + this.directionalLightRotateCountX * 360 * k;
+						targetInstance.meshParams.directionalLightRotationY += (finishInstance.meshParams.directionalLightRotationY - startInstance.meshParams.directionalLightRotationY) * k + this.directionalLightRotateCountY * 360 * k;
+					}
 					if(startInstance.colorEffect != null || finishInstance.colorEffect != null) {
 						var startCE;
 						if(startInstance.colorEffect != null) startCE = startInstance.colorEffect; else startCE = finishInstance.colorEffect.getNeutralClone();
@@ -5934,7 +6029,7 @@ nanofl_engine_MotionTween.prototype = {
 					});
 					nanofl_engine_MotionTween.fixFilterSequence(startFilters,finishFilters);
 					nanofl_engine_MotionTween.fixFilterSequence(finishFilters,startFilters);
-					stdlib_Debug.assert(startFilters.length == finishFilters.length,"startFilters.length = " + startFilters.length + " != finishFilters.length = " + finishFilters.length,{ fileName : "MotionTween.hx", lineNumber : 127, className : "nanofl.engine.MotionTween", methodName : "apply"});
+					stdlib_Debug.assert(startFilters.length == finishFilters.length,"startFilters.length = " + startFilters.length + " != finishFilters.length = " + finishFilters.length,{ fileName : "MotionTween.hx", lineNumber : 144, className : "nanofl.engine.MotionTween", methodName : "apply"});
 					targetInstance.filters = [];
 					var _g1 = 0;
 					var _g = startFilters.length;
@@ -5955,7 +6050,7 @@ nanofl_engine_MotionTween.prototype = {
 		return r;
 	}
 	,clone: function() {
-		return new nanofl_engine_MotionTween(this.easing,this.rotateCount,this.orientToPath,this.rotateCountX,this.rotateCountY);
+		return new nanofl_engine_MotionTween(this.easing,this.rotateCount,this.orientToPath,this.rotateCountX,this.rotateCountY,this.directionalLightRotateCountX,this.directionalLightRotateCountY);
 	}
 	,isGood: function() {
 		var startElements = this.keyFrame.elements;
@@ -5973,6 +6068,10 @@ nanofl_engine_MotionTween.prototype = {
 		if(motionTween.easing != this.easing) return false;
 		if(motionTween.rotateCount != this.rotateCount) return false;
 		if(motionTween.orientToPath != this.orientToPath) return false;
+		if(motionTween.rotateCountX != this.rotateCountX) return false;
+		if(motionTween.rotateCountY != this.rotateCountY) return false;
+		if(motionTween.directionalLightRotateCountX != this.directionalLightRotateCountX) return false;
+		if(motionTween.directionalLightRotateCountY != this.directionalLightRotateCountY) return false;
 		return true;
 	}
 	,translatedMatrixByLocalVector: function(m,dx,dy) {
@@ -6175,11 +6274,6 @@ nanofl_engine_coloreffects_ColorEffect.load = function(node) {
 	}
 	return null;
 };
-nanofl_engine_coloreffects_ColorEffect.equS = function(a,b) {
-	if(a == null && b == null) return true;
-	if(a == null && b != null || a != null && b == null) return false;
-	return a.equ(b);
-};
 nanofl_engine_coloreffects_ColorEffect.prototype = {
 	apply: function(obj) {
 		throw new js__$Boot_HaxeError("Unsupported.");
@@ -6377,7 +6471,7 @@ nanofl_engine_coloreffects_ColorEffectTint.prototype = $extend(nanofl_engine_col
 		return new nanofl_engine_coloreffects_ColorEffectTint(this.color,0);
 	}
 	,getTweened: function(k,finish) {
-		return new nanofl_engine_coloreffects_ColorEffectTint(this.color,this.multiplier + ((js_Boot.__cast(finish , nanofl_engine_coloreffects_ColorEffectTint)).multiplier - this.multiplier) * k);
+		return new nanofl_engine_coloreffects_ColorEffectTint(nanofl_engine_ColorTools.getTweened(this.color,k,(js_Boot.__cast(finish , nanofl_engine_coloreffects_ColorEffectTint)).color),this.multiplier + ((js_Boot.__cast(finish , nanofl_engine_coloreffects_ColorEffectTint)).multiplier - this.multiplier) * k);
 	}
 	,equ: function(c) {
 		return js_Boot.__instanceof(c,nanofl_engine_coloreffects_ColorEffectTint) && this.color == c.color && this.multiplier == c.multiplier;
@@ -6704,9 +6798,7 @@ nanofl_engine_elements_GroupElement.prototype = $extend(nanofl_engine_elements_E
 	}
 	,__class__: nanofl_engine_elements_GroupElement
 });
-var nanofl_engine_elements_Instance = function(namePath,name,colorEffect,filters,blendMode) {
-	this.rotationY = 0.0;
-	this.rotationX = 0.0;
+var nanofl_engine_elements_Instance = function(namePath,name,colorEffect,filters,blendMode,meshParams) {
 	var _g = this;
 	nanofl_engine_elements_Element.call(this);
 	Object.defineProperty(this,"symbol",{ get : function() {
@@ -6720,6 +6812,7 @@ var nanofl_engine_elements_Instance = function(namePath,name,colorEffect,filters
 	this.colorEffect = colorEffect;
 	if(filters != null) this.filters = filters; else this.filters = [];
 	if(blendMode != null) this.blendMode = blendMode; else this.blendMode = "normal";
+	this.meshParams = meshParams;
 };
 $hxClasses["nanofl.engine.elements.Instance"] = nanofl_engine_elements_Instance;
 nanofl_engine_elements_Instance.__name__ = ["nanofl","engine","elements","Instance"];
@@ -6732,8 +6825,7 @@ nanofl_engine_elements_Instance.prototype = $extend(nanofl_engine_elements_Eleme
 	,colorEffect: null
 	,filters: null
 	,blendMode: null
-	,rotationX: null
-	,rotationY: null
+	,meshParams: null
 	,symbol: null
 	,get_symbol: function() {
 		return js_Boot.__cast(this.library.getItem(this.namePath) , nanofl_engine_libraryitems_InstancableItem);
@@ -6744,20 +6836,20 @@ nanofl_engine_elements_Instance.prototype = $extend(nanofl_engine_elements_Eleme
 	,loadProperties: function(node,version) {
 		if(!nanofl_engine_elements_Element.prototype.loadProperties.call(this,node,version)) return false;
 		this.namePath = htmlparser_HtmlParserTools.getAttr(node,"libraryItem");
-		stdlib_Debug.assert(this.namePath != null,null,{ fileName : "Instance.hx", lineNumber : 49, className : "nanofl.engine.elements.Instance", methodName : "loadProperties"});
-		stdlib_Debug.assert(this.namePath != "",null,{ fileName : "Instance.hx", lineNumber : 50, className : "nanofl.engine.elements.Instance", methodName : "loadProperties"});
+		stdlib_Debug.assert(this.namePath != null,null,{ fileName : "Instance.hx", lineNumber : 48, className : "nanofl.engine.elements.Instance", methodName : "loadProperties"});
+		stdlib_Debug.assert(this.namePath != "",null,{ fileName : "Instance.hx", lineNumber : 49, className : "nanofl.engine.elements.Instance", methodName : "loadProperties"});
 		this.name = htmlparser_HtmlParserTools.getAttr(node,"name","");
 		this.colorEffect = nanofl_engine_coloreffects_ColorEffect.load(htmlparser_HtmlParserTools.findOne(node,">color"));
 		this.filters = node.find(">filters>*").map(function(node1) {
 			return nanofl_engine_FilterDef.load(node1,version);
 		});
 		this.blendMode = htmlparser_HtmlParserTools.getAttr(node,"blendMode","normal");
-		this.rotationX = htmlparser_HtmlParserTools.getAttrFloat(node,"rotationX",0.0);
-		this.rotationY = htmlparser_HtmlParserTools.getAttrFloat(node,"rotationY",0.0);
+		this.meshParams = nanofl_engine_MeshParams.load(node);
 		return true;
 	}
 	,save: function(out) {
-		out.begin("instance").attr("libraryItem",this.namePath).attr("name",this.name,"").attr("blendMode",this.blendMode,"normal").attr("rotationX",this.rotationX,0.0).attr("rotationY",this.rotationY,0.0);
+		out.begin("instance").attr("libraryItem",this.namePath).attr("name",this.name,"").attr("blendMode",this.blendMode,"normal");
+		if(this.meshParams != null) this.meshParams.save(out);
 		if(this.colorEffect != null) this.colorEffect.save(out);
 		if(this.filters.length > 0) {
 			out.begin("filters");
@@ -6774,11 +6866,9 @@ nanofl_engine_elements_Instance.prototype = $extend(nanofl_engine_elements_Eleme
 		out.end();
 	}
 	,clone: function() {
-		var obj = new nanofl_engine_elements_Instance(this.namePath,this.name,nanofl_engine_NullTools.clone(this.colorEffect),nanofl_engine_ArrayTools.clone(this.filters),this.blendMode);
+		var obj = new nanofl_engine_elements_Instance(this.namePath,this.name,nanofl_engine_NullTools.clone(this.colorEffect),nanofl_engine_ArrayTools.clone(this.filters),this.blendMode,nanofl_engine_NullTools.clone(this.meshParams));
 		obj.library = this.library;
 		this.copyBaseProperties(obj);
-		obj.rotationX = this.rotationX;
-		obj.rotationY = this.rotationY;
 		return obj;
 	}
 	,isScene: function() {
@@ -6821,10 +6911,7 @@ nanofl_engine_elements_Instance.prototype = $extend(nanofl_engine_elements_Eleme
 		}
 		if(this.name != "") dispObj.name = this.name;
 		dispObj.compositeOperation = this.blendMode;
-		if(js_Boot.__instanceof(dispObj,nanofl_Mesh)) {
-			dispObj.rotationX = this.rotationX;
-			dispObj.rotationY = this.rotationY;
-		}
+		if(this.meshParams != null && js_Boot.__instanceof(dispObj,nanofl_Mesh)) this.meshParams.applyToMesh(dispObj);
 	}
 	,getNavigatorName: function() {
 		return this.namePath;
@@ -6857,8 +6944,7 @@ nanofl_engine_elements_Instance.prototype = $extend(nanofl_engine_elements_Eleme
 		if(!nanofl_engine_NullTools.equ(element.colorEffect,this.colorEffect)) return false;
 		if(!nanofl_engine_ArrayTools.equ(element.filters,this.filters)) return false;
 		if(element.blendMode != this.blendMode) return false;
-		if(element.rotationX != this.rotationX) return false;
-		if(element.rotationY != this.rotationY) return false;
+		if(!nanofl_engine_NullTools.equ(element.meshParams,this.meshParams)) return false;
 		return true;
 	}
 	,hxUnserialize: function(s) {
@@ -12631,7 +12717,7 @@ nanofl_engine_libraryitems_FontItem.prototype = $extend(nanofl_engine_libraryite
 	,__class__: nanofl_engine_libraryitems_FontItem
 });
 var nanofl_engine_libraryitems_MeshItem = function(namePath,ext,originalExt) {
-	this.size = 100;
+	this.renderAreaSize = 256;
 	nanofl_engine_libraryitems_InstancableItem.call(this,namePath);
 	this.ext = ext;
 	this.originalExt = originalExt;
@@ -12650,7 +12736,7 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 	ext: null
 	,originalExt: null
 	,textureAtlas: null
-	,size: null
+	,renderAreaSize: null
 	,data: null
 	,boundingRadius: null
 	,getNotSerializableFields: function() {
@@ -12662,7 +12748,7 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 	,clone: function() {
 		var obj = new nanofl_engine_libraryitems_MeshItem(this.namePath,this.ext,this.originalExt);
 		obj.textureAtlas = this.textureAtlas;
-		obj.size = this.size;
+		obj.renderAreaSize = this.renderAreaSize;
 		obj.data = this.data;
 		obj.boundingRadius = this.boundingRadius;
 		this.copyBaseProperties(obj);
@@ -12691,18 +12777,20 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 		nanofl_engine_libraryitems_InstancableItem.prototype.loadProperties.call(this,xml);
 		this.originalExt = htmlparser_HtmlParserTools.getAttr(xml,"originalExt",null);
 		this.textureAtlas = htmlparser_HtmlParserTools.getAttr(xml,"textureAtlas",null);
+		this.renderAreaSize = htmlparser_HtmlParserTools.getAttr(xml,"renderAreaSize",256);
 	}
 	,saveProperties: function(xml) {
 		nanofl_engine_libraryitems_InstancableItem.prototype.saveProperties.call(this,xml);
 		xml.attr("ext",this.ext,null);
 		xml.attr("originalExt",this.originalExt,null);
 		xml.attr("textureAtlas",this.textureAtlas,null);
+		xml.attr("renderAreaSize",this.renderAreaSize,256);
 	}
 	,getUrl: function() {
 		return this.library.realUrl(this.namePath + "." + this.ext);
 	}
 	,preload: function(ready) {
-		stdlib_Debug.assert(this.library != null,"You need to add item '" + this.namePath + "' to the library before preload call.",{ fileName : "MeshItem.hx", lineNumber : 150, className : "nanofl.engine.libraryitems.MeshItem", methodName : "preload"});
+		stdlib_Debug.assert(this.library != null,"You need to add item '" + this.namePath + "' to the library before preload call.",{ fileName : "MeshItem.hx", lineNumber : 155, className : "nanofl.engine.libraryitems.MeshItem", methodName : "preload"});
 		if(nanofl_engine_TextureItemTools.getSpriteSheet(this) == null) this.preloadInner(ready); else nanofl_engine_TextureItemTools.preload(this,ready);
 	}
 	,preloadInner: function(ready) {
@@ -12723,7 +12811,7 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 					}
 				}
 				var loader = new THREE.JSONLoader();
-				_g.data = loader.parse(json,_g.library.libraryDir);
+				_g.data = loader.parse(json,_g.library.realUrl(""));
 				if(_g.data.materials != null) {
 					var _g21 = 0;
 					var _g31 = _g.data.materials;
@@ -12756,7 +12844,7 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 		return r;
 	}
 	,updateDisplayObject: function(dispObj,childFrameIndexes) {
-		stdlib_Debug.assert(js_Boot.__instanceof(dispObj,nanofl_Mesh),null,{ fileName : "MeshItem.hx", lineNumber : 235, className : "nanofl.engine.libraryitems.MeshItem", methodName : "updateDisplayObject"});
+		stdlib_Debug.assert(js_Boot.__instanceof(dispObj,nanofl_Mesh),null,{ fileName : "MeshItem.hx", lineNumber : 240, className : "nanofl.engine.libraryitems.MeshItem", methodName : "updateDisplayObject"});
 		dispObj.update();
 	}
 	,getDisplayObjectClassName: function() {
@@ -12766,10 +12854,13 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 		if(item.namePath != this.namePath) return false;
 		if(!js_Boot.__instanceof(item,nanofl_engine_libraryitems_MeshItem)) return false;
 		if(item.ext != this.ext) return false;
+		if(item.textureAtlas != this.textureAtlas) return false;
+		if(item.renderAreaSize != this.renderAreaSize) return false;
 		return true;
 	}
 	,getNearestPoint: function(pos) {
-		var bounds = { minX : 0.0, minY : 0.0, maxX : this.size + 0.0, maxY : this.size + 0.0};
+		var d = this.renderAreaSize / 2;
+		var bounds = { minX : -d, minY : -d, maxX : d, maxY : d};
 		return nanofl_engine_geom_BoundsTools.getNearestPoint(bounds,pos);
 	}
 	,toString: function() {
@@ -17278,5 +17369,6 @@ nanofl_engine_geom_Equation.EPS = 1e-10;
 nanofl_engine_geom_Matrix.DEG_TO_RAD = Math.PI / 180;
 nanofl_engine_geom_Polygon.showSelection = true;
 nanofl_engine_geom_StraightLine.EPS = 1e-10;
+nanofl_engine_libraryitems_MeshItem.DEFAULT_RENDER_AREA_SIZE = 256;
 tjson_TJSON.OBJECT_REFERENCE_PREFIX = "@~obRef#";
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports);

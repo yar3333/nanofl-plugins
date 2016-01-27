@@ -844,14 +844,13 @@ declare module nanofl.engine.elements
 	
 	export class Instance extends nanofl.engine.elements.Element implements nanofl.engine.IPathElement
 	{
-		constructor(namePath:string, name?:string, colorEffect?:nanofl.engine.coloreffects.ColorEffect, filters?:nanofl.engine.FilterDef[], blendMode?:nanofl.engine.BlendModes);
+		constructor(namePath:string, name?:string, colorEffect?:nanofl.engine.coloreffects.ColorEffect, filters?:nanofl.engine.FilterDef[], blendMode?:nanofl.engine.BlendModes, meshParams?:nanofl.engine.MeshParams);
 		namePath : string;
 		name : string;
 		colorEffect : nanofl.engine.coloreffects.ColorEffect;
 		filters : nanofl.engine.FilterDef[];
 		blendMode : nanofl.engine.BlendModes;
-		rotationX : number;
-		rotationY : number;
+		meshParams : nanofl.engine.MeshParams;
 		symbol : nanofl.engine.libraryitems.InstancableItem;
 		getType() : string;
 		save(out:htmlparser.XmlBuilder) : void;
@@ -1016,7 +1015,6 @@ declare module nanofl.engine.coloreffects
 		save(out:htmlparser.XmlBuilder) : void;
 		equ(c:nanofl.engine.coloreffects.ColorEffect) : boolean;
 		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffect;
-		static equS(a:nanofl.engine.coloreffects.ColorEffect, b:nanofl.engine.coloreffects.ColorEffect) : boolean;
 	}
 	
 	export class ColorEffectAdvanced extends nanofl.engine.coloreffects.ColorEffect
@@ -1255,6 +1253,27 @@ declare module nanofl
 	export class SolidContainer extends createjs.Container
 	{
 		constructor();
+	}
+	
+	export class Mesh extends nanofl.SolidContainer
+	{
+		constructor(symbol:nanofl.engine.libraryitems.MeshItem);
+		symbol : nanofl.engine.libraryitems.MeshItem;
+		rotationX : number;
+		rotationY : number;
+		bitmap : createjs.Bitmap;
+		canvas : HTMLCanvasElement;
+		mesh : THREE.Mesh;
+		ambientLight : THREE.AmbientLight;
+		directionalLight : THREE.DirectionalLight;
+		camera : THREE.PerspectiveCamera;
+		renderer : THREE.Renderer;
+		clone(recursive?:boolean) : nanofl.Mesh;
+		toString() : string;
+		getBounds() : createjs.Rectangle;
+		draw(ctx:CanvasRenderingContext2D, ignoreCache?:boolean) : boolean;
+		update() : void;
+		static forceSoftwareRenderer : boolean;
 	}
 	
 	export class MovieClip extends createjs.Container
@@ -1629,11 +1648,12 @@ declare module nanofl.ide.undo.states
 	
 	export class InstanceState extends nanofl.ide.undo.states.ElementState
 	{
-		constructor(name:string, colorEffect:nanofl.engine.coloreffects.ColorEffect, filters:nanofl.engine.FilterDef[], blendMode:nanofl.engine.BlendModes);
+		constructor(name:string, colorEffect:nanofl.engine.coloreffects.ColorEffect, filters:nanofl.engine.FilterDef[], blendMode:nanofl.engine.BlendModes, meshParams:nanofl.engine.MeshParams);
 		name : string;
 		colorEffect : nanofl.engine.coloreffects.ColorEffect;
 		filters : nanofl.engine.FilterDef[];
 		blendMode : nanofl.engine.BlendModes;
+		meshParams : nanofl.engine.MeshParams;
 		equ(_state:nanofl.ide.undo.states.ElementState) : boolean;
 	}
 	
@@ -1674,7 +1694,7 @@ declare module nanofl.ide.undo.states
 	
 	export class TransformationState
 	{
-		constructor(matrix:nanofl.engine.geom.Matrix, rotationX:number, rotationY:number);
+		constructor(matrix:nanofl.engine.geom.Matrix, meshParams:nanofl.engine.MeshParams);
 		equ(state:nanofl.ide.undo.states.TransformationState) : boolean;
 		toElement(element:nanofl.engine.elements.Element) : void;
 		static fromElement(element:nanofl.engine.elements.Element) : nanofl.ide.undo.states.TransformationState;
@@ -2243,7 +2263,7 @@ declare module nanofl.engine.libraryitems
 		ext : string;
 		originalExt : string;
 		textureAtlas : string;
-		size : number;
+		renderAreaSize : number;
 		data : { geometry : THREE.Geometry; materials : THREE.Material[]; };
 		boundingRadius : number;
 		getType() : string;
@@ -2264,6 +2284,7 @@ declare module nanofl.engine.libraryitems
 		getUsedSymbolNamePaths() : string[];
 		generateOptimizedFiles(fileSystem:nanofl.engine.FileSystem, optimizations:nanofl.ide.PublishOptimizations, destDir:string) : { relPath : string; baseDir : string; }[];
 		toString() : string;
+		static DEFAULT_RENDER_AREA_SIZE : number;
 		static extensions : string[];
 		static load(api:nanofl.ide.NanoApi, namePath:string, originalExt:string, files:Map<string, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.MeshItem;
 		static parse(namePath:string, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MeshItem;
@@ -9738,8 +9759,10 @@ declare module nanofl.engine
 	export class ColorTools
 	{
 		static parse(s:string) : { a : number; b : number; g : number; r : number; };
-		static colorToString(color:string, alpha?:number) : string;
+		static joinStringAndAlpha(color:string, alpha?:number) : string;
+		static stringToNumber(color:string, defValue?:number) : number;
 		static rgbaToString(rgba:{ a : number; b : number; g : number; r : number; }) : string;
+		static rgbaToNumber(rgba:{ a : number; b : number; g : number; r : number; }) : number;
 		/**
 		 * Converts an RGB color value to HSL. Conversion formula
 		 * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
@@ -9791,6 +9814,7 @@ declare module nanofl.engine
 		static tweenRgba(start:{ a : number; b : number; g : number; r : number; }, finish:{ a : number; b : number; g : number; r : number; }, t:number) : { a : number; b : number; g : number; r : number; };
 		static tweenHsl(start:{ h : number; l : number; s : number; }, finish:{ h : number; l : number; s : number; }, t:number) : { h : number; l : number; s : number; };
 		static normalize(s:string) : string;
+		static getTweened(start:string, k:number, finish:string) : string;
 	}
 	
 	export class Console
@@ -10132,14 +10156,33 @@ declare module nanofl.engine
 		static createWithScene(libraryDir?:string, elements?:nanofl.engine.elements.Element[], layerName?:string) : nanofl.engine.Library;
 	}
 	
+	export class MeshParams
+	{
+		constructor();
+		rotationX : number;
+		rotationY : number;
+		cameraFov : number;
+		ambientLightColor : string;
+		directionalLightColor : string;
+		directionalLightRotationX : number;
+		directionalLightRotationY : number;
+		save(out:htmlparser.XmlBuilder) : void;
+		equ(obj:nanofl.engine.MeshParams) : boolean;
+		clone() : nanofl.engine.MeshParams;
+		applyToMesh(mesh:nanofl.Mesh) : void;
+		static load(node:htmlparser.HtmlNodeElement) : nanofl.engine.MeshParams;
+	}
+	
 	export class MotionTween
 	{
-		constructor(easing:number, rotateCount:number, orientToPath:boolean, rotateCountX:number, rotateCountY:number);
+		constructor(easing:number, rotateCount:number, orientToPath:boolean, rotateCountX:number, rotateCountY:number, directionalLightRotateCountX:number, directionalLightRotateCountY:number);
 		easing : number;
 		rotateCount : number;
 		orientToPath : boolean;
 		rotateCountX : number;
 		rotateCountY : number;
+		directionalLightRotateCountX : number;
+		directionalLightRotateCountY : number;
 		save(out:htmlparser.XmlBuilder) : void;
 		apply(frameSubIndex:number) : nanofl.engine.TweenedElement[];
 		clone() : nanofl.engine.MotionTween;

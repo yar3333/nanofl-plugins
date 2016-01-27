@@ -3,8 +3,10 @@ package nanofl.engine;
 extern class ColorTools
 {
 	static function parse(s:String) : { var a : Float; var b : Int; var g : Int; var r : Int; };
-	static function colorToString(color:String, ?alpha:Float) : String;
+	static function joinStringAndAlpha(color:String, ?alpha:Float) : String;
+	static function stringToNumber(color:String, ?defValue:Int) : Int;
 	static function rgbaToString(rgba:{ @:optional var a : Float; var b : Int; var g : Int; var r : Int; }) : String;
+	static function rgbaToNumber(rgba:{ @:optional var a : Float; var b : Int; var g : Int; var r : Int; }) : Int;
 	/**
 	 * Converts an RGB color value to HSL. Conversion formula
 	 * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
@@ -56,4 +58,5 @@ extern class ColorTools
 	static function tweenRgba(start:{ @:optional var a : Float; var b : Int; var g : Int; var r : Int; }, finish:{ @:optional var a : Float; var b : Int; var g : Int; var r : Int; }, t:Float) : { @:optional var a : Float; var b : Int; var g : Int; var r : Int; };
 	static function tweenHsl(start:{ var h : Float; var l : Float; var s : Float; }, finish:{ var h : Float; var l : Float; var s : Float; }, t:Float) : { var h : Float; var l : Float; var s : Float; };
 	static function normalize(s:String) : String;
+	static function getTweened(start:String, k:Float, finish:String) : String;
 }

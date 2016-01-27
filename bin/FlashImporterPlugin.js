@@ -896,7 +896,7 @@ flashimport_SymbolLoader.prototype = {
 		case "none":
 			return null;
 		case "motion":
-			return new nanofl.engine.MotionTween(-htmlparser.HtmlParserTools.getAttrInt(frame,"acceleration",0),this.parseMotionTweenRotate(htmlparser.HtmlParserTools.getAttr(frame,"motionTweenRotate"),htmlparser.HtmlParserTools.getAttr(frame,"motionTweenRotateTimes",1)),htmlparser.HtmlParserTools.getAttr(frame,"motionTweenOrientToPath",false),0,0);
+			return new nanofl.engine.MotionTween(-htmlparser.HtmlParserTools.getAttrInt(frame,"acceleration",0),this.parseMotionTweenRotate(htmlparser.HtmlParserTools.getAttr(frame,"motionTweenRotate"),htmlparser.HtmlParserTools.getAttr(frame,"motionTweenRotateTimes",1)),htmlparser.HtmlParserTools.getAttr(frame,"motionTweenOrientToPath",false),0,0,0,0);
 		case "shape":
 			if(!Lambda.has(this.morphingNotSupported,namePath)) {
 				this.morphingNotSupported.push(namePath);
@@ -1054,14 +1054,14 @@ flashimport_SymbolLoader.prototype = {
 		var _g = fill.name;
 		switch(_g) {
 		case "SolidColor":
-			return { fill : new nanofl.engine.fills.SolidFill(nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(fill,"color","#000000"),htmlparser.HtmlParserTools.getAttr(fill,"alpha",1.0))), matrix : new nanofl.engine.geom.Matrix()};
+			return { fill : new nanofl.engine.fills.SolidFill(nanofl.engine.ColorTools.joinStringAndAlpha(htmlparser.HtmlParserTools.getAttr(fill,"color","#000000"),htmlparser.HtmlParserTools.getAttr(fill,"alpha",1.0))), matrix : new nanofl.engine.geom.Matrix()};
 		case "LinearGradient":
 			var gradients = fill.find(">GradientEntry");
 			var m = flashimport_MatrixParser.load(htmlparser.HtmlParserTools.findOne(fill,">matrix>Matrix"),0.001220703125);
 			var p0 = m.transformPoint(-1,0);
 			var p1 = m.transformPoint(1,0);
 			return { fill : new nanofl.engine.fills.LinearFill(gradients.map(function(g) {
-				return nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(g,"color","#000000"),htmlparser.HtmlParserTools.getAttr(g,"alpha",1.0));
+				return nanofl.engine.ColorTools.joinStringAndAlpha(htmlparser.HtmlParserTools.getAttr(g,"color","#000000"),htmlparser.HtmlParserTools.getAttr(g,"alpha",1.0));
 			}),gradients.map(function(g1) {
 				return htmlparser.HtmlParserTools.getAttr(g1,"ratio");
 			}),p0.x,p0.y,p1.x,p1.y), matrix : new nanofl.engine.geom.Matrix()};
@@ -1074,11 +1074,11 @@ flashimport_SymbolLoader.prototype = {
 			var p2 = m1.transformPoint(0,1);
 			var k = Math.abs(nanofl.engine.geom.PointTools.getDist(p01.x,p01.y,p2.x,p2.y) - nanofl.engine.geom.PointTools.getDist(p01.x,p01.y,p11.x,p11.y));
 			if(k < flashimport_SymbolLoader.EPS) return { fill : new nanofl.engine.fills.RadialFill(gradients1.map(function(g2) {
-				return nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(g2,"color","#000000"),htmlparser.HtmlParserTools.getAttr(g2,"alpha",1.0));
+				return nanofl.engine.ColorTools.joinStringAndAlpha(htmlparser.HtmlParserTools.getAttr(g2,"color","#000000"),htmlparser.HtmlParserTools.getAttr(g2,"alpha",1.0));
 			}),gradients1.map(function(g3) {
 				return htmlparser.HtmlParserTools.getAttr(g3,"ratio");
 			}),p01.x,p01.y,nanofl.engine.geom.PointTools.getDist(p01.x,p01.y,p11.x,p11.y),p01.x + (p11.x - p01.x) * focalPointRatio,p01.y + (p11.y - p01.y) * focalPointRatio), matrix : new nanofl.engine.geom.Matrix()}; else return { fill : new nanofl.engine.fills.RadialFill(gradients1.map(function(g4) {
-				return nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(g4,"color","#000000"),htmlparser.HtmlParserTools.getAttr(g4,"alpha",1.0));
+				return nanofl.engine.ColorTools.joinStringAndAlpha(htmlparser.HtmlParserTools.getAttr(g4,"color","#000000"),htmlparser.HtmlParserTools.getAttr(g4,"alpha",1.0));
 			}),gradients1.map(function(g5) {
 				return htmlparser.HtmlParserTools.getAttr(g5,"ratio");
 			}),0,0,1,focalPointRatio,0), matrix : m1};
@@ -1096,7 +1096,7 @@ flashimport_SymbolLoader.prototype = {
 		var _g = stroke.name;
 		switch(_g) {
 		case "SolidStroke":
-			return { stroke : new nanofl.engine.strokes.SolidStroke(nanofl.engine.ColorTools.colorToString(htmlparser.HtmlParserTools.getAttr(colorElem,"color","#000000"),htmlparser.HtmlParserTools.getAttr(colorElem,"alpha",1.0)),!isHairline?htmlparser.HtmlParserTools.getAttr(stroke,"weight",1.0):1.0,htmlparser.HtmlParserTools.getAttr(stroke,"caps","round"),htmlparser.HtmlParserTools.getAttr(stroke,"joins","round"),htmlparser.HtmlParserTools.getAttr(stroke,"miterLimit",3.0),isHairline), matrix : new nanofl.engine.geom.Matrix()};
+			return { stroke : new nanofl.engine.strokes.SolidStroke(nanofl.engine.ColorTools.joinStringAndAlpha(htmlparser.HtmlParserTools.getAttr(colorElem,"color","#000000"),htmlparser.HtmlParserTools.getAttr(colorElem,"alpha",1.0)),!isHairline?htmlparser.HtmlParserTools.getAttr(stroke,"weight",1.0):1.0,htmlparser.HtmlParserTools.getAttr(stroke,"caps","round"),htmlparser.HtmlParserTools.getAttr(stroke,"joins","round"),htmlparser.HtmlParserTools.getAttr(stroke,"miterLimit",3.0),isHairline), matrix : new nanofl.engine.geom.Matrix()};
 		default:
 			nanofl.engine.Debug.console.warn("Unknow stroke type '" + stroke.name + "'.");
 			return { stroke : new nanofl.engine.strokes.SolidStroke("#000000"), matrix : new nanofl.engine.geom.Matrix()};

@@ -2,12 +2,14 @@ package nanofl.engine;
 
 extern class MotionTween
 {
-	function new(easing:Int, rotateCount:Int, orientToPath:Bool, rotateCountX:Int, rotateCountY:Int) : Void;
+	function new(easing:Int, rotateCount:Int, orientToPath:Bool, rotateCountX:Int, rotateCountY:Int, directionalLightRotateCountX:Int, directionalLightRotateCountY:Int) : Void;
 	var easing : Int;
 	var rotateCount : Int;
 	var orientToPath : Bool;
 	var rotateCountX : Int;
 	var rotateCountY : Int;
+	var directionalLightRotateCountX : Int;
+	var directionalLightRotateCountY : Int;
 	function save(out:htmlparser.XmlBuilder) : Void;
 	function apply(frameSubIndex:Int) : Array<nanofl.engine.TweenedElement>;
 	function clone() : nanofl.engine.MotionTween;

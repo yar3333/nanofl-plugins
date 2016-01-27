@@ -2759,7 +2759,7 @@ svgimport_SvgPathToShapeConvertor.prototype = {
 	}
 	,getGradientRgbaColors: function(grad) {
 		return Lambda.array(Lambda.mapi(grad.colors,function(i,c) {
-			return nanofl.engine.ColorTools.colorToString(c,grad.alphas[i]);
+			return nanofl.engine.ColorTools.joinStringAndAlpha(c,grad.alphas[i]);
 		}));
 	}
 	,__class__: svgimport_SvgPathToShapeConvertor
@@ -2890,7 +2890,7 @@ svgimport_SvgTextExporter.prototype = $extend(svgimport_BaseExporter.prototype,{
 			return "rgba(0,0,0,0)";
 		case 1:
 			var color = strokeType[2];
-			return nanofl.engine.ColorTools.colorToString(color,alpha);
+			return nanofl.engine.ColorTools.joinStringAndAlpha(color,alpha);
 		case 2:
 			var grad = strokeType[2];
 			return this.gradientToColor(grad);
@@ -2903,7 +2903,7 @@ svgimport_SvgTextExporter.prototype = $extend(svgimport_BaseExporter.prototype,{
 			return "rgba(0,0,0,0)";
 		case 1:
 			var color = fillType[2];
-			return nanofl.engine.ColorTools.colorToString(color,alpha);
+			return nanofl.engine.ColorTools.joinStringAndAlpha(color,alpha);
 		case 2:
 			var grad = fillType[2];
 			return this.gradientToColor(grad);
@@ -2914,10 +2914,10 @@ svgimport_SvgTextExporter.prototype = $extend(svgimport_BaseExporter.prototype,{
 		switch(grad[1]) {
 		case 0:
 			var grad1 = grad[2];
-			return nanofl.engine.ColorTools.colorToString(grad1.colors[0],grad1.alphas[0]);
+			return nanofl.engine.ColorTools.joinStringAndAlpha(grad1.colors[0],grad1.alphas[0]);
 		case 1:
 			var grad2 = grad[2];
-			return nanofl.engine.ColorTools.colorToString(grad2.colors[0],grad2.alphas[0]);
+			return nanofl.engine.ColorTools.joinStringAndAlpha(grad2.colors[0],grad2.alphas[0]);
 		}
 		return null;
 	}

@@ -9,5 +9,4 @@ extern class ColorEffect
 	function save(out:htmlparser.XmlBuilder) : Void;
 	function equ(c:nanofl.engine.coloreffects.ColorEffect) : Bool;
 	static function load(node:htmlparser.HtmlNodeElement) : nanofl.engine.coloreffects.ColorEffect;
-	static function equS(a:nanofl.engine.coloreffects.ColorEffect, b:nanofl.engine.coloreffects.ColorEffect) : Bool;
 }
