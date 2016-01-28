@@ -3497,15 +3497,17 @@ var nanofl_Mesh = $hx_exports.nanofl.Mesh = function(symbol) {
 	nanofl_SolidContainer.call(this);
 	this.symbol = symbol;
 	this.addChild(new createjs.Bitmap(window.document.createElement("canvas")));
-	this.canvas.width = symbol.renderAreaSize;
-	this.canvas.height = symbol.renderAreaSize;
-	this.bitmap.x = -symbol.renderAreaSize / 2;
-	this.bitmap.y = -symbol.renderAreaSize / 2;
+	this.canvas.width = this.canvas.height = symbol.renderAreaSize;
+	this.bitmap.x = this.bitmap.y = -128.;
+	this.bitmap.scaleX = this.bitmap.scaleY = 256 / symbol.renderAreaSize;
 	var material;
 	if(symbol.data.materials != null) material = new THREE.MeshFaceMaterial(symbol.data.materials); else material = new THREE.MeshLambertMaterial({ color : 11184810, overdraw : 1});
 	this.mesh = new THREE.Mesh(symbol.data.geometry,material);
 	if(!nanofl_Mesh.forceSoftwareRenderer && nanofl_Mesh.isWebGLSupported()) this.renderer = new THREE.WebGLRenderer({ canvas : this.canvas, alpha : true}); else this.renderer = new THREE.CanvasRenderer({ canvas : this.canvas, alpha : true});
 	this.renderer.setSize(symbol.renderAreaSize,symbol.renderAreaSize);
+	var d = 128;
+	if(256 % 2 != 0) d++;
+	this.setBounds(-d,-d,d,d);
 	symbol.updateDisplayObject(this,null);
 };
 $hxClasses["nanofl.Mesh"] = nanofl_Mesh;
@@ -3541,10 +3543,6 @@ nanofl_Mesh.prototype = $extend(nanofl_SolidContainer.prototype,{
 	}
 	,toString: function() {
 		return this.symbol.toString();
-	}
-	,getBounds: function() {
-		var d = this.symbol.renderAreaSize / 2;
-		return new createjs.Rectangle(-d,-d,this.symbol.renderAreaSize,this.symbol.renderAreaSize);
 	}
 	,draw: function(ctx,ignoreCache) {
 		this.update();

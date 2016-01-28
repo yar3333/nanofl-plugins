@@ -1266,7 +1266,6 @@ declare module nanofl
 		renderer : THREE.Renderer;
 		clone(recursive?:boolean) : nanofl.Mesh;
 		toString() : string;
-		getBounds() : createjs.Rectangle;
 		draw(ctx:CanvasRenderingContext2D, ignoreCache?:boolean) : boolean;
 		update() : void;
 		static forceSoftwareRenderer : boolean;

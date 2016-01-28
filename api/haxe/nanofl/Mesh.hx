@@ -15,7 +15,6 @@ extern class Mesh extends nanofl.SolidContainer
 	var renderer : js.three.Renderer;
 	override function clone(?recursive:Bool) : nanofl.Mesh;
 	override function toString() : String;
-	override function getBounds() : createjs.Rectangle;
 	override function draw(ctx:js.html.CanvasRenderingContext2D, ?ignoreCache:Bool) : Bool;
 	function update() : Void;
 	static var forceSoftwareRenderer : Bool;
