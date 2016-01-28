@@ -97,13 +97,13 @@ declare module nanofl
 		//rotationX : number;
 		//rotationY : number;
 		
-		mesh : js.three.Mesh;
+		mesh : THREE.Mesh;
 		
-		ambientLight : js.three.AmbientLight;
-		directionalLight : js.three.DirectionalLight;
-		camera : js.three.PerspectiveCamera;
+		ambientLight : THREE.AmbientLight;
+		directionalLight : THREE.DirectionalLight;
+		camera : THREE.PerspectiveCamera;
 		
-		renderer : js.three.Renderer;
+		renderer : THREE.Renderer;
 		
 		constructor(symbol:any) : void;
 		update() : void;
