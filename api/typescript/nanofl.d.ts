@@ -792,7 +792,6 @@ declare module nanofl.engine.elements
 		regY : number;
 		visible : boolean;
 		parent : nanofl.engine.IElementsContainer;
-		getType() : string;
 		save(out:htmlparser.XmlBuilder) : void;
 		clone() : nanofl.engine.elements.Element;
 		translate(dx:number, dy:number) : void;
@@ -852,7 +851,6 @@ declare module nanofl.engine.elements
 		blendMode : nanofl.engine.BlendModes;
 		meshParams : nanofl.engine.MeshParams;
 		symbol : nanofl.engine.libraryitems.InstancableItem;
-		getType() : string;
 		save(out:htmlparser.XmlBuilder) : void;
 		clone() : nanofl.engine.elements.Instance;
 		isScene() : boolean;
@@ -875,7 +873,6 @@ declare module nanofl.engine.elements
 		constructor(edges?:nanofl.engine.geom.StrokeEdge[], polygons?:nanofl.engine.geom.Polygon[], isNormalize?:boolean);
 		edges : nanofl.engine.geom.StrokeEdge[];
 		polygons : nanofl.engine.geom.Polygon[];
-		getType() : string;
 		save(out:htmlparser.XmlBuilder) : void;
 		ensureNoTransform() : void;
 		draw(g:nanofl.engine.Render, scaleSelection:number) : void;
@@ -932,7 +929,6 @@ declare module nanofl.engine.elements
 	export class SpriteFrameElement extends nanofl.engine.elements.Element
 	{
 		constructor(sprite:nanofl.engine.libraryitems.SpriteItem, index:number);
-		getType() : string;
 		save(out:htmlparser.XmlBuilder) : void;
 		clone() : nanofl.engine.elements.SpriteFrameElement;
 		getState() : nanofl.ide.undo.states.ElementState;
@@ -1261,9 +1257,9 @@ declare module nanofl
 		symbol : nanofl.engine.libraryitems.MeshItem;
 		rotationX : number;
 		rotationY : number;
+		rotationZ : number;
 		bitmap : createjs.Bitmap;
 		canvas : HTMLCanvasElement;
-		mesh : THREE.Mesh;
 		ambientLight : THREE.AmbientLight;
 		directionalLight : THREE.DirectionalLight;
 		camera : THREE.PerspectiveCamera;

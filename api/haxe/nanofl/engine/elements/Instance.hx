@@ -10,7 +10,6 @@ extern class Instance extends nanofl.engine.elements.Element implements nanofl.e
 	var blendMode : nanofl.engine.BlendModes;
 	var meshParams : nanofl.engine.MeshParams;
 	var symbol(default, never) : nanofl.engine.libraryitems.InstancableItem;
-	override function getType() : String;
 	override function save(out:htmlparser.XmlBuilder) : Void;
 	override function clone() : nanofl.engine.elements.Instance;
 	function isScene() : Bool;

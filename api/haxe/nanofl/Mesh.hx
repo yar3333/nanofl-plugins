@@ -6,9 +6,9 @@ extern class Mesh extends nanofl.SolidContainer
 	var symbol(default, null) : nanofl.engine.libraryitems.MeshItem;
 	var rotationX : Float;
 	var rotationY : Float;
+	var rotationZ : Float;
 	var bitmap(default, never) : createjs.Bitmap;
 	var canvas(default, never) : js.html.CanvasElement;
-	var mesh : js.three.Mesh;
 	var ambientLight : js.three.AmbientLight;
 	var directionalLight : js.three.DirectionalLight;
 	var camera : js.three.PerspectiveCamera;

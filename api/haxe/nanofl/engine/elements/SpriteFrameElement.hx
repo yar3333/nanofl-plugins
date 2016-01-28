@@ -3,7 +3,6 @@ package nanofl.engine.elements;
 extern class SpriteFrameElement extends nanofl.engine.elements.Element
 {
 	function new(sprite:nanofl.engine.libraryitems.SpriteItem, index:Int) : Void;
-	override function getType() : String;
 	override function save(out:htmlparser.XmlBuilder) : Void;
 	override function clone() : nanofl.engine.elements.SpriteFrameElement;
 	override function getState() : nanofl.ide.undo.states.ElementState;

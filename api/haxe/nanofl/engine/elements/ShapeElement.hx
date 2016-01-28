@@ -5,7 +5,6 @@ extern class ShapeElement extends nanofl.engine.elements.Element
 	function new(?edges:Array<nanofl.engine.geom.StrokeEdge>, ?polygons:Array<nanofl.engine.geom.Polygon>, ?isNormalize:Bool) : Void;
 	var edges(default, null) : Array<nanofl.engine.geom.StrokeEdge>;
 	var polygons(default, null) : Array<nanofl.engine.geom.Polygon>;
-	override function getType() : String;
 	override function save(out:htmlparser.XmlBuilder) : Void;
 	function ensureNoTransform() : Void;
 	function draw(g:nanofl.engine.Render, scaleSelection:Float) : Void;

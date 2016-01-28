@@ -38,11 +38,19 @@ declare module nanofl
 		onMouseUp(e:createjs.MouseEvent) : void;
 	}
 	
+	export class Library
+	{
+		getItem(namePath:string) : any;
+	}
+	
 	export class Player
 	{
-		static library : { getItem(namePath:string) : any; };
+		static library : Library;
 		static stage : createjs.Stage;
 		static scene : nanofl.MovieClip;
+		static spriteSheets : { [name:string]: createjs.SpriteSheet; };
+	
+		static function init(canvas:js.html.CanvasElement, library:Library, ?framerate:number, ?scaleMode:string, ?textureAtlasesData:Array<{ [name:string]: { images:Array<string>, frames:Array<Array<number>> }}>) : void;
 	}
 	
 	export class SeamlessSoundLoop
@@ -80,5 +88,25 @@ declare module nanofl
 		
 		constructor(characters?:string, fillColor?:string, size?:number);
 		clone() : TextRun;
+	}
+	
+	export class Mesh extends createjs.Container
+	{
+		static forceSoftwareRenderer : boolean;
+		
+		rotationX : number;
+		rotationY : number;
+		rotationZ : number;
+		
+		mesh : THREE.Mesh;
+		
+		ambientLight : THREE.AmbientLight;
+		directionalLight : THREE.DirectionalLight;
+		camera : THREE.PerspectiveCamera;
+		
+		renderer : THREE.Renderer;
+		
+		constructor(symbol:any) : void;
+		update() : void;
 	}
 }
