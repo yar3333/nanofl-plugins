@@ -94,8 +94,9 @@ declare module nanofl
 	{
 		static forceSoftwareRenderer : boolean;
 		
-		//rotationX : number;
-		//rotationY : number;
+		rotationX : number;
+		rotationY : number;
+		rotationZ : number;
 		
 		mesh : THREE.Mesh;
 		
