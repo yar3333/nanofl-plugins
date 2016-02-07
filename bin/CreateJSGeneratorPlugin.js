@@ -7,7 +7,7 @@ function $extend(from, fields) {
 	return proto;
 }
 var CreateJSGeneratorPlugin = function() {
-	this.properties = [{ type : "list", name : "mode", label : "Mode", defaultValue : "HTML", values : ["HTML","JavaScript","JavaScript/FlashDevelop","JavaScript/MsVisualStudio2013","TypeScript","TypeScript/MsVisualStudio2013","Haxe","Haxe/FlashDevelop","TextureAtlas"]},{ type : "string", name : "urlOnClick", label : "URL on click", defaultValue : "", description : "Useful for Banner Ads. Keep field empty to disable this feature."},{ type : "bool", name : "forceThreeJS", label : "Force ThreeJS support", defaultValue : false, description : "Include ThreeJS support even there are no Meshes in the library."},{ type : "bool", name : "useLocalScripts", label : "Use local scripts for Player/CreateJS/ThreeJS", defaultValue : false, description : "Check to prevent loading scripts from CDN. Local copies will be used. This increase document folder size."},{ type : "bool", name : "forceSoftwareRenderer", label : "Force software renderer for ThreeJS", defaultValue : false, description : "Don't check to have 3D acceleration autodetection. In code: nanofl.Mesh.forceSoftwareRenderer."}];
+	this.properties = [{ type : "list", name : "mode", label : "Mode", defaultValue : "HTML", values : ["HTML","JavaScript","JavaScript/FlashDevelop","JavaScript/MsVisualStudio2013","TypeScript","TypeScript/MsVisualStudio2013","Haxe","Haxe/FlashDevelop","TextureAtlas"]},{ type : "string", name : "urlOnClick", label : "URL on click", defaultValue : "", description : "Useful for Banner Ads. Keep field empty to disable this feature."},{ type : "bool", name : "useLocalScripts", label : "Use local scripts for Player/CreateJS/ThreeJS", defaultValue : false, description : "Check to prevent loading scripts from CDN. Local copies will be used. This increase document folder size."},{ type : "bool", name : "forceSoftwareRenderer", label : "Force software renderer for ThreeJS", defaultValue : false, description : "Don't check to have 3D acceleration autodetection. In code: nanofl.Mesh.forceSoftwareRenderer."}];
 	this.name = "CreateJS";
 };
 CreateJSGeneratorPlugin.__name__ = true;
@@ -890,7 +890,7 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 	}
 	,prepareLocalScriptFiles: function(dir) {
 		var localScripts = [languages_HtmlGenerator.scriptUrls.createjs.local,languages_HtmlGenerator.scriptUrls.player.local];
-		if(this.params.forceThreeJS || this.library.getMeshes().length > 0) localScripts.push(languages_HtmlGenerator.scriptUrls.threejs.local);
+		if(this.library.getMeshes().length > 0) localScripts.push(languages_HtmlGenerator.scriptUrls.threejs.local);
 		var _g = 0;
 		while(_g < localScripts.length) {
 			var localScript = localScripts[_g];
@@ -942,7 +942,7 @@ languages_HtmlGenerator.prototype = $extend(languages_TextureAtlasGenerator.prot
 	,getScriptUrls: function(dir,name) {
 		var r = [];
 		r.push(this.params.useLocalScripts?"bin/" + languages_HtmlGenerator.scriptUrls.createjs.local:languages_HtmlGenerator.scriptUrls.createjs.remote);
-		if(this.params.forceThreeJS || this.library.getMeshes().length > 0) r.push(this.params.useLocalScripts?"bin/" + languages_HtmlGenerator.scriptUrls.threejs.local:languages_HtmlGenerator.scriptUrls.threejs.remote);
+		if(this.library.getMeshes().length > 0) r.push(this.params.useLocalScripts?"bin/" + languages_HtmlGenerator.scriptUrls.threejs.local:languages_HtmlGenerator.scriptUrls.threejs.remote);
 		r.push(this.params.useLocalScripts?"bin/" + languages_HtmlGenerator.scriptUrls.player.local:languages_HtmlGenerator.scriptUrls.player.remote);
 		return r;
 	}

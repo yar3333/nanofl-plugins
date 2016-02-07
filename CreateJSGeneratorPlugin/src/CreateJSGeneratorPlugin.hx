@@ -44,10 +44,6 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 			description:"Useful for Banner Ads. Keep field empty to disable this feature."
 		},
 		{
-			type:"bool", name:"forceThreeJS", label:"Force ThreeJS support", defaultValue:false,
-			description:"Include ThreeJS support even there are no Meshes in the library."
-		},
-		{
 			type:"bool", name:"useLocalScripts", label:"Use local scripts for Player/CreateJS/ThreeJS", defaultValue:false,
 			description:"Check to prevent loading scripts from CDN. Local copies will be used. This increase document folder size."
 		},

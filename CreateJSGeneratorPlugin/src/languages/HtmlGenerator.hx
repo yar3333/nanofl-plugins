@@ -81,7 +81,7 @@ class HtmlGenerator extends TextureAtlasGenerator
 	function prepareLocalScriptFiles(dir:String)
 	{
 		var localScripts = [ scriptUrls.createjs.local, scriptUrls.player.local ];
-		if (params.forceThreeJS || library.getMeshes().length > 0)
+		if (library.getMeshes().length > 0)
 		{
 			localScripts.push(scriptUrls.threejs.local);
 		}
@@ -160,7 +160,7 @@ class HtmlGenerator extends TextureAtlasGenerator
 		
 		r.push(params.useLocalScripts ? "bin/" + scriptUrls.createjs.local : scriptUrls.createjs.remote);
 		
-		if (params.forceThreeJS || library.getMeshes().length > 0)
+		if (library.getMeshes().length > 0)
 		{
 			r.push(params.useLocalScripts ? "bin/" + scriptUrls.threejs.local : scriptUrls.threejs.remote);
 		}
