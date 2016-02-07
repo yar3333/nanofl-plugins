@@ -4,6 +4,8 @@ extern interface FileSystem
 {
 	function getTempDirectory() : String;
 	function getPluginsDirectory() : String;
+	function getCurrentDirectory() : String;
+	function isWindows() : Bool;
 	function getToolPath(windowsRelativePath:String, linuxCommand:String) : String;
 	function createDirectory(path:String) : Void;
 	function readDirectory(dir:String) : Array<String>;

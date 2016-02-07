@@ -9907,6 +9907,8 @@ declare module nanofl.engine
 	{
 		getTempDirectory() : string;
 		getPluginsDirectory() : string;
+		getCurrentDirectory() : string;
+		isWindows() : boolean;
 		getToolPath(windowsRelativePath:string, linuxCommand:string) : string;
 		createDirectory(path:string) : void;
 		readDirectory(dir:string) : string[];
