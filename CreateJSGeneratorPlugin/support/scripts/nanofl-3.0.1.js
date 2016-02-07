@@ -4715,6 +4715,8 @@ nanofl_engine_FileSystem.__name__ = ["nanofl","engine","FileSystem"];
 nanofl_engine_FileSystem.prototype = {
 	getTempDirectory: null
 	,getPluginsDirectory: null
+	,getCurrentDirectory: null
+	,isWindows: null
 	,getToolPath: null
 	,createDirectory: null
 	,readDirectory: null
@@ -12829,7 +12831,7 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 				},1); else ready();
 				break;
 			default:
-				stdlib_Debug.assert(false,"Unknow Mesh file extension ('" + _g.ext + "').",{ fileName : "MeshItem.hx", lineNumber : 239, className : "nanofl.engine.libraryitems.MeshItem", methodName : "preloadInner"});
+				stdlib_Debug.assert(false,"Unknow Mesh file extension ('" + _g.ext + "').",{ fileName : "MeshItem.hx", lineNumber : 242, className : "nanofl.engine.libraryitems.MeshItem", methodName : "preloadInner"});
 			}
 		});
 	}
@@ -12842,7 +12844,7 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 		return r;
 	}
 	,updateDisplayObject: function(dispObj,childFrameIndexes) {
-		stdlib_Debug.assert(js_Boot.__instanceof(dispObj,nanofl_Mesh),null,{ fileName : "MeshItem.hx", lineNumber : 270, className : "nanofl.engine.libraryitems.MeshItem", methodName : "updateDisplayObject"});
+		stdlib_Debug.assert(js_Boot.__instanceof(dispObj,nanofl_Mesh),null,{ fileName : "MeshItem.hx", lineNumber : 273, className : "nanofl.engine.libraryitems.MeshItem", methodName : "updateDisplayObject"});
 		dispObj.update();
 	}
 	,getDisplayObjectClassName: function() {
