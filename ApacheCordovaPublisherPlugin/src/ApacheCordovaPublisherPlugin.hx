@@ -5,8 +5,8 @@ import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileSystem;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
-import nanofl.ide.plugins.IPublisherPlugin;
 import nanofl.ide.NanoApi;
+import nanofl.ide.plugins.IPublisherPlugin;
 using Lambda;
 using StringTools;
 

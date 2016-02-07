@@ -1,7 +1,5 @@
 import nanofl.engine.FileSystem;
 
-using StringTools;
-
 class CordovaCLI
 {
 	var fileSystem : FileSystem;
@@ -16,7 +14,7 @@ class CordovaCLI
 	public function run(args:Array<String>) : { exitCode:Int, output:String, error:String }
 	{
 		var r = fileSystem.runCaptured("cordova", args, null, directory);
-		if (r.exitCode != 0) error("none zero exit code (" + r.exitCode + ") when run with args: " + args.join(" ") + (r.output != "" ? "\n" + r.output : "") + (r.error != "" ? "\n" + r.error : ""));
+		if (r.exitCode != 0) error("none zero exit code", r);
 		return r;
 	}
 	
@@ -27,9 +25,10 @@ class CordovaCLI
 	
 	public function getPlatforms() : { installed:Array<String>, available:Array<String> }
 	{
-		var re = ~/Installed\s+platforms:([^\r\n]+).+?Available\s+platforms:([^\r\n]+)/s;
-		var s = run([ "platforms", "ls" ]).output;
-		if (re.match(s))
+		var re = ~/Installed\s+platforms:([^\r\n]+)(?:.|[\r\n])+?Available\s+platforms:([^\r\n]+)/;
+		var result = run([ "platforms", "ls" ]);
+		
+		if (re.match(result.output))
 		{
 			return
 			{
@@ -37,7 +36,7 @@ class CordovaCLI
 				available: re.matched(2).split(",").map(StringTools.trim).filter(function(s) return s != "")
 			};
 		}
-		error("can't detect platforms.");
+		error("can't detect platforms.", result);
 		return null;
 	}
 	
@@ -62,9 +61,11 @@ class CordovaCLI
 		return run([ "build" ]);
 	}
 	
-	function error(s:String, ?infos:haxe.PosInfos)
+	function error(message:String, result:{ exitCode:Int, output:String, error:String }, ?infos:haxe.PosInfos)
 	{
-		haxe.Log.trace("Cordova CLI error:\n" + s, infos);
-		throw s.replace("\n", "<br>");
+		throw (infos != null && infos.fileName != null ? infos.fileName + ":" + infos.lineNumber + ": " : "")
+				+ "Cordova CLI error (" + result.exitCode + "): " + message
+				+ "\n\toutput = " + result.output
+				+ "\n\t error = " + result.error;
 	}
 }

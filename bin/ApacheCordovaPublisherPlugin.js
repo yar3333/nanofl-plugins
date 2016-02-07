@@ -108,23 +108,23 @@ CordovaCLI.__name__ = true;
 CordovaCLI.prototype = {
 	run: function(args) {
 		var r = this.fileSystem.runCaptured("cordova",args,null,this.directory);
-		if(r.exitCode != 0) this.error("none zero exit code (" + r.exitCode + ") when run with args: " + args.join(" ") + (r.output != ""?"\n" + r.output:"") + (r.error != ""?"\n" + r.error:""),{ fileName : "CordovaCLI.hx", lineNumber : 19, className : "CordovaCLI", methodName : "run"});
+		if(r.exitCode != 0) this.error("none zero exit code",r,{ fileName : "CordovaCLI.hx", lineNumber : 17, className : "CordovaCLI", methodName : "run"});
 		return r;
 	}
 	,createApplication: function(domain,title) {
 		this.run(["create",".",domain,title]);
 	}
 	,getPlatforms: function() {
-		var re = new EReg("Installed\\s+platforms:([^\r\n]+).+?Available\\s+platforms:([^\r\n]+)","s");
-		var s = this.run(["platforms","ls"]).output;
-		if(re.match(s)) return { installed : re.matched(1).split(",").map(StringTools.trim).filter(function(s1) {
-			return s1 != "";
-		}).map(function(s2) {
-			return s2.split(" ")[0];
-		}), available : re.matched(2).split(",").map(StringTools.trim).filter(function(s3) {
-			return s3 != "";
+		var re = new EReg("Installed\\s+platforms:([^\r\n]+)(?:.|[\r\n])+?Available\\s+platforms:([^\r\n]+)","");
+		var result = this.run(["platforms","ls"]);
+		if(re.match(result.output)) return { installed : re.matched(1).split(",").map(StringTools.trim).filter(function(s) {
+			return s != "";
+		}).map(function(s1) {
+			return s1.split(" ")[0];
+		}), available : re.matched(2).split(",").map(StringTools.trim).filter(function(s2) {
+			return s2 != "";
 		})};
-		this.error("can't detect platforms.",{ fileName : "CordovaCLI.hx", lineNumber : 40, className : "CordovaCLI", methodName : "getPlatforms"});
+		this.error("can't detect platforms.",result,{ fileName : "CordovaCLI.hx", lineNumber : 39, className : "CordovaCLI", methodName : "getPlatforms"});
 		return null;
 	}
 	,addPlatform: function(platform) {
@@ -140,9 +140,8 @@ CordovaCLI.prototype = {
 	,build: function() {
 		return this.run(["build"]);
 	}
-	,error: function(s,infos) {
-		haxe_Log.trace("Cordova CLI error:\n" + s,infos);
-		throw new js__$Boot_HaxeError(StringTools.replace(s,"\n","<br>"));
+	,error: function(message,result,infos) {
+		throw new js__$Boot_HaxeError((infos != null && infos.fileName != null?infos.fileName + ":" + infos.lineNumber + ": ":"") + "Cordova CLI error (" + result.exitCode + "): " + message + "\n\toutput = " + result.output + "\n\t error = " + result.error);
 	}
 	,__class__: CordovaCLI
 };
