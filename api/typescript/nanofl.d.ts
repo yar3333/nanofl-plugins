@@ -1263,7 +1263,6 @@ declare module nanofl
 		ambientLight : THREE.AmbientLight;
 		directionalLight : THREE.DirectionalLight;
 		camera : THREE.PerspectiveCamera;
-		renderer : THREE.Renderer;
 		clone(recursive?:boolean) : nanofl.Mesh;
 		toString() : string;
 		draw(ctx:CanvasRenderingContext2D, ignoreCache?:boolean) : boolean;
@@ -2261,6 +2260,8 @@ declare module nanofl.engine.libraryitems
 		renderAreaSize : number;
 		data : { geometry : THREE.Geometry; materials : THREE.Material[]; };
 		boundingRadius : number;
+		canvas : HTMLCanvasElement;
+		renderer : THREE.Renderer;
 		getType() : string;
 		clone() : nanofl.engine.libraryitems.MeshItem;
 		getIcon() : string;

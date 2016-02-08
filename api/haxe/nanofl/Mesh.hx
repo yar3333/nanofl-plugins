@@ -12,7 +12,6 @@ extern class Mesh extends nanofl.SolidContainer
 	var ambientLight : js.three.AmbientLight;
 	var directionalLight : js.three.DirectionalLight;
 	var camera : js.three.PerspectiveCamera;
-	var renderer : js.three.Renderer;
 	override function clone(?recursive:Bool) : nanofl.Mesh;
 	override function toString() : String;
 	override function draw(ctx:js.html.CanvasRenderingContext2D, ?ignoreCache:Bool) : Bool;

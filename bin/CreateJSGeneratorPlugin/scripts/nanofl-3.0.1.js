@@ -3496,15 +3496,11 @@ var nanofl_Mesh = $hx_exports.nanofl.Mesh = function(symbol) {
 	}});
 	nanofl_SolidContainer.call(this);
 	this.symbol = symbol;
-	this.addChild(new createjs.Bitmap(window.document.createElement("canvas")));
-	this.canvas.width = this.canvas.height = symbol.renderAreaSize;
+	this.addChild(new createjs.Bitmap(symbol.canvas));
 	this.bitmap.x = this.bitmap.y = -symbol.renderAreaSize / 2;
-	this.bitmap.scaleX = this.bitmap.scaleY = symbol.renderAreaSize / symbol.renderAreaSize;
 	var material;
 	if(symbol.data.materials != null) material = new THREE.MeshFaceMaterial(symbol.data.materials); else material = new THREE.MeshLambertMaterial({ color : 11184810, overdraw : 1});
 	this.mesh = new THREE.Mesh(symbol.data.geometry,material);
-	if(!nanofl_Mesh.forceSoftwareRenderer && nanofl_Mesh.isWebGLSupported()) this.renderer = new THREE.WebGLRenderer({ canvas : this.canvas, alpha : true}); else this.renderer = new THREE.CanvasRenderer({ canvas : this.canvas, alpha : true});
-	this.renderer.setSize(symbol.renderAreaSize,symbol.renderAreaSize);
 	var d = symbol.renderAreaSize >> 1;
 	if(symbol.renderAreaSize % 2 != 0) d++;
 	this.setBounds(-d,-d,d,d);
@@ -3512,13 +3508,6 @@ var nanofl_Mesh = $hx_exports.nanofl.Mesh = function(symbol) {
 };
 $hxClasses["nanofl.Mesh"] = nanofl_Mesh;
 nanofl_Mesh.__name__ = ["nanofl","Mesh"];
-nanofl_Mesh.isWebGLSupported = function() {
-	if(nanofl_Mesh._isWebGLSupported == null) {
-		var canvas = window.document.createElement("canvas");
-		nanofl_Mesh._isWebGLSupported = !(!(window.WebGLRenderingContext && (canvas.getContext("webgl") || canvas.getContext("experimental-webgl"))));
-	}
-	return nanofl_Mesh._isWebGLSupported;
-};
 nanofl_Mesh.__super__ = nanofl_SolidContainer;
 nanofl_Mesh.prototype = $extend(nanofl_SolidContainer.prototype,{
 	symbol: null
@@ -3537,7 +3526,6 @@ nanofl_Mesh.prototype = $extend(nanofl_SolidContainer.prototype,{
 	,ambientLight: null
 	,directionalLight: null
 	,camera: null
-	,renderer: null
 	,clone: function(recursive) {
 		return this._cloneProps(new nanofl_Mesh(this.symbol));
 	}
@@ -3567,8 +3555,7 @@ nanofl_Mesh.prototype = $extend(nanofl_SolidContainer.prototype,{
 		this.camera.lookAt(new THREE.Vector3(0,0,0));
 		this.camera.updateMatrix();
 		this.camera.updateProjectionMatrix();
-		scene.add(this.camera);
-		this.renderer.render(scene,this.camera);
+		this.symbol.renderer.render(scene,this.camera);
 	}
 	,hxUnserialize: function(s) {
 		var _g = this;
@@ -12706,6 +12693,13 @@ nanofl_engine_libraryitems_FontItem.prototype = $extend(nanofl_engine_libraryite
 var nanofl_engine_libraryitems_MeshItem = function(namePath,ext,originalExt) {
 	this.textureFiles = [];
 	this.renderAreaSize = 256;
+	var _g = this;
+	Object.defineProperty(this,"canvas",{ get : function() {
+		return _g.get_canvas();
+	}});
+	Object.defineProperty(this,"renderer",{ get : function() {
+		return _g.get_renderer();
+	}});
 	nanofl_engine_libraryitems_InstancableItem.call(this,namePath);
 	this.ext = ext;
 	this.originalExt = originalExt;
@@ -12719,6 +12713,13 @@ nanofl_engine_libraryitems_MeshItem.parse = function(namePath,itemNode) {
 	item.loadProperties(itemNode);
 	return item;
 };
+nanofl_engine_libraryitems_MeshItem.isWebGLSupported = function() {
+	if(nanofl_engine_libraryitems_MeshItem._isWebGLSupported == null) {
+		var canvas = window.document.createElement("canvas");
+		nanofl_engine_libraryitems_MeshItem._isWebGLSupported = !(!(window.WebGLRenderingContext && (canvas.getContext("webgl") || canvas.getContext("experimental-webgl"))));
+	}
+	return nanofl_engine_libraryitems_MeshItem._isWebGLSupported;
+};
 nanofl_engine_libraryitems_MeshItem.__super__ = nanofl_engine_libraryitems_InstancableItem;
 nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryitems_InstancableItem.prototype,{
 	ext: null
@@ -12727,9 +12728,13 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 	,renderAreaSize: null
 	,data: null
 	,boundingRadius: null
+	,_canvas: null
+	,canvas: null
+	,_renderer: null
+	,renderer: null
 	,textureFiles: null
 	,getNotSerializableFields: function() {
-		return nanofl_engine_libraryitems_InstancableItem.prototype.getNotSerializableFields.call(this).concat(["data","boundingRadius","textureFiles"]);
+		return nanofl_engine_libraryitems_InstancableItem.prototype.getNotSerializableFields.call(this).concat(["data","boundingRadius","_canvas","_renderer","textureFiles"]);
 	}
 	,getType: function() {
 		return "mesh";
@@ -12780,7 +12785,7 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 		return this.library.realUrl(this.namePath + "." + this.ext);
 	}
 	,preload: function(ready) {
-		stdlib_Debug.assert(this.library != null,"You need to add item '" + this.namePath + "' to the library before preload call.",{ fileName : "MeshItem.hx", lineNumber : 160, className : "nanofl.engine.libraryitems.MeshItem", methodName : "preload"});
+		stdlib_Debug.assert(this.library != null,"You need to add item '" + this.namePath + "' to the library before preload call.",{ fileName : "MeshItem.hx", lineNumber : 172, className : "nanofl.engine.libraryitems.MeshItem", methodName : "preload"});
 		if(nanofl_engine_TextureItemTools.getSpriteSheet(this) == null) this.preloadInner(ready); else nanofl_engine_TextureItemTools.preload(this,ready);
 	}
 	,preloadInner: function(ready) {
@@ -12831,7 +12836,7 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 				},1); else ready();
 				break;
 			default:
-				stdlib_Debug.assert(false,"Unknow Mesh file extension ('" + _g.ext + "').",{ fileName : "MeshItem.hx", lineNumber : 242, className : "nanofl.engine.libraryitems.MeshItem", methodName : "preloadInner"});
+				stdlib_Debug.assert(false,"Unknow Mesh file extension ('" + _g.ext + "').",{ fileName : "MeshItem.hx", lineNumber : 254, className : "nanofl.engine.libraryitems.MeshItem", methodName : "preloadInner"});
 			}
 		});
 	}
@@ -12844,8 +12849,22 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 		return r;
 	}
 	,updateDisplayObject: function(dispObj,childFrameIndexes) {
-		stdlib_Debug.assert(js_Boot.__instanceof(dispObj,nanofl_Mesh),null,{ fileName : "MeshItem.hx", lineNumber : 273, className : "nanofl.engine.libraryitems.MeshItem", methodName : "updateDisplayObject"});
+		stdlib_Debug.assert(js_Boot.__instanceof(dispObj,nanofl_Mesh),null,{ fileName : "MeshItem.hx", lineNumber : 285, className : "nanofl.engine.libraryitems.MeshItem", methodName : "updateDisplayObject"});
 		dispObj.update();
+	}
+	,get_canvas: function() {
+		if(this._canvas == null) {
+			this._canvas = window.document.createElement("canvas");
+			this._canvas.width = this._canvas.height = this.renderAreaSize;
+		}
+		return this._canvas;
+	}
+	,get_renderer: function() {
+		if(this._renderer == null) {
+			if(!nanofl_Mesh.forceSoftwareRenderer && nanofl_engine_libraryitems_MeshItem.isWebGLSupported()) this._renderer = new THREE.WebGLRenderer({ canvas : this.canvas, alpha : true}); else this._renderer = new THREE.CanvasRenderer({ canvas : this.canvas, alpha : true});
+			this._renderer.setSize(this.renderAreaSize,this.renderAreaSize);
+		}
+		return this._renderer;
 	}
 	,getDisplayObjectClassName: function() {
 		return "nanofl.Mesh";
@@ -12865,6 +12884,16 @@ nanofl_engine_libraryitems_MeshItem.prototype = $extend(nanofl_engine_libraryite
 	}
 	,toString: function() {
 		return "MeshItem(" + this.namePath + ")";
+	}
+	,hxUnserialize: function(s) {
+		var _g = this;
+		Object.defineProperty(this,"canvas",{ get : function() {
+			return _g.get_canvas();
+		}});
+		Object.defineProperty(this,"renderer",{ get : function() {
+			return _g.get_renderer();
+		}});
+		nanofl_engine_libraryitems_InstancableItem.prototype.hxUnserialize.call(this,s);
 	}
 	,__class__: nanofl_engine_libraryitems_MeshItem
 });
