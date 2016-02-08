@@ -14,8 +14,6 @@ class Mesh extends createjs.Container
 	var directionalLight : js.three.DirectionalLight;
 	var camera : js.three.PerspectiveCamera;
 	
-	var renderer : js.three.Renderer;
-	
 	function new(symbol:Dynamic) : Void;
 	function update() : Void;
 }

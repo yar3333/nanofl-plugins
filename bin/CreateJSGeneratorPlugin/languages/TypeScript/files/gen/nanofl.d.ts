@@ -104,8 +104,6 @@ declare module nanofl
 		directionalLight : THREE.DirectionalLight;
 		camera : THREE.PerspectiveCamera;
 		
-		renderer : THREE.Renderer;
-		
 		constructor(symbol:any) : void;
 		update() : void;
 	}
