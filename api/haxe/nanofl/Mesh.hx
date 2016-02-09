@@ -7,11 +7,11 @@ extern class Mesh extends nanofl.SolidContainer
 	var rotationX : Float;
 	var rotationY : Float;
 	var rotationZ : Float;
-	var bitmap(default, never) : createjs.Bitmap;
-	var canvas(default, never) : js.html.CanvasElement;
-	var ambientLight : js.three.AmbientLight;
-	var directionalLight : js.three.DirectionalLight;
-	var camera : js.three.PerspectiveCamera;
+	var scene : js.three.Scene;
+	var group : js.three.Group;
+	var camera(default, null) : js.three.PerspectiveCamera;
+	var ambientLight(default, null) : js.three.AmbientLight;
+	var directionalLight(default, null) : js.three.DirectionalLight;
 	override function clone(?recursive:Bool) : nanofl.Mesh;
 	override function toString() : String;
 	override function draw(ctx:js.html.CanvasRenderingContext2D, ?ignoreCache:Bool) : Bool;

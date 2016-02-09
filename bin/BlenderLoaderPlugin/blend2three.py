@@ -51,4 +51,14 @@ for i in range(1, len(sys.argv)):
 #option_indent=True
 #option_compression='None'
 #option_influences=2
-bpy.ops.export.three(filepath=sys.argv[i+1], option_hierarchy=True, option_face_materials=True, option_maps=True, option_skinning=True, option_bones=True)
+
+bpy.ops.export.three(
+	filepath=sys.argv[i+1],
+	option_hierarchy=True,
+	option_export_scene=True,
+	option_lights=True,
+	option_materials=True,
+	option_face_materials=True,
+	option_maps=True,
+	option_skinning=True,
+	option_bones=True)

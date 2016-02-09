@@ -1258,11 +1258,11 @@ declare module nanofl
 		rotationX : number;
 		rotationY : number;
 		rotationZ : number;
-		bitmap : createjs.Bitmap;
-		canvas : HTMLCanvasElement;
+		scene : THREE.Scene;
+		group : THREE.Group;
+		camera : THREE.PerspectiveCamera;
 		ambientLight : THREE.AmbientLight;
 		directionalLight : THREE.DirectionalLight;
-		camera : THREE.PerspectiveCamera;
 		clone(recursive?:boolean) : nanofl.Mesh;
 		toString() : string;
 		draw(ctx:CanvasRenderingContext2D, ignoreCache?:boolean) : boolean;
@@ -2258,9 +2258,9 @@ declare module nanofl.engine.libraryitems
 		originalExt : string;
 		textureAtlas : string;
 		renderAreaSize : number;
-		data : { geometry : THREE.Geometry; materials : THREE.Material[]; };
+		loadLights : boolean;
+		scene : THREE.Scene;
 		boundingRadius : number;
-		canvas : HTMLCanvasElement;
 		renderer : THREE.Renderer;
 		getType() : string;
 		clone() : nanofl.engine.libraryitems.MeshItem;

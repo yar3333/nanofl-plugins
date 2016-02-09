@@ -199,9 +199,9 @@ package js.three;
 	function getWorldScale(?optionalTarget:js.three.Vector3) : js.three.Vector3;
 	function getWorldDirection(?optionalTarget:js.three.Vector3) : js.three.Vector3;
 	function raycast(raycaster:js.three.Raycaster, intersects:Dynamic) : Void;
-	function traverse(callback:js.three.Object3D -> Dynamic) : Void;
-	function traverseVisible(callback:js.three.Object3D -> Dynamic) : Void;
-	function traverseAncestors(callback:js.three.Object3D -> Dynamic) : Void;
+	function traverse(callback:js.three.Object3D -> Void) : Void;
+	function traverseVisible(callback:js.three.Object3D -> Void) : Void;
+	function traverseAncestors(callback:js.three.Object3D -> Void) : Void;
 	/**
 	 * Updates local transform.
 	 */
