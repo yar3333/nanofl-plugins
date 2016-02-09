@@ -100,7 +100,10 @@ declare module nanofl
 		
 		scene : THREE.Scene;
 		group : THREE.Group;
+		
 		camera : THREE.PerspectiveCamera;
+		autoCamera : boolean;
+		
 		ambientLight : THREE.AmbientLight;
 		directionalLight : THREE.DirectionalLight;
 		

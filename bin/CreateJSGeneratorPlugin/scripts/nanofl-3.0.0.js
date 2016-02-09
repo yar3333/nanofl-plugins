@@ -3481,6 +3481,9 @@ nanofl_SolidContainer.prototype = $extend(createjs.Container.prototype,{
 	__class__: nanofl_SolidContainer
 });
 var nanofl_Mesh = $hx_exports.nanofl.Mesh = function(symbol) {
+	this.camera = new THREE.PerspectiveCamera(70,1,1e-7,1e7);
+	this.directionalLight = new THREE.DirectionalLight(8421504,1);
+	this.ambientLight = new THREE.AmbientLight(14737632);
 	this.rotationY = 0.0;
 	this.rotationX = 0.0;
 	var _g = this;
@@ -3492,10 +3495,17 @@ var nanofl_Mesh = $hx_exports.nanofl.Mesh = function(symbol) {
 	}});
 	nanofl_SolidContainer.call(this);
 	this.symbol = symbol;
-	this.addChild(new createjs.Bitmap(null));
-	symbol.updateDisplayObject(this,null);
+	this.addChild(new createjs.Bitmap(window.document.createElement("canvas")));
+	this.canvas.width = symbol.size * 2;
+	this.canvas.height = symbol.size * 2;
 	this.bitmap.x = -symbol.size;
 	this.bitmap.y = -symbol.size;
+	var material;
+	if(symbol.data.materials != null) material = new THREE.MeshFaceMaterial(symbol.data.materials); else material = new THREE.MeshLambertMaterial({ color : 11184810, overdraw : 1});
+	this.mesh = new THREE.Mesh(symbol.data.geometry,material);
+	if(!nanofl_Mesh.forceSoftwareRenderer && nanofl_Mesh.isWebGLSupported()) this.renderer = new THREE.WebGLRenderer({ canvas : this.canvas, alpha : true}); else this.renderer = new THREE.CanvasRenderer({ canvas : this.canvas, alpha : true});
+	this.renderer.setSize(symbol.size * 2,symbol.size * 2);
+	symbol.updateDisplayObject(this,null);
 };
 $hxClasses["nanofl.Mesh"] = nanofl_Mesh;
 nanofl_Mesh.__name__ = ["nanofl","Mesh"];
@@ -3519,6 +3529,10 @@ nanofl_Mesh.prototype = $extend(nanofl_SolidContainer.prototype,{
 	,get_canvas: function() {
 		return this.bitmap.image;
 	}
+	,mesh: null
+	,ambientLight: null
+	,directionalLight: null
+	,camera: null
 	,renderer: null
 	,clone: function(recursive) {
 		return this._cloneProps(new nanofl_Mesh(this.symbol));
@@ -3534,32 +3548,22 @@ nanofl_Mesh.prototype = $extend(nanofl_SolidContainer.prototype,{
 		return nanofl_SolidContainer.prototype.draw.call(this,ctx,ignoreCache);
 	}
 	,update: function() {
-		if(this.bitmap.image == null) this.bitmap.image = window.document.createElement("canvas");
-		this.canvas.width = this.symbol.size * 2;
-		this.canvas.height = this.symbol.size * 2;
 		var scene = new THREE.Scene();
-		var material;
-		if(this.symbol.data.materials != null) material = new THREE.MeshFaceMaterial(this.symbol.data.materials); else material = new THREE.MeshLambertMaterial({ color : 11184810, overdraw : 1});
-		var mesh = new THREE.Mesh(this.symbol.data.geometry,material);
-		mesh.rotateX(this.rotationX * Math.PI / 180);
-		mesh.rotateY(this.rotationY * Math.PI / 180);
-		scene.add(mesh);
-		var light = new THREE.DirectionalLight(8421504,1);
-		scene.add(light);
-		scene.add(new THREE.AmbientLight(14737632));
-		var camera = new THREE.PerspectiveCamera(70,1,1e-7,1e7);
-		scene.add(camera);
-		var posZ = this.symbol.boundingRadius / Math.sin(camera.fov / 2 * Math.PI / 180);
-		light.position.z = -posZ;
-		camera.position.z = -posZ;
-		camera.lookAt(new THREE.Vector3(0,0,0));
-		camera.updateMatrix();
-		camera.updateProjectionMatrix();
-		if(this.renderer == null) {
-			if(!nanofl_Mesh.forceSoftwareRenderer && nanofl_Mesh.isWebGLSupported()) this.renderer = new THREE.WebGLRenderer({ canvas : this.canvas, alpha : true}); else this.renderer = new THREE.CanvasRenderer({ canvas : this.canvas, alpha : true});
+		this.mesh.rotateX(this.rotationX * Math.PI / 180);
+		this.mesh.rotateY(this.rotationY * Math.PI / 180);
+		scene.add(this.mesh);
+		var posZ = this.symbol.boundingRadius / Math.sin(this.camera.fov / 2 * Math.PI / 180);
+		if(this.ambientLight != null) scene.add(this.ambientLight);
+		if(this.directionalLight != null) {
+			this.directionalLight.position.z = -posZ;
+			scene.add(this.directionalLight);
 		}
-		this.renderer.setSize(this.symbol.size * 2,this.symbol.size * 2);
-		this.renderer.render(scene,camera);
+		this.camera.position.z = -posZ;
+		this.camera.lookAt(new THREE.Vector3(0,0,0));
+		this.camera.updateMatrix();
+		this.camera.updateProjectionMatrix();
+		scene.add(this.camera);
+		this.renderer.render(scene,this.camera);
 	}
 	,hxUnserialize: function(s) {
 		var _g = this;

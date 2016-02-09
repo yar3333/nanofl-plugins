@@ -10,7 +10,10 @@ class Mesh extends createjs.Container
 	
 	var scene : js.three.Scene;
 	var group : js.three.Group;
+	
 	var camera(default, null) : js.three.PerspectiveCamera;
+	var autoCamera : Bool;
+	
 	var ambientLight(default, null) : js.three.AmbientLight;
 	var directionalLight(default, null) : js.three.DirectionalLight;
 	

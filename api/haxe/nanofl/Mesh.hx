@@ -10,6 +10,7 @@ extern class Mesh extends nanofl.SolidContainer
 	var scene : js.three.Scene;
 	var group : js.three.Group;
 	var camera(default, null) : js.three.PerspectiveCamera;
+	var autoCamera : Bool;
 	var ambientLight(default, null) : js.three.AmbientLight;
 	var directionalLight(default, null) : js.three.DirectionalLight;
 	override function clone(?recursive:Bool) : nanofl.Mesh;
