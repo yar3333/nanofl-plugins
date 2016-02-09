@@ -98,11 +98,11 @@ declare module nanofl
 		rotationY : number;
 		rotationZ : number;
 		
-		mesh : THREE.Mesh;
-		
+		scene : THREE.Scene;
+		group : THREE.Group;
+		camera : THREE.PerspectiveCamera;
 		ambientLight : THREE.AmbientLight;
 		directionalLight : THREE.DirectionalLight;
-		camera : THREE.PerspectiveCamera;
 		
 		constructor(symbol:any) : void;
 		update() : void;

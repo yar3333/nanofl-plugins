@@ -8,11 +8,11 @@ class Mesh extends createjs.Container
 	var rotationY : Float;
 	var rotationZ : Float;
 	
-	var mesh : js.three.Mesh;
-	
-	var ambientLight : js.three.AmbientLight;
-	var directionalLight : js.three.DirectionalLight;
-	var camera : js.three.PerspectiveCamera;
+	var scene : js.three.Scene;
+	var group : js.three.Group;
+	var camera(default, null) : js.three.PerspectiveCamera;
+	var ambientLight(default, null) : js.three.AmbientLight;
+	var directionalLight(default, null) : js.three.DirectionalLight;
 	
 	function new(symbol:Dynamic) : Void;
 	function update() : Void;
