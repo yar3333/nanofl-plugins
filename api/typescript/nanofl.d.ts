@@ -620,6 +620,17 @@ declare module nanofl.ide
 		REMOVE_LIBRARY_ITEMS(namePaths:string[])
 	}
 	
+	export class Generator
+	{
+		constructor(name?:string, params?:any);
+		name : string;
+		params : any;
+		equ(g:nanofl.ide.Generator) : boolean;
+		clone() : nanofl.ide.Generator;
+		toString() : string;
+		static fromString(s:string) : nanofl.ide.Generator;
+	}
+	
 	type IPlugins =
 	{
 		reload(alertOnSuccess?:boolean) : boolean;
@@ -720,18 +731,6 @@ declare module nanofl.ide
 		static load(s:string) : nanofl.ide.PublishOptimizations;
 	}
 	
-	export class ServerApiTools
-	{
-		static loadDocument(api:nanofl.ide.NanoApi, path:string, lastModified:Date) : { lastModified : Date; library : nanofl.engine.Library; properties : nanofl.engine.DocumentProperties; };
-		static saveDocument(api:nanofl.ide.NanoApi, path:string, properties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>, fileActions:nanofl.ide.FileAction[]) : { generatorError : string; lastModified : Date; };
-		static publishDocument(api:nanofl.ide.NanoApi, path:string, originalProperties:nanofl.engine.DocumentProperties, originalLibrary:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : { message : string; success : boolean; };
-		static copyLibraryFiles(fileSystem:nanofl.engine.FileSystem, srcLibraryDir:string, relativePaths:string[], destLibraryDir:string) : void;
-		static renameFiles(fileSystem:nanofl.engine.FileSystem, files:{ src : string; dest : string; }[]) : void;
-		static remove(fileSystem:nanofl.engine.FileSystem, paths:string[]) : void;
-		static loadFilesFromClipboard(fileSystem:nanofl.engine.FileSystem, destDir:string) : boolean;
-		static saveFilesIntoClipboard(fileSystem:nanofl.engine.FileSystem, baseDir:string, relativePaths:string[]) : void;
-	}
-	
 	export interface ServerUtils
 	{
 		getTempDirectory() : string;
@@ -742,6 +741,18 @@ declare module nanofl.ide
 		uploadFiles(files:File[], destDir:string, callb:() => void) : void;
 		loadFilesFromClipboard(destDir:string, callb:(arg:boolean) => void) : void;
 		saveFilesIntoClipboard(baseDir:string, relativePaths:string[], callb:() => void) : void;
+	}
+	
+	export class ServerUtilsTools
+	{
+		static loadDocument(api:nanofl.ide.NanoApi, path:string, lastModified:Date) : { lastModified : Date; library : nanofl.engine.Library; properties : nanofl.engine.DocumentProperties; };
+		static saveDocument(api:nanofl.ide.NanoApi, path:string, properties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>, fileActions:nanofl.ide.FileAction[]) : { generatorError : string; lastModified : Date; };
+		static publishDocument(api:nanofl.ide.NanoApi, path:string, originalProperties:nanofl.engine.DocumentProperties, originalLibrary:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : { message : string; success : boolean; };
+		static copyLibraryFiles(fileSystem:nanofl.engine.FileSystem, srcLibraryDir:string, relativePaths:string[], destLibraryDir:string) : void;
+		static renameFiles(fileSystem:nanofl.engine.FileSystem, files:{ src : string; dest : string; }[]) : void;
+		static remove(fileSystem:nanofl.engine.FileSystem, paths:string[]) : void;
+		static loadFilesFromClipboard(fileSystem:nanofl.engine.FileSystem, destDir:string) : boolean;
+		static saveFilesIntoClipboard(fileSystem:nanofl.engine.FileSystem, baseDir:string, relativePaths:string[]) : void;
 	}
 	
 	export class ShapePropertiesOptions
@@ -9884,25 +9895,22 @@ declare module nanofl.engine
 	
 	export class DocumentProperties
 	{
-		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, scaleMode?:string, generatorName?:string, generatorParams?:any, useTextureAtlases?:boolean, textureAtlases?:Map<string, nanofl.ide.textureatlas.TextureAtlasParams>, publishSettings?:nanofl.ide.plugins.PublishSetting[]);
+		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, scaleMode?:string, generator?:nanofl.ide.Generator, useTextureAtlases?:boolean, textureAtlases?:Map<string, nanofl.ide.textureatlas.TextureAtlasParams>, publishSettings?:nanofl.ide.plugins.PublishSetting[]);
 		title : string;
 		width : number;
 		height : number;
 		backgroundColor : string;
 		framerate : number;
 		scaleMode : string;
-		generatorName : string;
-		generatorParams : any;
+		generator : nanofl.ide.Generator;
 		useTextureAtlases : boolean;
 		textureAtlases : Map<string, nanofl.ide.textureatlas.TextureAtlasParams>;
 		publishSettings : nanofl.ide.plugins.PublishSetting[];
 		save(fileSystem:nanofl.engine.FileSystem, filePath:string) : void;
-		getGeneratorAsString() : string;
 		equ(p:nanofl.engine.DocumentProperties) : boolean;
 		clone() : nanofl.engine.DocumentProperties;
 		getOptimized(optimizations:nanofl.ide.PublishOptimizations) : nanofl.engine.DocumentProperties;
 		static load(filePath:string, fileSystem:nanofl.engine.FileSystem) : nanofl.engine.DocumentProperties;
-		static parseGenerator(s:string) : { name : string; params : any; };
 	}
 	
 	export interface FileSystem
