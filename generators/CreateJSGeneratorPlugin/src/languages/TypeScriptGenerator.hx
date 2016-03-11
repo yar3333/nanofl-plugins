@@ -25,10 +25,10 @@ class TypeScriptGenerator extends CodeGenerator
 		
 		if (linkedItems.length > 0)
 		{
-            fileSystem.copy(supportDir + "/languages/typescript/files", dir);
+            fileSystem.copy(supportDir + "/languages/TypeScript/files", dir);
 			
-			var baseMovieClipTemplate = fileSystem.getContent(supportDir + "/languages/typescript/BaseMovieClip.ts");
-			var movieClipTemplate = fileSystem.getContent(supportDir + "/languages/typescript/MovieClip.ts");
+			var baseMovieClipTemplate = fileSystem.getContent(supportDir + "/languages/TypeScript/BaseMovieClip.ts");
+			var movieClipTemplate = fileSystem.getContent(supportDir + "/languages/TypeScript/MovieClip.ts");
 			
 			for (item in linkedItems)
 			{

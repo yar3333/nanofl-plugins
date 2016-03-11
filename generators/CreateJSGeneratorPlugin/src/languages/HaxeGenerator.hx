@@ -25,10 +25,10 @@ class HaxeGenerator extends CodeGenerator
 		
 		if (linkedItems.length > 0)
 		{
-			fileSystem.copy(supportDir + "/languages/haxe/files", dir);
+			fileSystem.copy(supportDir + "/languages/Haxe/files", dir);
 			
-			var baseMovieClipTemplate = fileSystem.getContent(supportDir + "/languages/haxe/BaseMovieClip.hx");
-			var movieClipTemplate = fileSystem.getContent(supportDir + "/languages/haxe/MovieClip.hx");
+			var baseMovieClipTemplate = fileSystem.getContent(supportDir + "/languages/Haxe/BaseMovieClip.hx");
+			var movieClipTemplate = fileSystem.getContent(supportDir + "/languages/Haxe/MovieClip.hx");
 			
 			for (item in linkedItems)
 			{

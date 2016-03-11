@@ -998,9 +998,9 @@ languages_HaxeGenerator.prototype = $extend(languages_CodeGenerator.prototype,{
 			return item.linkedClass != "";
 		});
 		if(linkedItems.length > 0) {
-			this.fileSystem.copy(this.supportDir + "/languages/haxe/files",dir);
-			var baseMovieClipTemplate = this.fileSystem.getContent(this.supportDir + "/languages/haxe/BaseMovieClip.hx");
-			var movieClipTemplate = this.fileSystem.getContent(this.supportDir + "/languages/haxe/MovieClip.hx");
+			this.fileSystem.copy(this.supportDir + "/languages/Haxe/files",dir);
+			var baseMovieClipTemplate = this.fileSystem.getContent(this.supportDir + "/languages/Haxe/BaseMovieClip.hx");
+			var movieClipTemplate = this.fileSystem.getContent(this.supportDir + "/languages/Haxe/MovieClip.hx");
 			var _g = 0;
 			while(_g < linkedItems.length) {
 				var item1 = linkedItems[_g];
@@ -1167,9 +1167,9 @@ languages_TypeScriptGenerator.prototype = $extend(languages_CodeGenerator.protot
 		});
 		this.fileSystem.remove(dir + "/gen/*");
 		if(linkedItems.length > 0) {
-			this.fileSystem.copy(this.supportDir + "/languages/typescript/files",dir);
-			var baseMovieClipTemplate = this.fileSystem.getContent(this.supportDir + "/languages/typescript/BaseMovieClip.ts");
-			var movieClipTemplate = this.fileSystem.getContent(this.supportDir + "/languages/typescript/MovieClip.ts");
+			this.fileSystem.copy(this.supportDir + "/languages/TypeScript/files",dir);
+			var baseMovieClipTemplate = this.fileSystem.getContent(this.supportDir + "/languages/TypeScript/BaseMovieClip.ts");
+			var movieClipTemplate = this.fileSystem.getContent(this.supportDir + "/languages/TypeScript/MovieClip.ts");
 			var _g = 0;
 			while(_g < linkedItems.length) {
 				var item1 = linkedItems[_g];
