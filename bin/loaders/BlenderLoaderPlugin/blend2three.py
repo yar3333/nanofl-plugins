@@ -1,7 +1,7 @@
 # convert blend to threejs using Blender
 #
 # Run as follows:
-#   blender -b infile.blend -P blend2threejs.py -- outfile.js
+#   blender -b infile.blend -P blend2three.py -- outfile.js
  
 import bpy
 import sys
