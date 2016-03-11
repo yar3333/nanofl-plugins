@@ -1,6 +1,6 @@
 package nanofl;
 
-class Mesh extends createjs.Container
+extern class Mesh extends createjs.Container
 {
 	static var forceSoftwareRenderer : Bool;
 	
