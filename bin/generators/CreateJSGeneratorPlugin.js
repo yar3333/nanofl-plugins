@@ -17,7 +17,7 @@ CreateJSGeneratorPlugin.main = function() {
 };
 CreateJSGeneratorPlugin.prototype = {
 	generate: function(api,params,filePath,documentProperties,library,textureAtlases) {
-		var supportDir = api.fileSystem.getPluginsDirectory() + "/CreateJSGeneratorPlugin";
+		var supportDir = api.fileSystem.getPluginsDirectory() + "/generators/CreateJSGeneratorPlugin";
 		var languageAndIde = params.mode.split("/");
 		var pathParts = filePath.split("/");
 		var dir = pathParts.slice(0,pathParts.length - 1).join("/");

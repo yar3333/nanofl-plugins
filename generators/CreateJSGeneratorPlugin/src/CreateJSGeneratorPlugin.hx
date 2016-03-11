@@ -55,7 +55,7 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 	
 	public function generate(api:NanoApi, params:Params, filePath:String, documentProperties:DocumentProperties, library:Library, textureAtlases:Map<String, TextureAtlas>) : Array<String>
 	{
-		var supportDir = api.fileSystem.getPluginsDirectory() + "/CreateJSGeneratorPlugin";
+		var supportDir = api.fileSystem.getPluginsDirectory() + "/generators/CreateJSGeneratorPlugin";
 		
 		var languageAndIde = params.mode.split("/");
 		
