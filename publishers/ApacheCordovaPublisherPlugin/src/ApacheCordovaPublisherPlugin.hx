@@ -1,4 +1,5 @@
 import haxe.io.Path;
+import htmlparser.XmlDocument;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.Debug.console;
 import nanofl.engine.DocumentProperties;
@@ -105,6 +106,20 @@ class ApacheCordovaPublisherPlugin implements IPublisherPlugin
 		{
 			api.fileSystem.copy(file.baseDir + "/" + file.relPath, destDir + "/" + file.relPath);
 		}
+		
+		log("TUNE");
+		var configFile = outPath + "/config.xml";
+		if (api.fileSystem.exists(configFile))
+		{
+			var config = new XmlDocument(api.fileSystem.getContent(configFile));
+			var content = config.find(">widget>content");
+			if (content.length > 0)
+			{
+				content[0].setAttribute("src", Path.withoutExtension(Path.withoutDirectory(filePath)) + ".html");
+			}
+			api.fileSystem.saveContent(configFile, config.toString());
+		}
+		
 		log("BUILD");
 		cordovaCLI.build();
 	}

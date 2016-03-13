@@ -24,7 +24,7 @@ ApacheCordovaPublisherPlugin.prototype = {
 	publish: function(api,params,filePath,documentProperties,library,files) {
 		var _g2 = this;
 		nanofl.engine.Debug.console.log("ApacheCordovaPublisherPlugin.publish " + Std.string(files));
-		if(params.outPath == "") this.error("Output folder must be specified. Check publish settings.",{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 45, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
+		if(params.outPath == "") this.error("Output folder must be specified. Check publish settings.",{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 46, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
 		var baseSrcDir = haxe_io_Path.directory(filePath);
 		var outPath = haxe_io_Path.join([baseSrcDir,params.outPath]);
 		var cordovaCLI = new CordovaCLI(api.fileSystem,outPath);
@@ -66,7 +66,7 @@ ApacheCordovaPublisherPlugin.prototype = {
 				}
 			}
 		}
-		ApacheCordovaPublisherPlugin.log("COPY",{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 101, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
+		ApacheCordovaPublisherPlugin.log("COPY",{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 102, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
 		var destDir = outPath + "/www";
 		this.removeDirectoryContent(api.fileSystem,destDir);
 		var _g3 = 0;
@@ -75,7 +75,15 @@ ApacheCordovaPublisherPlugin.prototype = {
 			++_g3;
 			api.fileSystem.copy(file.baseDir + "/" + file.relPath,destDir + "/" + file.relPath);
 		}
-		ApacheCordovaPublisherPlugin.log("BUILD",{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 108, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
+		ApacheCordovaPublisherPlugin.log("TUNE",{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 110, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
+		var configFile = outPath + "/config.xml";
+		if(api.fileSystem.exists(configFile)) {
+			var config = new htmlparser.XmlDocument(api.fileSystem.getContent(configFile));
+			var content = config.find(">widget>content");
+			if(content.length > 0) content[0].setAttribute("src",haxe_io_Path.withoutExtension(haxe_io_Path.withoutDirectory(filePath)) + ".html");
+			api.fileSystem.saveContent(configFile,config.toString());
+		}
+		ApacheCordovaPublisherPlugin.log("BUILD",{ fileName : "ApacheCordovaPublisherPlugin.hx", lineNumber : 123, className : "ApacheCordovaPublisherPlugin", methodName : "publish"});
 		cordovaCLI.build();
 	}
 	,createProject: function(cordovaCLI,filePath,params) {
