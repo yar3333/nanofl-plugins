@@ -26,11 +26,6 @@ EReg.prototype = {
 	,matched: function(n) {
 		if(this.r.m != null && n >= 0 && n < this.r.m.length) return this.r.m[n]; else throw new js__$Boot_HaxeError("EReg::matched");
 	}
-	,matchedRight: function() {
-		if(this.r.m == null) throw new js__$Boot_HaxeError("No string matched");
-		var sz = this.r.m.index + this.r.m[0].length;
-		return HxOverrides.substr(this.r.s,sz,this.r.s.length - sz);
-	}
 	,matchedPos: function() {
 		if(this.r.m == null) throw new js__$Boot_HaxeError("No string matched");
 		return { pos : this.r.m.index, len : this.r.m[0].length};
@@ -1597,6 +1592,92 @@ haxe_io_Path.prototype = {
 	}
 	,__class__: haxe_io_Path
 };
+var htmlparser_CssSelector = function(type) {
+	this.classes = [];
+	this.type = type;
+};
+$hxClasses["htmlparser.CssSelector"] = htmlparser_CssSelector;
+htmlparser_CssSelector.__name__ = ["htmlparser","CssSelector"];
+htmlparser_CssSelector.parse = function(selector) {
+	var r = [];
+	var selectors = new EReg("\\s*,\\s*","g").split(selector);
+	var _g = 0;
+	while(_g < selectors.length) {
+		var s = selectors[_g];
+		++_g;
+		if(s != "") r.push(htmlparser_CssSelector.parseInner(s));
+	}
+	return r;
+};
+htmlparser_CssSelector.parseInner = function(selector) {
+	var rr = [];
+	selector = " " + selector;
+	var r = null;
+	var re = new EReg(htmlparser_CssSelector.reSelector,"gi");
+	var pos = 0;
+	while(re.matchSub(selector,pos)) {
+		var type1;
+		try {
+			type1 = re.matched(1);
+		} catch( _ ) {
+			haxe_CallStack.lastException = _;
+			if (_ instanceof js__$Boot_HaxeError) _ = _.val;
+			type1 = null;
+		}
+		if(type1 == null) type1 = "";
+		var type2;
+		try {
+			type2 = re.matched(2);
+		} catch( _1 ) {
+			haxe_CallStack.lastException = _1;
+			if (_1 instanceof js__$Boot_HaxeError) _1 = _1.val;
+			type2 = null;
+		}
+		if(type2 == null) type2 = "";
+		if(type1.length > 0 || type2.length > 0) {
+			if(r != null) rr.push(r);
+			r = new htmlparser_CssSelector(type2.length > 0?">":" ");
+		}
+		var name = re.matched(4);
+		if(name != "*") {
+			var s = re.matched(3);
+			if(s == "#") r.id = name; else if(s == ".") r.classes.push(name); else r.tagNameLC = name.toLowerCase();
+			var sIndex;
+			try {
+				sIndex = re.matched(5);
+			} catch( _2 ) {
+				haxe_CallStack.lastException = _2;
+				if (_2 instanceof js__$Boot_HaxeError) _2 = _2.val;
+				sIndex = null;
+			}
+			if(sIndex != null && sIndex != "") {
+				r.index = Std.parseInt(sIndex.substring(1,sIndex.length - 1));
+				if(isNaN(r.index)) r.index = null;
+			}
+		}
+		var p = re.matchedPos();
+		pos = p.pos + p.len;
+	}
+	if(r != null) rr.push(r);
+	return rr;
+};
+htmlparser_CssSelector.getMatched = function(re,n) {
+	try {
+		return re.matched(n);
+	} catch( _ ) {
+		haxe_CallStack.lastException = _;
+		if (_ instanceof js__$Boot_HaxeError) _ = _.val;
+		return null;
+	}
+};
+htmlparser_CssSelector.prototype = {
+	type: null
+	,tagNameLC: null
+	,id: null
+	,classes: null
+	,index: null
+	,__class__: htmlparser_CssSelector
+};
 var htmlparser_HtmlAttribute = function(name,value,quote) {
 	this.name = name;
 	this.value = value;
@@ -1824,7 +1905,7 @@ htmlparser_HtmlNodeElement.prototype = $extend(htmlparser_HtmlNode.prototype,{
 		return r.b;
 	}
 	,find: function(selector) {
-		var parsedSelectors = htmlparser_HtmlParser.parseCssSelector(selector);
+		var parsedSelectors = htmlparser_CssSelector.parse(selector);
 		var resNodes = [];
 		var _g = 0;
 		while(_g < parsedSelectors.length) {
@@ -1875,29 +1956,18 @@ htmlparser_HtmlNodeElement.prototype = $extend(htmlparser_HtmlNode.prototype,{
 		return nodes;
 	}
 	,isSelectorTrue: function(selector) {
+		if(selector.tagNameLC != null && this.name.toLowerCase() != selector.tagNameLC) return false;
+		if(selector.id != null && this.getAttribute("id") != selector.id) return false;
 		var _g = 0;
-		var _g1 = selector.tags;
+		var _g1 = selector.classes;
 		while(_g < _g1.length) {
-			var tag = _g1[_g];
+			var clas = _g1[_g];
 			++_g;
-			if(this.name.toLowerCase() != tag) return false;
-		}
-		var _g2 = 0;
-		var _g11 = selector.ids;
-		while(_g2 < _g11.length) {
-			var id = _g11[_g2];
-			++_g2;
-			if(this.getAttribute("id") != id) return false;
-		}
-		var _g3 = 0;
-		var _g12 = selector.classes;
-		while(_g3 < _g12.length) {
-			var clas = _g12[_g3];
-			++_g3;
 			var reg = new EReg("(?:^|\\s)" + clas + "(?:$|\\s)","");
 			var classAttr = this.getAttribute("class");
 			if(classAttr == null || !reg.match(classAttr)) return false;
 		}
+		if(selector.index != null && (this.parent == null || HxOverrides.indexOf(this.parent.children,this,0) + 1 != selector.index)) return false;
 		return true;
 	}
 	,replaceChild: function(node,newNode) {
@@ -2014,8 +2084,9 @@ var htmlparser_HtmlParser = function() {
 };
 $hxClasses["htmlparser.HtmlParser"] = htmlparser_HtmlParser;
 htmlparser_HtmlParser.__name__ = ["htmlparser","HtmlParser"];
-htmlparser_HtmlParser.run = function(str) {
-	return new htmlparser_HtmlParser().parse(str);
+htmlparser_HtmlParser.run = function(str,tolerant) {
+	if(tolerant == null) tolerant = false;
+	return new htmlparser_HtmlParser().parse(str,tolerant);
 };
 htmlparser_HtmlParser.parseAttrs = function(str) {
 	var attributes = [];
@@ -2031,47 +2102,6 @@ htmlparser_HtmlParser.parseAttrs = function(str) {
 	}
 	return attributes;
 };
-htmlparser_HtmlParser.parseCssSelector = function(selector) {
-	var reg = new EReg("\\s*,\\s*","");
-	var selectors = reg.split(selector);
-	var r = [];
-	var _g = 0;
-	while(_g < selectors.length) {
-		var s = selectors[_g];
-		++_g;
-		if(s != "") r.push(htmlparser_HtmlParser.parseCssSelectorInner(s));
-	}
-	return r;
-};
-htmlparser_HtmlParser.parseCssSelectorInner = function(selector) {
-	var reSubSelector = "[.#]?" + htmlparser_HtmlParser.reID + "(?::" + htmlparser_HtmlParser.reID + ")?";
-	var parsedSelectors = [];
-	var reg = new EReg("([ >])((?:" + reSubSelector + ")+|[*])","i");
-	var strSelector = " " + selector;
-	while(reg.match(strSelector)) {
-		var tags = [];
-		var ids = [];
-		var classes = [];
-		if(reg.matched(2) != "*") {
-			var subreg = new EReg(reSubSelector,"i");
-			var substr = reg.matched(2);
-			try {
-				while(subreg.match(substr)) {
-					var s = subreg.matched(0);
-					if(HxOverrides.substr(s,0,1) == "#") ids.push(HxOverrides.substr(s,1,null)); else if(HxOverrides.substr(s,0,1) == ".") classes.push(HxOverrides.substr(s,1,null)); else tags.push(s.toLowerCase());
-					substr = subreg.matchedRight();
-				}
-			} catch( e ) {
-				haxe_CallStack.lastException = e;
-				if (e instanceof js__$Boot_HaxeError) e = e.val;
-				throw new js__$Boot_HaxeError(e);
-			}
-		}
-		parsedSelectors.push({ type : reg.matched(1), tags : tags, ids : ids, classes : classes});
-		strSelector = reg.matchedRight();
-	}
-	return parsedSelectors;
-};
 htmlparser_HtmlParser.getMatched = function(re,n) {
 	try {
 		return re.matched(n);
@@ -2082,10 +2112,13 @@ htmlparser_HtmlParser.getMatched = function(re,n) {
 	}
 };
 htmlparser_HtmlParser.prototype = {
-	matches: null
+	tolerant: null
+	,matches: null
 	,str: null
 	,i: null
-	,parse: function(str) {
+	,parse: function(str,tolerant) {
+		if(tolerant == null) tolerant = false;
+		this.tolerant = tolerant;
 		this.matches = [];
 		var pos = 0;
 		while(pos < str.length && htmlparser_HtmlParser.reMain.matchSub(str,pos)) {
@@ -2229,7 +2262,9 @@ htmlparser_HtmlParser.prototype = {
 						$r = null;
 					}
 					return $r;
-				}(this))};
+				}(this)), tagOpenLC : null, tagCloseLC : null};
+				if(r.tagOpen != null) r.tagOpenLC = r.tagOpen.toLowerCase();
+				if(r.tagClose != null) r.tagCloseLC = r.tagClose.toLowerCase();
 				this.matches.push(r);
 			}
 			pos = p.pos + p.len;
@@ -2237,13 +2272,13 @@ htmlparser_HtmlParser.prototype = {
 		if(this.matches.length > 0) {
 			this.str = str;
 			this.i = 0;
-			var nodes = this.processMatches();
-			if(this.i < this.matches.length) throw new js__$Boot_HaxeError("Error parsing XML at " + this.i + ":\n" + str);
+			var nodes = this.processMatches("");
+			if(this.i < this.matches.length) throw new js__$Boot_HaxeError(new htmlparser_HtmlParserException("Not all nodes processed.",this.getPosition(this.i)));
 			return nodes;
 		}
 		if(str.length > 0) return [new htmlparser_HtmlNodeText(str)]; else return [];
 	}
-	,processMatches: function() {
+	,processMatches: function(baseTagLC) {
 		var nodes = [];
 		var prevEnd;
 		if(this.i > 0) prevEnd = this.matches[this.i - 1].allPos + this.matches[this.i - 1].all.length; else prevEnd = 0;
@@ -2259,7 +2294,11 @@ htmlparser_HtmlParser.prototype = {
 				var styleNode = this.newElement("style",htmlparser_HtmlParser.parseAttrs(m.styleAttrs));
 				styleNode.addChild(new htmlparser_HtmlNodeText(m.styleText));
 				nodes.push(styleNode);
-			} else if(m.close != null && m.close != "") break; else if(m.comment != null && m.comment != "") nodes.push(new htmlparser_HtmlNodeText(m.comment)); else throw new js__$Boot_HaxeError("Error");
+			} else if(m.close != null && m.close != "") {
+				if(m.tagCloseLC == baseTagLC) break;
+				if(!this.tolerant && m.tagCloseLC != baseTagLC) throw new js__$Boot_HaxeError(new htmlparser_HtmlParserException("Closed tag <" + m.tagClose + "> don't match to open tag <" + baseTagLC + ">.",this.getPosition(this.i)));
+			} else if(m.comment != null && m.comment != "") nodes.push(new htmlparser_HtmlNodeText(m.comment)); else throw new js__$Boot_HaxeError(new htmlparser_HtmlParserException("Unexpected XML node.",this.getPosition(this.i)));
+			if(this.tolerant && this.i >= this.matches.length) break;
 			var curEnd = this.matches[this.i].allPos + this.matches[this.i].all.length;
 			var nextStart;
 			if(this.i + 1 < this.matches.length) nextStart = this.matches[this.i + 1].allPos; else nextStart = this.str.length;
@@ -2270,19 +2309,24 @@ htmlparser_HtmlParser.prototype = {
 	}
 	,parseElement: function() {
 		var tag = this.matches[this.i].tagOpen;
+		var tagLC = this.matches[this.i].tagOpenLC;
 		var attrs = this.matches[this.i].attrs;
-		var isWithClose = this.matches[this.i].tagEnd != null && this.matches[this.i].tagEnd != "" || this.isSelfClosingTag(tag);
+		var isWithClose = this.matches[this.i].tagEnd != null && this.matches[this.i].tagEnd != "" || this.isSelfClosingTag(tagLC);
 		var elem = this.newElement(tag,htmlparser_HtmlParser.parseAttrs(attrs));
 		if(!isWithClose) {
 			this.i++;
-			var nodes = this.processMatches();
+			var nodes = this.processMatches(tagLC);
 			var _g = 0;
 			while(_g < nodes.length) {
 				var node = nodes[_g];
 				++_g;
 				elem.addChild(node);
 			}
-			if(this.matches[this.i].close == null || this.matches[this.i].close == "" || this.matches[this.i].tagClose != tag) throw new js__$Boot_HaxeError("XML parse error: tag <" + tag + "> not closed. ParsedText = \n<pre>" + this.str + "</pre>\n");
+			if(this.i < this.matches.length || !this.tolerant) {
+				if(this.matches[this.i].close == null || this.matches[this.i].close == "" || this.matches[this.i].tagCloseLC != tagLC) {
+					if(!this.tolerant) throw new js__$Boot_HaxeError(new htmlparser_HtmlParserException("Tag <" + tag + "> not closed.",this.getPosition(this.i)));
+				}
+			}
 		}
 		return elem;
 	}
@@ -2292,7 +2336,45 @@ htmlparser_HtmlParser.prototype = {
 	,newElement: function(name,attributes) {
 		return new htmlparser_HtmlNodeElement(name,attributes);
 	}
+	,getPosition: function(matchIndex) {
+		var m = this.matches[matchIndex];
+		var line = 1;
+		var lastNewLinePos = -1;
+		var i = 0;
+		while(i < m.allPos) {
+			var chars;
+			if(i + 1 < this.str.length) chars = this.str.substring(i,i + 2); else chars = this.str.charAt(i);
+			if(chars == "\r\n") {
+				i += 2;
+				lastNewLinePos = i;
+				line++;
+			} else if(chars.charAt(0) == "\n" || chars.charAt(0) == "\r") {
+				i++;
+				lastNewLinePos = i;
+				line++;
+			} else i++;
+		}
+		return { line : line, column : m.allPos - lastNewLinePos, length : m.all.length};
+	}
 	,__class__: htmlparser_HtmlParser
+};
+var htmlparser_HtmlParserException = function(message,pos) {
+	this.message = message;
+	this.line = pos.line;
+	this.column = pos.column;
+	this.length = pos.length;
+};
+$hxClasses["htmlparser.HtmlParserException"] = htmlparser_HtmlParserException;
+htmlparser_HtmlParserException.__name__ = ["htmlparser","HtmlParserException"];
+htmlparser_HtmlParserException.prototype = {
+	message: null
+	,line: null
+	,column: null
+	,length: null
+	,toString: function() {
+		return "Parse error at " + this.line + ":" + this.column + ". " + this.message;
+	}
+	,__class__: htmlparser_HtmlParserException
 };
 var htmlparser_HtmlParserTools = function() { };
 $hxClasses["htmlparser.HtmlParserTools"] = htmlparser_HtmlParserTools;
@@ -6855,6 +6937,7 @@ nanofl_engine_elements_Instance.prototype = $extend(nanofl_engine_elements_Eleme
 	}
 	,updateDisplayObjectInstanceProperties: function(dispObj) {
 		if(dispObj.filters == null) dispObj.filters = [];
+		dispObj.alpha = 1.0;
 		if(this.colorEffect != null) this.colorEffect.apply(dispObj);
 		var _g = 0;
 		var _g1 = this.filters;
@@ -14095,7 +14178,6 @@ var stdlib_Exception = function(message) {
 	if(message == null) this.message = ""; else this.message = message;
 	this.stack = haxe_CallStack.callStack();
 	this.stack.shift();
-	this.stack.shift();
 };
 $hxClasses["stdlib.Exception"] = stdlib_Exception;
 stdlib_Exception.__name__ = ["stdlib","Exception"];
@@ -14170,6 +14252,14 @@ stdlib_LambdaIterator.array = function(it) {
 		r.push(e);
 	}
 	return r;
+};
+stdlib_LambdaIterator.indexOf = function(it,elem) {
+	var r = 0;
+	while(it.hasNext()) {
+		if(it.next() == elem) return r;
+		r++;
+	}
+	return -1;
 };
 stdlib_LambdaIterator.map = function(it,conv) {
 	var r = [];
@@ -17368,6 +17458,9 @@ haxe_io_FPHelper.i64tmp = (function($this) {
 	$r = x;
 	return $r;
 }(this));
+htmlparser_CssSelector.reID = "[a-z](?:-?[_a-z0-9])*";
+htmlparser_CssSelector.reNamespacedID = htmlparser_CssSelector.reID + "(?::" + htmlparser_CssSelector.reID + ")?";
+htmlparser_CssSelector.reSelector = "(\\s*)((?:[>]\\s*)?)([.#]?)(" + htmlparser_CssSelector.reNamespacedID + "|[*])((?:\\[\\d+\\])?)";
 htmlparser_HtmlParser.SELF_CLOSING_TAGS_HTML = { img : 1, br : 1, input : 1, meta : 1, link : 1, hr : 1, base : 1, embed : 1, spacer : 1, source : 1, param : 1};
 htmlparser_HtmlParser.reID = "[a-z](?:-?[_a-z0-9])*";
 htmlparser_HtmlParser.reNamespacedID = htmlparser_HtmlParser.reID + "(?::" + htmlparser_HtmlParser.reID + ")?";
@@ -17402,7 +17495,7 @@ nanofl_engine_ScaleMode.fit = "fit";
 nanofl_engine_ScaleMode.fill = "fill";
 nanofl_engine_ScaleMode.stretch = "stretch";
 nanofl_engine_ScaleMode.custom = "custom";
-nanofl_engine_Version.ide = "3.0.4";
+nanofl_engine_Version.ide = "3.0.5";
 nanofl_engine_Version.player = "3.0.2";
 nanofl_engine_Version.document = "2.1.0";
 nanofl_engine_geom_BezierCurve.EPS = 1e-10;

@@ -538,6 +538,14 @@ stdlib_LambdaIterator.array = function(it) {
 	}
 	return r;
 };
+stdlib_LambdaIterator.indexOf = function(it,elem) {
+	var r = 0;
+	while(it.hasNext()) {
+		if(it.next() == elem) return r;
+		r++;
+	}
+	return -1;
+};
 stdlib_LambdaIterator.map = function(it,conv) {
 	var r = [];
 	while( it.hasNext() ) {

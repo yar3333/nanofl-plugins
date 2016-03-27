@@ -4,6 +4,8 @@ import jsfl.BitmapItem;
 import jsfl.SoundItem;
 import jsfl.Flash;
 import jsfl.FLfile;
+import jsfl.Item.ItemType;
+import jsfl.SoundItem.SoundCompressionType;
 using StringTools;
 
 class FlashMediaImporter
@@ -32,11 +34,11 @@ class FlashMediaImporter
 			{
 				switch (item.itemType)
 				{
-					case "bitmap":
+					case  ItemType.Bitmap:
 						log("  Import: " + item.name + " / " + item.itemType + " / " + (cast item:BitmapItem).originalCompressionType);
 						importBitmap(destLibraryDir, cast item);
 						
-					case "movie clip", "graphic", "button", "folder":
+					case ItemType.MovieClip, ItemType.Graphic, ItemType.Button, ItemType.Folder:
 						// nothing to do
 						
 					case "sound":
@@ -82,7 +84,7 @@ class FlashMediaImporter
 	
 	static function importSound(destLibraryDir:String, item:SoundItem) : Bool
 	{
-		var savePath = destLibraryDir + "/" + Path.withoutExtension(item.name) + (item.originalCompressionType == "RAW" ? ".wav" : ".mp3");
+		var savePath = destLibraryDir + "/" + Path.withoutExtension(item.name) + (item.originalCompressionType == SoundCompressionType.RAW ? ".wav" : ".mp3");
 		if (!FLfile.exists(savePath))
 		{
 			FLfile.createFolder(Path.directory(savePath));

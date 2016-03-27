@@ -2063,7 +2063,6 @@ var stdlib_Exception = function(message) {
 	if(message == null) this.message = ""; else this.message = message;
 	this.stack = haxe_CallStack.callStack();
 	this.stack.shift();
-	this.stack.shift();
 };
 stdlib_Exception.__name__ = ["stdlib","Exception"];
 stdlib_Exception.string = function(e) {
@@ -2132,6 +2131,14 @@ stdlib_LambdaIterator.array = function(it) {
 		r.push(e);
 	}
 	return r;
+};
+stdlib_LambdaIterator.indexOf = function(it,elem) {
+	var r = 0;
+	while(it.hasNext()) {
+		if(it.next() == elem) return r;
+		r++;
+	}
+	return -1;
 };
 stdlib_LambdaIterator.map = function(it,conv) {
 	var r = [];

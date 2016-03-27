@@ -1,9 +1,11 @@
 package htmlparser;
 
-typedef CssSelector =
+extern class CssSelector
 {
-	var classes : Array<String>;
-	var ids : Array<String>;
-	var tags : Array<String>;
-	var type : String;
-};
+	var type(default, null) : String;
+	var tagNameLC(default, null) : String;
+	var id(default, null) : String;
+	var classes(default, null) : Array<String>;
+	var index(default, null) : Int;
+	static function parse(selector:String) : Array<Array<htmlparser.CssSelector>>;
+}

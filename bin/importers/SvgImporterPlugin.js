@@ -1189,7 +1189,6 @@ var stdlib_Exception = function(message) {
 	if(message == null) this.message = ""; else this.message = message;
 	this.stack = haxe_CallStack.callStack();
 	this.stack.shift();
-	this.stack.shift();
 };
 stdlib_Exception.__name__ = ["stdlib","Exception"];
 stdlib_Exception.string = function(e) {

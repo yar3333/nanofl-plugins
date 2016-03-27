@@ -1103,12 +1103,14 @@ declare module nanofl.engine.geom.Edge
 
 declare module htmlparser
 {
-	type CssSelector =
+	export class CssSelector
 	{
-		classes : string[];
-		ids : string[];
-		tags : string[];
 		type : string;
+		tagNameLC : string;
+		id : string;
+		classes : string[];
+		index : number;
+		static parse(selector:string) : htmlparser.CssSelector[][];
 	}
 	
 	export class HtmlAttribute
@@ -1162,7 +1164,7 @@ declare module htmlparser
 	
 	export class HtmlDocument extends htmlparser.HtmlNodeElement
 	{
-		constructor(str?:string);
+		constructor(str?:string, tolerant?:boolean);
 	}
 	
 	export class HtmlNodeText extends htmlparser.HtmlNode
@@ -1175,10 +1177,19 @@ declare module htmlparser
 	
 	export class HtmlParser
 	{
-		parse(str:string) : htmlparser.HtmlNode[];
+		parse(str:string, tolerant?:boolean) : htmlparser.HtmlNode[];
 		static SELF_CLOSING_TAGS_HTML : any;
-		static run(str:string) : htmlparser.HtmlNode[];
-		static parseCssSelector(selector:string) : htmlparser.CssSelector[][];
+		static run(str:string, tolerant?:boolean) : htmlparser.HtmlNode[];
+	}
+	
+	export class HtmlParserException
+	{
+		constructor(message:string, pos:{ column : number; length : number; line : number; });
+		message : string;
+		line : number;
+		column : number;
+		length : number;
+		toString() : string;
 	}
 	
 	export class HtmlParserTools
