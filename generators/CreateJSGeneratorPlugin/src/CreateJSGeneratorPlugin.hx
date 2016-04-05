@@ -27,9 +27,9 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 				"HTML",
 				"JavaScript",
 				"JavaScript/FlashDevelop",
-				"JavaScript/MsVisualStudio2013",
+				"JavaScript/MsVisualStudio",
 				"TypeScript",
-				"TypeScript/MsVisualStudio2013", 
+				"TypeScript/MsVisualStudio", 
 				"Haxe",
 				"Haxe/FlashDevelop",
 				"TextureAtlas"
@@ -81,7 +81,7 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 			var generator : BaseIdeGenerator = switch (languageAndIde[1])
 			{
 				case "FlashDevelop": new FlashDevelopGenerator(api.fileSystem, supportDir);
-				case "MsVisualStudio2013": new MsVisualStudio2013Generator(api.fileSystem, supportDir);
+				case "MsVisualStudio": new MsVisualStudioGenerator(api.fileSystem, supportDir);
 				case _: throw "Unsupported IDE '" + languageAndIde[1] + "'."; null;
 			};
 			generator.generate(languageAndIde[0], dir, name);

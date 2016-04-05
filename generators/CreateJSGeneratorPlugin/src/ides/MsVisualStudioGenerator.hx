@@ -1,10 +1,10 @@
 ﻿package ides;
 
-class MsVisualStudio2013Generator extends BaseIdeGenerator
+class MsVisualStudioGenerator extends BaseIdeGenerator
 {
 	override public function generate(language:String, dir:String, name:String)
 	{
-		trace("MsVisualStudio2013Generator language = " + language + "; dir = " + dir + "; name = " + name);
+		trace("MsVisualStudioGenerator language = " + language + "; dir = " + dir + "; name = " + name);
 		
 		var guid = newGuid();
 		for (ext in [".sln", ".csproj"])
@@ -12,7 +12,7 @@ class MsVisualStudio2013Generator extends BaseIdeGenerator
 			var destFile = dir + "/" + name + ext;
 			if (!fileSystem.exists(destFile))
 			{
-				var template = fileSystem.getContent(supportDir + "/ides/MsVisualStudio2013/" + language + "/project" + ext);
+				var template = fileSystem.getContent(supportDir + "/ides/MsVisualStudio/" + language + "/project" + ext);
 				template = template.split("{name}").join(name);
 				template = template.split("{guid}").join(guid);
 				fileSystem.saveContent(destFile, template);

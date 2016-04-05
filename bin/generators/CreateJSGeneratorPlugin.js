@@ -7,7 +7,7 @@ function $extend(from, fields) {
 	return proto;
 }
 var CreateJSGeneratorPlugin = function() {
-	this.properties = [{ type : "list", name : "mode", label : "Mode", defaultValue : "HTML", values : ["HTML","JavaScript","JavaScript/FlashDevelop","JavaScript/MsVisualStudio2013","TypeScript","TypeScript/MsVisualStudio2013","Haxe","Haxe/FlashDevelop","TextureAtlas"]},{ type : "string", name : "urlOnClick", label : "URL on click", defaultValue : "", description : "Useful for Banner Ads. Keep field empty to disable this feature."},{ type : "bool", name : "useLocalScripts", label : "Use local scripts for Player/CreateJS/ThreeJS", defaultValue : false, description : "Check to prevent loading scripts from CDN. Local copies will be used. This increase document folder size."},{ type : "bool", name : "forceSoftwareRenderer", label : "Force software renderer for ThreeJS", defaultValue : false, description : "Don't check to have 3D acceleration autodetection. In code: nanofl.Mesh.forceSoftwareRenderer."}];
+	this.properties = [{ type : "list", name : "mode", label : "Mode", defaultValue : "HTML", values : ["HTML","JavaScript","JavaScript/FlashDevelop","JavaScript/MsVisualStudio","TypeScript","TypeScript/MsVisualStudio","Haxe","Haxe/FlashDevelop","TextureAtlas"]},{ type : "string", name : "urlOnClick", label : "URL on click", defaultValue : "", description : "Useful for Banner Ads. Keep field empty to disable this feature."},{ type : "bool", name : "useLocalScripts", label : "Use local scripts for Player/CreateJS/ThreeJS", defaultValue : false, description : "Check to prevent loading scripts from CDN. Local copies will be used. This increase document folder size."},{ type : "bool", name : "forceSoftwareRenderer", label : "Force software renderer for ThreeJS", defaultValue : false, description : "Don't check to have 3D acceleration autodetection. In code: nanofl.Mesh.forceSoftwareRenderer."}];
 	this.name = "CreateJS";
 };
 CreateJSGeneratorPlugin.__name__ = true;
@@ -55,8 +55,8 @@ CreateJSGeneratorPlugin.prototype = {
 			case "FlashDevelop":
 				generator1 = new ides_FlashDevelopGenerator(api.fileSystem,supportDir);
 				break;
-			case "MsVisualStudio2013":
-				generator1 = new ides_MsVisualStudio2013Generator(api.fileSystem,supportDir);
+			case "MsVisualStudio":
+				generator1 = new ides_MsVisualStudioGenerator(api.fileSystem,supportDir);
 				break;
 			default:
 				throw new js__$Boot_HaxeError("Unsupported IDE '" + languageAndIde[1] + "'.");
@@ -421,14 +421,14 @@ ides_FlashDevelopGenerator.prototype = $extend(ides_BaseIdeGenerator.prototype,{
 	}
 	,__class__: ides_FlashDevelopGenerator
 });
-var ides_MsVisualStudio2013Generator = function(fileSystem,supportDir) {
+var ides_MsVisualStudioGenerator = function(fileSystem,supportDir) {
 	ides_BaseIdeGenerator.call(this,fileSystem,supportDir);
 };
-ides_MsVisualStudio2013Generator.__name__ = true;
-ides_MsVisualStudio2013Generator.__super__ = ides_BaseIdeGenerator;
-ides_MsVisualStudio2013Generator.prototype = $extend(ides_BaseIdeGenerator.prototype,{
+ides_MsVisualStudioGenerator.__name__ = true;
+ides_MsVisualStudioGenerator.__super__ = ides_BaseIdeGenerator;
+ides_MsVisualStudioGenerator.prototype = $extend(ides_BaseIdeGenerator.prototype,{
 	generate: function(language,dir,name) {
-		console.log("MsVisualStudio2013Generator language = " + language + "; dir = " + dir + "; name = " + name);
+		console.log("MsVisualStudioGenerator language = " + language + "; dir = " + dir + "; name = " + name);
 		var guid = this.newGuid();
 		var _g = 0;
 		var _g1 = [".sln",".csproj"];
@@ -437,7 +437,7 @@ ides_MsVisualStudio2013Generator.prototype = $extend(ides_BaseIdeGenerator.proto
 			++_g;
 			var destFile = dir + "/" + name + ext;
 			if(!this.fileSystem.exists(destFile)) {
-				var template = this.fileSystem.getContent(this.supportDir + "/ides/MsVisualStudio2013/" + language + "/project" + ext);
+				var template = this.fileSystem.getContent(this.supportDir + "/ides/MsVisualStudio/" + language + "/project" + ext);
 				template = template.split("{name}").join(name);
 				template = template.split("{guid}").join(guid);
 				this.fileSystem.saveContent(destFile,template);
@@ -453,7 +453,7 @@ ides_MsVisualStudio2013Generator.prototype = $extend(ides_BaseIdeGenerator.proto
 		});
 		return uuid.toUpperCase();
 	}
-	,__class__: ides_MsVisualStudio2013Generator
+	,__class__: ides_MsVisualStudioGenerator
 });
 var js__$Boot_HaxeError = function(val) {
 	Error.call(this);
