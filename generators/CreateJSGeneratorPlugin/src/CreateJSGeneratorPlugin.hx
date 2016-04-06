@@ -6,9 +6,12 @@ import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileSystem;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
+import nanofl.engine.libraryitems.InstancableItem;
 import nanofl.ide.plugins.IGeneratorPlugin;
 import nanofl.ide.NanoApi;
 import nanofl.ide.textureatlas.TextureAtlas;
+using stdlib.StringTools;
+using stdlib.Lambda;
 
 class CreateJSGeneratorPlugin implements IGeneratorPlugin
 {
@@ -106,4 +109,27 @@ class CreateJSGeneratorPlugin implements IGeneratorPlugin
 		return null;
 	}
 	#end
+	
+	public function getCodeFilePath(params:Params, symbol:InstancableItem) : String
+	{
+		var language = params.mode.split("/")[0];
+		
+		var exts =
+		[
+			"JavaScript" => ".js",
+			"TypeScript" => ".hx",
+			"Haxe"       => ".hx"
+		];
+		
+		if (exts.keys().indexOf(language) >= 0)
+		{
+			if (symbol.linkedClass == "")
+			{
+				symbol.linkedClass = (Path.directory(symbol.namePath) + "/" + Path.withoutDirectory(symbol.namePath).capitalize()).ltrim("/").replace("/", ".");
+			}
+			return "src/" + symbol.linkedClass.replace(".", "/") + exts.get(language);
+		}
+		
+		return null;
+	}
 }

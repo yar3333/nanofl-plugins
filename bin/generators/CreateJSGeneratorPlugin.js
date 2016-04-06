@@ -75,6 +75,20 @@ CreateJSGeneratorPlugin.prototype = {
 		api.serverUtils.openInBrowser(htmlFilePath);
 		return null;
 	}
+	,getCodeFilePath: function(params,symbol) {
+		var language = params.mode.split("/")[0];
+		var exts;
+		var _g = new haxe_ds_StringMap();
+		if(__map_reserved.JavaScript != null) _g.setReserved("JavaScript",".js"); else _g.h["JavaScript"] = ".js";
+		if(__map_reserved.TypeScript != null) _g.setReserved("TypeScript",".hx"); else _g.h["TypeScript"] = ".hx";
+		if(__map_reserved.Haxe != null) _g.setReserved("Haxe",".hx"); else _g.h["Haxe"] = ".hx";
+		exts = _g;
+		if(stdlib_LambdaIterator.indexOf(exts.keys(),language) >= 0) {
+			if(symbol.linkedClass == "") symbol.linkedClass = stdlib_StringTools.replace(stdlib_StringTools.ltrim(haxe_io_Path.directory(symbol.namePath) + "/" + stdlib_StringTools.capitalize(haxe_io_Path.withoutDirectory(symbol.namePath)),"/"),"/",".");
+			return "src/" + StringTools.replace(symbol.linkedClass,".","/") + (__map_reserved[language] != null?exts.getReserved(language):exts.h[language]);
+		}
+		return null;
+	}
 	,__class__: CreateJSGeneratorPlugin
 };
 var EReg = function(r,opt) {
@@ -113,6 +127,9 @@ EReg.prototype = {
 			return b1;
 		}
 	}
+	,replace: function(s,by) {
+		return s.replace(this.r,by);
+	}
 	,map: function(s,f) {
 		var offset = 0;
 		var buf = new StringBuf();
@@ -136,6 +153,11 @@ EReg.prototype = {
 };
 var HxOverrides = function() { };
 HxOverrides.__name__ = true;
+HxOverrides.cca = function(s,index) {
+	var x = s.charCodeAt(index);
+	if(x != x) return undefined;
+	return x;
+};
 HxOverrides.substr = function(s,pos,len) {
 	if(pos != null && pos != 0 && len != null && len < 0) return "";
 	if(len == null) len = s.length;
@@ -207,6 +229,15 @@ Std.string = function(s) {
 Std["int"] = function(x) {
 	return x | 0;
 };
+Std.parseInt = function(x) {
+	var v = parseInt(x,10);
+	if(v == 0 && (HxOverrides.cca(x,1) == 120 || HxOverrides.cca(x,1) == 88)) v = parseInt(x);
+	if(isNaN(v)) return null;
+	return v;
+};
+Std.random = function(x) {
+	if(x <= 0) return 0; else return Math.floor(Math.random() * x);
+};
 var StringBuf = function() {
 	this.b = "";
 };
@@ -219,6 +250,53 @@ StringBuf.prototype = {
 };
 var StringTools = function() { };
 StringTools.__name__ = true;
+StringTools.htmlEscape = function(s,quotes) {
+	s = s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+	if(quotes) return s.split("\"").join("&quot;").split("'").join("&#039;"); else return s;
+};
+StringTools.htmlUnescape = function(s) {
+	return s.split("&gt;").join(">").split("&lt;").join("<").split("&quot;").join("\"").split("&#039;").join("'").split("&amp;").join("&");
+};
+StringTools.startsWith = function(s,start) {
+	return s.length >= start.length && HxOverrides.substr(s,0,start.length) == start;
+};
+StringTools.endsWith = function(s,end) {
+	var elen = end.length;
+	var slen = s.length;
+	return slen >= elen && HxOverrides.substr(s,slen - elen,elen) == end;
+};
+StringTools.isSpace = function(s,pos) {
+	var c = HxOverrides.cca(s,pos);
+	return c > 8 && c < 14 || c == 32;
+};
+StringTools.ltrim = function(s) {
+	var l = s.length;
+	var r = 0;
+	while(r < l && StringTools.isSpace(s,r)) r++;
+	if(r > 0) return HxOverrides.substr(s,r,l - r); else return s;
+};
+StringTools.rtrim = function(s) {
+	var l = s.length;
+	var r = 0;
+	while(r < l && StringTools.isSpace(s,l - r - 1)) r++;
+	if(r > 0) return HxOverrides.substr(s,0,l - r); else return s;
+};
+StringTools.trim = function(s) {
+	return StringTools.ltrim(StringTools.rtrim(s));
+};
+StringTools.lpad = function(s,c,l) {
+	if(c.length <= 0) return s;
+	while(s.length < l) s = c + s;
+	return s;
+};
+StringTools.rpad = function(s,c,l) {
+	if(c.length <= 0) return s;
+	while(s.length < l) s = s + c;
+	return s;
+};
+StringTools.replace = function(s,sub,by) {
+	return s.split(sub).join(by);
+};
 StringTools.hex = function(n,digits) {
 	var s = "";
 	var hexChars = "0123456789ABCDEF";
@@ -231,6 +309,9 @@ StringTools.hex = function(n,digits) {
 };
 var haxe_IMap = function() { };
 haxe_IMap.__name__ = true;
+haxe_IMap.prototype = {
+	__class__: haxe_IMap
+};
 var haxe__$Int64__$_$_$Int64 = function(high,low) {
 	this.high = high;
 	this.low = low;
@@ -238,6 +319,44 @@ var haxe__$Int64__$_$_$Int64 = function(high,low) {
 haxe__$Int64__$_$_$Int64.__name__ = true;
 haxe__$Int64__$_$_$Int64.prototype = {
 	__class__: haxe__$Int64__$_$_$Int64
+};
+var haxe_Utf8 = function(size) {
+	this.__b = "";
+};
+haxe_Utf8.__name__ = true;
+haxe_Utf8.iter = function(s,chars) {
+	var _g1 = 0;
+	var _g = s.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		chars(HxOverrides.cca(s,i));
+	}
+};
+haxe_Utf8.encode = function(s) {
+	throw new js__$Boot_HaxeError("Not implemented");
+};
+haxe_Utf8.decode = function(s) {
+	throw new js__$Boot_HaxeError("Not implemented");
+};
+haxe_Utf8.compare = function(a,b) {
+	if(a > b) return 1; else if(a == b) return 0; else return -1;
+};
+haxe_Utf8.prototype = {
+	addChar: function(c) {
+		this.__b += String.fromCharCode(c);
+	}
+	,__class__: haxe_Utf8
+};
+var haxe_ds_IntMap = function() {
+	this.h = { };
+};
+haxe_ds_IntMap.__name__ = true;
+haxe_ds_IntMap.__interfaces__ = [haxe_IMap];
+haxe_ds_IntMap.prototype = {
+	get: function(key) {
+		return this.h[key];
+	}
+	,__class__: haxe_ds_IntMap
 };
 var haxe_ds__$StringMap_StringMapIterator = function(map,keys) {
 	this.map = map;
@@ -255,13 +374,22 @@ haxe_ds__$StringMap_StringMapIterator.prototype = {
 	}
 	,__class__: haxe_ds__$StringMap_StringMapIterator
 };
-var haxe_ds_StringMap = function() { };
+var haxe_ds_StringMap = function() {
+	this.h = { };
+};
 haxe_ds_StringMap.__name__ = true;
 haxe_ds_StringMap.__interfaces__ = [haxe_IMap];
 haxe_ds_StringMap.prototype = {
-	get: function(key) {
+	set: function(key,value) {
+		if(__map_reserved[key] != null) this.setReserved(key,value); else this.h[key] = value;
+	}
+	,get: function(key) {
 		if(__map_reserved[key] != null) return this.getReserved(key);
 		return this.h[key];
+	}
+	,setReserved: function(key,value) {
+		if(this.rh == null) this.rh = { };
+		this.rh["$" + key] = value;
 	}
 	,getReserved: function(key) {
 		if(this.rh == null) return null; else return this.rh["$" + key];
@@ -375,6 +503,16 @@ haxe_io_Path.withoutExtension = function(path) {
 	var s = new haxe_io_Path(path);
 	s.ext = null;
 	return s.toString();
+};
+haxe_io_Path.withoutDirectory = function(path) {
+	var s = new haxe_io_Path(path);
+	s.dir = null;
+	return s.toString();
+};
+haxe_io_Path.directory = function(path) {
+	var s = new haxe_io_Path(path);
+	if(s.dir == null) return "";
+	return s.dir;
 };
 haxe_io_Path.prototype = {
 	toString: function() {
@@ -588,6 +726,9 @@ js_Boot.__instanceof = function(o,cl) {
 		if(cl == Enum && o.__ename__ != null) return true;
 		return o.__enum__ == cl;
 	}
+};
+js_Boot.__cast = function(o,t) {
+	if(js_Boot.__instanceof(o,t)) return o; else throw new js__$Boot_HaxeError("Cannot cast " + Std.string(o) + " to " + Std.string(t));
 };
 js_Boot.__nativeClassName = function(o) {
 	var name = js_Boot.__toStr.call(o).slice(8,-1);
@@ -1214,6 +1355,568 @@ languages_TypeScriptGenerator.prototype = $extend(languages_CodeGenerator.protot
 		} else this.fileSystem.remove(classFilePath);
 	}
 	,__class__: languages_TypeScriptGenerator
+});
+var stdlib_LambdaArray = function() { };
+stdlib_LambdaArray.__name__ = true;
+stdlib_LambdaArray.insertRange = function(arr,pos,range) {
+	var _g = 0;
+	while(_g < range.length) {
+		var e = range[_g];
+		++_g;
+		var pos1 = pos++;
+		arr.splice(pos1,0,e);
+	}
+};
+stdlib_LambdaArray.extract = function(arr,f) {
+	var r = [];
+	var i = 0;
+	while(i < arr.length) if(f(arr[i])) {
+		r.push(arr[i]);
+		arr.splice(i,1);
+	} else i++;
+	return r;
+};
+var stdlib_LambdaIterable = function() { };
+stdlib_LambdaIterable.__name__ = true;
+stdlib_LambdaIterable.findIndex = function(it,f) {
+	var n = 0;
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		if(f(x)) return n;
+		n++;
+	}
+	return -1;
+};
+stdlib_LambdaIterable.sorted = function(it,cmp) {
+	var r = Lambda.array(it);
+	r.sort(cmp != null?cmp:Reflect.compare);
+	return r;
+};
+var stdlib_LambdaIterator = function() { };
+stdlib_LambdaIterator.__name__ = true;
+stdlib_LambdaIterator.array = function(it) {
+	var r = [];
+	while( it.hasNext() ) {
+		var e = it.next();
+		r.push(e);
+	}
+	return r;
+};
+stdlib_LambdaIterator.indexOf = function(it,elem) {
+	var r = 0;
+	while(it.hasNext()) {
+		if(it.next() == elem) return r;
+		r++;
+	}
+	return -1;
+};
+stdlib_LambdaIterator.map = function(it,conv) {
+	var r = [];
+	while( it.hasNext() ) {
+		var e = it.next();
+		r.push(conv(e));
+	}
+	return r;
+};
+stdlib_LambdaIterator.filter = function(it,pred) {
+	var r = [];
+	while( it.hasNext() ) {
+		var e = it.next();
+		if(pred(e)) r.push(e);
+	}
+	return r;
+};
+stdlib_LambdaIterator.exists = function(it,pred) {
+	while( it.hasNext() ) {
+		var e = it.next();
+		if(pred(e)) return true;
+	}
+	return false;
+};
+stdlib_LambdaIterator.count = function(it,pred) {
+	var n = 0;
+	if(pred == null) {
+		while( it.hasNext() ) {
+			var _ = it.next();
+			n++;
+		}
+	} else {
+		while( it.hasNext() ) {
+			var x = it.next();
+			if(pred(x)) n++;
+		}
+	}
+	return n;
+};
+stdlib_LambdaIterator.findIndex = function(it,f) {
+	var n = 0;
+	while( it.hasNext() ) {
+		var x = it.next();
+		if(f(x)) return n;
+		n++;
+	}
+	return -1;
+};
+stdlib_LambdaIterator.sorted = function(it,cmp) {
+	var r = stdlib_LambdaIterator.array(it);
+	r.sort(cmp != null?cmp:Reflect.compare);
+	return r;
+};
+var stdlib_Std = function() { };
+stdlib_Std.__name__ = true;
+stdlib_Std.parseInt = function(x,defaultValue) {
+	if(x != null) {
+		if(new EReg("^\\s*[+-]?\\s*((?:0x[0-9a-fA-F]{1,7})|(?:\\d{1,9}))\\s*$","").match(x)) return Std.parseInt(x); else return defaultValue;
+	} else return defaultValue;
+};
+stdlib_Std.parseFloat = function(x,defaultValue) {
+	if(x == null) return defaultValue;
+	if(new EReg("^\\s*[+-]?\\s*\\d{1,20}(?:[.]\\d+)?(?:e[+-]?\\d{1,20})?\\s*$","").match(x)) {
+		var r = parseFloat(x);
+		if(!isNaN(r)) return r; else return defaultValue;
+	}
+	return defaultValue;
+};
+stdlib_Std.bool = function(v) {
+	return v != false && v != null && v != 0 && v != "" && v != "0" && (!(typeof(v) == "string") || (js_Boot.__cast(v , String)).toLowerCase() != "false" && (js_Boot.__cast(v , String)).toLowerCase() != "off" && (js_Boot.__cast(v , String)).toLowerCase() != "null");
+};
+stdlib_Std.parseValue = function(x) {
+	var value = x;
+	var valueLC;
+	if(value != null) valueLC = value.toLowerCase(); else valueLC = null;
+	var parsedValue;
+	if(valueLC == "true") value = true; else if(valueLC == "false") value = false; else if(valueLC == "null") value = null; else if((parsedValue = stdlib_Std.parseInt(value)) != null) value = parsedValue; else if((parsedValue = stdlib_Std.parseFloat(value)) != null) value = parsedValue;
+	return value;
+};
+stdlib_Std.hash = function(obj) {
+	var r = new haxe_ds_StringMap();
+	var _g = 0;
+	var _g1 = Reflect.fields(obj);
+	while(_g < _g1.length) {
+		var key = _g1[_g];
+		++_g;
+		var value = Reflect.field(obj,key);
+		r.set(key,value);
+	}
+	return r;
+};
+stdlib_Std.min = function(a,b) {
+	if(a < b) return a; else return b;
+};
+stdlib_Std.max = function(a,b) {
+	if(a > b) return a; else return b;
+};
+stdlib_Std.abs = function(x) {
+	if(x >= 0) return x; else return -x;
+};
+stdlib_Std.sign = function(n) {
+	if(n > 0) return 1; else if(n < 0) return -1; else return 0;
+};
+stdlib_Std["is"] = function(v,t) {
+	return js_Boot.__instanceof(v,t);
+};
+stdlib_Std.instance = function(value,c) {
+	return (value instanceof c)?value:null;
+};
+stdlib_Std.string = function(s) {
+	return Std.string(s);
+};
+stdlib_Std["int"] = function(x) {
+	return x | 0;
+};
+stdlib_Std.random = function(x) {
+	return Std.random(x);
+};
+var stdlib_StringTools = function() { };
+stdlib_StringTools.__name__ = true;
+stdlib_StringTools.ltrim = function(s,chars) {
+	if(chars == null) return StringTools.ltrim(s);
+	while(s.length > 0 && chars.indexOf(HxOverrides.substr(s,0,1)) >= 0) s = HxOverrides.substr(s,1,null);
+	return s;
+};
+stdlib_StringTools.rtrim = function(s,chars) {
+	if(chars == null) return StringTools.rtrim(s);
+	while(s.length > 0 && chars.indexOf(HxOverrides.substr(s,s.length - 1,1)) >= 0) s = HxOverrides.substr(s,0,s.length - 1);
+	return s;
+};
+stdlib_StringTools.trim = function(s,chars) {
+	if(chars == null) return StringTools.trim(s);
+	return stdlib_StringTools.rtrim(stdlib_StringTools.ltrim(s,chars),chars);
+};
+stdlib_StringTools.hexdec = function(s) {
+	return stdlib_Std.parseInt("0x" + s);
+};
+stdlib_StringTools.addcslashes = function(s) {
+	return new EReg("['\"\t\r\n\\\\]","g").map(s,function(re) {
+		return "\\" + re.matched(0);
+	});
+};
+stdlib_StringTools.stripTags = function(str,allowedTags) {
+	if(allowedTags == null) allowedTags = "";
+	var allowedTagsArray = [];
+	if(allowedTags != "") {
+		var re1 = new EReg("[a-zA-Z0-9]+","i");
+		var pos = 0;
+		while(re1.matchSub(allowedTags,pos)) {
+			allowedTagsArray.push(re1.matched(0));
+			pos = re1.matchedPos().pos + re1.matchedPos().len;
+		}
+	}
+	var matches = [];
+	var re = new EReg("</?[\\S][^>]*>","g");
+	str = re.map(str,function(_) {
+		var html = re.matched(0);
+		var allowed = false;
+		if(allowedTagsArray.length > 0) {
+			var htmlLC = html.toLowerCase();
+			var _g = 0;
+			while(_g < allowedTagsArray.length) {
+				var allowedTag = allowedTagsArray[_g];
+				++_g;
+				if(StringTools.startsWith(htmlLC,"<" + allowedTag + ">") || StringTools.startsWith(htmlLC,"<" + allowedTag + " ") || StringTools.startsWith(htmlLC,"</" + allowedTag)) {
+					allowed = true;
+					break;
+				}
+			}
+		}
+		if(allowed) return html; else return "";
+	});
+	return str;
+};
+stdlib_StringTools.regexEscape = function(s) {
+	return new EReg("([\\-\\[\\]/\\{\\}\\(\\)\\*\\+\\?\\.\\\\\\^\\$\\|])","g").replace(s,"\\$1");
+};
+stdlib_StringTools.jsonEscape = function(s) {
+	if(s == null) return "null";
+	var r = new stdlib_Utf8(s.length + (s.length / 5 | 0));
+	r.__b += "\"";
+	haxe_Utf8.iter(s,function(c) {
+		switch(c) {
+		case 92:
+			r.__b += "\\";
+			r.__b += "\\";
+			break;
+		case 34:
+			r.__b += "\\";
+			r.__b += "\"";
+			break;
+		case 9:
+			r.__b += "\\";
+			r.__b += "t";
+			break;
+		case 10:
+			r.__b += "\\";
+			r.__b += "n";
+			break;
+		case 13:
+			r.__b += "\\";
+			r.__b += "r";
+			break;
+		default:
+			if(c < 32) {
+				r.__b += "\\";
+				r.__b += "u";
+				var t = StringTools.hex(c,4);
+				r.addChar(t.charCodeAt(0));
+				r.addChar(t.charCodeAt(1));
+				r.addChar(t.charCodeAt(2));
+				r.addChar(t.charCodeAt(3));
+			} else r.__b += String.fromCharCode(c);
+		}
+	});
+	r.__b += "\"";
+	return r.__b;
+};
+stdlib_StringTools.isEmpty = function(s) {
+	return s == null || s == "";
+};
+stdlib_StringTools.capitalize = function(s) {
+	if(stdlib_StringTools.isEmpty(s)) return s; else return HxOverrides.substr(s,0,1).toUpperCase() + HxOverrides.substr(s,1,null);
+};
+stdlib_StringTools.urlEncode = function(s) {
+	return encodeURIComponent(s);
+};
+stdlib_StringTools.urlDecode = function(s) {
+	return decodeURIComponent(s.split("+").join(" "));
+};
+stdlib_StringTools.htmlEscape = function(s,quotes) {
+	return StringTools.htmlEscape(s,quotes);
+};
+stdlib_StringTools.htmlUnescape = function(s) {
+	return StringTools.htmlUnescape(s);
+};
+stdlib_StringTools.startsWith = function(s,start) {
+	return StringTools.startsWith(s,start);
+};
+stdlib_StringTools.endsWith = function(s,end) {
+	return StringTools.endsWith(s,end);
+};
+stdlib_StringTools.isSpace = function(s,pos) {
+	return StringTools.isSpace(s,pos);
+};
+stdlib_StringTools.lpad = function(s,c,l) {
+	return StringTools.lpad(s,c,l);
+};
+stdlib_StringTools.rpad = function(s,c,l) {
+	return StringTools.rpad(s,c,l);
+};
+stdlib_StringTools.replace = function(s,sub,by) {
+	return StringTools.replace(s,sub,by);
+};
+stdlib_StringTools.hex = function(n,digits) {
+	return StringTools.hex(n,digits);
+};
+stdlib_StringTools.fastCodeAt = function(s,index) {
+	return s.charCodeAt(index);
+};
+stdlib_StringTools.isEof = function(c) {
+	return c != c;
+};
+var stdlib_Utf8 = function(size) {
+	haxe_Utf8.call(this,size);
+};
+stdlib_Utf8.__name__ = true;
+stdlib_Utf8.replace = function(s,from,to) {
+	var codes = [];
+	haxe_Utf8.iter(s,function(c) {
+		codes.push(c);
+	});
+	var r = new stdlib_Utf8();
+	var len = from.length;
+	if(codes.length < len) return s;
+	var _g1 = 0;
+	var _g = codes.length - len + 1;
+	while(_g1 < _g) {
+		var i = [_g1++];
+		var found = [true];
+		var j = [0];
+		haxe_Utf8.iter(from,(function(j,found,i) {
+			return function(cc) {
+				if(found[0]) {
+					if(codes[i[0] + j[0]] != cc) found[0] = false;
+					j[0]++;
+				}
+			};
+		})(j,found,i));
+		if(found[0]) r.addString(to); else r.__b += String.fromCharCode(codes[i[0]]);
+	}
+	var _g11 = codes.length - len + 1;
+	var _g2 = codes.length;
+	while(_g11 < _g2) {
+		var i1 = _g11++;
+		r.__b += String.fromCharCode(codes[i1]);
+	}
+	return r.__b;
+};
+stdlib_Utf8.compactSpaces = function(s) {
+	var r = new stdlib_Utf8();
+	var prevSpace = false;
+	haxe_Utf8.iter(s,function(c) {
+		if(c == 32 || c == 13 || c == 10 || c == 9) {
+			if(!prevSpace) {
+				r.__b += " ";
+				prevSpace = true;
+			}
+		} else {
+			r.__b += String.fromCharCode(c);
+			prevSpace = false;
+		}
+	});
+	return r.__b;
+};
+stdlib_Utf8.htmlUnescape = function(s) {
+	var r = new stdlib_Utf8();
+	var $escape = null;
+	haxe_Utf8.iter(s,function(c) {
+		if($escape != null) {
+			if(c == 59) {
+				var chr = stdlib_Utf8.htmlUnescapeChar($escape);
+				if(chr != null) r.__b += String.fromCharCode(chr);
+				$escape = null;
+			} else $escape += String.fromCharCode(c);
+		} else if(c == 38) $escape = ""; else r.__b += String.fromCharCode(c);
+	});
+	return r.__b;
+};
+stdlib_Utf8.htmlEscape = function(utf8Str,chars) {
+	if(chars == null) chars = "";
+	chars = "&<>" + chars;
+	var r = new stdlib_Utf8();
+	haxe_Utf8.iter(utf8Str,function(c) {
+		var s;
+		var this1 = stdlib_Utf8.get_htmlEscapeMap();
+		s = this1.get(c);
+		if(s != null && c >= 0 && c <= 255 && chars.indexOf(String.fromCharCode(c)) >= 0) r.addString(s); else r.__b += String.fromCharCode(c);
+	});
+	return r.__b;
+};
+stdlib_Utf8.htmlUnescapeChar = function(escape) {
+	if(StringTools.startsWith(escape,"#x")) return stdlib_Std.parseInt("0x" + HxOverrides.substr(escape,2,null)); else if(StringTools.startsWith(escape,"#")) return stdlib_Std.parseInt(HxOverrides.substr(escape,1,null)); else {
+		var r;
+		var this1 = stdlib_Utf8.get_htmlUnescapeMap();
+		r = this1.get(escape);
+		if(r != null) return r;
+	}
+	console.log("Unknow escape sequence: " + escape);
+	return null;
+};
+stdlib_Utf8.get_htmlEscapeMap = function() {
+	if(stdlib_Utf8.htmlEscapeMap == null) {
+		var _g = new haxe_ds_IntMap();
+		_g.h[32] = "&nbsp;";
+		_g.h[38] = "&amp;";
+		_g.h[60] = "&lt;";
+		_g.h[62] = "&gt;";
+		_g.h[34] = "&quot;";
+		_g.h[39] = "&apos;";
+		_g.h[13] = "&#xD;";
+		_g.h[10] = "&#xA;";
+		stdlib_Utf8.htmlEscapeMap = _g;
+	}
+	return stdlib_Utf8.htmlEscapeMap;
+};
+stdlib_Utf8.get_htmlUnescapeMap = function() {
+	if(stdlib_Utf8.htmlUnescapeMap == null) {
+		var _g = new haxe_ds_StringMap();
+		if(__map_reserved.nbsp != null) _g.setReserved("nbsp",32); else _g.h["nbsp"] = 32;
+		if(__map_reserved.amp != null) _g.setReserved("amp",38); else _g.h["amp"] = 38;
+		if(__map_reserved.lt != null) _g.setReserved("lt",60); else _g.h["lt"] = 60;
+		if(__map_reserved.gt != null) _g.setReserved("gt",62); else _g.h["gt"] = 62;
+		if(__map_reserved.quot != null) _g.setReserved("quot",34); else _g.h["quot"] = 34;
+		if(__map_reserved.apos != null) _g.setReserved("apos",39); else _g.h["apos"] = 39;
+		if(__map_reserved.euro != null) _g.setReserved("euro",8364); else _g.h["euro"] = 8364;
+		if(__map_reserved.iexcl != null) _g.setReserved("iexcl",161); else _g.h["iexcl"] = 161;
+		if(__map_reserved.cent != null) _g.setReserved("cent",162); else _g.h["cent"] = 162;
+		if(__map_reserved.pound != null) _g.setReserved("pound",163); else _g.h["pound"] = 163;
+		if(__map_reserved.curren != null) _g.setReserved("curren",164); else _g.h["curren"] = 164;
+		if(__map_reserved.yen != null) _g.setReserved("yen",165); else _g.h["yen"] = 165;
+		if(__map_reserved.brvbar != null) _g.setReserved("brvbar",166); else _g.h["brvbar"] = 166;
+		if(__map_reserved.sect != null) _g.setReserved("sect",167); else _g.h["sect"] = 167;
+		if(__map_reserved.uml != null) _g.setReserved("uml",168); else _g.h["uml"] = 168;
+		if(__map_reserved.copy != null) _g.setReserved("copy",169); else _g.h["copy"] = 169;
+		if(__map_reserved.ordf != null) _g.setReserved("ordf",170); else _g.h["ordf"] = 170;
+		if(__map_reserved.not != null) _g.setReserved("not",172); else _g.h["not"] = 172;
+		if(__map_reserved.shy != null) _g.setReserved("shy",173); else _g.h["shy"] = 173;
+		if(__map_reserved.reg != null) _g.setReserved("reg",174); else _g.h["reg"] = 174;
+		if(__map_reserved.macr != null) _g.setReserved("macr",175); else _g.h["macr"] = 175;
+		if(__map_reserved.deg != null) _g.setReserved("deg",176); else _g.h["deg"] = 176;
+		if(__map_reserved.plusmn != null) _g.setReserved("plusmn",177); else _g.h["plusmn"] = 177;
+		if(__map_reserved.sup2 != null) _g.setReserved("sup2",178); else _g.h["sup2"] = 178;
+		if(__map_reserved.sup3 != null) _g.setReserved("sup3",179); else _g.h["sup3"] = 179;
+		if(__map_reserved.acute != null) _g.setReserved("acute",180); else _g.h["acute"] = 180;
+		if(__map_reserved.micro != null) _g.setReserved("micro",181); else _g.h["micro"] = 181;
+		if(__map_reserved.para != null) _g.setReserved("para",182); else _g.h["para"] = 182;
+		if(__map_reserved.middot != null) _g.setReserved("middot",183); else _g.h["middot"] = 183;
+		if(__map_reserved.cedil != null) _g.setReserved("cedil",184); else _g.h["cedil"] = 184;
+		if(__map_reserved.sup1 != null) _g.setReserved("sup1",185); else _g.h["sup1"] = 185;
+		if(__map_reserved.ordm != null) _g.setReserved("ordm",186); else _g.h["ordm"] = 186;
+		if(__map_reserved.raquo != null) _g.setReserved("raquo",187); else _g.h["raquo"] = 187;
+		if(__map_reserved.frac14 != null) _g.setReserved("frac14",188); else _g.h["frac14"] = 188;
+		if(__map_reserved.frac12 != null) _g.setReserved("frac12",189); else _g.h["frac12"] = 189;
+		if(__map_reserved.frac34 != null) _g.setReserved("frac34",190); else _g.h["frac34"] = 190;
+		if(__map_reserved.iquest != null) _g.setReserved("iquest",191); else _g.h["iquest"] = 191;
+		if(__map_reserved.Agrave != null) _g.setReserved("Agrave",192); else _g.h["Agrave"] = 192;
+		if(__map_reserved.Aacute != null) _g.setReserved("Aacute",193); else _g.h["Aacute"] = 193;
+		if(__map_reserved.Acirc != null) _g.setReserved("Acirc",194); else _g.h["Acirc"] = 194;
+		if(__map_reserved.Atilde != null) _g.setReserved("Atilde",195); else _g.h["Atilde"] = 195;
+		if(__map_reserved.Auml != null) _g.setReserved("Auml",196); else _g.h["Auml"] = 196;
+		if(__map_reserved.Aring != null) _g.setReserved("Aring",197); else _g.h["Aring"] = 197;
+		if(__map_reserved.AElig != null) _g.setReserved("AElig",198); else _g.h["AElig"] = 198;
+		if(__map_reserved.Ccedil != null) _g.setReserved("Ccedil",199); else _g.h["Ccedil"] = 199;
+		if(__map_reserved.Egrave != null) _g.setReserved("Egrave",200); else _g.h["Egrave"] = 200;
+		if(__map_reserved.Eacute != null) _g.setReserved("Eacute",201); else _g.h["Eacute"] = 201;
+		if(__map_reserved.Ecirc != null) _g.setReserved("Ecirc",202); else _g.h["Ecirc"] = 202;
+		if(__map_reserved.Euml != null) _g.setReserved("Euml",203); else _g.h["Euml"] = 203;
+		if(__map_reserved.Igrave != null) _g.setReserved("Igrave",204); else _g.h["Igrave"] = 204;
+		if(__map_reserved.Iacute != null) _g.setReserved("Iacute",205); else _g.h["Iacute"] = 205;
+		if(__map_reserved.Icirc != null) _g.setReserved("Icirc",206); else _g.h["Icirc"] = 206;
+		if(__map_reserved.Iuml != null) _g.setReserved("Iuml",207); else _g.h["Iuml"] = 207;
+		if(__map_reserved.ETH != null) _g.setReserved("ETH",208); else _g.h["ETH"] = 208;
+		if(__map_reserved.Ntilde != null) _g.setReserved("Ntilde",209); else _g.h["Ntilde"] = 209;
+		if(__map_reserved.Ograve != null) _g.setReserved("Ograve",210); else _g.h["Ograve"] = 210;
+		if(__map_reserved.Oacute != null) _g.setReserved("Oacute",211); else _g.h["Oacute"] = 211;
+		if(__map_reserved.Ocirc != null) _g.setReserved("Ocirc",212); else _g.h["Ocirc"] = 212;
+		if(__map_reserved.Otilde != null) _g.setReserved("Otilde",213); else _g.h["Otilde"] = 213;
+		if(__map_reserved.Ouml != null) _g.setReserved("Ouml",214); else _g.h["Ouml"] = 214;
+		if(__map_reserved.times != null) _g.setReserved("times",215); else _g.h["times"] = 215;
+		if(__map_reserved.Oslash != null) _g.setReserved("Oslash",216); else _g.h["Oslash"] = 216;
+		if(__map_reserved.Ugrave != null) _g.setReserved("Ugrave",217); else _g.h["Ugrave"] = 217;
+		if(__map_reserved.Uacute != null) _g.setReserved("Uacute",218); else _g.h["Uacute"] = 218;
+		if(__map_reserved.Ucirc != null) _g.setReserved("Ucirc",219); else _g.h["Ucirc"] = 219;
+		if(__map_reserved.Uuml != null) _g.setReserved("Uuml",220); else _g.h["Uuml"] = 220;
+		if(__map_reserved.Yacute != null) _g.setReserved("Yacute",221); else _g.h["Yacute"] = 221;
+		if(__map_reserved.THORN != null) _g.setReserved("THORN",222); else _g.h["THORN"] = 222;
+		if(__map_reserved.szlig != null) _g.setReserved("szlig",223); else _g.h["szlig"] = 223;
+		if(__map_reserved.agrave != null) _g.setReserved("agrave",224); else _g.h["agrave"] = 224;
+		if(__map_reserved.aacute != null) _g.setReserved("aacute",225); else _g.h["aacute"] = 225;
+		if(__map_reserved.acirc != null) _g.setReserved("acirc",226); else _g.h["acirc"] = 226;
+		if(__map_reserved.atilde != null) _g.setReserved("atilde",227); else _g.h["atilde"] = 227;
+		if(__map_reserved.auml != null) _g.setReserved("auml",228); else _g.h["auml"] = 228;
+		if(__map_reserved.aring != null) _g.setReserved("aring",229); else _g.h["aring"] = 229;
+		if(__map_reserved.aelig != null) _g.setReserved("aelig",230); else _g.h["aelig"] = 230;
+		if(__map_reserved.ccedil != null) _g.setReserved("ccedil",231); else _g.h["ccedil"] = 231;
+		if(__map_reserved.egrave != null) _g.setReserved("egrave",232); else _g.h["egrave"] = 232;
+		if(__map_reserved.eacute != null) _g.setReserved("eacute",233); else _g.h["eacute"] = 233;
+		if(__map_reserved.ecirc != null) _g.setReserved("ecirc",234); else _g.h["ecirc"] = 234;
+		if(__map_reserved.euml != null) _g.setReserved("euml",235); else _g.h["euml"] = 235;
+		if(__map_reserved.igrave != null) _g.setReserved("igrave",236); else _g.h["igrave"] = 236;
+		if(__map_reserved.iacute != null) _g.setReserved("iacute",237); else _g.h["iacute"] = 237;
+		if(__map_reserved.icirc != null) _g.setReserved("icirc",238); else _g.h["icirc"] = 238;
+		if(__map_reserved.iuml != null) _g.setReserved("iuml",239); else _g.h["iuml"] = 239;
+		if(__map_reserved.eth != null) _g.setReserved("eth",240); else _g.h["eth"] = 240;
+		if(__map_reserved.ntilde != null) _g.setReserved("ntilde",241); else _g.h["ntilde"] = 241;
+		if(__map_reserved.ograve != null) _g.setReserved("ograve",242); else _g.h["ograve"] = 242;
+		if(__map_reserved.oacute != null) _g.setReserved("oacute",243); else _g.h["oacute"] = 243;
+		if(__map_reserved.ocirc != null) _g.setReserved("ocirc",244); else _g.h["ocirc"] = 244;
+		if(__map_reserved.otilde != null) _g.setReserved("otilde",245); else _g.h["otilde"] = 245;
+		if(__map_reserved.ouml != null) _g.setReserved("ouml",246); else _g.h["ouml"] = 246;
+		if(__map_reserved.divide != null) _g.setReserved("divide",247); else _g.h["divide"] = 247;
+		if(__map_reserved.oslash != null) _g.setReserved("oslash",248); else _g.h["oslash"] = 248;
+		if(__map_reserved.ugrave != null) _g.setReserved("ugrave",249); else _g.h["ugrave"] = 249;
+		if(__map_reserved.uacute != null) _g.setReserved("uacute",250); else _g.h["uacute"] = 250;
+		if(__map_reserved.ucirc != null) _g.setReserved("ucirc",251); else _g.h["ucirc"] = 251;
+		if(__map_reserved.uuml != null) _g.setReserved("uuml",252); else _g.h["uuml"] = 252;
+		if(__map_reserved.yacute != null) _g.setReserved("yacute",253); else _g.h["yacute"] = 253;
+		if(__map_reserved.thorn != null) _g.setReserved("thorn",254); else _g.h["thorn"] = 254;
+		stdlib_Utf8.htmlUnescapeMap = _g;
+	}
+	return stdlib_Utf8.htmlUnescapeMap;
+};
+stdlib_Utf8.iter = function(s,chars) {
+	haxe_Utf8.iter(s,chars);
+	return;
+};
+stdlib_Utf8.encode = function(s) {
+	return haxe_Utf8.encode(s);
+};
+stdlib_Utf8.decode = function(s) {
+	return haxe_Utf8.decode(s);
+};
+stdlib_Utf8.charCodeAt = function(s,index) {
+	return HxOverrides.cca(s,index);
+};
+stdlib_Utf8.validate = function(s) {
+	return true;
+};
+stdlib_Utf8.$length = function(s) {
+	return s.length;
+};
+stdlib_Utf8.compare = function(a,b) {
+	return haxe_Utf8.compare(a,b);
+};
+stdlib_Utf8.sub = function(s,pos,len) {
+	return HxOverrides.substr(s,pos,len);
+};
+stdlib_Utf8.__super__ = haxe_Utf8;
+stdlib_Utf8.prototype = $extend(haxe_Utf8.prototype,{
+	addString: function(s) {
+		var _g = this;
+		haxe_Utf8.iter(s,function(c) {
+			_g.__b += String.fromCharCode(c);
+		});
+	}
+	,__class__: stdlib_Utf8
 });
 function $iterator(o) { if( o instanceof Array ) return function() { return HxOverrides.iter(o); }; return typeof(o.iterator) == 'function' ? $bind(o,o.iterator) : o.iterator; }
 var $_, $fid = 0;
