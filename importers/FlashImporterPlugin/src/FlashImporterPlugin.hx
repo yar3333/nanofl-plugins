@@ -3,7 +3,7 @@ import flashimport.Macro;
 import haxe.io.Path;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.Library;
-import nanofl.engine.Plugins;
+import nanofl.ide.plugins.ImporterPlugins;
 import nanofl.ide.DocumentProperties;
 import nanofl.ide.NanoApi;
 import nanofl.ide.plugins.IImporterPlugin;
@@ -13,7 +13,7 @@ class FlashImporterPlugin implements IImporterPlugin
 {
 	static var IMPORT_MEDIA_SCRIPT_TEMPLATE = Macro.embedFile("../bin/FlashMediaImporter.jsfl");
 	
-	static function main() Plugins.registerImporter(new FlashImporterPlugin());
+	static function main() ImporterPlugins.register(new FlashImporterPlugin());
 	
 	public function new() { }
 	

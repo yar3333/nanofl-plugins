@@ -13,7 +13,7 @@ var CreateJSGeneratorPlugin = function() {
 CreateJSGeneratorPlugin.__name__ = true;
 CreateJSGeneratorPlugin.__interfaces__ = [nanofl.ide.plugins.IGeneratorPlugin];
 CreateJSGeneratorPlugin.main = function() {
-	nanofl.engine.Plugins.registerGenerator(new CreateJSGeneratorPlugin());
+	nanofl.ide.plugins.GeneratorPlugins.register(new CreateJSGeneratorPlugin());
 };
 CreateJSGeneratorPlugin.prototype = {
 	generate: function(api,params,filePath,documentProperties,library,textureAtlases) {

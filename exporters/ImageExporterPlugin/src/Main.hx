@@ -1,10 +1,10 @@
-import nanofl.engine.Plugins;
+import nanofl.ide.plugins.ExporterPlugins;
 
 class Main
 {
 	static function main() 
 	{
-		Plugins.registerExporter(new PngImageExporterPlugin());
-		Plugins.registerExporter(new JpegImageExporterPlugin());
+		ExporterPlugins.register(new PngImageExporterPlugin());
+		ExporterPlugins.register(new JpegImageExporterPlugin());
 	}
 }

@@ -1,13 +1,13 @@
-import nanofl.engine.Plugins;
+import nanofl.engine.plugins.FilterPlugins;
 
 class StdFiltersPlugin
 {
 	static function main()
 	{
-		Plugins.registerFilter(new DropShadowFilterPlugin());
-		Plugins.registerFilter(new BoxBlurFilterPlugin());
-		Plugins.registerFilter(new GlowFilterPlugin());
-		Plugins.registerFilter(new AdjustColorFilterPlugin());
-		Plugins.registerFilter(new GaussianBlurFilterPlugin());
+		FilterPlugins.register(new DropShadowFilterPlugin());
+		FilterPlugins.register(new BoxBlurFilterPlugin());
+		FilterPlugins.register(new GlowFilterPlugin());
+		FilterPlugins.register(new AdjustColorFilterPlugin());
+		FilterPlugins.register(new GaussianBlurFilterPlugin());
 	}
 }

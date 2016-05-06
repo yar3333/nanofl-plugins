@@ -16,7 +16,7 @@ var BlenderLoaderPlugin = function() {
 BlenderLoaderPlugin.__name__ = true;
 BlenderLoaderPlugin.__interfaces__ = [nanofl.ide.plugins.ILoaderPlugin];
 BlenderLoaderPlugin.main = function() {
-	nanofl.engine.Plugins.registerLoader(new BlenderLoaderPlugin());
+	nanofl.ide.plugins.LoaderPlugins.register(new BlenderLoaderPlugin());
 };
 BlenderLoaderPlugin.prototype = {
 	load: function(api,params,baseDir,files) {

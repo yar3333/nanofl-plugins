@@ -66,7 +66,7 @@ var SvgExporterPlugin = function() {
 SvgExporterPlugin.__name__ = true;
 SvgExporterPlugin.__interfaces__ = [nanofl.ide.plugins.IExporterPlugin];
 SvgExporterPlugin.main = function() {
-	nanofl.engine.Plugins.registerExporter(new SvgExporterPlugin());
+	nanofl.ide.plugins.ExporterPlugins.register(new SvgExporterPlugin());
 };
 SvgExporterPlugin.prototype = {
 	exportDocument: function(api,params,srcFilePath,destFilePath,documentProperties,library) {
@@ -104,9 +104,6 @@ haxe_ds_ObjectMap.prototype = {
 	}
 	,__class__: haxe_ds_ObjectMap
 };
-var haxe_ds_StringMap = function() { };
-haxe_ds_StringMap.__name__ = true;
-haxe_ds_StringMap.__interfaces__ = [haxe_IMap];
 var haxe_io_Bytes = function() { };
 haxe_io_Bytes.__name__ = true;
 var haxe_io_Error = { __ename__ : true, __constructs__ : ["Blocked","Overflow","OutsideBounds","Custom"] };
@@ -1127,7 +1124,6 @@ if(Array.prototype.filter == null) Array.prototype.filter = function(f1) {
 	}
 	return a1;
 };
-var __map_reserved = {}
 var ArrayBuffer = (Function("return typeof ArrayBuffer != 'undefined' ? ArrayBuffer : null"))() || js_html_compat_ArrayBuffer;
 if(ArrayBuffer.prototype.slice == null) ArrayBuffer.prototype.slice = js_html_compat_ArrayBuffer.sliceImpl;
 var DataView = (Function("return typeof DataView != 'undefined' ? DataView : null"))() || js_html_compat_DataView;

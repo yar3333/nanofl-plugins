@@ -1,16 +1,16 @@
 import haxe.io.Path;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.Library;
-import nanofl.engine.Plugins;
 import nanofl.ide.DocumentProperties;
 import nanofl.ide.NanoApi;
 import nanofl.ide.ServerUtilsTools;
 import nanofl.ide.plugins.IImporterPlugin;
+import nanofl.ide.plugins.ImporterPlugins;
 using StringTools;
 
 class ZippedNanoFLImporterPlugin implements IImporterPlugin
 {
-	static function main() Plugins.registerImporter(new ZippedNanoFLImporterPlugin());
+	static function main() ImporterPlugins.register(new ZippedNanoFLImporterPlugin());
 	
 	public function new() { }
 	

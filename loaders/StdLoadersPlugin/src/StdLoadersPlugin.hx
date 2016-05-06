@@ -1,14 +1,14 @@
-import nanofl.engine.Plugins;
+import nanofl.ide.plugins.LoaderPlugins;
 
 class StdLoadersPlugin
 {
 	static function main()
 	{
-		Plugins.registerLoader(new BitmapLoaderPlugin());
-		Plugins.registerLoader(new FontLoaderPlugin());
-		Plugins.registerLoader(new SoundLoaderPlugin());
-		Plugins.registerLoader(new MovieClipLoaderPlugin());
-		Plugins.registerLoader(new SpriteLoaderPlugin());
-		Plugins.registerLoader(new MeshLoaderPlugin());
+		LoaderPlugins.register(new BitmapLoaderPlugin());
+		LoaderPlugins.register(new FontLoaderPlugin());
+		LoaderPlugins.register(new SoundLoaderPlugin());
+		LoaderPlugins.register(new MovieClipLoaderPlugin());
+		LoaderPlugins.register(new SpriteLoaderPlugin());
+		LoaderPlugins.register(new MeshLoaderPlugin());
 	}
 }

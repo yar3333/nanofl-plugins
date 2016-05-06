@@ -9341,6 +9341,12 @@ declare module nanofl.engine.geom
 
 declare module nanofl.engine.plugins
 {
+	export class FilterPlugins
+	{
+		static plugins : Map<string, nanofl.engine.plugins.IFilterPlugin>;
+		static register(plugin:nanofl.engine.plugins.IFilterPlugin) : void;
+	}
+	
 	export interface IFilterPlugin
 	{
 		/**
@@ -9513,6 +9519,19 @@ declare module nanofl.ide.plugins
 	{
 		static getPreferenceKey(plugin:nanofl.ide.plugins.CustomizablePlugin) : string;
 		static getParams(plugin:nanofl.ide.plugins.CustomizablePlugin, preferences:nanofl.ide.Preferences) : any;
+	}
+	
+	export class ExporterPlugins
+	{
+		static plugins : Map<string, nanofl.ide.plugins.IExporterPlugin>;
+		static register(plugin:nanofl.ide.plugins.IExporterPlugin) : void;
+		static getByExtension(ext:string) : nanofl.ide.plugins.IExporterPlugin;
+	}
+	
+	export class GeneratorPlugins
+	{
+		static plugins : Map<string, nanofl.ide.plugins.IGeneratorPlugin>;
+		static register(plugin:nanofl.ide.plugins.IGeneratorPlugin) : void;
 	}
 	
 	export interface IExporterPlugin
@@ -9691,6 +9710,19 @@ declare module nanofl.ide.plugins
 		publish(api:nanofl.ide.NanoApi, params:any, filePath:string, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.engine.Library, files:{ relPath : string; baseDir : string; }[]) : void;
 	}
 	
+	export class ImporterPlugins
+	{
+		static plugins : Map<string, nanofl.ide.plugins.IImporterPlugin>;
+		static register(plugin:nanofl.ide.plugins.IImporterPlugin) : void;
+		static getByExtension(ext:string) : nanofl.ide.plugins.IImporterPlugin;
+	}
+	
+	export class LoaderPlugins
+	{
+		static plugins : Map<string, nanofl.ide.plugins.ILoaderPlugin>;
+		static register(plugin:nanofl.ide.plugins.ILoaderPlugin) : void;
+	}
+	
 	export class PublishSetting
 	{
 		constructor(publisher:string, enabled:boolean, optimizations:nanofl.ide.PublishOptimizations, params:any);
@@ -9700,6 +9732,12 @@ declare module nanofl.ide.plugins
 		params : any;
 		equ(ps:nanofl.ide.plugins.PublishSetting) : boolean;
 		clone() : nanofl.ide.plugins.PublishSetting;
+	}
+	
+	export class PublisherPlugins
+	{
+		static plugins : Map<string, nanofl.ide.plugins.IPublisherPlugin>;
+		static register(plugin:nanofl.ide.plugins.IPublisherPlugin) : void;
 	}
 }
 
@@ -10230,24 +10268,6 @@ declare module nanofl.engine
 		static iterateInstances(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, insideMask?:boolean, callb:(arg0:nanofl.engine.elements.Instance, arg1:{ layerIndex : number; keyFrameIndex : number; insideMask : boolean; }) => void) : void;
 		static iterateElements(item:nanofl.engine.libraryitems.MovieClipItem, allFrames:boolean, insideMask?:boolean, callb:(arg0:nanofl.engine.elements.Element, arg1:{ layerIndex : number; keyFrameIndex : number; insideMask : boolean; }) => void) : void;
 		static hasInstance(item:nanofl.engine.libraryitems.MovieClipItem, namePath:string, deep:boolean) : boolean;
-	}
-	
-	export class Plugins
-	{
-		static filters : Map<string, nanofl.engine.plugins.IFilterPlugin>;
-		static importers : Map<string, nanofl.ide.plugins.IImporterPlugin>;
-		static exporters : Map<string, nanofl.ide.plugins.IExporterPlugin>;
-		static generators : Map<string, nanofl.ide.plugins.IGeneratorPlugin>;
-		static loaders : Map<string, nanofl.ide.plugins.ILoaderPlugin>;
-		static publishers : Map<string, nanofl.ide.plugins.IPublisherPlugin>;
-		static registerFilter(plugin:nanofl.engine.plugins.IFilterPlugin) : void;
-		static registerImporter(plugin:nanofl.ide.plugins.IImporterPlugin) : void;
-		static registerExporter(plugin:nanofl.ide.plugins.IExporterPlugin) : void;
-		static registerGenerator(plugin:nanofl.ide.plugins.IGeneratorPlugin) : void;
-		static registerLoader(plugin:nanofl.ide.plugins.ILoaderPlugin) : void;
-		static registerPublisher(plugin:nanofl.ide.plugins.IPublisherPlugin) : void;
-		static getImporterByExtension(ext:string) : nanofl.ide.plugins.IImporterPlugin;
-		static getExporterByExtension(ext:string) : nanofl.ide.plugins.IExporterPlugin;
 	}
 	
 	type Render =

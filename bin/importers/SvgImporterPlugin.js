@@ -302,7 +302,7 @@ var SvgImporterPlugin = function() {
 SvgImporterPlugin.__name__ = ["SvgImporterPlugin"];
 SvgImporterPlugin.__interfaces__ = [nanofl.ide.plugins.IImporterPlugin];
 SvgImporterPlugin.main = function() {
-	nanofl.engine.Plugins.registerImporter(new SvgImporterPlugin());
+	nanofl.ide.plugins.ImporterPlugins.register(new SvgImporterPlugin());
 };
 SvgImporterPlugin.prototype = {
 	importDocument: function(api,params,srcFilePath,destFilePath,documentProperties,library,callb) {

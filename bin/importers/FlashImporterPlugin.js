@@ -82,7 +82,7 @@ var FlashImporterPlugin = function() {
 FlashImporterPlugin.__name__ = ["FlashImporterPlugin"];
 FlashImporterPlugin.__interfaces__ = [nanofl.ide.plugins.IImporterPlugin];
 FlashImporterPlugin.main = function() {
-	nanofl.engine.Plugins.registerImporter(new FlashImporterPlugin());
+	nanofl.ide.plugins.ImporterPlugins.register(new FlashImporterPlugin());
 };
 FlashImporterPlugin.prototype = {
 	importDocument: function(api,params,srcFilePath,destFilePath,documentProperties,library,callb) {

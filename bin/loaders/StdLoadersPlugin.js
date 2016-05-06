@@ -319,12 +319,12 @@ Std.string = function(s) {
 var StdLoadersPlugin = function() { };
 StdLoadersPlugin.__name__ = true;
 StdLoadersPlugin.main = function() {
-	nanofl.engine.Plugins.registerLoader(new BitmapLoaderPlugin());
-	nanofl.engine.Plugins.registerLoader(new FontLoaderPlugin());
-	nanofl.engine.Plugins.registerLoader(new SoundLoaderPlugin());
-	nanofl.engine.Plugins.registerLoader(new MovieClipLoaderPlugin());
-	nanofl.engine.Plugins.registerLoader(new SpriteLoaderPlugin());
-	nanofl.engine.Plugins.registerLoader(new MeshLoaderPlugin());
+	nanofl.ide.plugins.LoaderPlugins.register(new BitmapLoaderPlugin());
+	nanofl.ide.plugins.LoaderPlugins.register(new FontLoaderPlugin());
+	nanofl.ide.plugins.LoaderPlugins.register(new SoundLoaderPlugin());
+	nanofl.ide.plugins.LoaderPlugins.register(new MovieClipLoaderPlugin());
+	nanofl.ide.plugins.LoaderPlugins.register(new SpriteLoaderPlugin());
+	nanofl.ide.plugins.LoaderPlugins.register(new MeshLoaderPlugin());
 };
 var StringBuf = function() {
 	this.b = "";

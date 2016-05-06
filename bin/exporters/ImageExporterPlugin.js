@@ -60,8 +60,8 @@ JpegImageExporterPlugin.prototype = {
 var Main = function() { };
 Main.__name__ = true;
 Main.main = function() {
-	nanofl.engine.Plugins.registerExporter(new PngImageExporterPlugin());
-	nanofl.engine.Plugins.registerExporter(new JpegImageExporterPlugin());
+	nanofl.ide.plugins.ExporterPlugins.register(new PngImageExporterPlugin());
+	nanofl.ide.plugins.ExporterPlugins.register(new JpegImageExporterPlugin());
 };
 Math.__name__ = true;
 var PngImageExporterPlugin = function() {
@@ -92,8 +92,6 @@ StringTools.__name__ = true;
 StringTools.fastCodeAt = function(s,index) {
 	return s.charCodeAt(index);
 };
-var haxe_IMap = function() { };
-haxe_IMap.__name__ = true;
 var haxe__$Int64__$_$_$Int64 = function(high,low) {
 	this.high = high;
 	this.low = low;
@@ -202,9 +200,6 @@ haxe_crypto_BaseCode.prototype = {
 	}
 	,__class__: haxe_crypto_BaseCode
 };
-var haxe_ds_StringMap = function() { };
-haxe_ds_StringMap.__name__ = true;
-haxe_ds_StringMap.__interfaces__ = [haxe_IMap];
 var haxe_io_Error = { __ename__ : true, __constructs__ : ["Blocked","Overflow","OutsideBounds","Custom"] };
 haxe_io_Error.Blocked = ["Blocked",0];
 haxe_io_Error.Blocked.toString = $estr;
@@ -600,7 +595,6 @@ var Bool = Boolean;
 Bool.__ename__ = ["Bool"];
 var Class = { __name__ : ["Class"]};
 var Enum = { };
-var __map_reserved = {}
 var ArrayBuffer = (Function("return typeof ArrayBuffer != 'undefined' ? ArrayBuffer : null"))() || js_html_compat_ArrayBuffer;
 if(ArrayBuffer.prototype.slice == null) ArrayBuffer.prototype.slice = js_html_compat_ArrayBuffer.sliceImpl;
 var DataView = (Function("return typeof DataView != 'undefined' ? DataView : null"))() || js_html_compat_DataView;

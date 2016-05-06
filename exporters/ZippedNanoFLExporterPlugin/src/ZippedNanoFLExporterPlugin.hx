@@ -1,14 +1,14 @@
 import haxe.io.Path;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.Library;
-import nanofl.engine.Plugins;
+import nanofl.ide.plugins.ExporterPlugins;
 import nanofl.ide.DocumentProperties;
 import nanofl.ide.NanoApi;
 import nanofl.ide.plugins.IExporterPlugin;
 
 class ZippedNanoFLExporterPlugin implements IExporterPlugin
 {
-	static function main() Plugins.registerExporter(new ZippedNanoFLExporterPlugin());
+	static function main() ExporterPlugins.register(new ZippedNanoFLExporterPlugin());
 	
 	public function new() {}
 	

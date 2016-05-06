@@ -3,7 +3,7 @@ import ides.*;
 import languages.*;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.Library;
-import nanofl.engine.Plugins;
+import nanofl.ide.plugins.GeneratorPlugins;
 import nanofl.engine.libraryitems.InstancableItem;
 import nanofl.ide.DocumentProperties;
 import nanofl.ide.NanoApi;
@@ -14,7 +14,7 @@ using stdlib.Lambda;
 
 class CreateJSGeneratorPlugin implements IGeneratorPlugin
 {
-	static function main() Plugins.registerGenerator(new CreateJSGeneratorPlugin());
+	static function main() GeneratorPlugins.register(new CreateJSGeneratorPlugin());
 	
 	public function new() { }
 	

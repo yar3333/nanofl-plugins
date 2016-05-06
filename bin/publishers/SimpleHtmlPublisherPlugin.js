@@ -43,7 +43,7 @@ var SimpleHtmlPublisherPlugin = function() {
 SimpleHtmlPublisherPlugin.__name__ = true;
 SimpleHtmlPublisherPlugin.__interfaces__ = [nanofl.ide.plugins.IPublisherPlugin];
 SimpleHtmlPublisherPlugin.main = function() {
-	nanofl.engine.Plugins.registerPublisher(new SimpleHtmlPublisherPlugin());
+	nanofl.ide.plugins.PublisherPlugins.register(new SimpleHtmlPublisherPlugin());
 };
 SimpleHtmlPublisherPlugin.log = function(s,infos) {
 	haxe_Log.trace(s,infos);
@@ -98,8 +98,6 @@ StringBuf.prototype = {
 	}
 	,__class__: StringBuf
 };
-var haxe_IMap = function() { };
-haxe_IMap.__name__ = true;
 var haxe__$Int64__$_$_$Int64 = function(high,low) {
 	this.high = high;
 	this.low = low;
@@ -113,9 +111,6 @@ haxe_Log.__name__ = true;
 haxe_Log.trace = function(v,infos) {
 	js_Boot.__trace(v,infos);
 };
-var haxe_ds_StringMap = function() { };
-haxe_ds_StringMap.__name__ = true;
-haxe_ds_StringMap.__interfaces__ = [haxe_IMap];
 var haxe_io_Bytes = function() { };
 haxe_io_Bytes.__name__ = true;
 var haxe_io_Error = { __ename__ : true, __constructs__ : ["Blocked","Overflow","OutsideBounds","Custom"] };
@@ -659,7 +654,6 @@ if(Array.prototype.filter == null) Array.prototype.filter = function(f1) {
 	}
 	return a1;
 };
-var __map_reserved = {}
 var ArrayBuffer = (Function("return typeof ArrayBuffer != 'undefined' ? ArrayBuffer : null"))() || js_html_compat_ArrayBuffer;
 if(ArrayBuffer.prototype.slice == null) ArrayBuffer.prototype.slice = js_html_compat_ArrayBuffer.sliceImpl;
 var DataView = (Function("return typeof DataView != 'undefined' ? DataView : null"))() || js_html_compat_DataView;

@@ -4,7 +4,7 @@ import nanofl.engine.Debug.console;
 import nanofl.engine.FileSystem;
 import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.engine.libraryitems.MeshItem;
-import nanofl.engine.Plugins;
+import nanofl.ide.plugins.LoaderPlugins;
 import nanofl.ide.CachedFile;
 import nanofl.ide.NanoApi;
 import nanofl.ide.plugins.ILoaderPlugin;
@@ -15,7 +15,7 @@ class BlenderLoaderPlugin implements ILoaderPlugin
 {
 	static function main()
 	{
-		Plugins.registerLoader(new BlenderLoaderPlugin());
+		LoaderPlugins.register(new BlenderLoaderPlugin());
 	}
 	
 	public var name = "BlenderLoader";

@@ -1,14 +1,14 @@
 import htmlparser.XmlBuilder;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.Library;
-import nanofl.engine.Plugins;
+import nanofl.ide.plugins.ExporterPlugins;
 import nanofl.ide.DocumentProperties;
 import nanofl.ide.NanoApi;
 import nanofl.ide.plugins.IExporterPlugin;
 
 class FlashExporterPlugin implements IExporterPlugin
 {
-	static function main() Plugins.registerExporter(new FlashExporterPlugin());
+	static function main() ExporterPlugins.register(new FlashExporterPlugin());
 	
 	public function new() { }
 	

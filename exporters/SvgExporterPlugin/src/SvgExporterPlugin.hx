@@ -2,7 +2,7 @@ import htmlparser.XmlBuilder;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.Debug.console;
 import nanofl.engine.Library;
-import nanofl.engine.Plugins;
+import nanofl.ide.plugins.ExporterPlugins;
 import nanofl.ide.DocumentProperties;
 import nanofl.ide.NanoApi;
 import nanofl.ide.plugins.IExporterPlugin;
@@ -10,7 +10,7 @@ import svgexporter.SvgExporter;
 
 class SvgExporterPlugin implements IExporterPlugin
 {
-	static function main() Plugins.registerExporter(new SvgExporterPlugin());
+	static function main() ExporterPlugins.register(new SvgExporterPlugin());
 	
 	public function new() { }
 	

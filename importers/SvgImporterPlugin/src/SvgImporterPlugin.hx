@@ -1,11 +1,11 @@
 import htmlparser.XmlDocument;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.Library;
-import nanofl.engine.Plugins;
 import nanofl.ide.DocumentProperties;
 import nanofl.ide.LibraryTools;
 import nanofl.ide.NanoApi;
 import nanofl.ide.plugins.IImporterPlugin;
+import nanofl.ide.plugins.ImporterPlugins;
 import stdlib.Debug;
 import svgimport.Svg;
 import svgimport.SvgElement;
@@ -14,7 +14,7 @@ import svgimport.SvgPathExporter;
 
 class SvgImporterPlugin implements IImporterPlugin
 {
-	static function main() Plugins.registerImporter(new SvgImporterPlugin());
+	static function main() ImporterPlugins.register(new SvgImporterPlugin());
 	
 	public function new() { }
 	
