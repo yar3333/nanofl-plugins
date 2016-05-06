@@ -5631,11 +5631,6 @@ var nanofl_engine_Library = function(libraryDir,items) {
 };
 $hxClasses["nanofl.engine.Library"] = nanofl_engine_Library;
 nanofl_engine_Library.__name__ = ["nanofl","engine","Library"];
-nanofl_engine_Library.createWithScene = function(libraryDir,elements,layerName) {
-	var library = new nanofl_engine_Library(libraryDir);
-	library.addSceneWithFrame(elements,layerName);
-	return library;
-};
 nanofl_engine_Library.prototype = {
 	items: null
 	,libraryDir: null
@@ -5719,18 +5714,18 @@ nanofl_engine_Library.prototype = {
 		return fonts;
 	}
 	,getItem: function(namePath) {
-		stdlib_Debug.assert(namePath != null,null,{ fileName : "Library.hx", lineNumber : 325, className : "nanofl.engine.Library", methodName : "getItem"});
-		stdlib_Debug.assert(namePath != "",null,{ fileName : "Library.hx", lineNumber : 326, className : "nanofl.engine.Library", methodName : "getItem"});
+		stdlib_Debug.assert(namePath != null,null,{ fileName : "Library.hx", lineNumber : 121, className : "nanofl.engine.Library", methodName : "getItem"});
+		stdlib_Debug.assert(namePath != "",null,{ fileName : "Library.hx", lineNumber : 122, className : "nanofl.engine.Library", methodName : "getItem"});
 		var r = this.items.get(namePath);
 		if(r != null) return r;
-		haxe_Log.trace("Symbol '" + namePath + "' is not found.",{ fileName : "Library.hx", lineNumber : 329, className : "nanofl.engine.Library", methodName : "getItem"});
+		haxe_Log.trace("Symbol '" + namePath + "' is not found.",{ fileName : "Library.hx", lineNumber : 125, className : "nanofl.engine.Library", methodName : "getItem"});
 		return nanofl_engine_libraryitems_MovieClipItem.createWithFrame(namePath,[new nanofl_engine_elements_TextElement("",0,0,false,true,[new nanofl_TextRun("Symbol '" + namePath + "' is not found.")])],"temp");
 	}
 	,hasItem: function(namePath) {
 		return this.items.exists(namePath);
 	}
 	,save: function(fileSystem) {
-		stdlib_Debug.assert(this.libraryDir != null,null,{ fileName : "Library.hx", lineNumber : 340, className : "nanofl.engine.Library", methodName : "save"});
+		stdlib_Debug.assert(this.libraryDir != null,null,{ fileName : "Library.hx", lineNumber : 136, className : "nanofl.engine.Library", methodName : "save"});
 		var $it0 = this.items.iterator();
 		while( $it0.hasNext() ) {
 			var item = $it0.next();

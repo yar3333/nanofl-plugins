@@ -2,7 +2,7 @@ package nanofl.ide;
 
 extern class EditorLibrary
 {
-	function new(app:nanofl.ide.Application, library:nanofl.engine.Library, document:nanofl.ide.Document) : Void;
+	function new(app:nanofl.ide.Application, library:nanofl.ide.Library, document:nanofl.ide.Document) : Void;
 	var libraryDir(default, never) : String;
 	var activeItem : nanofl.engine.libraryitems.LibraryItem;
 	function addItems(items:Array<nanofl.engine.libraryitems.LibraryItem>, ?addUndoTransaction:Bool) : Void;
@@ -18,7 +18,7 @@ extern class EditorLibrary
 	function getSceneInstance() : nanofl.engine.elements.Instance;
 	function getSceneItem() : nanofl.engine.libraryitems.MovieClipItem;
 	function getItems(?includeScene:Bool) : Array<nanofl.engine.libraryitems.LibraryItem>;
-	function getRawLibrary() : nanofl.engine.Library;
+	function getRawLibrary() : nanofl.ide.Library;
 	function getSelectedItemsWithDependencies() : Array<nanofl.engine.libraryitems.LibraryItem>;
 	function hasSelected() : Bool;
 	function removeSelected() : Void;

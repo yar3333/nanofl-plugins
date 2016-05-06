@@ -2,11 +2,11 @@ import flashimport.DocumentImporter;
 import flashimport.Macro;
 import haxe.io.Path;
 import nanofl.engine.CustomProperty;
-import nanofl.engine.Library;
-import nanofl.ide.plugins.ImporterPlugins;
 import nanofl.ide.DocumentProperties;
+import nanofl.ide.Library;
 import nanofl.ide.NanoApi;
 import nanofl.ide.plugins.IImporterPlugin;
+import nanofl.ide.plugins.ImporterPlugins;
 import stdlib.Uuid;
 
 class FlashImporterPlugin implements IImporterPlugin

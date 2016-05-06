@@ -36,5 +36,5 @@ extern interface IExporterPlugin
 	 * @param	library				Document's library.
 	 * @return	Success flag.
 	 */
-	function exportDocument(api:nanofl.ide.NanoApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.engine.Library) : Bool;
+	function exportDocument(api:nanofl.ide.NanoApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.ide.Library) : Bool;
 }

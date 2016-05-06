@@ -565,7 +565,7 @@ declare module nanofl.ide
 	
 	export class EditorLibrary
 	{
-		constructor(app:nanofl.ide.Application, library:nanofl.engine.Library, document:nanofl.ide.Document);
+		constructor(app:nanofl.ide.Application, library:nanofl.ide.Library, document:nanofl.ide.Document);
 		libraryDir : string;
 		activeItem : nanofl.engine.libraryitems.LibraryItem;
 		addItems(items:nanofl.engine.libraryitems.LibraryItem[], addUndoTransaction?:boolean) : void;
@@ -581,7 +581,7 @@ declare module nanofl.ide
 		getSceneInstance() : nanofl.engine.elements.Instance;
 		getSceneItem() : nanofl.engine.libraryitems.MovieClipItem;
 		getItems(includeScene?:boolean) : nanofl.engine.libraryitems.LibraryItem[];
-		getRawLibrary() : nanofl.engine.Library;
+		getRawLibrary() : nanofl.ide.Library;
 		getSelectedItemsWithDependencies() : nanofl.engine.libraryitems.LibraryItem[];
 		hasSelected() : boolean;
 		removeSelected() : void;
@@ -616,7 +616,7 @@ declare module nanofl.ide
 		constructor(pluginName:string, params:any);
 		pluginName : string;
 		params : any;
-		run(api:nanofl.ide.NanoApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.engine.Library) : boolean;
+		run(api:nanofl.ide.NanoApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.ide.Library) : boolean;
 	}
 	
 	export class Figure
@@ -685,15 +685,32 @@ declare module nanofl.ide
 		constructor(pluginName:string, params?:any);
 		pluginName : string;
 		params : any;
-		run(api:nanofl.ide.NanoApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.engine.Library, callb:(arg:boolean) => void) : void;
+		run(api:nanofl.ide.NanoApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.ide.Library, callb:(arg:boolean) => void) : void;
+	}
+	
+	export class Library extends nanofl.engine.Library
+	{
+		constructor(libraryDir:string, items?:nanofl.engine.libraryitems.LibraryItem[]);
+		clone() : nanofl.ide.Library;
+		loadItems(api:nanofl.ide.NanoApi) : void;
+		parseItems(base:htmlparser.HtmlNodeElement) : void;
+		addFont(family:string, variants:nanofl.engine.FontVariant[]) : void;
+		canRenameItem(oldNamePath:string, newNamePath:string) : boolean;
+		renameItem(oldNamePath:string, newNamePath:string) : void;
+		compile(libraryDir:string) : { filterCodes : Map<string, string>; serializedLibrary : string; };
+		removeUnusedItems() : void;
+		optimize() : void;
+		getOptimized(optimizations:nanofl.ide.PublishOptimizations) : nanofl.ide.Library;
+		static SCENE_NAME_PATH : string;
+		static createWithScene(libraryDir?:string, elements?:nanofl.engine.elements.Element[], layerName?:string) : nanofl.ide.Library;
 	}
 	
 	export class LibraryTools
 	{
-		static optimize(library:nanofl.engine.Library) : void;
-		static getUnusedItems(library:nanofl.engine.Library) : string[];
-		static getItemsContainInstances(library:nanofl.engine.Library, namePaths:string[]) : nanofl.engine.libraryitems.LibraryItem[];
-		static hasEquItems(library:nanofl.engine.Library, items:nanofl.engine.libraryitems.LibraryItem[]) : boolean;
+		static optimize(library:nanofl.ide.Library) : void;
+		static getUnusedItems(library:nanofl.ide.Library) : string[];
+		static getItemsContainInstances(library:nanofl.ide.Library, namePaths:string[]) : nanofl.engine.libraryitems.LibraryItem[];
+		static hasEquItems(library:nanofl.ide.Library, items:nanofl.engine.libraryitems.LibraryItem[]) : boolean;
 	}
 	
 	type NanoApi =
@@ -791,9 +808,9 @@ declare module nanofl.ide
 	
 	export class ServerUtilsTools
 	{
-		static loadDocument(api:nanofl.ide.NanoApi, path:string, lastModified:Date) : { lastModified : Date; library : nanofl.engine.Library; properties : nanofl.ide.DocumentProperties; };
-		static saveDocument(api:nanofl.ide.NanoApi, path:string, properties:nanofl.ide.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>, fileActions:nanofl.ide.FileAction[]) : { generatorError : string; lastModified : Date; };
-		static publishDocument(api:nanofl.ide.NanoApi, path:string, originalProperties:nanofl.ide.DocumentProperties, originalLibrary:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : { message : string; success : boolean; };
+		static loadDocument(api:nanofl.ide.NanoApi, path:string, lastModified:Date) : { lastModified : Date; library : nanofl.ide.Library; properties : nanofl.ide.DocumentProperties; };
+		static saveDocument(api:nanofl.ide.NanoApi, path:string, properties:nanofl.ide.DocumentProperties, library:nanofl.ide.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>, fileActions:nanofl.ide.FileAction[]) : { generatorError : string; lastModified : Date; };
+		static publishDocument(api:nanofl.ide.NanoApi, path:string, originalProperties:nanofl.ide.DocumentProperties, originalLibrary:nanofl.ide.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : { message : string; success : boolean; };
 		static copyLibraryFiles(fileSystem:nanofl.engine.FileSystem, srcLibraryDir:string, relativePaths:string[], destLibraryDir:string) : void;
 		static renameFiles(fileSystem:nanofl.engine.FileSystem, files:{ src : string; dest : string; }[]) : void;
 		static remove(fileSystem:nanofl.engine.FileSystem, paths:string[]) : void;
@@ -9570,7 +9587,7 @@ declare module nanofl.ide.plugins
 		 * @param	library				Document's library.
 		 * @return	Success flag.
 		 */
-		exportDocument(api:nanofl.ide.NanoApi, params:any, srcFilePath:string, destFilePath:string, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.engine.Library) : boolean;
+		exportDocument(api:nanofl.ide.NanoApi, params:any, srcFilePath:string, destFilePath:string, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.ide.Library) : boolean;
 	}
 	
 	export interface IGeneratorPlugin
@@ -9594,7 +9611,7 @@ declare module nanofl.ide.plugins
 		 * @param	textureAtlases		Generated texture atlases.
 		 * @return	Paths to files to publish. Must be relative to the the document's root directory.
 		 */
-		generate(api:nanofl.ide.NanoApi, params:any, filePath:string, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : string[];
+		generate(api:nanofl.ide.NanoApi, params:any, filePath:string, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.ide.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : string[];
 		/**
 		 * Called to "run" saved document. Must return error message or null if no errors.
 		 * Use this method if you need direct access to file system and OS.
@@ -9648,7 +9665,7 @@ declare module nanofl.ide.plugins
 		 * @param	library				Document's library.
 		 * @param	callb				Call this after importing with a success bool flag.
 		 */
-		importDocument(api:nanofl.ide.NanoApi, params:any, srcFilePath:string, destFilePath:string, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.engine.Library, callb:(arg:boolean) => void) : void;
+		importDocument(api:nanofl.ide.NanoApi, params:any, srcFilePath:string, destFilePath:string, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.ide.Library, callb:(arg:boolean) => void) : void;
 	}
 	
 	export interface ILoaderPlugin
@@ -9707,7 +9724,7 @@ declare module nanofl.ide.plugins
 		 * @param	filePath	Path to `*.nfl` file.
 		 * @param	files		Files to publish.
 		 */
-		publish(api:nanofl.ide.NanoApi, params:any, filePath:string, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.engine.Library, files:{ relPath : string; baseDir : string; }[]) : void;
+		publish(api:nanofl.ide.NanoApi, params:any, filePath:string, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.ide.Library, files:{ relPath : string; baseDir : string; }[]) : void;
 	}
 	
 	export class ImporterPlugins
@@ -10193,15 +10210,6 @@ declare module nanofl.engine
 		constructor(libraryDir:string, items?:nanofl.engine.libraryitems.LibraryItem[]);
 		libraryDir : string;
 		addSceneWithFrame(elements?:nanofl.engine.elements.Element[], layerName?:string) : nanofl.engine.libraryitems.MovieClipItem;
-		loadItems(api:nanofl.ide.NanoApi) : void;
-		parseItems(base:htmlparser.HtmlNodeElement) : void;
-		addFont(family:string, variants:nanofl.engine.FontVariant[]) : void;
-		canRenameItem(oldNamePath:string, newNamePath:string) : boolean;
-		renameItem(oldNamePath:string, newNamePath:string) : void;
-		compile(libraryDir:string) : { filterCodes : Map<string, string>; serializedLibrary : string; };
-		removeUnusedItems() : void;
-		optimize() : void;
-		getOptimized(optimizations:nanofl.ide.PublishOptimizations) : nanofl.engine.Library;
 		addItem<T>(item:T) : T;
 		removeItem(namePath:string) : void;
 		getSceneItem() : nanofl.engine.libraryitems.MovieClipItem;
@@ -10222,7 +10230,6 @@ declare module nanofl.engine
 		getItemsInFolder(folderNamePath:string) : nanofl.engine.libraryitems.LibraryItem[];
 		equ(library:nanofl.engine.Library) : boolean;
 		static SCENE_NAME_PATH : string;
-		static createWithScene(libraryDir?:string, elements?:nanofl.engine.elements.Element[], layerName?:string) : nanofl.engine.Library;
 	}
 	
 	export class MeshParams

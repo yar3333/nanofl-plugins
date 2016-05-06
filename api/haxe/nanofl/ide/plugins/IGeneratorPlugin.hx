@@ -21,7 +21,7 @@ extern interface IGeneratorPlugin
 	 * @param	textureAtlases		Generated texture atlases.
 	 * @return	Paths to files to publish. Must be relative to the the document's root directory.
 	 */
-	function generate(api:nanofl.ide.NanoApi, params:Dynamic, filePath:String, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<String, nanofl.ide.textureatlas.TextureAtlas>) : Array<String>;
+	function generate(api:nanofl.ide.NanoApi, params:Dynamic, filePath:String, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.ide.Library, textureAtlases:Map<String, nanofl.ide.textureatlas.TextureAtlas>) : Array<String>;
 	/**
 	 * Called to "run" saved document. Must return error message or null if no errors.
 	 * Use this method if you need direct access to file system and OS.

@@ -25,5 +25,5 @@ extern interface IPublisherPlugin
 	 * @param	filePath	Path to `*.nfl` file.
 	 * @param	files		Files to publish.
 	 */
-	function publish(api:nanofl.ide.NanoApi, params:Dynamic, filePath:String, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.engine.Library, files:Array<{ var relPath : String; var baseDir : String; }>) : Void;
+	function publish(api:nanofl.ide.NanoApi, params:Dynamic, filePath:String, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.ide.Library, files:Array<{ var relPath : String; var baseDir : String; }>) : Void;
 }

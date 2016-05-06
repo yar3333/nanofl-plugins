@@ -1,7 +1,7 @@
 import htmlparser.XmlDocument;
 import nanofl.engine.CustomProperty;
-import nanofl.engine.Library;
 import nanofl.ide.DocumentProperties;
+import nanofl.ide.Library;
 import nanofl.ide.LibraryTools;
 import nanofl.ide.NanoApi;
 import nanofl.ide.plugins.IImporterPlugin;

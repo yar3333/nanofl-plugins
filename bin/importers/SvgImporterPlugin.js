@@ -312,12 +312,12 @@ SvgImporterPlugin.prototype = {
 		var svg = new svgimport_Svg(xml);
 		documentProperties.width = Math.round(svg.width);
 		documentProperties.height = Math.round(svg.height);
-		if(svg.id != nanofl.engine.Library.SCENE_NAME_PATH) {
+		if(svg.id != nanofl.ide.Library.SCENE_NAME_PATH) {
 			stdlib_Debug.assert(svg.id == "" || svg.elements.exists(svg.id),null,{ fileName : "SvgImporterPlugin.hx", lineNumber : 53, className : "SvgImporterPlugin", methodName : "importDocument"});
 			svg.elements.remove(svg.id);
-			svg.id = nanofl.engine.Library.SCENE_NAME_PATH;
+			svg.id = nanofl.ide.Library.SCENE_NAME_PATH;
 			var value = svgimport_SvgElement.DisplayGroup(svg);
-			svg.elements.set(nanofl.engine.Library.SCENE_NAME_PATH,value);
+			svg.elements.set(nanofl.ide.Library.SCENE_NAME_PATH,value);
 		}
 		haxe_Log.trace("Convert",{ fileName : "SvgImporterPlugin.hx", lineNumber : 59, className : "SvgImporterPlugin", methodName : "importDocument"});
 		var $it0 = svg.elements.keys();

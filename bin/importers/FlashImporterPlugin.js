@@ -453,7 +453,7 @@ flashimport_DocumentImporter.importXmlFiles = function(api,srcFilePath,destDocPr
 		}
 	}
 	flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles load document",{ fileName : "DocumentImporter.hx", lineNumber : 120, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
-	symbolLoader.loadFromXml(nanofl.engine.Library.SCENE_NAME_PATH,srcDoc);
+	symbolLoader.loadFromXml(nanofl.ide.Library.SCENE_NAME_PATH,srcDoc);
 	flashimport_DocumentImporter.log("DocumentImporter.importXmlFiles load symbols",{ fileName : "DocumentImporter.hx", lineNumber : 123, className : "flashimport.DocumentImporter", methodName : "importXmlFiles"});
 	var hrefs = docPropNode.find(">symbols>Include").map(function(node) {
 		return htmlparser.HtmlParserTools.getAttrString(node,"href");
