@@ -1,12 +1,12 @@
 import haxe.io.Path;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.Debug.console;
-import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileSystem;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
-import nanofl.ide.plugins.IPublisherPlugin;
+import nanofl.ide.DocumentProperties;
 import nanofl.ide.NanoApi;
+import nanofl.ide.plugins.IPublisherPlugin;
 
 class SimpleHtmlPublisherPlugin implements IPublisherPlugin
 {

@@ -1,3 +1,3 @@
 package nanofl.ide.undo.states;
 
-typedef DocumentState = nanofl.engine.DocumentProperties;
+typedef DocumentState = nanofl.ide.DocumentProperties;

@@ -21,7 +21,7 @@ extern interface IGeneratorPlugin
 	 * @param	textureAtlases		Generated texture atlases.
 	 * @return	Paths to files to publish. Must be relative to the the document's root directory.
 	 */
-	function generate(api:nanofl.ide.NanoApi, params:Dynamic, filePath:String, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<String, nanofl.ide.textureatlas.TextureAtlas>) : Array<String>;
+	function generate(api:nanofl.ide.NanoApi, params:Dynamic, filePath:String, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<String, nanofl.ide.textureatlas.TextureAtlas>) : Array<String>;
 	/**
 	 * Called to "run" saved document. Must return error message or null if no errors.
 	 * Use this method if you need direct access to file system and OS.
@@ -30,4 +30,11 @@ extern interface IGeneratorPlugin
 	 * @param	filePath	Path to `*.nfl` file.
 	 */
 	function test(api:nanofl.ide.NanoApi, params:Dynamic, filePath:String) : String;
+	/**
+	 * Must return relative path to code file, linked to symbol.
+	 * If `symbol.linkedClass` is empty then this method must fill it with correct default value.
+	 * If `symbol.linkedClass` contain incorrect value, this method can fix it.
+	 * Method must return `null` if no code file is supported.
+	 */
+	function getCodeFilePath(params:Dynamic, symbol:nanofl.engine.libraryitems.InstancableItem) : String;
 }

@@ -23,6 +23,7 @@ extern class LibraryGroup extends nanofl.ide.commands.BaseGroup
 	function importMeshes() : Void;
 	function properties() : Void;
 	function createFolder() : Void;
+	function editSymbolCode() : Void;
 	function cut() : Void;
 	function copy() : Void;
 	function paste() : Void;

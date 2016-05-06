@@ -1,4 +1,4 @@
-package nanofl.engine;
+package nanofl.ide;
 
 extern class DocumentProperties
 {
@@ -14,8 +14,8 @@ extern class DocumentProperties
 	var textureAtlases : Map<String, nanofl.ide.textureatlas.TextureAtlasParams>;
 	var publishSettings : Array<nanofl.ide.plugins.PublishSetting>;
 	function save(fileSystem:nanofl.engine.FileSystem, filePath:String) : Void;
-	function equ(p:nanofl.engine.DocumentProperties) : Bool;
-	function clone() : nanofl.engine.DocumentProperties;
-	function getOptimized(optimizations:nanofl.ide.PublishOptimizations) : nanofl.engine.DocumentProperties;
-	static function load(filePath:String, fileSystem:nanofl.engine.FileSystem) : nanofl.engine.DocumentProperties;
+	function equ(p:nanofl.ide.DocumentProperties) : Bool;
+	function clone() : nanofl.ide.DocumentProperties;
+	function getOptimized(optimizations:nanofl.ide.PublishOptimizations) : nanofl.ide.DocumentProperties;
+	static function load(filePath:String, fileSystem:nanofl.engine.FileSystem) : nanofl.ide.DocumentProperties;
 }

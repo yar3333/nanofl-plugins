@@ -8,6 +8,7 @@ extern class Commands
 	var editor(default, null) : nanofl.ide.commands.EditorGroup;
 	var library(default, null) : nanofl.ide.commands.LibraryGroup;
 	var timeline(default, null) : nanofl.ide.commands.TimelineGroup;
+	var output(default, null) : nanofl.ide.commands.OutputGroup;
 	function validateCommand(command:String) : Void;
 	function run(command:String, ?params:Array<Dynamic>) : Bool;
 }

@@ -10,4 +10,6 @@ extern interface ServerUtils
 	function uploadFiles(files:Array<js.html.File>, destDir:String, callb:Void -> Void) : Void;
 	function loadFilesFromClipboard(destDir:String, callb:Bool -> Void) : Void;
 	function saveFilesIntoClipboard(baseDir:String, relativePaths:Array<String>, callb:Void -> Void) : Void;
+	function loadCodeFile(path:String, callb:{ var text : String; } -> Void) : Void;
+	function saveCodeFile(path:String, text:String, callb:Void -> Void) : Void;
 }

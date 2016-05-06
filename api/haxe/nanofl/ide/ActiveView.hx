@@ -5,4 +5,5 @@ package nanofl.ide;
 	LIBRARY;
 	TIMELINE;
 	EDITOR;
+	OUTPUT;
 }

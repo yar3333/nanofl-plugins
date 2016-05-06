@@ -41,7 +41,7 @@ class FlashMediaImporter
 					case ItemType.MovieClip, ItemType.Graphic, ItemType.Button, ItemType.Folder:
 						// nothing to do
 						
-					case "sound":
+					case ItemType.Sound:
 						log("  Import: " + item.name + " / " + item.itemType + " / " + (cast item:SoundItem).originalCompressionType);
 						importSound(destLibraryDir, cast item);
 						

@@ -1,7 +1,7 @@
 import haxe.crypto.Base64;
 import js.html.CanvasElement;
 import nanofl.DisplayObjectTools;
-import nanofl.engine.DocumentProperties;
+import nanofl.ide.DocumentProperties;
 import nanofl.engine.FileSystem;
 import nanofl.engine.Library;
 

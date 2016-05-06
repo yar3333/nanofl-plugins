@@ -127,6 +127,15 @@ HxOverrides.indexOf = function(a,obj,i) {
 	}
 	return -1;
 };
+HxOverrides.lastIndexOf = function(a,obj,i) {
+	var len = a.length;
+	if(i >= len) i = len - 1; else if(i < 0) i += len;
+	while(i >= 0) {
+		if(a[i] === obj) return i;
+		i--;
+	}
+	return -1;
+};
 HxOverrides.remove = function(a,obj) {
 	var i = HxOverrides.indexOf(a,obj,0);
 	if(i == -1) return false;
@@ -2272,13 +2281,13 @@ htmlparser_HtmlParser.prototype = {
 		if(this.matches.length > 0) {
 			this.str = str;
 			this.i = 0;
-			var nodes = this.processMatches("");
+			var nodes = this.processMatches([]).nodes;
 			if(this.i < this.matches.length) throw new js__$Boot_HaxeError(new htmlparser_HtmlParserException("Not all nodes processed.",this.getPosition(this.i)));
 			return nodes;
 		}
 		if(str.length > 0) return [new htmlparser_HtmlNodeText(str)]; else return [];
 	}
-	,processMatches: function(baseTagLC) {
+	,processMatches: function(openedTagsLC) {
 		var nodes = [];
 		var prevEnd;
 		if(this.i > 0) prevEnd = this.matches[this.i - 1].allPos + this.matches[this.i - 1].all.length; else prevEnd = 0;
@@ -2286,7 +2295,11 @@ htmlparser_HtmlParser.prototype = {
 		if(prevEnd < curStart) nodes.push(new htmlparser_HtmlNodeText(HxOverrides.substr(this.str,prevEnd,curStart - prevEnd)));
 		while(this.i < this.matches.length) {
 			var m = this.matches[this.i];
-			if(m.elem != null && m.elem != "") nodes.push(this.parseElement()); else if(m.script != null && m.script != "") {
+			if(m.elem != null && m.elem != "") {
+				var ee = this.parseElement(openedTagsLC);
+				nodes.push(ee.element);
+				if(ee.closeTagLC != "") return { nodes : nodes, closeTagLC : ee.closeTagLC};
+			} else if(m.script != null && m.script != "") {
 				var scriptNode = this.newElement("script",htmlparser_HtmlParser.parseAttrs(m.scriptAttrs));
 				scriptNode.addChild(new htmlparser_HtmlNodeText(m.scriptText));
 				nodes.push(scriptNode);
@@ -2295,8 +2308,10 @@ htmlparser_HtmlParser.prototype = {
 				styleNode.addChild(new htmlparser_HtmlNodeText(m.styleText));
 				nodes.push(styleNode);
 			} else if(m.close != null && m.close != "") {
-				if(m.tagCloseLC == baseTagLC) break;
-				if(!this.tolerant && m.tagCloseLC != baseTagLC) throw new js__$Boot_HaxeError(new htmlparser_HtmlParserException("Closed tag <" + m.tagClose + "> don't match to open tag <" + baseTagLC + ">.",this.getPosition(this.i)));
+				if(m.tagCloseLC == openedTagsLC[openedTagsLC.length - 1]) break;
+				if(this.tolerant) {
+					if(HxOverrides.lastIndexOf(openedTagsLC,m.tagCloseLC,openedTagsLC.length - 1) >= 0) break;
+				} else throw new js__$Boot_HaxeError(new htmlparser_HtmlParserException("Closed tag <" + m.tagClose + "> don't match to open tag <" + openedTagsLC[openedTagsLC.length - 1] + ">.",this.getPosition(this.i)));
 			} else if(m.comment != null && m.comment != "") nodes.push(new htmlparser_HtmlNodeText(m.comment)); else throw new js__$Boot_HaxeError(new htmlparser_HtmlParserException("Unexpected XML node.",this.getPosition(this.i)));
 			if(this.tolerant && this.i >= this.matches.length) break;
 			var curEnd = this.matches[this.i].allPos + this.matches[this.i].all.length;
@@ -2305,30 +2320,35 @@ htmlparser_HtmlParser.prototype = {
 			if(curEnd < nextStart) nodes.push(new htmlparser_HtmlNodeText(HxOverrides.substr(this.str,curEnd,nextStart - curEnd)));
 			this.i++;
 		}
-		return nodes;
+		return { nodes : nodes, closeTagLC : ""};
 	}
-	,parseElement: function() {
+	,parseElement: function(openedTagsLC) {
 		var tag = this.matches[this.i].tagOpen;
 		var tagLC = this.matches[this.i].tagOpenLC;
 		var attrs = this.matches[this.i].attrs;
 		var isWithClose = this.matches[this.i].tagEnd != null && this.matches[this.i].tagEnd != "" || this.isSelfClosingTag(tagLC);
 		var elem = this.newElement(tag,htmlparser_HtmlParser.parseAttrs(attrs));
+		var closeTagLC = "";
 		if(!isWithClose) {
 			this.i++;
-			var nodes = this.processMatches(tagLC);
+			openedTagsLC.push(tagLC);
+			var m = this.processMatches(openedTagsLC);
 			var _g = 0;
-			while(_g < nodes.length) {
-				var node = nodes[_g];
+			var _g1 = m.nodes;
+			while(_g < _g1.length) {
+				var node = _g1[_g];
 				++_g;
 				elem.addChild(node);
 			}
+			openedTagsLC.pop();
+			if(m.closeTagLC != tagLC) closeTagLC = m.closeTagLC; else closeTagLC = "";
 			if(this.i < this.matches.length || !this.tolerant) {
 				if(this.matches[this.i].close == null || this.matches[this.i].close == "" || this.matches[this.i].tagCloseLC != tagLC) {
-					if(!this.tolerant) throw new js__$Boot_HaxeError(new htmlparser_HtmlParserException("Tag <" + tag + "> not closed.",this.getPosition(this.i)));
+					if(!this.tolerant) throw new js__$Boot_HaxeError(new htmlparser_HtmlParserException("Tag <" + tag + "> not closed.",this.getPosition(this.i))); else closeTagLC = this.matches[this.i].tagCloseLC;
 				}
 			}
 		}
-		return elem;
+		return { element : elem, closeTagLC : closeTagLC};
 	}
 	,isSelfClosingTag: function(tag) {
 		return Object.prototype.hasOwnProperty.call(htmlparser_HtmlParser.SELF_CLOSING_TAGS_HTML,tag);
@@ -14086,8 +14106,11 @@ stdlib_Debug.getDump = function(v,limit,level,prefix) {
 		case 4:
 			s = "OBJECT" + "\n" + stdlib_Debug.getObjectDump(v,limit,level + 1,prefix);
 			break;
-		case 5:case 8:
-			s = "FUNCTION OR UNKNOW\n";
+		case 5:
+			s = "FUNCTION\n";
+			break;
+		case 8:
+			s = "UNKNOW\n";
 			break;
 		}
 	}
@@ -14134,7 +14157,7 @@ stdlib_Debug.traceStack = function(v,pos) {
 		return ss1[0] + StringTools.rpad(""," ",len - ss1[0].length + 1) + ss1[1];
 	});
 	stack = lines.slice(1).join("\n");
-	haxe_Log.trace("TRACE " + (typeof(v) == "string"?v:stdlib_StringTools.trim(stdlib_Debug.getDump(v))) + "\nStack trace:\n" + stack,{ fileName : "Debug.hx", lineNumber : 136, className : "stdlib.Debug", methodName : "traceStack", customParams : [pos]});
+	haxe_Log.trace("TRACE " + (typeof(v) == "string"?v:stdlib_StringTools.trim(stdlib_Debug.getDump(v))) + "\nStack trace:\n" + stack,{ fileName : "Debug.hx", lineNumber : 187, className : "stdlib.Debug", methodName : "traceStack", customParams : [pos]});
 };
 stdlib_Debug.methodMustBeOverriden = function(_this,pos) {
 	throw new js__$Boot_HaxeError(new stdlib_Exception("Method " + pos.methodName + "() must be overriden in class " + Type.getClassName(Type.getClass(_this)) + "."));
@@ -14222,6 +14245,11 @@ stdlib_LambdaArray.extract = function(arr,f) {
 		r.push(arr[i]);
 		arr.splice(i,1);
 	} else i++;
+	return r;
+};
+stdlib_LambdaArray.spliceEx = function(arr,pos,len,replacement) {
+	var r = arr.splice(pos,len != null?len:arr.length - pos);
+	if(replacement != null) stdlib_LambdaArray.insertRange(arr,pos,replacement);
 	return r;
 };
 var stdlib_LambdaIterable = function() { };
@@ -15243,6 +15271,9 @@ var $_, $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }
 if(Array.prototype.indexOf) HxOverrides.indexOf = function(a,o,i) {
 	return Array.prototype.indexOf.call(a,o,i);
+};
+if(Array.prototype.lastIndexOf) HxOverrides.lastIndexOf = function(a1,o1,i1) {
+	return Array.prototype.lastIndexOf.call(a1,o1,i1);
 };
 $hxClasses.Math = Math;
 String.prototype.__class__ = $hxClasses.String = String;

@@ -77,6 +77,7 @@ declare module nanofl.ide.commands
 		editor : nanofl.ide.commands.EditorGroup;
 		library : nanofl.ide.commands.LibraryGroup;
 		timeline : nanofl.ide.commands.TimelineGroup;
+		output : nanofl.ide.commands.OutputGroup;
 		validateCommand(command:string) : void;
 		run(command:string, params?:any[]) : boolean;
 	}
@@ -168,9 +169,17 @@ declare module nanofl.ide.commands
 		importMeshes() : void;
 		properties() : void;
 		createFolder() : void;
+		editSymbolCode() : void;
 		cut() : void;
 		copy() : void;
 		paste() : void;
+	}
+	
+	export class OutputGroup extends nanofl.ide.commands.BaseGroup
+	{
+		constructor(app:nanofl.ide.Application);
+		clear() : void;
+		copy() : void;
 	}
 	
 	export class TimelineGroup extends nanofl.ide.commands.BaseGroup
@@ -229,6 +238,7 @@ declare module nanofl.ide.menu
 		static fixWidth(container:js.JQuery) : void;
 		static updateItemStates(container:js.JQuery, app:nanofl.ide.Application) : void;
 		static enableItem(container:js.JQuery, command:string, enable?:boolean) : void;
+		static enableItemLazy(container:js.JQuery, command:string, enable:() => boolean) : void;
 		static toggleItem(container:js.JQuery, command:string, show?:boolean) : void;
 		static onItemClick(a:js.JQuery, commands:nanofl.ide.commands.Commands) : void;
 	}
@@ -303,17 +313,19 @@ declare module nanofl.ide
 	{
 		LIBRARY,
 		TIMELINE,
-		EDITOR
+		EDITOR,
+		OUTPUT
 	}
 	
 	type Application =
 	{
-		addRecent(path:string) : void;
 		clipboard : nanofl.ide.Clipboard;
 		commands : nanofl.ide.commands.Commands;
 		createNewEmptyDocument(callb?:(arg:nanofl.ide.Document) => void) : void;
-		document : nanofl.ide.Document;
+		get_document() : nanofl.ide.Document;
+		documents : nanofl.ide.IDocuments;
 		dragAndDrop : nanofl.ide.draganddrop.DragAndDrop;
+		editSymbolCode(symbol:nanofl.engine.libraryitems.InstancableItem) : void;
 		/**
 		 * FileSystem functions.
 		 */
@@ -333,6 +345,7 @@ declare module nanofl.ide
 		 */
 		preferences : nanofl.ide.Preferences;
 		quit(force?:boolean, exitCode?:number) : void;
+		recents : nanofl.ide.IRecents;
 		serverUtils : nanofl.ide.ServerUtils;
 	}
 	
@@ -364,7 +377,7 @@ declare module nanofl.ide
 		restoreFocus(e?:MouseEvent) : void;
 	}
 	
-	export class Document
+	export class Document implements nanofl.ide.IDocument
 	{
 		/**
 		 * Document UUID (generated on every document object create).
@@ -382,18 +395,19 @@ declare module nanofl.ide
 		 * Path to NanoFL document file (*.nfl).
 		 */
 		path : string;
-		properties : nanofl.engine.DocumentProperties;
+		properties : nanofl.ide.DocumentProperties;
 		library : nanofl.ide.EditorLibrary;
 		lastModified : Date;
 		navigator : nanofl.ide.Navigator;
 		editor : nanofl.ide.Editor;
-		undoQueue : nanofl.ide.undo.UndoQueue;
+		undoQueue : nanofl.ide.undo.document.UndoQueue;
 		get_busy() : boolean
 	 	set_busy(v:boolean) : boolean;
 		get_isModified() : boolean;
 		get_isTemporary() : boolean;
-		activate(isCenterView:boolean) : void;
-		setProperties(properties:nanofl.engine.DocumentProperties) : void;
+		activate(isCenterView?:boolean) : void;
+		deactivate() : void;
+		setProperties(properties:nanofl.ide.DocumentProperties) : void;
 		save(callb?:(arg:boolean) => void) : void;
 		saveAs(newPath?:string, callb?:(arg:boolean) => void) : void;
 		export(destPath?:string, plugin?:nanofl.ide.plugins.IExporterPlugin, callb?:(arg:boolean) => void) : void;
@@ -405,10 +419,37 @@ declare module nanofl.ide
 		canBeSaved() : boolean;
 		canBePublished() : boolean;
 		dispose() : void;
-		static createTemporary(app:nanofl.ide.Application, properties?:nanofl.engine.DocumentProperties) : nanofl.ide.Document;
+		saveNative(callb:(arg:boolean) => void) : void;
+		getShortTitle() : string;
+		getPath() : string;
+		getLongTitle() : string;
+		getIcon() : string;
+		saveWithPrompt(callb:(arg:boolean) => void) : void;
+		close(force?:boolean, callb?:() => void) : void;
+		undoStatusChanged() : void;
+		static createTemporary(app:nanofl.ide.Application, properties?:nanofl.ide.DocumentProperties) : nanofl.ide.Document;
 		static load(app:nanofl.ide.Application, path:string, callb:(arg:nanofl.ide.Document) => void) : void;
 		static import_(app:nanofl.ide.Application, path:string, importer?:nanofl.ide.Importer, callb?:(arg:nanofl.ide.Document) => void) : void;
-		static disposeAll() : void;
+	}
+	
+	export class DocumentProperties
+	{
+		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, scaleMode?:string, generator?:nanofl.ide.Generator, useTextureAtlases?:boolean, textureAtlases?:Map<string, nanofl.ide.textureatlas.TextureAtlasParams>, publishSettings?:nanofl.ide.plugins.PublishSetting[]);
+		title : string;
+		width : number;
+		height : number;
+		backgroundColor : string;
+		framerate : number;
+		scaleMode : string;
+		generator : nanofl.ide.Generator;
+		useTextureAtlases : boolean;
+		textureAtlases : Map<string, nanofl.ide.textureatlas.TextureAtlasParams>;
+		publishSettings : nanofl.ide.plugins.PublishSetting[];
+		save(fileSystem:nanofl.engine.FileSystem, filePath:string) : void;
+		equ(p:nanofl.ide.DocumentProperties) : boolean;
+		clone() : nanofl.ide.DocumentProperties;
+		getOptimized(optimizations:nanofl.ide.PublishOptimizations) : nanofl.ide.DocumentProperties;
+		static load(filePath:string, fileSystem:nanofl.engine.FileSystem) : nanofl.ide.DocumentProperties;
 	}
 	
 	export class Editor
@@ -420,6 +461,7 @@ declare module nanofl.ide
 		magnet : boolean;
 		shift : boolean;
 		zoomLevel : number;
+		ready : boolean;
 		beginEditing(pathItem:nanofl.ide.PathItem, isCenterView?:boolean) : void;
 		updateShapes() : void;
 		updateElement(element:nanofl.engine.elements.Element) : void;
@@ -471,6 +513,8 @@ declare module nanofl.ide
 		getSelectedBounds() : { height : number; width : number; x : number; y : number; };
 		getHitTestGap() : number;
 		getEditableLayers() : nanofl.ide.EditorLayer[];
+		saveViewState() : void;
+		loadViewState() : void;
 	}
 	
 	export class EditorLayer
@@ -572,7 +616,7 @@ declare module nanofl.ide
 		constructor(pluginName:string, params:any);
 		pluginName : string;
 		params : any;
-		run(api:nanofl.ide.NanoApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library) : boolean;
+		run(api:nanofl.ide.NanoApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.engine.Library) : boolean;
 	}
 	
 	export class Figure
@@ -641,7 +685,7 @@ declare module nanofl.ide
 		constructor(pluginName:string, params?:any);
 		pluginName : string;
 		params : any;
-		run(api:nanofl.ide.NanoApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, callb:(arg:boolean) => void) : void;
+		run(api:nanofl.ide.NanoApi, srcFilePath:string, destFilePath:string, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.engine.Library, callb:(arg:boolean) => void) : void;
 	}
 	
 	export class LibraryTools
@@ -741,18 +785,22 @@ declare module nanofl.ide
 		uploadFiles(files:File[], destDir:string, callb:() => void) : void;
 		loadFilesFromClipboard(destDir:string, callb:(arg:boolean) => void) : void;
 		saveFilesIntoClipboard(baseDir:string, relativePaths:string[], callb:() => void) : void;
+		loadCodeFile(path:string, callb:(arg:{ text : string; }) => void) : void;
+		saveCodeFile(path:string, text:string, callb:() => void) : void;
 	}
 	
 	export class ServerUtilsTools
 	{
-		static loadDocument(api:nanofl.ide.NanoApi, path:string, lastModified:Date) : { lastModified : Date; library : nanofl.engine.Library; properties : nanofl.engine.DocumentProperties; };
-		static saveDocument(api:nanofl.ide.NanoApi, path:string, properties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>, fileActions:nanofl.ide.FileAction[]) : { generatorError : string; lastModified : Date; };
-		static publishDocument(api:nanofl.ide.NanoApi, path:string, originalProperties:nanofl.engine.DocumentProperties, originalLibrary:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : { message : string; success : boolean; };
+		static loadDocument(api:nanofl.ide.NanoApi, path:string, lastModified:Date) : { lastModified : Date; library : nanofl.engine.Library; properties : nanofl.ide.DocumentProperties; };
+		static saveDocument(api:nanofl.ide.NanoApi, path:string, properties:nanofl.ide.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>, fileActions:nanofl.ide.FileAction[]) : { generatorError : string; lastModified : Date; };
+		static publishDocument(api:nanofl.ide.NanoApi, path:string, originalProperties:nanofl.ide.DocumentProperties, originalLibrary:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : { message : string; success : boolean; };
 		static copyLibraryFiles(fileSystem:nanofl.engine.FileSystem, srcLibraryDir:string, relativePaths:string[], destLibraryDir:string) : void;
 		static renameFiles(fileSystem:nanofl.engine.FileSystem, files:{ src : string; dest : string; }[]) : void;
 		static remove(fileSystem:nanofl.engine.FileSystem, paths:string[]) : void;
 		static loadFilesFromClipboard(fileSystem:nanofl.engine.FileSystem, destDir:string) : boolean;
 		static saveFilesIntoClipboard(fileSystem:nanofl.engine.FileSystem, baseDir:string, relativePaths:string[]) : void;
+		static loadCodeFile(fileSystem:nanofl.engine.FileSystem, path:string) : { text : string; };
+		static saveCodeFile(fileSystem:nanofl.engine.FileSystem, path:string, text:string) : void;
 	}
 	
 	export class ShapePropertiesOptions
@@ -971,28 +1019,6 @@ declare module nanofl.engine.elements
 		clone() : nanofl.engine.elements.TextElement;
 		breakApart() : nanofl.engine.elements.TextElement[];
 		fixErrors() : boolean;
-	}
-}
-
-declare module nanofl.ide.undo
-{
-	export class UndoQueue
-	{
-		/**
-		 * This method may be called several times with different operations.
-		 */
-		beginTransaction(operations:{ document : boolean; element : nanofl.engine.elements.Element; elements : boolean; figure : boolean; libraryAddItems : boolean; libraryChangeItems : string[]; libraryRemoveItems : string[]; libraryRenameItems : { oldNamePath : string; newNamePath : string; }[]; timeline : boolean; transformations : boolean; }) : void;
-		cancelTransaction() : void;
-		revertTransaction() : void;
-		forgetTransaction() : void;
-		commitTransaction() : void;
-		undo() : void;
-		redo() : void;
-		canUndo() : boolean;
-		canRedo() : boolean;
-		documentSaved() : void;
-		isDocumentModified() : boolean;
-		toString() : string;
 	}
 }
 
@@ -1642,7 +1668,7 @@ declare module nanofl.engine.fills
 
 declare module nanofl.ide.undo.states
 {
-	type DocumentState = nanofl.engine.DocumentProperties;
+	type DocumentState = nanofl.ide.DocumentProperties;
 	
 	export class ElementState
 	{
@@ -9525,7 +9551,7 @@ declare module nanofl.ide.plugins
 		 * @param	library				Document's library.
 		 * @return	Success flag.
 		 */
-		exportDocument(api:nanofl.ide.NanoApi, params:any, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library) : boolean;
+		exportDocument(api:nanofl.ide.NanoApi, params:any, srcFilePath:string, destFilePath:string, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.engine.Library) : boolean;
 	}
 	
 	export interface IGeneratorPlugin
@@ -9549,7 +9575,7 @@ declare module nanofl.ide.plugins
 		 * @param	textureAtlases		Generated texture atlases.
 		 * @return	Paths to files to publish. Must be relative to the the document's root directory.
 		 */
-		generate(api:nanofl.ide.NanoApi, params:any, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : string[];
+		generate(api:nanofl.ide.NanoApi, params:any, filePath:string, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.engine.Library, textureAtlases:Map<string, nanofl.ide.textureatlas.TextureAtlas>) : string[];
 		/**
 		 * Called to "run" saved document. Must return error message or null if no errors.
 		 * Use this method if you need direct access to file system and OS.
@@ -9558,6 +9584,13 @@ declare module nanofl.ide.plugins
 		 * @param	filePath	Path to `*.nfl` file.
 		 */
 		test(api:nanofl.ide.NanoApi, params:any, filePath:string) : string;
+		/**
+		 * Must return relative path to code file, linked to symbol.
+		 * If `symbol.linkedClass` is empty then this method must fill it with correct default value.
+		 * If `symbol.linkedClass` contain incorrect value, this method can fix it.
+		 * Method must return `null` if no code file is supported.
+		 */
+		getCodeFilePath(params:any, symbol:nanofl.engine.libraryitems.InstancableItem) : string;
 	}
 	
 	export interface IImporterPlugin
@@ -9596,7 +9629,7 @@ declare module nanofl.ide.plugins
 		 * @param	library				Document's library.
 		 * @param	callb				Call this after importing with a success bool flag.
 		 */
-		importDocument(api:nanofl.ide.NanoApi, params:any, srcFilePath:string, destFilePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, callb:(arg:boolean) => void) : void;
+		importDocument(api:nanofl.ide.NanoApi, params:any, srcFilePath:string, destFilePath:string, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.engine.Library, callb:(arg:boolean) => void) : void;
 	}
 	
 	export interface ILoaderPlugin
@@ -9655,7 +9688,7 @@ declare module nanofl.ide.plugins
 		 * @param	filePath	Path to `*.nfl` file.
 		 * @param	files		Files to publish.
 		 */
-		publish(api:nanofl.ide.NanoApi, params:any, filePath:string, documentProperties:nanofl.engine.DocumentProperties, library:nanofl.engine.Library, files:{ relPath : string; baseDir : string; }[]) : void;
+		publish(api:nanofl.ide.NanoApi, params:any, filePath:string, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.engine.Library, files:{ relPath : string; baseDir : string; }[]) : void;
 	}
 	
 	export class PublishSetting
@@ -9902,26 +9935,6 @@ declare module nanofl.engine
 	export class Debug
 	{
 		static console : nanofl.engine.Console;
-	}
-	
-	export class DocumentProperties
-	{
-		constructor(title?:string, width?:number, height?:number, backgroundColor?:string, framerate?:number, scaleMode?:string, generator?:nanofl.ide.Generator, useTextureAtlases?:boolean, textureAtlases?:Map<string, nanofl.ide.textureatlas.TextureAtlasParams>, publishSettings?:nanofl.ide.plugins.PublishSetting[]);
-		title : string;
-		width : number;
-		height : number;
-		backgroundColor : string;
-		framerate : number;
-		scaleMode : string;
-		generator : nanofl.ide.Generator;
-		useTextureAtlases : boolean;
-		textureAtlases : Map<string, nanofl.ide.textureatlas.TextureAtlasParams>;
-		publishSettings : nanofl.ide.plugins.PublishSetting[];
-		save(fileSystem:nanofl.engine.FileSystem, filePath:string) : void;
-		equ(p:nanofl.engine.DocumentProperties) : boolean;
-		clone() : nanofl.engine.DocumentProperties;
-		getOptimized(optimizations:nanofl.ide.PublishOptimizations) : nanofl.engine.DocumentProperties;
-		static load(filePath:string, fileSystem:nanofl.engine.FileSystem) : nanofl.engine.DocumentProperties;
 	}
 	
 	export interface FileSystem

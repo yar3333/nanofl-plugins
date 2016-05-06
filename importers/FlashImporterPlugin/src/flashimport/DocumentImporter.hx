@@ -2,11 +2,11 @@ package flashimport;
 
 import haxe.io.Path;
 import htmlparser.XmlDocument;
-import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileSystem;
 import nanofl.engine.Library;
 import nanofl.engine.libraryitems.FolderItem;
 import nanofl.engine.libraryitems.SoundItem;
+import nanofl.ide.DocumentProperties;
 import nanofl.ide.NanoApi;
 using htmlparser.HtmlParserTools;
 using StringTools;

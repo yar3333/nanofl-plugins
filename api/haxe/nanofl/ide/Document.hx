@@ -1,6 +1,6 @@
 package nanofl.ide;
 
-extern class Document
+extern class Document implements nanofl.ide.IDocument
 {
 	/**
 	 * Document UUID (generated on every document object create).
@@ -18,18 +18,19 @@ extern class Document
 	 * Path to NanoFL document file (*.nfl).
 	 */
 	var path(default, null) : String;
-	var properties(default, null) : nanofl.engine.DocumentProperties;
+	var properties(default, null) : nanofl.ide.DocumentProperties;
 	var library(default, null) : nanofl.ide.EditorLibrary;
 	var lastModified(default, null) : Date;
 	var navigator(default, null) : nanofl.ide.Navigator;
 	var editor(default, null) : nanofl.ide.Editor;
-	var undoQueue(default, null) : nanofl.ide.undo.UndoQueue;
+	var undoQueue(default, null) : nanofl.ide.undo.document.UndoQueue;
 	@:isVar
 	var busy(get, set) : Bool;
 	var isModified(get, never) : Bool;
 	var isTemporary(get, never) : Bool;
-	function activate(isCenterView:Bool) : Void;
-	function setProperties(properties:nanofl.engine.DocumentProperties) : Void;
+	function activate(?isCenterView:Bool) : Void;
+	function deactivate() : Void;
+	function setProperties(properties:nanofl.ide.DocumentProperties) : Void;
 	function save(?callb:Bool -> Void) : Void;
 	function saveAs(?newPath:String, ?callb:Bool -> Void) : Void;
 	function export(?destPath:String, ?plugin:nanofl.ide.plugins.IExporterPlugin, ?callb:Bool -> Void) : Void;
@@ -41,8 +42,15 @@ extern class Document
 	function canBeSaved() : Bool;
 	function canBePublished() : Bool;
 	function dispose() : Void;
-	static function createTemporary(app:nanofl.ide.Application, ?properties:nanofl.engine.DocumentProperties) : nanofl.ide.Document;
+	function saveNative(callb:Bool -> Void) : Void;
+	function getShortTitle() : String;
+	function getPath() : String;
+	function getLongTitle() : String;
+	function getIcon() : String;
+	function saveWithPrompt(callb:Bool -> Void) : Void;
+	function close(?force:Bool, ?callb:Void -> Void) : Void;
+	function undoStatusChanged() : Void;
+	static function createTemporary(app:nanofl.ide.Application, ?properties:nanofl.ide.DocumentProperties) : nanofl.ide.Document;
 	static function load(app:nanofl.ide.Application, path:String, callb:nanofl.ide.Document -> Void) : Void;
 	static function import_(app:nanofl.ide.Application, path:String, ?importer:nanofl.ide.Importer, ?callb:nanofl.ide.Document -> Void) : Void;
-	static function disposeAll() : Void;
 }

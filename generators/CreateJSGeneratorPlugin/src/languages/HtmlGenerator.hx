@@ -1,9 +1,9 @@
 package languages;
 
-import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileSystem;
 import nanofl.engine.Library;
 import nanofl.engine.Version;
+import nanofl.ide.DocumentProperties;
 import nanofl.ide.textureatlas.TextureAtlas;
 
 class HtmlGenerator extends TextureAtlasGenerator

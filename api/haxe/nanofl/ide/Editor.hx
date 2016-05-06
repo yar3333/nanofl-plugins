@@ -9,6 +9,7 @@ extern class Editor
 	var magnet : Bool;
 	var shift : Bool;
 	var zoomLevel : Float;
+	var ready(default, never) : Bool;
 	function beginEditing(pathItem:nanofl.ide.PathItem, ?isCenterView:Bool) : Void;
 	function updateShapes() : Void;
 	function updateElement(element:nanofl.engine.elements.Element) : Void;
@@ -62,4 +63,6 @@ extern class Editor
 	function getSelectedBounds() : { var height : Float; var width : Float; var x : Float; var y : Float; };
 	function getHitTestGap() : Float;
 	function getEditableLayers() : Array<nanofl.ide.EditorLayer>;
+	function saveViewState() : Void;
+	function loadViewState() : Void;
 }

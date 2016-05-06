@@ -1,5 +1,5 @@
 import nanofl.engine.CustomProperty;
-import nanofl.engine.DocumentProperties;
+import nanofl.ide.DocumentProperties;
 import nanofl.engine.Library;
 import nanofl.ide.plugins.IExporterPlugin;
 import nanofl.ide.NanoApi;

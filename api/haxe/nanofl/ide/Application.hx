@@ -2,12 +2,13 @@ package nanofl.ide;
 
 typedef Application =
 {
-	function addRecent(path:String) : Void;
 	var clipboard : nanofl.ide.Clipboard;
 	var commands : nanofl.ide.commands.Commands;
 	function createNewEmptyDocument(?callb:nanofl.ide.Document -> Void) : Void;
-	var document : nanofl.ide.Document;
+	var document(get, never) : nanofl.ide.Document;
+	var documents : nanofl.ide.IDocuments;
 	var dragAndDrop : nanofl.ide.draganddrop.DragAndDrop;
+	function editSymbolCode(symbol:nanofl.engine.libraryitems.InstancableItem) : Void;
 	/**
 	 * FileSystem functions.
 	 */
@@ -27,5 +28,6 @@ typedef Application =
 	 */
 	var preferences(default, null) : nanofl.ide.Preferences;
 	function quit(?force:Bool, ?exitCode:Int) : Void;
+	var recents : nanofl.ide.IRecents;
 	var serverUtils(default, null) : nanofl.ide.ServerUtils;
 };

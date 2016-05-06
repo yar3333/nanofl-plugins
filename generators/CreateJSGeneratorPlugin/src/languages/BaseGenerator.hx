@@ -1,8 +1,8 @@
 package languages;
 
-import nanofl.engine.DocumentProperties;
 import nanofl.engine.FileSystem;
 import nanofl.engine.Library;
+import nanofl.ide.DocumentProperties;
 import nanofl.ide.textureatlas.TextureAtlas;
 
 class BaseGenerator

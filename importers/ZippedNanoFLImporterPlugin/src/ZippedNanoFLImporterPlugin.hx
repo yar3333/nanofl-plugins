@@ -1,12 +1,11 @@
 import haxe.io.Path;
 import nanofl.engine.CustomProperty;
-import nanofl.engine.DocumentProperties;
-import nanofl.engine.FileSystem;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
-import nanofl.ide.plugins.IImporterPlugin;
+import nanofl.ide.DocumentProperties;
 import nanofl.ide.NanoApi;
 import nanofl.ide.ServerUtilsTools;
+import nanofl.ide.plugins.IImporterPlugin;
 using StringTools;
 
 class ZippedNanoFLImporterPlugin implements IImporterPlugin

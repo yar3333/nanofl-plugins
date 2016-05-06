@@ -1,11 +1,11 @@
 import htmlparser.XmlDocument;
 import nanofl.engine.CustomProperty;
-import nanofl.engine.DocumentProperties;
 import nanofl.engine.Library;
 import nanofl.engine.Plugins;
+import nanofl.ide.DocumentProperties;
 import nanofl.ide.LibraryTools;
-import nanofl.ide.plugins.IImporterPlugin;
 import nanofl.ide.NanoApi;
+import nanofl.ide.plugins.IImporterPlugin;
 import stdlib.Debug;
 import svgimport.Svg;
 import svgimport.SvgElement;

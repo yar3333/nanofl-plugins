@@ -1127,8 +1127,11 @@ stdlib_Debug.getDump = function(v,limit,level,prefix) {
 		case 4:
 			s = "OBJECT" + "\n" + stdlib_Debug.getObjectDump(v,limit,level + 1,prefix);
 			break;
-		case 5:case 8:
-			s = "FUNCTION OR UNKNOW\n";
+		case 5:
+			s = "FUNCTION\n";
+			break;
+		case 8:
+			s = "UNKNOW\n";
 			break;
 		}
 	}
@@ -1175,7 +1178,7 @@ stdlib_Debug.traceStack = function(v,pos) {
 		return ss1[0] + StringTools.rpad(""," ",len - ss1[0].length + 1) + ss1[1];
 	});
 	stack = lines.slice(1).join("\n");
-	haxe_Log.trace("TRACE " + (typeof(v) == "string"?v:stdlib_StringTools.trim(stdlib_Debug.getDump(v))) + "\nStack trace:\n" + stack,{ fileName : "Debug.hx", lineNumber : 136, className : "stdlib.Debug", methodName : "traceStack", customParams : [pos]});
+	haxe_Log.trace("TRACE " + (typeof(v) == "string"?v:stdlib_StringTools.trim(stdlib_Debug.getDump(v))) + "\nStack trace:\n" + stack,{ fileName : "Debug.hx", lineNumber : 187, className : "stdlib.Debug", methodName : "traceStack", customParams : [pos]});
 };
 stdlib_Debug.methodMustBeOverriden = function(_this,pos) {
 	throw new js__$Boot_HaxeError(new stdlib_Exception("Method " + pos.methodName + "() must be overriden in class " + Type.getClassName(Type.getClass(_this)) + "."));
