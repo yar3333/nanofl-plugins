@@ -1376,6 +1376,11 @@ stdlib_LambdaArray.extract = function(arr,f) {
 	} else i++;
 	return r;
 };
+stdlib_LambdaArray.spliceEx = function(arr,pos,len,replacement) {
+	var r = arr.splice(pos,len != null?len:arr.length - pos);
+	if(replacement != null) stdlib_LambdaArray.insertRange(arr,pos,replacement);
+	return r;
+};
 var stdlib_LambdaIterable = function() { };
 stdlib_LambdaIterable.__name__ = true;
 stdlib_LambdaIterable.findIndex = function(it,f) {
