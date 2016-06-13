@@ -4,7 +4,7 @@ import languages.*;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.libraryitems.InstancableItem;
 import nanofl.ide.DocumentProperties;
-import nanofl.ide.Library;
+import nanofl.ide.library.Library;
 import nanofl.ide.NanoApi;
 import nanofl.ide.plugins.GeneratorPlugins;
 import nanofl.ide.plugins.IGeneratorPlugin;
