@@ -31,6 +31,6 @@ extern class MeshItem extends nanofl.engine.libraryitems.InstancableItem impleme
 	override function toString() : String;
 	static var DEFAULT_RENDER_AREA_SIZE(default, never) : Int;
 	static var extensions(default, null) : Array<String>;
-	static function load(api:nanofl.ide.NanoApi, namePath:String, originalExt:String, files:Map<String, nanofl.ide.CachedFile>) : nanofl.engine.libraryitems.MeshItem;
+	static function load(api:nanofl.ide.NanoApi, namePath:String, originalExt:String, files:Map<String, nanofl.ide.filesystem.CachedFile>) : nanofl.engine.libraryitems.MeshItem;
 	static function parse(namePath:String, itemNode:htmlparser.HtmlNodeElement) : nanofl.engine.libraryitems.MeshItem;
 }

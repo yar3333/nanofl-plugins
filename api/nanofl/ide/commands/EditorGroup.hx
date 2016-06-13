@@ -41,5 +41,6 @@ extern class EditorGroup extends nanofl.ide.commands.BaseGroup
 	function copy() : Void;
 	function paste() : Void;
 	function properties() : Void;
+	function editCode() : Void;
 	function dump() : Void;
 }

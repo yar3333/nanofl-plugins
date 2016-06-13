@@ -36,5 +36,5 @@ extern interface IImporterPlugin
 	 * @param	library				Document's library.
 	 * @param	callb				Call this after importing with a success bool flag.
 	 */
-	function importDocument(api:nanofl.ide.NanoApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.ide.Library, callb:Bool -> Void) : Void;
+	function importDocument(api:nanofl.ide.NanoApi, params:Dynamic, srcFilePath:String, destFilePath:String, documentProperties:nanofl.ide.DocumentProperties, library:nanofl.ide.library.Library, callb:Bool -> Void) : Void;
 }

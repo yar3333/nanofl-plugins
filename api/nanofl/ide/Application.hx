@@ -1,33 +1,25 @@
 package nanofl.ide;
 
-typedef Application =
+extern class Application
 {
-	var clipboard : nanofl.ide.Clipboard;
-	var commands : nanofl.ide.commands.Commands;
-	function createNewEmptyDocument(?callb:nanofl.ide.Document -> Void) : Void;
+	function new(template:pages.index.TemplateClient, view:nanofl.ide.View) : Void;
+	var serverUtils(default, null) : nanofl.ide.filesystem.ServerUtils;
+	var newObjectParams : nanofl.ide.graphicseditor.NewObjectParams;
 	var document(get, never) : nanofl.ide.Document;
-	var documents : nanofl.ide.IDocuments;
+	var clipboard : nanofl.ide.Clipboard;
 	var dragAndDrop : nanofl.ide.draganddrop.DragAndDrop;
-	function editSymbolCode(symbol:nanofl.engine.libraryitems.InstancableItem) : Void;
-	/**
-	 * FileSystem functions.
-	 */
-	var fileSystem(default, null) : nanofl.engine.FileSystem;
-	/**
-	 * Known font names.
-	 */
-	var fonts(default, null) : Array<String>;
-	function importDocument(?path:String, ?plugin:nanofl.ide.plugins.IImporterPlugin, ?callb:nanofl.ide.Document -> Void) : Void;
+	var commands : nanofl.ide.commands.Commands;
+	var plugins : nanofl.ide.plugins.IPlugins;
 	var keyboard : nanofl.ide.keyboard.Keyboard;
-	var newObjectParams : nanofl.ide.NewObjectParams;
-	function openDocument(?path:String, ?callb:nanofl.ide.Document -> Void) : Void;
-	var pid : String;
-	var plugins : nanofl.ide.IPlugins;
-	/**
-	 * User preferences.
-	 */
 	var preferences(default, null) : nanofl.ide.Preferences;
-	function quit(?force:Bool, ?exitCode:Int) : Void;
+	var fonts(default, null) : Array<String>;
+	var documents : nanofl.ide.IDocuments;
 	var recents : nanofl.ide.IRecents;
-	var serverUtils(default, null) : nanofl.ide.ServerUtils;
-};
+	var fileSystem : nanofl.engine.FileSystem;
+	var pid : String;
+	function createNewEmptyDocument(?callb:nanofl.ide.Document -> Void) : Void;
+	function openDocument(?path:String, ?callb:nanofl.ide.Document -> Void) : Void;
+	function editSymbolCode(symbol:nanofl.engine.libraryitems.InstancableItem) : Void;
+	function importDocument(?path:String, ?plugin:nanofl.ide.plugins.IImporterPlugin, ?callb:nanofl.ide.Document -> Void) : Void;
+	function quit(?force:Bool, ?exitCode:Int) : Void;
+}

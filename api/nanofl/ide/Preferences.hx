@@ -8,6 +8,5 @@ extern interface Preferences
 	function getFloat(key:String, ?defValue:Float) : Float;
 	function getBool(key:String, ?defValue:Bool) : Bool;
 	function getObject(key:String, ?defValue:Dynamic) : Dynamic;
-	function getKeymap(pathID:String) : Array<{ var shortcut : String; var command : String; }>;
 	function getMenu(pathID:String) : Array<nanofl.ide.menu.MenuItem>;
 }

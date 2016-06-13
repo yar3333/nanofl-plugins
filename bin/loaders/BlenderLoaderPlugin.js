@@ -44,7 +44,7 @@ BlenderLoaderPlugin.prototype = {
 					api.fileSystem.run(blenderExePath,["-b",blendFilePath,"-P",scriptPath,"--",jsonFilePath],true);
 					if(api.fileSystem.exists(jsonFilePath)) {
 						if(!(__map_reserved[relJsonFilePath] != null?files.existsReserved(relJsonFilePath):files.h.hasOwnProperty(relJsonFilePath))) {
-							var value = new nanofl.ide.CachedFile(api.fileSystem,baseDir,relJsonFilePath);
+							var value = new nanofl.ide.filesystem.CachedFile(api.fileSystem,baseDir,relJsonFilePath);
 							if(__map_reserved[relJsonFilePath] != null) files.setReserved(relJsonFilePath,value); else files.h[relJsonFilePath] = value;
 						}
 					}

@@ -75,7 +75,7 @@ ZippedNanoFLImporterPlugin.prototype = {
 		});
 		if(docFiles.length > 0) {
 			api.fileSystem.rename(destDir + "/" + haxe_io_Path.withoutExtension(docFiles[0]) + ".*",haxe_io_Path.withoutExtension(destFilePath) + ".*");
-			var e = nanofl.ide.ServerUtilsTools.loadDocument(api,destFilePath,null);
+			var e = nanofl.ide.filesystem.ServerUtilsTools.loadDocument(api,destFilePath,null);
 			if(e != null) {
 				var _g = 0;
 				var _g1 = Reflect.fields(e.properties);
