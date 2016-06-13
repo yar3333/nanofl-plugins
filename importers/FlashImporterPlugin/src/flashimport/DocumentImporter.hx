@@ -6,7 +6,7 @@ import haxe.io.Path;
 import htmlparser.XmlDocument;
 import nanofl.engine.FileSystem;
 import nanofl.ide.DocumentProperties;
-import nanofl.ide.Library;
+import nanofl.ide.library.Library;
 import nanofl.ide.NanoApi;
 using htmlparser.HtmlParserTools;
 using StringTools;

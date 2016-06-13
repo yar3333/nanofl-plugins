@@ -3,7 +3,7 @@ import flashimport.Macro;
 import haxe.io.Path;
 import nanofl.engine.CustomProperty;
 import nanofl.ide.DocumentProperties;
-import nanofl.ide.Library;
+import nanofl.ide.library.Library;
 import nanofl.ide.NanoApi;
 import nanofl.ide.plugins.IImporterPlugin;
 import nanofl.ide.plugins.ImporterPlugins;

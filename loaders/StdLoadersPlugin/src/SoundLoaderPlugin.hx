@@ -2,7 +2,7 @@ import haxe.io.Path;
 import nanofl.engine.CustomProperty;
 import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.engine.libraryitems.SoundItem;
-import nanofl.ide.CachedFile;
+import nanofl.ide.filesystem.CachedFile;
 import nanofl.ide.plugins.ILoaderPlugin;
 import nanofl.ide.NanoApi;
 using Lambda;

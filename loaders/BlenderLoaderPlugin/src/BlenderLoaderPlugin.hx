@@ -5,7 +5,7 @@ import nanofl.engine.FileSystem;
 import nanofl.engine.libraryitems.LibraryItem;
 import nanofl.engine.libraryitems.MeshItem;
 import nanofl.ide.plugins.LoaderPlugins;
-import nanofl.ide.CachedFile;
+import nanofl.ide.filesystem.CachedFile;
 import nanofl.ide.NanoApi;
 import nanofl.ide.plugins.ILoaderPlugin;
 using StringTools;
