@@ -27,7 +27,7 @@ extern class MeshItem extends nanofl.engine.libraryitems.InstancableItem impleme
 	override function getLibraryFilePaths() : Array<String>;
 	override function getNearestPoint(pos:nanofl.engine.geom.Point) : nanofl.engine.geom.Point;
 	override function getUsedSymbolNamePaths() : Array<String>;
-	override function generateOptimizedFiles(fileSystem:nanofl.engine.FileSystem, optimizations:nanofl.ide.PublishOptimizations, destDir:String) : Array<{ var relPath : String; var baseDir : String; }>;
+	override function generateOptimizedFiles(fileSystem:nanofl.engine.FileSystem, settings:nanofl.ide.publishing.PublishSettings, destDir:String) : Array<{ var relPath : String; var baseDir : String; }>;
 	override function toString() : String;
 	static var DEFAULT_RENDER_AREA_SIZE(default, never) : Int;
 	static var extensions(default, null) : Array<String>;
