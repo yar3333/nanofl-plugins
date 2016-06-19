@@ -38,7 +38,6 @@ package nanofl.ide;
 	function publish(?callb:Bool -> Void) : Void;
 	function resize(width:Int, height:Int) : Void;
 	function canBeSaved() : Bool;
-	function canBePublished() : Bool;
 	override function dispose() : Void;
 	function saveNative(callb:Bool -> Void) : Void;
 	override function getShortTitle() : String;
