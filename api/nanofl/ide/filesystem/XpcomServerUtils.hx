@@ -5,7 +5,7 @@ extern class XpcomServerUtils implements nanofl.ide.filesystem.ServerUtils
 	function new(api:nanofl.ide.NanoApi) : Void;
 	function loadDocument(path:String, callb:{ var properties : nanofl.ide.DocumentProperties; var library : nanofl.ide.library.Library; var lastModified : Date; } -> Void) : Void;
 	function reloadDocument(path:String, lastModified:Date, callb:{ var properties : nanofl.ide.DocumentProperties; var library : nanofl.ide.library.Library; var lastModified : Date; } -> Void) : Void;
-	function saveDocument(path:String, properties:nanofl.ide.DocumentProperties, library:nanofl.ide.library.Library, textureAtlases:Map<String, nanofl.ide.textureatlas.TextureAtlas>, fileActions:Array<nanofl.ide.filesystem.FileAction>, callb:{ var lastModified : Date; var generatorError : String; } -> Void) : Void;
+	function saveDocument(path:String, properties:nanofl.ide.DocumentProperties, library:nanofl.ide.library.Library, textureAtlases:Map<String, nanofl.ide.textureatlas.TextureAtlas>, fileActions:Array<nanofl.ide.filesystem.FileAction>, callb:{ var lastModified : Date; var errorMessage : String; } -> Void) : Void;
 	function publishDocument(path:String, properties:nanofl.ide.DocumentProperties, library:nanofl.ide.library.Library, textureAtlases:Map<String, nanofl.ide.textureatlas.TextureAtlas>, callb:{ var success : Bool; var message : String; } -> Void) : Void;
 	function getTempDirectory() : String;
 	function syncDirectory(src:String, dest:String, callb:Void -> Void) : Void;
