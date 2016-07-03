@@ -12,7 +12,6 @@ extern class Library extends nanofl.engine.Library
 	function compile(libraryDir:String) : { var filterCodes : Map<String, String>; var serializedLibrary : String; };
 	function removeUnusedItems() : Void;
 	function optimize() : Void;
-	function getOptimized(settings:nanofl.ide.publishing.PublishSettings) : nanofl.ide.library.Library;
 	static var SCENE_NAME_PATH(default, never) : String;
 	static function createWithScene(?libraryDir:String, ?elements:Array<nanofl.engine.elements.Element>, ?layerName:String) : nanofl.ide.library.Library;
 }

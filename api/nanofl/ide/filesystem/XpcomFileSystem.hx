@@ -32,4 +32,5 @@ extern class XpcomFileSystem implements nanofl.engine.FileSystem
 	function getEnvironmentVariable(name:String) : String;
 	function convertImage(srcFile:String, destFile:String, quality:Int) : Bool;
 	function convertAudio(srcFile:String, destFile:String, quality:Int) : Bool;
+	function newFile(path:String) : xpcom.mozilla.modules.FileUtils.File;
 }

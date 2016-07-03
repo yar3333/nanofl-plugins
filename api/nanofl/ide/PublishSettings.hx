@@ -1,4 +1,4 @@
-package nanofl.ide.publishing;
+package nanofl.ide;
 
 extern class PublishSettings
 {
@@ -14,8 +14,8 @@ extern class PublishSettings
 	var urlOnClick : String;
 	var useLocalScripts : Bool;
 	var forceSoftwareRenderer : Bool;
-	function equ(p:nanofl.ide.publishing.PublishSettings) : Bool;
-	function clone() : nanofl.ide.publishing.PublishSettings;
+	function equ(p:nanofl.ide.PublishSettings) : Bool;
+	function clone() : nanofl.ide.PublishSettings;
 	function save(out:htmlparser.XmlBuilder) : Void;
-	static function load(xml:htmlparser.HtmlNodeElement) : nanofl.ide.publishing.PublishSettings;
+	static function load(xml:htmlparser.HtmlNodeElement) : nanofl.ide.PublishSettings;
 }

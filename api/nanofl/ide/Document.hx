@@ -1,6 +1,6 @@
 package nanofl.ide;
 
-@:autoBuild(stdlib.AbstractClassBuilder.build()) extern class Document extends nanofl.ide.BaseDocument
+@:autoBuild(stdlib.AbstractClassBuilder.build()) extern class Document extends nanofl.ide.OpenedFile
 {
 	/**
 	 * Used when document was opened directly from none-NanoFL format. In other cases is null.

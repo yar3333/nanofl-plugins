@@ -39,11 +39,11 @@ extern class EditorLibrary
 	function uploadFiles(files:Array<js.html.File>, ?folderPath:String, ?callb:Array<nanofl.engine.libraryitems.LibraryItem> -> Void) : Void;
 	function loadFilesFromClipboard(callb:Bool -> Void) : Void;
 	function copyFilesIntoLibrary(srcDir:String, relativePaths:Array<String>, ?callb:Void -> Void) : Void;
-	function generateTextureAtlases(textureAtlasesParams:Map<String, nanofl.ide.textureatlas.TextureAtlasParams>) : Map<String, nanofl.ide.textureatlas.TextureAtlas>;
 	function selectUnusedItems() : Void;
 	function removeUnusedItems() : Void;
 	function optimize() : Void;
 	function drop(dropEffect:nanofl.ide.draganddrop.DropEffect, data:htmlparser.HtmlNodeElement, folder:String, callb:Array<nanofl.engine.libraryitems.LibraryItem> -> Void) : Void;
 	function getWithExandedFolders(items:Array<nanofl.engine.libraryitems.LibraryItem>) : Array<nanofl.engine.libraryitems.LibraryItem>;
 	function fixErrors() : Void;
+	function publish(settings:nanofl.ide.PublishSettings, destLibraryDir:String, callb:nanofl.ide.library.Library -> Void) : Void;
 }

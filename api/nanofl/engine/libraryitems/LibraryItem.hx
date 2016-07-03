@@ -11,8 +11,7 @@ extern class LibraryItem
 	function saveToXml(out:htmlparser.XmlBuilder) : Void;
 	function getFilePathToRunWithEditor() : String;
 	function getLibraryFilePaths() : Array<String>;
-	function getOptimized(settings:nanofl.ide.publishing.PublishSettings) : nanofl.engine.libraryitems.LibraryItem;
-	function generateOptimizedFiles(fileSystem:nanofl.engine.FileSystem, settings:nanofl.ide.publishing.PublishSettings, destDir:String) : Array<{ var relPath : String; var baseDir : String; }>;
+	function publish(serverUtils:nanofl.ide.filesystem.ServerUtils, settings:nanofl.ide.PublishSettings, destLibraryDir:String, callb:nanofl.engine.libraryitems.LibraryItem -> Void) : Void;
 	function preload(ready:Void -> Void) : Void;
 	function duplicate(newNamePath:String) : nanofl.engine.libraryitems.LibraryItem;
 	function remove() : Void;

@@ -11,10 +11,11 @@ extern class Application
 	var commands : nanofl.ide.commands.Commands;
 	var plugins : nanofl.ide.plugins.IPlugins;
 	var keyboard : nanofl.ide.keyboard.Keyboard;
-	var preferences(default, null) : nanofl.ide.Preferences;
+	var preferences(default, null) : nanofl.ide.preferences.Preferences;
 	var fonts(default, null) : Array<String>;
-	var documents : nanofl.ide.IDocuments;
+	var openedFiles : nanofl.ide.IOpenedFiles;
 	var recents : nanofl.ide.IRecents;
+	var compiler : nanofl.ide.ICompiler;
 	var fileSystem : nanofl.engine.FileSystem;
 	var pid : String;
 	function createNewEmptyDocument(?callb:nanofl.ide.Document -> Void) : Void;

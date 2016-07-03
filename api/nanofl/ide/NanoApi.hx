@@ -13,5 +13,5 @@ typedef NanoApi =
 	/**
 	 * User preferences.
 	 */
-	var preferences(default, null) : nanofl.ide.Preferences;
+	var preferences(default, null) : nanofl.ide.preferences.Preferences;
 };

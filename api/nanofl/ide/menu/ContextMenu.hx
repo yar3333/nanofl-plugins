@@ -1,3 +1,3 @@
 package nanofl.ide.menu;
 
-typedef ContextMenu = components.nanofl.contextmenu.Client;
+typedef ContextMenu = components.nanofl.common.contextmenu.Client;
